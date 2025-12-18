@@ -1,0 +1,92 @@
+<ui:fragment xmlns="http://www.w3.org/1999/xhtml" 
+			xmlns:ui="http://java.sun.com/jsf/facelets"
+ 			xmlns:f="http://java.sun.com/jsf/core" 
+ 			xmlns:h="http://java.sun.com/jsf/html"
+			xmlns:p="http://primefaces.org/ui"
+			xmlns:of="http://omnifaces.org/functions">
+
+	<h:form id="formTableLog" >
+
+		<script>
+			//<![CDATA[
+			function start() {
+				PF('statusDialog').show();
+			}
+
+			function stop() {
+				PF('statusDialog').hide();
+			}
+			//]]>
+		</script>
+		<p:dialog modal="true" widgetVar="statusDialog" header="Status" draggable="false" closable="false"
+				  resizable="false">
+			<i class="pi pi-spinner pi-spin" style="font-size:3rem"></i>
+		</p:dialog>
+
+		<p:dialog id="dlgLayoutLog" widgetVar="dlgLayoutLog" modal="true" width="70%" styleClass="dialog-top"    draggable="false" header="Log Importação Discador" positionType="fixed" appendTo="@(body)" resizable="false">
+
+			<div class="col-12 mb:col-3 mt-2" >
+
+				<p:dataTable id="tableImportacaoLog" emptyMessage="Sem registros"  value="#{campanhaBean.listLogImportacoesDiscador}" var="log" 
+								paginatorPosition="bottom"  styleClass="default ui-datatable-striped"
+								currentPageReportTemplate="[#{msg.totalDeRegistros}: {totalRecords}]"
+								paginatorTemplate="{CurrentPageReport}  {FirstPageLink} {PreviousPageLink} {PageLinks} {NextPageLink} {LastPageLink}"
+								rows="10" paginator="true">
+
+		
+						<p:ajax event="page" global="false" />
+						<p:ajax event="sort" global="false" />
+					
+
+					<p:column headerText="Cod Status" width="10%" sortBy="#{log.httpStatus}">
+
+						<p:outputLabel value="#{log.httpStatus}" />
+
+					</p:column>
+
+					<p:column headerText="Tipo da Integração" width="15%" sortBy="#{log.tipoIntegracao.constante}">
+
+						<p:outputLabel value="#{log.tipoIntegracao.constante}"  />
+
+					</p:column>
+					
+					<p:column headerText="Retorno" width="40%" sortBy="#{log.dadoRetorno}">
+
+						<p:outputLabel value="#{of:abbreviate(log.dadoRetorno,100)}"  title="#{log.dadoRetorno}"/>
+
+					</p:column>
+					
+					<p:column headerText="Retrabalhado" sortBy="#{log.retrabalhar}" width="10%">
+
+						<p:outputLabel value="#{log.retrabalhar eq true ? 'SIM' : NÃO}" />
+
+					</p:column>
+					
+					
+					<p:column headerText="Data Envio" width="20%" sortBy="#{log.dataEnvio}">
+
+						<p:outputLabel value="#{log.dataEnvio}" >
+						
+						<f:convertDateTime pattern="dd/MM/yyyy HH:mm:ss" timeZone="GMT-03:00"/>
+						
+						</p:outputLabel>
+
+					</p:column>
+
+
+				</p:dataTable>
+				
+			</div>
+
+			<div style="text-align: center;" class=" mt-3">
+
+				<p:commandButton value="Sair" id="btnSair" icon="pi pi-times"	styleClass="ui-button-raised" onclick="PF('dlgLayoutLog').hide();" style="width: auto"/>
+
+			</div>
+
+		</p:dialog>
+
+	</h:form>
+
+
+</ui:fragment>

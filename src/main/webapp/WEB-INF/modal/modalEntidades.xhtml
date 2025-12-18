@@ -1,0 +1,95 @@
+<ui:fragment xmlns="http://www.w3.org/1999/xhtml"
+	xmlns:h="http://java.sun.com/jsf/html"
+	xmlns:f="http://java.sun.com/jsf/core"
+	xmlns:o="http://omnifaces.org/ui"
+	xmlns:ui="http://java.sun.com/jsf/facelets"
+	xmlns:p="http://primefaces.org/ui">
+
+	<!--  -->
+	<p:dialog id="modalEntidades" widgetVar="modalEntidades"
+		modal="false" minimizable="true" draggable="true" resizable="true"
+		closable="true" visible="false" width="70%"
+		header="Entidades">
+
+		<h:form id="formEntidades" prependId="false">
+
+			<div class="p-col-12">
+
+				<div >
+
+					<p:dataTable id="tableEntidadesModal" rows="10" paginator="true"
+						value="#{sistemaBean.listEntidades}" var="e"
+						currentPageReportTemplate="[#{msg.totalDeRegistros}: {totalRecords}]"
+						paginatorPosition="bottom" emptyMessage="#{msg.emptyMessage}"
+						paginatorTemplate="{CurrentPageReport}  {FirstPageLink} {PreviousPageLink} {PageLinks} {NextPageLink} {LastPageLink}"
+						styleClass="ui-datatable-striped ui-datatable-sm " >
+
+						<p:ajax event="page" global="false" />
+						<p:ajax event="sort" global="false" />
+						<p:ajax event="filter" global="false" />
+
+						<p:column width="6%" headerText="Entidade" sortBy="#{e.entidade}"	filterBy="#{e.entidade}" filterMatchMode="startsWith">
+							<h:outputText value="#{e.entidade}" />
+						</p:column>
+
+						<p:column headerText="Nome Entidade" sortBy="#{e.nomeEntidade}"	filterBy="#{e.nomeEntidade}" filterMatchMode="contains" >
+
+							<p:outputLabel value="#{e.nomeEntidade}" />
+
+						</p:column>
+						
+						<p:column width="6%" headerText="Dia venc." sortBy="#{e.diaVencimento}"	filterBy="#{e.diaVencimento}" filterMatchMode="contains">
+							<h:outputText value="#{e.diaVencimento}" />
+						</p:column>
+						
+						<p:column width="6%" headerText="Vlr. Min Desconto" sortBy="#{e.diaVencimento}"	filterBy="#{e.diaVencimento}" filterMatchMode="contains">
+							<h:outputText value="#{e.valorMinDesconto}" />
+						</p:column>
+						
+						<p:column headerText="Taxa Período a.m." sortBy="#{e.taxaPeriodoAoMes}" filterBy="#{e.taxaPeriodoAoMes}" filterMatchMode="contains" width="10%">
+
+							<h:outputText  value="#{e.taxaPeriodoAoMes}" >
+									<f:convertNumber pattern="#0.000" locale="pt_BR"/>
+							</h:outputText>
+
+						</p:column>
+						
+								
+						<p:column headerText="Taxa Período a.a." sortBy="#{e.taxaPeriodoAoAno}" filterBy="#{e.taxaPeriodoAoAno}" filterMatchMode="contains" width="10%">
+
+							<h:outputText  value="#{e.taxaPeriodoAoAno}" >
+								<f:convertNumber pattern="#0.000" locale="pt_BR"/>
+							</h:outputText>
+
+						</p:column>
+						
+						<p:column headerText="CET a.m." sortBy="#{e.cetAoMes}" filterBy="#{e.cetAoMes}" filterMatchMode="contains" width="10%">
+
+							<h:outputText  value="#{e.cetAoMes}" >
+								<f:convertNumber pattern="#0.000" locale="pt_BR"/>
+							</h:outputText>
+
+						</p:column>
+						
+						<p:column headerText="CET a.a." sortBy="#{e.cetAoAno}" filterBy="#{e.cetAoAno}" filterMatchMode="contains" width="10%">
+
+							<h:outputText  value="#{e.cetAoAno}" >
+								<f:convertNumber pattern="#0.000" locale="pt_BR"/>
+							</h:outputText>
+
+						</p:column>
+						
+						
+						<p:column width="6%" headerText="Dia corte Fatura" sortBy="#{e.diaCorteFatura}"	filterBy="#{e.diaCorteFatura}" filterMatchMode="contains">
+							<h:outputText value="#{e.diaCorteFatura}" />
+						</p:column>
+
+					</p:dataTable>
+				</div>
+			</div>
+
+		</h:form>
+
+	</p:dialog>
+
+</ui:fragment>

@@ -1,0 +1,191 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:h="http://java.sun.com/jsf/html"
+      xmlns:f="http://java.sun.com/jsf/core"
+      xmlns:pe="http://primefaces.org/ui/extensions"
+      xmlns:ui="http://java.sun.com/jsf/facelets"
+      xmlns:p="http://primefaces.org/ui">
+
+    <h:head>
+    
+        <f:facet name="first">
+        
+            <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+            <meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
+            <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=0"/>
+            <meta name="apple-mobile-web-app-capable" content="yes" />
+            <link rel="shortcut icon" href="#{request.contextPath}/resources/img/favicon.ico" type="image/x-icon" />
+            <link rel="icon" href="#{request.contextPath}/resources/img/favicon.ico" type="image/x-icon" />
+      
+        </f:facet>
+      
+        <title>Proatend - Login</title>
+  
+    </h:head>
+
+    <h:body styleClass="login-body ">
+    
+       <p:tooltip for="username" id="tool"/>
+       
+    	<h:form id="formPrincipal" prependId="false">
+    	
+	    	<p:growl id="grl" widgetVar="grl" globalOnly="true" escape="false" showSummary="false"  showDetail="true" sticky="true">
+	
+				<p:autoUpdate />
+	
+			</p:growl>
+			
+	     	<p:remoteCommand id="redirecionar" name="redirecionarLoginSucesso"	immediate="true" action="/pages/home/inicial.xhtml?faces-redirect=true" />
+			<p:remoteCommand id="redirecionarConsulta" name="redirecionarConsulta"	immediate="true" action="/pages/atendimento/consultaIntegracao.xhtml?faces-redirect=true" />
+
+
+			<h:panelGroup styleClass="login-wrapper" layout="block" id="pngLoginPanel">
+	     
+	            <div class="login-panel">
+	     
+	                <p:graphicImage name="img/logos/logo_login.png"  styleClass="logo" /> 
+	
+	                <div class="login-form">
+	                   
+	                    <h2>Login</h2>
+	                   
+	                    <p:inputText id="username" placeholder="Login" required="true"	value="#{loginBean.strLogin}" requiredMessage="Obrigatorio." />
+	                 
+	                    <p:password id="password" placeholder="Senha" value="#{loginBean.senha}" requiredMessage="Obrigatorio."	required="true" feedback="false"/>
+	                
+	                  
+	                    <p:commandButton value="Entrar" actionListener="#{loginBean.login()}"	process="@this password username" update="@form grl dlgAlterarSenha pngLoginPanel tool" onstart="PF('blockUIWidget').block()"
+										  oncomplete="PF('blockUIWidget').unblock();loginRetorno(xhr, status, args)"  />
+	              
+	                </div>
+	                
+	                <p> 
+	                	<h:outputLink value="#" onclick="PF('dlgInf').show();"> Esqueci minha senha. </h:outputLink> 
+	                </p>
+	                
+	            </div>
+	            
+	            <div class="login-image">
+	                       
+	                <div class="login-image-content">
+	              <!--    <h2 style="font-family: Montserrat-Regular;color: #fff">Proativa Contact Center</h2> -->
+	              
+	                </div>
+	                
+	              	   <div class="image-footer">
+	            
+	                </div>   
+	                 
+	            </div>
+	            
+	        </h:panelGroup>
+	            
+	                        
+	            
+	         <pe:blockUI widgetVar="blockUIWidget" target="pngLoginPanel"	id="blockUIWidget">
+	
+					<h:panelGrid columns="2">
+			
+						<h:graphicImage library="img" name="ajax-loader.gif"	style="margin-right: 12px; vertical-align: middle;" />
+			
+						<h:outputText value="Aguarde..." style="white-space: nowrap;" />
+			
+					</h:panelGrid>
+			
+			</pe:blockUI>
+			
+        </h:form>
+            
+	<p:dialog header="Info" modal="true" id="dlgInf" widgetVar="dlgInf" resizable="false" draggable="false">
+
+		<div>
+
+			<span style="font-weight: bolder; font-size: 19px">Prezado,</span>
+
+			<p />
+			
+			<span style="font-weight: bolder; font-size: 19px">Para	resetar sua senha, solicite o suporte.</span>
+			
+			<p />
+			
+		</div>
+	</p:dialog>
+
+	<pe:blockUI target="dlgAlterarSenha" widgetVar="blockUIWidget1" >
+	
+		<h:panelGrid columns="2">
+		
+			<h:graphicImage library="img" name="ajax-loader.gif" style="margin-right: 12px; vertical-align: middle;" />
+			<h:outputText value="Aguarde..." style="white-space: nowrap;" />
+			
+		</h:panelGrid>
+		
+	</pe:blockUI>
+
+
+
+	<p:dialog id="dlgAlterarSenha" widgetVar="dlgAlterarSenha"	visible="false" modal="true" resizable="false" width="400"	header="Nova Senha" draggable="false">
+
+		<h:form id="formNovaSenha" prependId="false">
+
+			<h:inputHidden value="#{loginBean.strLogin}" id="loginNovo" />
+
+			<div class="ui-fluid ui-g">
+
+
+				<div class="ui-g-12 ui-md-12 ui-lg-12">
+
+					<p:outputLabel for="newPsw" value="Nova Senha" id="lblNewPsw" />
+
+					<p:password id="newPsw" placeholder="senha" match="newReptPsw"	validatorMessage="As senhas não correspondem."	value="#{loginBean.novaSenha}" requiredMessage="Obrigatorio." required="true" />
+
+				</div>
+
+				<div class="ui-g-12 ui-md-12 ui-lg-12">
+
+					<p:outputLabel for="newReptPsw" value="Confirmar nova Senha" id="lblReptPsw" />
+
+					<p:password id="newReptPsw" placeholder="senha"	value="#{loginBean.confirmaSenha}" requiredMessage="Obrigatorio."	required="true" />
+
+				</div>
+
+				<div class="ui-g-12 ui-md-12 ui-lg-12">
+				
+					<p:messages id="msg" />
+					
+				</div>
+
+				<div class="ui-g-12 ui-md-12 ui-lg-12">
+
+					<p:commandButton value="Salvar" styleClass="blue-btn raised-btn" icon="fa fa-fw fa-save" actionListener="#{loginBean.alterarSenha()}" onstart="PF('blockUIWidget1').block()" update="grl @form"
+						oncomplete="PF('blockUIWidget1').unblock()" />
+
+					<p:spacer width="10" />
+
+					<p:commandButton value="Sair" type="button"	styleClass="blue-btn raised-btn" icon="fa fa-fw fa-close"	onclick="PF('dlgAlterarSenha').hide();" />
+
+
+				</div>
+
+			</div>
+
+		</h:form>
+
+	</p:dialog>
+      
+        
+        <h:outputStylesheet id="blockUICSS">
+		    #blockUIContent td {
+		        border: none !important;
+		        padding: 0 !important;
+		    }
+		</h:outputStylesheet>
+		<h:outputScript name="js/script.js?v5" />
+		<h:outputStylesheet name="css/primeicons.css" library="rain-layout" />
+		<h:outputStylesheet name="css/primeflex.min.css" library="rain-layout" />
+		<h:outputStylesheet id="layout-scheme" name="css/layout-blue-light.css" library="rain-layout" />
+		<h:outputStylesheet name="login.css"  />
+		
+    </h:body>
+
+</html>

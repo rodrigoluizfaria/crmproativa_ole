@@ -1,0 +1,301 @@
+<ui:composition xmlns="http://www.w3.org/1999/xhtml"
+                xmlns:h="http://java.sun.com/jsf/html"
+                xmlns:f="http://java.sun.com/jsf/core"
+                xmlns:ui="http://java.sun.com/jsf/facelets"
+                xmlns:matriz="http://java.sun.com/jsf/composite/componentes"
+                xmlns:p="http://primefaces.org/ui" template="/WEB-INF/template.xhtml">
+
+    <ui:define name="viewname">
+
+        <div class="bcca-breadcrumb">
+            <div class="bcca-breadcrumb-item bg-primary-500 hover:bg-primary-700">
+                <p:link outcome="/pages/administrativo/logConciliarAudio"
+                        style="text-decoration: none">LOG CONCILIAR AUDIO</p:link>
+            </div>
+            <div class="bcca-breadcrumb-item uppercase">ADMINISTRATIVO</div>
+        </div>
+
+    </ui:define>
+
+    <ui:define name="content">
+
+        <p:growl id="grl" widgetVar="grl" globalOnly="true" escape="false"
+                 showSummary="false" life="8000" showDetail="true" sticky="false">
+
+            <p:autoUpdate/>
+
+        </p:growl>
+
+        <script type="text/javascript">
+            //<![CDATA[
+            function start() {
+                PF('statusDialog').show();
+            }
+
+            function stop() {
+                PF('statusDialog').hide();
+            }
+
+            //]]>
+        </script>
+
+
+        <h:form prependId="false" id="formConciliar">
+
+            <div class="card">
+
+                <div class="ui-fluid formgrid grid">
+
+                    <matriz:selectEmpresa id="cmpEmpresa" managedBean="#{logConciliarAudioBean}"
+                                          value="#{logConciliarAudioBean.logConciliar.empresa}" filter="true"
+                                          ajax="true" exibirSelecione="true" selecioneItemLabel="Selecione"
+                                          update="selectLoja selectftp" required="true" style="col-12 md:col-3"/>
+
+
+                    <div class="field col-12 md:col-3">
+
+                        <p:outputLabel for="selectLoja" value="Loja"/>
+
+                        <p:selectOneMenu id="selectLoja" value="#{logConciliarAudioBean.idLoja}">
+
+                            <f:selectItem itemLabel="Selecione" noSelectionOption="true"/>
+
+                            <f:selectItems value="#{logConciliarAudioBean.listLojas}" var="loja"
+                                           itemLabel="#{loja.codigoLoja}" itemValue="#{loja.id}"/>
+
+                        </p:selectOneMenu>
+
+                    </div>
+
+                    <div class="field col-12 md:col-3">
+
+                        <p:outputLabel for="selectftp" value="Servidor SFTP"/>
+
+                        <p:selectOneMenu id="selectftp" value="#{logConciliarAudioBean.idSftp}">
+
+                            <f:selectItem itemLabel="Selecione" noSelectionOption="true"/>
+                            <f:selectItems value="#{logConciliarAudioBean.listSftps}" var="sftp"
+                                           itemLabel="#{sftp.descricao}" itemValue="#{sftp.id}"/>
+
+                        </p:selectOneMenu>
+
+                    </div>
+
+                    <div class="field col-12 md:col-3">
+
+                        <p:outputLabel value="Status"/>
+
+                        <p:selectOneMenu id="selectStatus" value="#{logConciliarAudioBean.logConciliar.status}"
+                                         filter="true" filterMatchMode="contains" autoWidth="false">
+
+                            <f:selectItem itemLabel="Selecione" itemValue=""/>
+
+                            <f:selectItems value="#{logConciliarAudioBean.statusConciliarSftp}" var="status"
+                                           itemLabel="#{status.constante}" itemValue="#{status}"/>
+
+                        </p:selectOneMenu>
+
+                    </div>
+
+                    <div class="field col-12 md:col-3">
+
+                        <p:outputLabel value="Tipo envio"/>
+
+                        <p:selectOneMenu id="selectProduto"
+                                         value="#{logConciliarAudioBean.logConciliar.tipoConciliar}" filter="true"
+                                         filterMatchMode="contains" autoWidth="false">
+
+                            <f:selectItem itemLabel="Selecione" itemValue=""/>
+
+                            <f:selectItems value="#{logConciliarAudioBean.tipoConciliarEnum}" var="tipo"
+                                           itemLabel="#{tipo.constante}" itemValue="#{tipo}"/>
+
+                        </p:selectOneMenu>
+
+                    </div>
+
+                    <div class="field col-12 md:col-3">
+
+                        <p:outputLabel value="Data Inicio"/>
+
+                        <p:datePicker id="calendarDataInicioPesquisa" value="#{logConciliarAudioBean.dataInicio}"
+                                      showButtonBar="true" monthNavigator="true" yearNavigator="true"
+                                      showWeek="true"
+                                      showIcon="true" pattern="dd/MM/yyyy"/>
+
+                    </div>
+
+                    <div class="field col-12 md:col-3">
+
+                        <p:outputLabel value="Data fim:"/>
+
+                        <p:datePicker id="calendarDataFimPesquisa" value="#{logConciliarAudioBean.dataFim}"
+                                      showButtonBar="true" monthNavigator="true" yearNavigator="true"
+                                      showWeek="true"
+                                      showIcon="true" pattern="dd/MM/yyyy"/>
+
+                    </div>
+
+                </div>
+                <div class=" mt-4 ">
+
+                    <p:commandButton value="Pesquisar" styleClass="mr-3 ui-button-raised" global="true"
+                                     id="btnBaixar" action="#{logConciliarAudioBean.pesquisar()}" update="@form"
+                                     icon="pi pi-search"/>
+
+
+                </div>
+
+
+            </div>
+
+
+            <div class="mt-4">
+
+                <div class="card">
+
+                    <p:dataTable id="conciliarTableAnexo" value="#{logConciliarAudioBean.listLogConciliar}"
+                                 var="log" rows="15" paginator="true" paginatorPosition="bottom"
+                                 emptyMessage="#{msg.emptyMessage}" styleClass="default"
+                                 currentPageReportTemplate="[#{msg.totalDeRegistros}: {totalRecords}]"
+                                 rowsPerPageTemplate="5,15,35"
+                                 paginatorTemplate="{CurrentPageReport}  {FirstPageLink} {PreviousPageLink} {PageLinks} {NextPageLink} {LastPageLink} {Exporters}">
+
+                        <p:ajax event="page" global="false"/>
+                        <p:ajax event="sort" global="false"/>
+
+
+                        <p:column headerText="Inicio" sortBy="#{log.dataInicio}">
+
+                            <h:outputText value="#{log.dataInicio}">
+                                <f:convertDateTime pattern="dd/MM/yyyy HH:mm:ss"/>
+                            </h:outputText>
+
+                        </p:column>
+
+                        <p:column headerText="Fim" sortBy="#{log.dataFim}">
+
+                            <h:outputText value="#{log.dataFim}">
+                                <f:convertDateTime pattern="dd/MM/yyyy HH:mm:ss"/>
+                            </h:outputText>
+
+                        </p:column>
+
+                        <p:column headerText="Observação" sortBy="#{log.observacao}">
+
+                            <h:outputText value="#{log.observacao}"/>
+
+                        </p:column>
+
+                        <p:column headerText="Arquivo" sortBy="#{log.arquivoCompactado}">
+
+                            <h:outputText value="#{log.arquivoCompactado}" title="#{log.aquivos}"/>
+
+                        </p:column>
+
+                        <p:column headerText="Status" sortBy="#{log.status}">
+
+                            <h:outputText value="#{log.status.constante}"/>
+
+                        </p:column>
+
+                        <p:column headerText="Tipo Envio" sortBy="#{log.tipoConciliar}">
+
+                            <h:outputText value="#{log.tipoConciliar.constante}"/>
+
+                        </p:column>
+
+                        <p:column headerText="Loja" sortBy="#{log.loja.codigoLoja}">
+
+
+                            <h:outputLabel value="#{log.loja.codigoLoja}">
+                            </h:outputLabel>
+
+                        </p:column>
+
+                        <p:column headerText="SFTP" sortBy="#{log.sftp.descricao}">
+
+                            <h:outputText value="#{log.sftp.descricao}"/>
+
+                        </p:column>
+
+                        <p:column headerText="#{msg.acao}" style="text-align:center;width:50px" exportable="false">
+
+                            <p:commandButton icon="pi pi-list" title="Vizualizar áudios"
+                                             rendered="#{log.aquivos ne null}"
+                                             styleClass="rounded-button ui-button-flat"
+                                             action="#{logConciliarAudioBean.onExibirStringAudios(log)}"
+                                             update="tableAudio" process="@this" oncomplete="PF('dlgStrAudio').show();"
+                                             ajax="true">
+
+                            </p:commandButton>
+
+                        </p:column>
+
+
+                    </p:dataTable>
+
+                    <p:dialog modal="true" widgetVar="dlgStrAudio" id="dlgStrAudio" header="" draggable="false"
+                              closable="false" resizable="false" width="40%">
+
+                        <p:dataTable id="tableAudio" widgetVar="tableAudio"
+                                     value="#{logConciliarAudioBean.listStringAudio}"
+                                     globalFilterFunction="#{logConciliarAudioBean.globalFilterFunction}"
+                                     filteredValue="#{logConciliarAudioBean.listStringAudioFilter}" var="str" rows="15"
+                                     paginator="true" paginatorPosition="bottom" emptyMessage="#{msg.emptyMessage}"
+                                     styleClass="default">
+
+                            <p:ajax event="page" global="false"/>
+                            <p:ajax event="sort" global="false"/>
+
+                            <p:ajax event="filter" global="false"/>
+
+                            <f:facet name="header">
+
+                                <div style="justify-content: flex-end; display: flex !important;">
+									
+									<span class="ui-input-icon-left ui-input-icon-right"> 
+										<i class="pi pi-user"></i> <p:inputText id="globalFilter"
+                                                                                onkeyup="PF('tableAudio').filter();"
+                                                                                style="width:20rem"
+                                                                                placeholder="Pesquisa..."/> <i
+                                            class="pi pi-search"></i>
+									</span>
+
+                                </div>
+
+                            </f:facet>
+
+                            <p:column headerText="Arquivos enviados." sortBy="#{str}">
+
+                                <h:outputText value="#{str}"/>
+
+                            </p:column>
+
+                            <f:facet name="footer">
+
+                                Total de arquivos: #{logConciliarAudioBean.listStringAudio.size()}
+
+                            </f:facet>
+
+                        </p:dataTable>
+
+                        <div class="col-12" style="text-align: center;">
+
+                            <p:commandButton type="button" onclick="PF('dlgStrAudio').hide();" icon="pi pi-times"
+                                             styleClass="ui-button-secondary ui-button-outlined" value="Sair"/>
+                        </div>
+
+                    </p:dialog>
+
+
+                </div>
+
+            </div>
+
+        </h:form>
+
+
+    </ui:define>
+
+</ui:composition>

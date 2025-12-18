@@ -1,0 +1,54 @@
+<ui:fragment xmlns="http://www.w3.org/1999/xhtml"
+             xmlns:h="http://java.sun.com/jsf/html"
+             xmlns:ui="http://java.sun.com/jsf/facelets"
+             xmlns:p="http://primefaces.org/ui">
+
+    <!--  -->
+    <p:dialog id="dlgEmail" widgetVar="dlgEmail" modal="true" draggable="false" resizable="false" closable="false" visible="false" width="50%" header="Cadastro Email">
+
+        <h:form id="formEmail" prependId="false" rendered="#{fichaAtendimentoBean.atendimento ne null}">
+
+            <div class="col-12">
+
+                <div class=" ui-fluid formgrid grid">
+
+                    <div class="field col-12">
+
+                        <p:outputLabel for="txtEmail">Email:</p:outputLabel>
+
+
+                        <p:inputText required="true" requiredMessage="#{msg.requerido}" id="txtEmail"
+                                     value="#{fichaAtendimentoBean.email.email}"/>
+
+
+                        <p:message id="msgEmail" for="txtEmail"/>
+
+                    </div>
+
+                </div>
+
+                <div class=" text-center col-12">
+
+                    <p:commandButton value="Salvar" icon="fa fa-fw fa-save fa-2x" id="btnSalvarEmail"
+                                     style="margin-right: 10px;" styleClass="ui-button-raised"
+                                     rendered="#{fichaAtendimentoBean.acao eq 'S'}"
+                                     actionListener="#{fichaAtendimentoBean.salvarEntidade('EMAIL')}" global="false"/>
+
+                    <p:commandButton value="Alterar" icon="fa fa-fw fa-save fa-2x" id="btnAlterarEmail"
+                                     style="margin-right: 10px;" styleClass="ui-button-raised"
+                                     rendered="#{fichaAtendimentoBean.acao eq 'U'}"
+                                     actionListener="#{fichaAtendimentoBean.updadeEntidade('EMAIL')}"/>
+
+                    <p:commandButton value="sair" icon="pi pi-times" id="btnSairEmail" type="button"
+                                     styleClass="ui-button-raised" onclick="PF('dlgEmail').hide();"
+                                     style="margin-right: 10px;" global="false" process="@this"/>
+
+                </div>
+
+            </div>
+
+        </h:form>
+
+    </p:dialog>
+
+</ui:fragment>

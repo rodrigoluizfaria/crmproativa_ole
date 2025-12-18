@@ -1,0 +1,17 @@
+@media ( min-width : 993px) {
+	.login-body .login-wrapper .login-image {
+		background-size: cover;
+		background-repeat: no-repeat;
+		 background-image: url("#{resource['img:fundo_estrelas.jpg']}") ; 
+	}
+}
+
+@font-face {
+	font-family: Aller;
+	src: url("#{resource['fonts:aller.ttf']}") ;
+}
+
+@font-face {
+	font-family: Montserrat-Regular;
+	src: url("#{resource['fonts:Montserrat-Regular.ttf']}") ;
+}

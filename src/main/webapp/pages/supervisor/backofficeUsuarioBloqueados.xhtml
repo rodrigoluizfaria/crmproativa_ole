@@ -1,0 +1,99 @@
+<ui:fragment xmlns="http://www.w3.org/1999/xhtml"
+             xmlns:h="http://java.sun.com/jsf/html"
+             xmlns:f="http://java.sun.com/jsf/core"
+             xmlns:o="http://omnifaces.org/ui"
+             xmlns:pe="http://primefaces.org/ui/extensions"
+             xmlns:ui="http://java.sun.com/jsf/facelets"
+             xmlns:matriz="http://java.sun.com/jsf/composite/componentes"
+             xmlns:p="http://primefaces.org/ui">
+
+    <h:form id="formBackofficeUsuarioBloqueado" prependId="false">
+
+        <div class="grid col-12 tab-padding">
+
+            <div class="col-12">
+
+                <p:spacer height="20"/>
+
+            </div>
+
+            <matriz:selectEmpresa id="selectEmpresaUsuarioBloqueado" style="col-12 md:col-3"
+                                  managedBean="#{supervisorBackofficeBean}" value="#{supervisorBackofficeBean.empresa}"
+                                  ajax="true" update="@form" filter="true" exibirSelecione="true"
+                                  required="true"/>
+
+            <div class="field col-12 md:col-3">
+
+                <p:outputLabel value="Operador"/>
+
+                <p:selectOneMenu id="selectUsuarioBloqueio" value="#{supervisorBackofficeBean.operadorBloqueado}"
+                                 filter="true" filterMatchMode="contains">
+
+                    <f:selectItem itemLabel="Selecione" itemValue=""/>
+
+                    <f:selectItems value="#{supervisorBackofficeBean.listOperador}" var="operador"
+                                   itemLabel="#{operador.nome}" itemValue="#{operador.id}"/>
+
+                </p:selectOneMenu>
+
+            </div>
+
+            <div class="field col-12 md:col-12">
+
+                <p:outputLabel value="&#160;&#160;" id="txtPesquisaBloqueioUsuario"/>
+
+                <div>
+
+                    <p:commandButton value="Pesquisar" id="btnPesquisarUsuarioBloqueado" icon="pi pi-search"
+                                     styleClass="ui-button-raised mr-3"
+                                     actionListener="#{supervisorBackofficeBean.pesquisarUsuariosBloqueados()}"
+                                     update="@form"/>
+
+                </div>
+
+            </div>
+
+            <div class="col-8 mt-2">
+
+                <p:dataTable id="tableBkoUsuarioBloqueado" var="bloqueado" rows="15" paginator="true"
+                             paginatorPosition="bottom" value="#{supervisorBackofficeBean.listUsuariosBloqueados}"
+                             emptyMessage="#{supervisorBackofficeBean.listUsuariosBloqueados eq null? '' : msg.emptyMessage}"
+                             currentPageReportTemplate="[#{msg.totalDeRegistros}: {totalRecords}]"
+                             paginatorTemplate="{CurrentPageReport}  {FirstPageLink} {PreviousPageLink} {PageLinks} {NextPageLink} {LastPageLink} {Exporters}">
+
+                    <p:ajax event="page" global="false"/>
+
+                    <p:ajax event="sort" global="false"/>
+
+                    <p:column headerText="Operador" sortBy="#{bloqueado[1]}">
+
+                        <h:outputLabel value="#{bloqueado[1]}"/>
+
+                    </p:column>
+
+                    <p:column headerText="Ação">
+
+                        <p:commandButton value="Desbloquear" icon="pi pi-unlock"
+                                         styleClass="rounded-button text-button mr-2 mb-2"
+                                         oncomplete="PF('dlgDesbloqueioUsuario').show()"
+                                         update=":dlgDesbloqueioUsuario">
+
+                            <f:setPropertyActionListener value="#{bloqueado[0]}"
+                                                         target="#{supervisorBackofficeBean.controleUsuarioBloqueado}"/>
+                            <f:setPropertyActionListener value="CONTROLE_USUARIO"
+                                                         target="#{supervisorBackofficeBean.dialogModal}"/>
+
+                        </p:commandButton>
+
+                    </p:column>
+
+                </p:dataTable>
+
+            </div>
+
+        </div>
+
+
+    </h:form>
+
+</ui:fragment>

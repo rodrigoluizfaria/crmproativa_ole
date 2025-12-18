@@ -1,0 +1,145 @@
+<ui:fragment xmlns="http://www.w3.org/1999/xhtml"
+             xmlns:h="http://java.sun.com/jsf/html"
+             xmlns:f="http://java.sun.com/jsf/core"
+             xmlns:ui="http://java.sun.com/jsf/facelets"
+             xmlns:p="http://primefaces.org/ui" template="/WEB-INF/template.xhtml">
+
+    <p:growl id="grl" widgetVar="grl" globalOnly="true" escape="false"
+             showSummary="false" life="8000" showDetail="true" sticky="false">
+
+        <p:autoUpdate/>
+
+    </p:growl>
+
+
+    <h:form id="formConteudo" prependId="false">
+
+        <div class="card">
+
+            <div class="ui-fluid formgrid grid">
+
+                <div class="field col-12 md:col-3">
+
+                    <p:outputLabel for="inputDescricao" id="lbDescricao"
+                                   value="#{msg.descricao}"/>
+
+                    <p:inputText id="inputDescricao"
+                                 value="#{pesquisaSatisfacaoBean.questionario.descricao}"/>
+
+                </div>
+
+
+                <div class="field col-12 md:col-2">
+
+                    <p:outputLabel for="selectOneAtivo" value="Acesso:"/>
+
+                    <p:selectOneMenu id="selectOneAtivo"
+                                     value="#{pesquisaSatisfacaoBean.questionario.acesso}">
+
+                        <f:selectItem itemLabel="Selecione" noSelectionOption="true"/>
+
+                        <f:selectItems value="#{pesquisaSatisfacaoBean.tipoAcessoEnum}"
+                                       var="acesso" itemLabel="#{acesso.constante}"
+                                       itemValue="#{acesso}"/>
+
+                    </p:selectOneMenu>
+
+                </div>
+
+            </div>
+                <div class="mt-5">
+
+
+                    <p:commandButton value="Pesquisar"
+                                     styleClass="mr-3 ui-button-raised" id="btnPesquisar"
+                                     action="#{pesquisaSatisfacaoBean.pesquisar()}" update="@form"
+                                     icon="pi pi-search"/>
+
+                    <p:commandButton id="btnExportar"
+                                     styleClass="mr-3 ui-button-outlined ui-button-raised"
+                                     icon="pi pi-file-excel" value="#{msg.exportar}" ajax="false"
+                                     rendered="#{sessionScope['usuario'].permissaoExportar}"
+                                     disabled="#{empty pesquisaSatisfacaoBean.listQuestionarios}">
+
+                        <p:dataExporter target="tablePesquisa" type="xls"
+                                        fileName="pesquisa_satisfacao"/>
+
+                    </p:commandButton>
+
+
+                    <p:commandButton value="Novo" id="btnNovo"
+                                     actionListener="#{pesquisaSatisfacaoBean.novo()}" ajax="false"
+                                     icon="pi pi-plus-circle"
+                                     styleClass="ui-button-outlined ui-button-raised"/>
+                </div>
+
+
+
+        </div>
+
+
+        <div class="mt-4">
+
+            <div class="card">
+
+
+
+                    <p:dataTable id="tablePesquisa"
+                                 value="#{pesquisaSatisfacaoBean.listQuestionarios}"
+                                 var="pesquisa" paginator="true" rows="10"
+                                 paginatorPosition="bottom"
+                                 emptyMessage="#{pesquisaSatisfacaoBean.listQuestionarios eq null ? '' : 'Nenum registro encontrado.'}"
+                                 styleClass="ui-datatable-striped ui-datatable-gridlines"
+                                 paginatorTemplate="{CurrentPageReport}  {FirstPageLink} {PreviousPageLink} {PageLinks} {NextPageLink} {LastPageLink}"
+                                 currentPageReportTemplate="[#{msg.totalDeRegistros}: {totalRecords}]">
+
+                        <p:ajax event="page" global="false"/>
+                        <p:ajax event="sort" global="false"/>
+
+                        <p:column headerText="#{msg.descricao}">
+
+                            <h:outputText value="#{pesquisa.descricao}"/>
+
+                        </p:column>
+
+                        <p:column headerText="Acesso">
+
+                            <h:outputText value="#{pesquisa.acesso.constante}"/>
+
+                        </p:column>
+
+                        <p:column style="text-align:center" exportable="false" width="10%">
+
+                            <p:commandButton icon="fa fw fa-edit" styleClass="rounded-button ui-button-flat mr-2" update="@form"
+                                             action="#{pesquisaSatisfacaoBean.editarFormulario(pesquisa.id)}"
+                                             ajax="false"/>
+
+                            <p:commandButton icon="pi pi-trash" styleClass="rounded-button ui-button-flat" update="@form"
+                                             actionListener="#{pesquisaSatisfacaoBean.remover(pesquisa.id)}">
+
+                                <p:confirm header="Confirmar" message="Deseja remover o formulário?"
+                                           icon="pi pi-exclamation-triangle"/>
+
+                            </p:commandButton>
+
+                        </p:column>
+
+                    </p:dataTable>
+
+            </div>
+
+        </div>
+
+        <p:confirmDialog global="true">
+
+            <p:commandButton value="Sim" type="button" styleClass="ui-confirmdialog-yes" icon="pi pi-check"/>
+
+            <p:commandButton value="Não" type="button" styleClass="ui-confirmdialog-no" icon="pi pi-times"/>
+
+        </p:confirmDialog>
+
+
+    </h:form>
+
+
+</ui:fragment>

@@ -1,0 +1,182 @@
+<ui:composition xmlns="http://www.w3.org/1999/xhtml"
+                xmlns:h="http://java.sun.com/jsf/html"
+                xmlns:f="http://java.sun.com/jsf/core"
+                xmlns:ui="http://java.sun.com/jsf/facelets"
+                xmlns:matriz="http://java.sun.com/jsf/composite/componentes"
+                xmlns:p="http://primefaces.org/ui" template="/WEB-INF/template.xhtml">
+
+
+    <ui:define name="viewname">
+
+        <div class="bcca-breadcrumb">
+            <div class="bcca-breadcrumb-item bg-primary-500 hover:bg-primary-700">
+                <p:link outcome="/pages/administrativo/upload" styleClass="uppercase"
+                        style="text-decoration: none">UPLOAD ARQUIVOS</p:link>
+            </div>
+            <div class="bcca-breadcrumb-item uppercase">ADMINISTRATIVO</div>
+        </div>
+
+    </ui:define>
+
+    <ui:define name="content">
+
+        <p:growl id="grl" widgetVar="grl" globalOnly="true" escape="false" showSummary="false" life="8000"
+                 showDetail="true" sticky="false">
+
+            <p:autoUpdate/>
+
+        </p:growl>
+
+        <script type="text/javascript">
+            //<![CDATA[
+            function start() {
+                PF('statusDialog').show();
+            }
+
+            function stop() {
+                PF('statusDialog').hide();
+            }
+
+            //]]>
+        </script>
+
+
+        <h:form prependId="false" id="formConciliar">
+
+
+                <div class="card">
+
+                    <div class="ui-fluid formgrid grid">
+
+                        <div class="field col-12 md:col-3">
+
+                            <p:outputLabel value="Descrição"/>
+                            <p:inputText value="#{uploadBean.arquivo.descricao}"/>
+
+
+                        </div>
+
+                        <div class="field col-12 md:col-3">
+
+                            <p:outputLabel value="Arquivo"/>
+                            <p:inputText value="#{uploadBean.arquivo.nomeArquivo}"/>
+
+
+                        </div>
+
+                        <div class="field col-12 md:col-3">
+
+                            <p:outputLabel value="Data Inicio"/>
+
+                            <p:datePicker id="calendarDataInicioPesquisa" value="#{uploadBean.dataInicio}"
+                                          showButtonBar="true" monthNavigator="true" yearNavigator="true"
+                                          showWeek="true"
+                                          showIcon="true" pattern="dd/MM/yyyy"/>
+
+                        </div>
+
+                        <div class="field col-12 md:col-3">
+
+                            <p:outputLabel value="Data fim:"/>
+
+                            <p:datePicker id="calendarDataFimPesquisa" value="#{uploadBean.dataFim}"
+                                          showButtonBar="true" monthNavigator="true" yearNavigator="true"
+                                          showWeek="true"
+                                          showIcon="true" pattern="dd/MM/yyyy"/>
+
+                        </div>
+
+                    </div>
+                        <div class="mt-5">
+
+                            <p:commandButton value="Pesquisar" styleClass="mr-3 ui-button-raised" global="true"
+                                             id="btnPesquisa" action="#{uploadBean.pesquisar()}" update="@form"
+                                             icon="pi pi-search"/>
+                            <p:commandButton value="Upload" styleClass="mr-3 ui-button-raised" global="true"
+                                             id="btnModal" onclick="PF('dlgUpload').show();" icon="pi pi-cloud-upload"/>
+
+
+                        </div>
+
+
+
+                </div>
+
+
+
+            <div class="mt-4">
+
+                <div class="card">
+
+                    <p:dataTable id="conciliarUploads" value="#{uploadBean.listUploads}"
+                                 var="file" rows="15" paginator="true" paginatorPosition="bottom"
+                                 emptyMessage="#{msg.emptyMessage}" styleClass="default ui-datatable-sm"
+                                 currentPageReportTemplate="[#{msg.totalDeRegistros}: {totalRecords}]"
+                                 rowsPerPageTemplate="5,15,35"
+                                 paginatorTemplate="{CurrentPageReport}  {FirstPageLink} {PreviousPageLink} {PageLinks} {NextPageLink} {LastPageLink} {Exporters}">
+
+                        <p:ajax event="page" global="false"/>
+                        <p:ajax event="sort" global="false"/>
+
+
+                        <p:column headerText="Data envio" sortBy="#{file.dataCriacao}">
+
+                            <h:outputText value="#{file.dataCriacao}">
+                                <f:convertDateTime pattern="dd/MM/yyyy HH:mm:ss"/>
+                            </h:outputText>
+
+                        </p:column>
+
+                        <p:column headerText="Descrição" sortBy="#{file.descricao}">
+
+                            <h:outputText value="#{file.descricao}">
+
+                            </h:outputText>
+
+                        </p:column>
+
+                        <p:column headerText="Arquivo" sortBy="#{file.nomeArquivo}">
+
+                            <h:outputText value="#{file.nomeArquivo}"/>
+
+                        </p:column>
+
+                        <p:column headerText="Tamanho" width="8%" sortBy="#{file.tamanho}">
+
+                            <h:outputText value="#{file.tamanho} KB"/>
+
+                        </p:column>
+
+
+                        <p:column headerText="#{msg.acao}" width="5%" exportable="false">
+
+                            <p:commandLink styleClass="rounded-button ui-button-flat" update="msgAudio"
+                                           title="baixar arquivo." ajax="false"
+                                           actionListener="#{uploadBean.baixarArquivo(file)}">
+
+                                <i class="fa fa-solid fa-download"/>
+
+                                <p:fileDownload value="#{uploadBean.file}"/>
+
+                            </p:commandLink>
+
+                            <p:commandButton icon="fa fa-trash" actionListener="#{uploadBean.delete(file.id)}"
+                                             title="Remover arquivo." update="@form"
+                                             styleClass="rounded-button ui-button-flat"/>
+
+                        </p:column>
+
+
+                    </p:dataTable>
+
+
+                </div>
+
+            </div>
+        </h:form>
+        <ui:include src="/pages/administrativo/modalUpload.xhtml"/>
+
+
+    </ui:define>
+
+</ui:composition>

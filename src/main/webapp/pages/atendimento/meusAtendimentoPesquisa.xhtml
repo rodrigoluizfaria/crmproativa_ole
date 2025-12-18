@@ -1,0 +1,201 @@
+<ui:fragment xmlns="http://www.w3.org/1999/xhtml"
+	xmlns:h="http://java.sun.com/jsf/html"
+	xmlns:f="http://java.sun.com/jsf/core"
+	xmlns:o="http://omnifaces.org/ui"
+	xmlns:cc="http://java.sun.com/jsf/composite/componentes"
+	xmlns:pe="http://primefaces.org/ui/extensions"
+	xmlns:ui="http://java.sun.com/jsf/facelets"
+	xmlns:p="http://primefaces.org/ui">
+
+	<h:form id="formAtendimentoPesquisa" prependId="false">
+
+		<div class="grid mt-4 ">
+
+			<div class="field col-12 md:col-2">
+
+				<p:outputLabel value="Status do Atendimentos" />
+
+				<p:selectOneMenu id="selectStatusAtn"	value="#{meusAtendimentosBean.idSatusAtendimento}" autoWidth="false">
+
+					<f:selectItem itemLabel="Selecione" itemValue="" />
+
+					<f:selectItems	value="#{meusAtendimentosBean.listStatusAtendimentos}"	var="statusAtendimento" itemLabel="#{statusAtendimento.descricao}"	itemValue="#{statusAtendimento.id}" />
+
+				</p:selectOneMenu>
+
+			</div>
+
+			<div class="field col-12 md:col-2">
+
+				<p:outputLabel value="Status do Contrato" />
+
+				<p:selectOneMenu id="selectStatusContrato"	value="#{meusAtendimentosBean.idStatusContrato}" autoWidth="false">
+
+					<f:selectItem itemLabel="Selecione" itemValue="" />
+
+					<f:selectItems value="#{meusAtendimentosBean.listStatusContrato}"	var="statusContrato" itemLabel="#{statusContrato.descricao}" itemValue="#{statusContrato.id}" />
+
+				</p:selectOneMenu>
+
+			</div>
+
+			<div class="field col-12 md:col-2">
+
+				<p:outputLabel value="CPF" />
+
+				<p:inputText id="txtCpfPesquisa" value="#{meusAtendimentosBean.cpf}" />
+
+			</div>
+
+			<div class="field col-12 md:col-2">
+
+				<p:outputLabel value="Nome" />
+
+				<p:inputText id="txtNomePesquisa"	value="#{meusAtendimentosBean.nome}" />
+
+			</div>
+
+			<div class="field col-12 md:col-2">
+
+				<p:outputLabel value="Adesão" />
+
+				<p:inputText id="txtProtocoloPesquisa" value="#{meusAtendimentosBean.adesao}" />
+
+			</div>
+
+			<div class="field col-12 md:col-2">
+
+				<p:outputLabel value="Data inicio" />
+
+				<p:datePicker id="calendarDataInicioPesquisa" value="#{meusAtendimentosBean.dataInicio}" showButtonBar="true" showIcon="true"  pattern="dd/MM/yyyy" locale="pt_BR"  />
+
+
+			</div>
+
+			<div class="field col-12 md:col-2">
+
+				<p:outputLabel value="Data fim" />
+
+				<p:datePicker id="calendarDataFimPesquisa"	value="#{meusAtendimentosBean.dataAFim}" showButtonBar="true" showIcon="true"  pattern="dd/MM/yyyy" locale="pt_BR" />
+
+
+			</div>
+
+			<div class="field col-12 md:col-3">
+
+				<p:outputLabel value="&#160;&#160;" id="txtPesquisaEspaco" />
+
+
+				<div>
+					<p:commandButton value="Pesquisar" icon="pi pi-search" styleClass="ui-button-raised" actionListener="#{meusAtendimentosBean.pesquisarAtendimentos()}" update="tableAtendimentos btnExportarPesquisa" />
+
+					<p:spacer width="10" />
+
+					<p:commandButton id="btnExportarPesquisa" icon="pi pi-upload" styleClass="ui-button-raised ui-button-outlined" value="#{msg.exportar}" ajax="false" disabled="#{empty meusAtendimentosBean.listAtendimentos}"	immediate="true" rendered="#{sessionScope['usuario'].permissaoExportar}">
+
+						<p:dataExporter target="tableAtendimentos" type="xls" fileName="atendimentos" />
+
+					</p:commandButton>
+				</div>
+
+			</div>
+
+			<div class="mt-4">
+
+				<p:dataTable id="tableAtendimentos" var="atendimento" rows="10"	paginator="true" paginatorPosition="bottom"	value="#{meusAtendimentosBean.listAtendimentos}"
+					emptyMessage="#{meusAtendimentosBean.listAtendimentos eq null? '' : msg.emptyMessage}"	currentPageReportTemplate="[#{msg.totalDeRegistros}: {totalRecords}]"
+					paginatorTemplate="{CurrentPageReport}  {FirstPageLink} {PreviousPageLink} {PageLinks} {NextPageLink} {LastPageLink} {Exporters}" styleClass="ui-datatable-gridlines ui-datatable-striped ui-datatable-sm">
+
+					<p:ajax event="page" global="false" />
+
+					<p:ajax event="sort" global="false" />
+
+					<p:column headerText="Data" sortBy="#{atendimento[5]}" width="10%">
+
+						<h:outputLabel value="#{atendimento[5]}">
+
+							<f:convertDateTime pattern="dd/MM/yyyy HH:mm:ss" timeZone="GMT-3" />
+
+						</h:outputLabel>
+
+					</p:column>
+
+					<p:column headerText="Campanha" sortBy="#{atendimento[1]}"	width="12%">
+
+						<h:outputLabel value="#{atendimento[1]}" />
+
+					</p:column>
+
+					<p:column headerText="Nome" sortBy="#{atendimento[2]}" width="15%">
+
+						<h:outputLabel value="#{atendimento[2]}" />
+
+					</p:column>
+
+					<p:column headerText="CPF" sortBy="#{atendimento[3]}" width="7%">
+
+						<h:outputLabel value="#{atendimento[3]}" />
+
+					</p:column>
+					
+				
+
+					<p:column headerText="Adesão" sortBy="#{atendimento[7]}" width="7%">
+
+						<h:outputLabel value="#{atendimento[7]}" />
+
+					</p:column>
+
+					<p:column headerText="Protocolo" sortBy="#{atendimento[11]}" width="10%">
+
+						<h:outputLabel value="#{atendimento[11]}" />
+
+					</p:column>
+
+					<p:column headerText="Status" sortBy="#{atendimento[4]}" width="10%">
+
+						<h:outputLabel value="#{atendimento[4]}" />
+
+					</p:column>
+
+
+					<p:column headerText="Qtde. Parcelas" sortBy="#{atendimento[8]}" width="5%">
+
+						<h:outputLabel value="#{atendimento[8]}" />
+
+					</p:column>
+
+					<p:column headerText="Val. Parcelas" sortBy="#{atendimento[9]}" width="5%">
+
+						<h:outputLabel value="#{atendimento[9]}" >
+								<f:convertNumber type="currency" locale="pt-br" currencySymbol="R$"/>
+						</h:outputLabel>
+
+					</p:column>
+
+					<p:column headerText="Val. Liberado" sortBy="#{atendimento[10]}"	width="7%">
+
+						<h:outputLabel value="#{atendimento[10]}" >
+								<f:convertNumber type="currency" locale="pt-br" currencySymbol="R$"/>
+						</h:outputLabel>
+
+					</p:column>
+
+					<p:column width="5%" exportable="false">
+						
+						<p:commandButton styleClass="rounded-button ui-button-flat" icon="fa fa-list-alt" onclick="PF('dlgVisualizarAtendimento').show();" update="formVisualizar" action="#{meusAtendimentosBean.visualizarAtendimento(atendimento[0])}"/>
+						
+				</p:column>
+
+
+				</p:dataTable>
+
+			</div>
+
+		</div>
+
+		<pe:tooltip global="true" myPosition="left center"	atPosition="right center" styleClass="qtip-default" />
+
+	</h:form>
+
+</ui:fragment>

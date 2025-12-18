@@ -1,0 +1,70 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd"> 
+
+<html xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:h="http://java.sun.com/jsf/html"
+      xmlns:f="http://java.sun.com/jsf/core"
+      xmlns:ui="http://java.sun.com/jsf/facelets"
+      xmlns:p="http://primefaces.org/ui"
+      xmlns:pe="http://primefaces.org/ui/extensions"
+      xmlns:c="http://java.sun.com/jsp/jstl/core"
+      xmlns:composite="http://java.sun.com/jsf/composite"> 
+      
+	<composite:interface >
+		<composite:attribute name="managedBean" type="com.proativaservicos.bean.GenericBean"/>
+		<composite:attribute name="value" type="com.proativaservicos.model.Empresa" default="#{cc.attrs.managedBean.empresa}"/>
+		<composite:attribute name="update" />
+		<composite:attribute name="required" type="boolean" default="true" />
+		<composite:attribute name="ajax" type="boolean" default="false" />
+		<composite:attribute name="listener" method-signature="void action()" default="#{cc.attrs.managedBean.trocarEmpresa}" />
+		<composite:attribute name="selecioneItemLabel" default="#{msg.selecione}"/>
+		<composite:attribute name="exibirSelecione" type="boolean" default="true"/>
+		<composite:attribute name="disabled" type="boolean" default="false"/>
+		<composite:attribute name="onchange" />
+		<composite:attribute name="filter" type="boolean" default="false"/>
+		<composite:attribute name="panelStyle" type="java.lang.String" default=""/>
+		<composite:attribute name="panelStyleClass" type="java.lang.String" default=""/>
+		<composite:attribute name="style" type="java.lang.String" default="md:col-2"/>
+		<composite:attribute name="style" type="java.lang.String" default="md:col-2"/>
+		<composite:attribute name="global" type="boolean" default="false"/>
+		
+		
+		
+	</composite:interface>
+
+	<composite:implementation>
+	
+	<!-- rendered="#{sessionScope['usuario'].empresa.possuiFiliais}" -->
+	
+		<h:panelGroup id="pngEmpresa" layout="block" styleClass="field col-12 #{cc.attrs.style}" rendered="#{sessionScope['usuario'].empresa.possuiFiliais}">
+	
+	
+			<p:outputLabel id="lblEmpresaNorequired" value="#{msg.empresa}" rendered="#{!cc.attrs.required}" />
+		
+			<p:outputLabel id="lblEmpresa1" value="#{msg.empresa}*" rendered="#{cc.attrs.required}" />
+			
+			<p:selectOneMenu id="cmbEmpresa" value="#{cc.attrs.value}" onchange="#{cc.attrs.onchange}" 
+							  required="#{cc.attrs.required}" requiredMessage="#{msg.requerido}" 
+							 converter="omnifaces.SelectItemsConverter" disabled="#{cc.attrs.disabled}"
+							 filter="#{cc.attrs.filter}" filterMatchMode="contains" 
+							 panelStyleClass="#{cc.attrs.filter ? 'panel-inside' : ''}" autoWidth="false">
+			
+				<c:if test="#{cc.attrs.exibirSelecione}">
+					<f:selectItem itemLabel="#{cc.attrs.selecioneItemLabel}" itemValue=""/>
+				</c:if>
+			
+				<f:selectItems value="#{sessionScope['usuario'].empresa.filiais}" var="empresa" itemLabel="#{empresa.nome}" itemValue="#{empresa}" />
+			
+				<p:ajax event="change" listener="#{cc.attrs.listener}" update="#{cc.attrs.update}" disabled="#{not cc.attrs.ajax}" global="#{cc.attrs.global}"/>
+			
+			</p:selectOneMenu>
+			
+			<p:message id="msgEmpresa" for="cmbEmpresa" rendered="#{cc.attrs.required}" />
+			
+			
+		
+	
+		</h:panelGroup>
+		
+	</composite:implementation>
+	
+</html>

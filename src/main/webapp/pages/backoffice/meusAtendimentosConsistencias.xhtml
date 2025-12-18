@@ -1,0 +1,101 @@
+<ui:composition xmlns="http://www.w3.org/1999/xhtml"
+                xmlns:ui="http://java.sun.com/jsf/facelets"
+                xmlns:p="http://primefaces.org/ui" template="/WEB-INF/template.xhtml">
+
+
+    <ui:define name="viewname">
+        <div class="bcca-breadcrumb">
+            <div class="bcca-breadcrumb-item bg-primary-500 hover:bg-primary-700">
+                <p:link outcome="/pages/backoffice/meusAtendimentosConsistencias"
+                        style="text-decoration: none">MEUS ATENDIMENTOS"</p:link>
+             </div>
+            <div class="bcca-breadcrumb-item ">BACKOFFICE</div>
+        </div>
+
+    </ui:define>
+
+    <ui:define name="content">
+
+        <style>
+            /*    .table-integrado {
+                   background-color: #d9edf7 !important;
+                   background-image: none !important;
+                   color: #31708f !important;
+                   border-color: #bce8f1;
+               }
+                .table-integrada {
+                   background-color: #d9edf7 !important;
+                   background-image: none !important;
+                   color: #31708f !important;
+                   border-color: #bce8f1;
+               } */
+            .table-cancelada {
+                color: #dc3545 !important;
+                background-color: #fcf8e3 !important;
+                border-color: #faebcc !important;
+            }
+
+        </style>
+
+        <p:growl id="grl" widgetVar="grl" globalOnly="true" escape="false" showSummary="false" life="8000"
+                 showDetail="true" sticky="false">
+
+            <p:autoUpdate/>
+
+        </p:growl>
+
+        <p:growl id="grlNo" widgetVar="grl" escape="false" showSummary="false" life="8000" showDetail="true"
+                 sticky="false"/>
+
+        <div class="card">
+
+            <div class="ui-fluid p-formgrid p-grid">
+
+                <p:tabView style="width:100%;" id="tabView" widgetVar="tabView">
+
+                    <p:ajax event="tabChange" listener="#{acompanhamentoMinhasConsistencias.onChangeTab}"
+                            process="@this" update="formPendente formBackofficePendencia" global="false"/>
+
+                    <p:tab title="Painel ">
+
+                        <ui:include src="/pages/backoffice/meusAtendimentosPainel.xhtml"/>
+
+                    </p:tab>
+
+                    <p:tab title="Pesquisa">
+
+                        <ui:include src="/pages/backoffice/acompanhamentoConsistenciasMinhaLista.xhtml"/>
+
+                    </p:tab>
+
+                    <p:tab title="Agendamentos" id="tabAgendamento">
+
+                        <ui:include src="/pages/backoffice/meusAtendimentosConsistenciasAgendados.xhtml"/>
+
+                    </p:tab>
+
+
+                    <p:tab title="Pendências" id="tabPendencia">
+
+                        <ui:include src="/pages/backoffice/meusAtendimentosConsistenciasPendentes.xhtml"/>
+
+                    </p:tab>
+
+
+                </p:tabView>
+
+            </div>
+
+        </div>
+
+        <!-- 	<ui:include	src="/pages/backoffice/administrativoPropostasPesquisa.xhtml" /> -->
+        <ui:include src="/pages/backoffice/acompanhamentoMinhasConsistenciasVisualizar.xhtml"/>
+
+    </ui:define>
+
+    <ui:define name="modal">
+
+
+    </ui:define>
+
+</ui:composition>

@@ -1,0 +1,152 @@
+<ui:fragment xmlns="http://www.w3.org/1999/xhtml"
+             xmlns:h="http://java.sun.com/jsf/html"
+             xmlns:f="http://java.sun.com/jsf/core"
+             xmlns:o="http://omnifaces.org/ui"
+             xmlns:ui="http://java.sun.com/jsf/facelets"
+             xmlns:p="http://primefaces.org/ui">
+
+    <!-- DLG MODAL -->
+    <p:dialog id="dlgAnexarAudio" widgetVar="dlgAnexarAudio" modal="true" styleClass="dialog-formulario"
+              draggable="true" resizable="false" closable="true" width="50%" responsive="true" header="Conciliar Áudio"
+              appendTo="@(body)">
+
+        <h:form id="formAnexarAudio" prependId="false">
+
+            <div class="card mb-4 ">
+
+                <div class=" ui-fluid mb-3">
+
+                    <h:panelGroup layout="block" styleClass="field grid" id="groupLojasAudio"
+                                  rendered="#{supervisorBackofficeBean.listLojas.size() > 1 }">
+
+                        <div class="col-12 ">
+
+                            <p:fieldset legend="Informe a loja" styleClass="fild-set-default-sem-borda"
+                                        style="padding: 15px 15px">
+
+                                <p:selectOneMenu id="selectOneLojasAudio"
+                                                 value="#{supervisorBackofficeBean.atendimentoVisualizar.loja}"
+                                                 converter="omnifaces.SelectItemsConverter" filter="true"
+                                                 filterMatchMode="contains">
+
+                                    <f:selectItem itemLabel="Selecione" noSelectionOption="true" itemValue=""/>
+
+                                    <f:selectItems value="#{supervisorBackofficeBean.listLojas}" var="loja"
+                                                   itemLabel="#{loja.codigoLoja}" itemValue="#{loja}"/>
+
+                                    <p:ajax process="@this" update="@form" event="change"/>
+
+                                </p:selectOneMenu>
+
+                            </p:fieldset>
+
+                        </div>
+
+                    </h:panelGroup>
+
+                </div>
+
+
+                <div class="ui-fluid grid formgrid mt-3">
+
+                    <div class="field col-12">
+
+                        <p:fieldset styleClass="fild-set-default-sem-borda" style="padding: 15px">
+
+                            <f:facet name="legend">
+                                Selecione os áudios | Formato permitido: .wav
+                            </f:facet>
+
+                            <h:panelGroup rendered="#{not empty supervisorBackofficeBean.listConciliar}"
+                                          id="pnpQuntidadeAnexo">
+
+                                <p> Arquivos anexados: #{supervisorBackofficeBean.listConciliar.size()} </p>
+
+
+                            </h:panelGroup>
+
+
+                            <p:fileUpload cancelLabel="Cancelar" chooseIcon=" fa fa-file-audio-o" skinSimple="true"
+                                          auto="true" sizeLimit="10000000" invalidSizeMessage="Tamanho do arquivo inválido"
+                                          update="@form selectOneLojasAudio" uploadLabel="Enviar" label="Selecionar"
+                                          process="@this #{supervisorBackofficeBean.listLojas.size() > 1 ? 'selectOneLojasAudio' : '' }"
+                                          listener="#{supervisorBackofficeBean.uploadArquivosAudio}"/>
+
+                            <p:messages globalOnly="true" id="msgUpload"/>
+
+                        </p:fieldset>
+
+                    </div>
+
+                    <div class="field col-9">
+
+                        <p:dataTable var="audio" id="tableAnexo" reflow="true" draggableRows="true"
+                                     value="#{supervisorBackofficeBean.listConciliar}" paginator="true" rows="5"
+                                     paginatorPosition="bottom" emptyMessage="#{msg.emptyMessage}" rowIndexVar="indice"
+                                     paginatorTemplate="{CurrentPageReport}  {FirstPageLink} {PreviousPageLink} {PageLinks} {NextPageLink} {LastPageLink} {Exporters}"
+                                     currentPageReportTemplate="[Total de áudios: {totalRecords}]">
+
+                            <p:ajax event="rowReorder" listener="#{supervisorBackofficeBean.onTrocarAudio}"
+                                    update="tableAnexo" global="false"/>
+
+                            <p:column headerText="Posição" sortBy="#{indice}" width="10%">
+
+                                <h:outputText value="#{indice}"/>
+
+                            </p:column>
+
+                            <p:column headerText="Arquivo" sortBy="#{audio.nomeArquivo}" width="60%">
+
+                                <h:outputText rendered="#{not empty audio.nomeArquivo}"
+                                        value="#{audio.nomeArquivo }"/>
+
+                                <h:outputText rendered="#{empty audio.nomeArquivo}"
+                                              value="#{audio.nomeArquivoOriginal }"/>
+
+                            </p:column>
+
+                            <p:column headerText="Tamanho" sortBy="#{audio.tamanhoArquivo}">
+
+                                <h:outputText value="#{audio.tamanhoArquivo / 1000} KB">
+                                    <f:convertNumber pattern="#0.000"/>
+                                </h:outputText>
+
+                            </p:column>
+
+                            <p:column style="text-align:center;width:50px" exportable="false">
+
+                                <p:commandButton icon="pi pi-times-circle" tabindex="Excluir"
+                                                 actionListener="#{supervisorBackofficeBean.excluirAnexoArquivo(audio)}"
+                                                 process="@this" global="false" update="@form"
+                                                 styleClass="rounded-button text-button  md:colmr-2">
+
+                                </p:commandButton>
+
+                            </p:column>
+
+
+                        </p:dataTable>
+
+                    </div>
+
+                </div>
+
+                <div class="ui-fluid md:colformgrid md:colgrid md:colcol-12" style="text-align: center; padding: 0px;">
+
+                    <div class="col-12" style="text-align: center; padding: 0px;">
+
+                        <p:commandButton value="Salvar" icon="pi pi-save" styleClass="mr-3 ui-button-raised" actionListener="#{supervisorBackofficeBean.salvarAudios()}"/>
+
+                        <p:commandButton value="Sair" icon="pi pi-times" styleClass="ui-button-secondary" onclick="PF('dlgAnexarAudio').hide();"/>
+
+                    </div>
+
+                </div>
+
+            </div>
+
+        </h:form>
+
+    </p:dialog>
+
+</ui:fragment>

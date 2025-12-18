@@ -1,0 +1,370 @@
+<ui:fragment xmlns="http://www.w3.org/1999/xhtml"
+             xmlns:h="http://java.sun.com/jsf/html"
+             xmlns:f="http://java.sun.com/jsf/core"
+             xmlns:ui="http://java.sun.com/jsf/facelets"
+             xmlns:p="http://primefaces.org/ui">
+
+    <h:form id="formBackofficeMinhaLista" prependId="false">
+
+        <div class="grid col-12 tab-padding">
+
+
+            <div class="field col-12 md:col-2">
+
+                <p:outputLabel value="CPF"/>
+
+                <p:inputText id="txtCpfPesquisaMinhaLista" value="#{acompanhamentoMinhasConsistencias.cpf}"/>
+
+            </div>
+
+
+            <div class="field col-12 md:col-2">
+
+                <p:outputLabel value="Adesão"/>
+
+                <p:inputText id="txtAdesaoPesquisaMinhaLista" value="#{acompanhamentoMinhasConsistencias.adesao}"/>
+
+            </div>
+            <div class="field col-12 md:col-2">
+
+                <p:outputLabel value="Nome"/>
+
+                <p:inputText id="txtNomePesquisaMinhaLista" value="#{acompanhamentoMinhasConsistencias.nome}"/>
+
+            </div>
+
+            <div class="field col-12 md:col-2">
+
+                <p:outputLabel value="Loja"/>
+
+                <p:selectOneMenu id="selecLoja" value="#{acompanhamentoMinhasConsistencias.loja}" filter="true"
+                                 filterMatchMode="contains" autoWidth="false">
+
+                    <f:selectItem itemLabel="Selecione" itemValue=""/>
+
+                    <f:selectItems value="#{acompanhamentoMinhasConsistencias.listLojas}" var="loja"
+                                   itemLabel="#{loja.codigoLoja}" itemValue="#{loja.id}"/>
+
+                </p:selectOneMenu>
+
+            </div>
+
+            <div class="field col-12 md:col-2">
+
+                <p:outputLabel value="Consistencias"/>
+
+                <p:selectOneMenu id="selectConsistencias" value="#{acompanhamentoMinhasConsistencias.consistencia}"
+                                 filter="true" filterMatchMode="contains" autoWidth="false">
+
+                    <f:selectItem itemLabel="Selecione" itemValue=""/>
+
+                    <f:selectItems value="#{acompanhamentoMinhasConsistencias.listConsistencias}" var="consistencia"
+                                   itemLabel="#{consistencia.codigoConcistencia}" itemValue="#{consistencia.id}"/>
+
+                </p:selectOneMenu>
+
+            </div>
+
+            <div class="field col-12 md:col-2">
+
+                <p:outputLabel value="Produto"/>
+
+                <p:selectOneMenu id="selectProduto" value="#{acompanhamentoMinhasConsistencias.produto}" filter="true"
+                                 filterMatchMode="contains" autoWidth="false">
+
+                    <f:selectItem itemLabel="Selecione" itemValue=""/>
+
+                    <f:selectItems value="#{acompanhamentoMinhasConsistencias.listProdutos}" var="produto"
+                                   itemLabel="#{produto.descricao}" itemValue="#{produto.id}"/>
+
+                </p:selectOneMenu>
+
+            </div>
+
+            <div class="field col-12 md:col-2">
+
+                <p:outputLabel value="Status"/>
+
+                <p:selectOneMenu id="selectStatus" value="#{acompanhamentoMinhasConsistencias.status}" filter="true"
+                                 filterMatchMode="contains" autoWidth="false"
+                                 converter="omnifaces.SelectItemsConverter">
+
+                    <f:selectItem itemLabel="Selecione" itemValue=""/>
+
+                    <f:selectItems value="#{acompanhamentoMinhasConsistencias.listStatusAtendimento}" var="status"
+                                   itemLabel="#{status.descricao}" itemValue="#{status}"/>
+                    <p:ajax process="@this" listener="#{acompanhamentoMinhasConsistencias.onChangeStatus}"
+                            update="selectMotivo selectSubMotivo" global="false"/>
+
+                </p:selectOneMenu>
+
+            </div>
+
+            <div class="field col-12 md:col-2">
+
+                <p:outputLabel value="Motivo"/>
+
+                <p:selectOneMenu id="selectMotivo" value="#{acompanhamentoMinhasConsistencias.motivo}" filter="true"
+                                 filterMatchMode="contains" autoWidth="false"
+                                 converter="omnifaces.SelectItemsConverter">
+
+                    <f:selectItem itemLabel="Selecione" itemValue=""/>
+
+                    <f:selectItems value="#{acompanhamentoMinhasConsistencias.listMotivos}" var="motivo"
+                                   itemLabel="#{motivo.descricao}" itemValue="#{motivo}"/>
+                    <p:ajax process="@this" listener="#{acompanhamentoMinhasConsistencias.onSelectMotivo}"
+                            update="selectSubMotivo" global="false"/>
+
+                </p:selectOneMenu>
+
+            </div>
+
+
+            <div class="field col-12 md:col-2">
+
+                <p:outputLabel value="Submotivo"/>
+
+                <p:selectOneMenu id="selectSubMotivo" value="#{acompanhamentoMinhasConsistencias.subMotivo}"
+                                 filter="true" filterMatchMode="contains" autoWidth="false"
+                                 converter="omnifaces.SelectItemsConverter">
+
+                    <f:selectItem itemLabel="Selecione" itemValue=""/>
+
+                    <f:selectItems value="#{acompanhamentoMinhasConsistencias.listSubMotivos}" var="submotivo"
+                                   itemLabel="#{submotivo.descricao}" itemValue="#{submotivo}"/>
+
+                </p:selectOneMenu>
+
+            </div>
+
+
+            <div class="field col-12 md:col-2">
+
+                <p:outputLabel value="Data inicio"/>
+
+                <p:datePicker id="calendarDataInicioPesquisaLista"
+                              value="#{acompanhamentoMinhasConsistencias.dataInicio}" showButtonBar="true"
+                              showIcon="true" pattern="dd/MM/yyyy" monthNavigator="true" yearNavigator="true" />
+
+
+            </div>
+
+            <div class="field col-12 md:col-2">
+
+                <p:outputLabel value="Data fim"/>
+
+                <p:datePicker id="calendarDataFimPesquisaLista" value="#{acompanhamentoMinhasConsistencias.dataFim}"
+                              showButtonBar="true" showIcon="true" pattern="dd/MM/yyyy" monthNavigator="true" yearNavigator="true" showWeek="true"/>
+
+
+            </div>
+
+
+            <div class="col-12 mt-2 ">
+
+                <p:commandButton value="Pesquisar" id="btnPesquisarMinhaLista" icon="pi pi-search"
+                                 styleClass="ui-button-raised "
+                                 actionListener="#{acompanhamentoMinhasConsistencias.pesquisarMinhaLista()}"
+                                 update="@form"/>
+
+            </div>
+
+
+            <div class="  mt-4">
+
+                <p:dataTable id="tableBkoPendenciaMinhaLista" var="pendencia" rows="15" paginator="true"
+                             paginatorPosition="bottom" rowKey="#{pendencia[0]}"
+                             value="#{acompanhamentoMinhasConsistencias.listMinhasPendencias}"
+                             emptyMessage="#{acompanhamentoMinhasConsistencias.listMinhasPendencias eq null? '' : msg.emptyMessage}"
+                             currentPageReportTemplate="[#{msg.totalDeRegistros}: {totalRecords}]"
+                             styleClass="ui-datatable-sm ui-datatable-striped  ui-datatable-gridlines"
+                             paginatorTemplate="{CurrentPageReport}  {FirstPageLink} {PreviousPageLink} {PageLinks} {NextPageLink} {LastPageLink} {Exporters}"
+                             rowStyleClass="table-#{pendencia[26].toLowerCase()}">
+
+                    <p:ajax event="page"/>
+
+                    <p:ajax event="sort" global="false"/>
+
+                    <p:column style="width:2rem" exportable="false">
+
+                        <p:rowToggler/>
+
+                    </p:column>
+
+                    <p:column headerText="Data" sortBy="#{pendencia[5]}" width="15%">
+
+                        <h:outputLabel value="#{pendencia[5]}">
+
+                            <f:convertDateTime pattern="dd/MM/yyyy HH:mm:ss"/>
+
+                        </h:outputLabel>
+
+                    </p:column>
+
+                    <p:column headerText="Cliente" sortBy="#{pendencia[2]}" width="20%">
+
+                        <h:outputLabel value="#{pendencia[2]}"/>
+
+                    </p:column>
+
+                    <p:column headerText="CPF" sortBy="#{pendencia[3]}" width="15%">
+
+                        <h:outputLabel value="#{pendencia[3]}"/>
+
+                    </p:column>
+
+                    <p:column headerText="Adesão" sortBy="#{pendencia[4]}" width="15%">
+
+                        <h:outputLabel value="#{pendencia[4]}"/>
+
+                    </p:column>
+
+
+                    <p:column headerText="Status" sortBy="#{pendencia[11]}" width="20%">
+
+                        <h:outputLabel value="#{pendencia[11]}"/>
+
+                    </p:column>
+
+                    <p:column headerText="Status Extrator" sortBy="#{pendencia[26]}" width="15%">
+
+                        <h:outputLabel value="#{pendencia[26]}"/>
+
+                    </p:column>
+
+                    <p:column headerText="Loja" sortBy="#{pendencia[9]}" width="8%">
+
+                        <h:outputLabel value="#{pendencia[9]}"/>
+
+                    </p:column>
+
+
+                    <p:column headerText="Valor Liberado" sortBy="#{pendencia[7]}" width="5%">
+
+                        <h:outputLabel value="#{pendencia[7]}">
+                            <f:convertNumber type="currency" locale="pt-br" currencySymbol="R$"/>
+                        </h:outputLabel>
+
+                        <f:facet name="footer">
+
+                            <h:outputLabel value="#{acompanhamentoMinhasConsistencias.total}">
+                                <f:convertNumber type="currency" locale="pt-br" currencySymbol="R$"/>
+                            </h:outputLabel>
+                        </f:facet>
+
+                    </p:column>
+
+                    <p:column headerText="Ação" width="5%">
+
+                        <p:commandButton icon="pi pi-chevron-circle-right" styleClass="rounded-button ui-button-flat"
+                                         oncomplete="PF('dlgConfirmarAntecipacaoNaoTrabalhado').show();" global="false"
+                                         id="btnAdiantarAtnMinhaLista" title="Antecipar Atendimento">
+
+                            <f:setPropertyActionListener value="#{pendencia[0]}"
+                                                         target="#{acompanhamentoMinhasConsistencias.idAtendimento}"/>
+
+                        </p:commandButton>
+
+                        <p:commandButton styleClass="rounded-button ui-button-flat" icon="fa fa-list-alt"
+                                         onclick="PF('dlgVisualizarAtendimento').show()" update=":formVisualizar"
+                                         title="Visualizar" immediate="true"
+                                         action="#{acompanhamentoMinhasConsistencias.visualizarAtendimento(pendencia[0])}"/>
+
+                    </p:column>
+
+                    <p:rowExpansion>
+
+                        <div class="p-grid p-col-12 " style="padding: 30px 10px;">
+                            <div class="p-field p-col-12 p-md-4">
+
+                                <p:panelGrid columns="2">
+
+                                    <f:facet name="header">
+                                        Tabulações
+                                    </f:facet>
+
+                                    <h:outputText value="Status:"/>
+                                    <h:outputText value="#{pendencia[11]}"/>
+
+                                    <h:outputText value="Motivo:"/>
+                                    <h:outputText value="#{pendencia[12]}"/>
+
+                                    <h:outputText value="Submotivo:"/>
+                                    <h:outputText value="#{pendencia[13]}"/>
+
+
+                                </p:panelGrid>
+                            </div>
+
+                            <div class="p-field p-col-12 p-md-8">
+
+                                <p:dataTable var="concistencia" value="#{pendencia[16]}"
+                                             styleClass="ui-datatable-sm ui-datatable-striped ui-datatable-gridlines"
+                                             rendered="#{pendencia[16] ne null}" rowExpandMode="single">
+
+                                    <f:facet name="header">
+                                        Lista de consistências.
+                                    </f:facet>
+
+                                    <p:column headerText="Codigo" width="5%">
+                                        <h:outputText
+                                                value=" #{not empty concistencia[0] ? concistencia[3] : 'Nenhuma consistência cadastrada.'}  "
+                                                title="#{concistencia[1]}"/>
+                                    </p:column>
+
+
+                                    <p:column headerText="Instituição" width="5%">
+                                        <h:outputText value="#{concistencia[2]}"/>
+                                    </p:column>
+
+                                    <p:column headerText="Convênio" width="5%">
+                                        <h:outputText value="#{concistencia[5]}"/>
+                                    </p:column>
+
+                                    <p:column headerText="Prazo" width="5%">
+                                        <h:outputText value="#{concistencia[6]}"/>
+                                    </p:column>
+
+                                    <p:column headerText="Resp" width="5%">
+                                        <h:outputText value="#{concistencia[7]}"/>
+                                    </p:column>
+
+                                    <p:column headerText="Tratada" width="5%">
+                                        <h:outputText
+                                                value="#{((concistencia[9] eq false or empty concistencia[9]) and not empty concistencia[0]  ) ? 'Não' : 'Sim'}"
+                                                styleClass="product-badge status-#{concistencia[9] eq false or empty concistencia[9] ? 'outofstock' : 'instock' }"
+                                                rendered="#{not empty concistencia[0]}"/>
+                                    </p:column>
+
+                                    <p:column headerText="Arquivos" width="5%">
+
+                                        <p:commandButton styleClass="rounded-button text-button secondary-button p-ml-5"
+                                                         icon="fa fa-download"
+                                                         actionListener="#{acompanhamentoMinhasConsistencias.onBaixarAnexo(pendencia[4] ,concistencia[10])}"
+                                                         ajax="false" title="Baixar anexos: #{concistencia[10]} "
+                                                         rendered="#{not empty concistencia[10]}">
+                                            <p:fileDownload value="#{acompanhamentoMinhasConsistencias.fileRar}"/>
+                                        </p:commandButton>
+
+                                        <p:graphicImage rendered="#{empty concistencia[10]}" styleClass="p-ml-5"
+                                                        name="img/down_fail.png" title="Nenhum arquivo enviado"/>
+
+                                    </p:column>
+                                </p:dataTable>
+
+                            </div>
+
+                        </div>
+
+                    </p:rowExpansion>
+
+
+                </p:dataTable>
+
+            </div>
+
+        </div>
+
+    </h:form>
+
+</ui:fragment>

@@ -1,0 +1,121 @@
+<ui:fragment xmlns="http://www.w3.org/1999/xhtml"
+	xmlns:h="http://java.sun.com/jsf/html"
+	xmlns:f="http://java.sun.com/jsf/core"
+	xmlns:ui="http://java.sun.com/jsf/facelets"
+	xmlns:p="http://primefaces.org/ui" xmlns:o="http://omnifaces.org/ui"
+	xmlns:matriz="http://java.sun.com/jsf/composite/componentes"
+	template="/WEB-INF/template.xhtml">
+
+
+		<p:growl globalOnly="true" id="grl" />
+
+		<h:form id="formPesquisa">
+
+				<div class="card">
+
+					<div class="formgrid ui-fluid grid">
+
+						<matriz:selectEmpresa id="cmpEmpresa" managedBean="#{equipeBean}"	value="#{equipeBean.equipe.empresa}" ajax="true" update="@form"	filter="true" exibirSelecione="true" style="md:col-3"	selecioneItemLabel="Selecione" required="false" />
+
+						<div class="field col-12 md:col-3">
+
+							<p:outputLabel for="inputPesqEquipe" value="Descrição" />
+
+							<p:inputText id="inputPesqEquipe" value="#{equipeBean.equipe.nome}" />
+
+						</div>
+
+						<div class="field col-12 md:col-3">
+
+							<p:outputLabel for="selectOneAtivo" value="Acesso:" />
+
+							<p:selectOneMenu id="selectOneAtivo" value="#{equipeBean.equipe.ativo}">
+
+								<f:selectItem itemLabel="Selecione" noSelectionOption="true" />
+
+								<f:selectItems value="#{equipeBean.tipoAcessoEnum}" var="acesso" itemLabel="#{acesso.constante}" itemValue="#{acesso}" />
+
+							</p:selectOneMenu>
+
+						</div>
+
+					</div>
+
+					<div class="mt-5">
+
+							<p:commandButton value="Pesquisar" styleClass="mr-3 ui-button-raised" id="btnPesquisar" icon="pi pi-search"	action="#{equipeBean.pesquisar()}" update="tableEquipe grl" />
+
+							<p:commandButton id="btnExportar" styleClass="mr-3 ui-button-raised ui-button-outlined" icon="pi pi-file-excel" value="#{msg.exportar}" ajax="false" onclick="disableModalLoading()"	rendered="#{sessionScope['usuario'].permissaoExportar}"	disabled="#{empty equipeBean.listEquipes}">
+
+								<p:dataExporter target="tableEquipe" type="xls"	fileName="equipe" />
+
+							</p:commandButton>
+
+							<p:commandButton value="Novo" id="btnNovo"	styleClass="ui-button-raised ui-button-outlined" icon="pi pi-plus-circle"	action="#{equipeBean.novo()}" ajax="false" />
+
+						</div>
+
+				</div>
+
+			<div class="mt-4">
+
+				<div class="card">
+
+						<p:dataTable var="equipe" id="tableEquipe" reflow="true"
+							styleClass="ui-datatable-striped ui-datatable-gridlines ui-datatable-sm "
+							value="#{equipeBean.listEquipes}" paginator="true" rows="10"
+							paginatorPosition="bottom" emptyMessage="#{msg.emptyMessage}"
+							paginatorTemplate="{CurrentPageReport}  {FirstPageLink} {PreviousPageLink} {PageLinks} {NextPageLink} {LastPageLink} {Exporters}"
+							currentPageReportTemplate="[#{msg.totalDeRegistros}: {totalRecords}]">
+
+							<p:column headerText="#{msg.empresa}"
+								sortBy="#{equipe.empresa.nome}">
+
+								<h:outputText value="#{equipe.empresa.nome}" />
+
+							</p:column>
+
+							<p:column headerText="#{msg.descricao}" sortBy="#{equipe.nome}">
+
+								<h:outputText value="#{equipe.nome}" />
+
+							</p:column>
+
+							<p:column headerText="Acesso" sortBy="#{equipe.ativo}">
+
+								<h:outputText value="#{equipe.ativo.constante}" />
+
+							</p:column>
+
+
+							<p:column style="text-align:center;width:50px" exportable="false">
+
+								<p:commandButton icon="fa fw fa-edit"
+									styleClass="ui-button-flat  mr-2"
+									action="#{equipeBean.editar(equipe)}" ajax="false">
+
+									<f:setPropertyActionListener value="#{equipe}"
+										target="#{equipeBean.equipe}" />
+
+								</p:commandButton>
+
+							</p:column>
+
+
+						</p:dataTable>
+
+
+
+</div>
+				</div>
+			
+		</h:form>
+
+
+
+
+
+
+
+
+</ui:fragment>

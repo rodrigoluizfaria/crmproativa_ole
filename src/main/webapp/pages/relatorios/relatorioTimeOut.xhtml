@@ -1,0 +1,319 @@
+<ui:composition xmlns="http://www.w3.org/1999/xhtml"
+                xmlns:h="http://java.sun.com/jsf/html"
+                xmlns:f="http://java.sun.com/jsf/core"
+                xmlns:ui="http://java.sun.com/jsf/facelets"
+                xmlns:comboempresa="http://java.sun.com/jsf/composite/componentes"
+                xmlns:p="http://primefaces.org/ui" template="/WEB-INF/template.xhtml">
+
+
+    <ui:define name="viewname">
+
+        <div class="bcca-breadcrumb">
+            <div class="bcca-breadcrumb-item bg-primary-500 hover:bg-primary-700">
+                <p:link outcome="/pages/relatorios/relatorioTimeOut" styleClass="uppercase"
+                        style="text-decoration: none">TIMEOUT</p:link>
+            </div>
+            <div class="bcca-breadcrumb-item uppercase">RELATÓRIOS</div>
+        </div>
+
+    </ui:define>
+
+    <ui:define name="content">
+
+        <div class="p-grid justify-center ">
+
+            <p:growl id="grl" widgetVar="grl" globalOnly="true" escape="false" showSummary="false" life="8000"
+                     showDetail="true" sticky="false">
+
+                <p:autoUpdate/>
+
+            </p:growl>
+
+            <h:form prependId="false" id="formTable">
+
+                <h:panelGroup id="panelRelatorio" layout="block">
+
+
+                    <div class="card">
+
+                        <div class="ui-fluid formgrid grid">
+
+                            <div class="col-9 ">
+
+                                <div class="ui-fluid formgrid grid grid ">
+
+                                    <div class="col-12 ">
+
+                                        <comboempresa:selectEmpresa id="cmpEmpresa"
+                                                                    managedBean="#{relatoriosTimeOutBean}"
+                                                                    listener="#{relatoriosTimeOutBean.trocarEmpresa()}"
+                                                                    value="#{relatoriosTimeOutBean.empresa}"
+                                                                    ajax="true"
+                                                                    update="@form" filter="true"
+                                                                    exibirSelecione="true"
+                                                                    selecioneItemLabel="Selecione" style="md:col-4"/>
+                                    </div>
+
+                                    <div class="field col-12 md:col-4">
+
+                                        <p:outputLabel value="Supervisor " for="selectOneSupervisor"/>
+
+                                        <p:selectOneMenu id="selectOneSupervisor"
+                                                         value="#{relatoriosTimeOutBean.idSupervisor}" filter="true"
+                                                         filterMatchMode="contains" autoWidth="false">
+
+                                            <f:selectItem itemLabel="Selecione" itemValue=""/>
+
+                                            <f:selectItems value="#{relatoriosTimeOutBean.listSupervisores}"
+                                                           var="sup" itemLabel="#{sup.nome}" itemValue="#{sup.id}"/>
+
+                                            <p:ajax listener="#{relatoriosTimeOutBean.onChangeSupervisor()}"
+                                                    process="@this" event="change"
+                                                    update="selectCheckBoxUsuario selectOneEquipe"/>
+
+                                        </p:selectOneMenu>
+
+                                    </div>
+
+
+                                    <div class="field col-12 md:col-4">
+
+                                        <p:outputLabel value="Equipe " for="selectOneEquipe"/>
+
+                                        <p:selectOneMenu id="selectOneEquipe"
+                                                         value="#{relatoriosTimeOutBean.idEquipe}" filter="true"
+                                                         filterMatchMode="contains" autoWidth="false">
+
+                                            <f:selectItem itemLabel="Selecione" itemValue=""/>
+
+                                            <f:selectItems value="#{relatoriosTimeOutBean.listEquipes}" var="equipe"
+                                                           itemLabel="#{equipe.nome}" itemValue="#{equipe.id}"/>
+
+                                            <p:ajax listener="#{relatoriosTimeOutBean.onChangeEquipe()}"
+                                                    process="@this"
+                                                    update="@this selectCheckBoxUsuario selectOneCoordenador selectOneSupervisor"
+                                                    global="false"/>
+
+
+                                        </p:selectOneMenu>
+
+                                    </div>
+
+                                    <div class="field col-12 md:col-4">
+
+                                        <p:outputLabel value="Data inicio" for="calendarDataInicioPesquisa"/>
+
+                                        <p:datePicker id="calendarDataInicioPesquisa" required="true"
+                                                      requiredMessage="Obtigatório"
+                                                      value="#{relatoriosTimeOutBean.dataInicio}"
+                                                      showButtonBar="true" showIcon="true"
+                                                      pattern="dd/MM/yyyy"/>
+
+                                        <p:messages for="calendarDataInicioPesquisa"/>
+
+                                    </div>
+
+                                    <div class="field col-12 md:col-4">
+
+                                        <p:outputLabel value="Coordenador " for="selectOneCoordenador"/>
+
+                                        <p:selectOneMenu id="selectOneCoordenador"
+                                                         value="#{relatoriosTimeOutBean.idCoordenador}"
+                                                         converter="omnifaces.SelectItemsConverter" filter="true"
+                                                         filterMatchMode="contains" autoWidth="false">
+
+                                            <f:selectItem itemValue="" itemLabel="Selecione"/>
+
+                                            <f:selectItems value="#{relatoriosTimeOutBean.listCoordenadores}"
+                                                           var="coor" itemLabel="#{coor.nome}"
+                                                           itemValue="#{coor.id}"/>
+
+                                            <p:ajax listener="#{relatoriosTimeOutBean.onChangeCoordenador()}"
+                                                    process="@this" event="change"
+                                                    update="selectOneSupervisor selectCheckBoxUsuario selectOneEquipe"/>
+
+
+                                        </p:selectOneMenu>
+
+                                    </div>
+
+                                    <div class="field col-12 md:col-4">
+
+                                        <p:outputLabel value="Usuario" for="selectCheckBoxUsuario"/>
+
+                                        <p:selectCheckboxMenu id="selectCheckBoxUsuario" required="true"
+                                                              requiredMessage="Obrigatório"
+                                                              widgetVar="selectCheckBoxStatus"
+                                                              value="#{relatoriosTimeOutBean.listIdUsuarios}"
+                                                              filter="true" filterMatchMode="startsWith"
+                                                              label="Usuarios">
+
+                                            <f:selectItems value="#{relatoriosTimeOutBean.listUsuarios}" var="usr"
+                                                           itemLabel="#{usr.nome}" itemValue="#{usr.id}"/>
+
+
+                                        </p:selectCheckboxMenu>
+
+                                        <p:messages for="selectCheckBoxUsuario"/>
+
+                                    </div>
+
+                                    <div class="field col-12 md:col-4">
+
+                                        <p:outputLabel value="Data Final" for="calendarDataFimPesquisa"/>
+
+                                        <p:datePicker id="calendarDataFimPesquisa"
+                                                      value="#{relatoriosTimeOutBean.dataFim}" required="true"
+                                                      requiredMessage="Obtigatório" showButtonBar="true"
+                                                      showIcon="true" pattern="dd/MM/yyyy"/>
+
+                                        <p:messages for="calendarDataFimPesquisa"/>
+
+                                    </div>
+
+
+                                </div>
+
+                            </div>
+
+                            <div class="col-3">
+
+                                <p:fieldset legend="Exibir por:" styleClass="mb-3 fild-set-default-sem-borda"
+                                            style="padding: 0px 20px;">
+
+
+                                    <!--    <div class="field grid">-->
+                                    <div class="flex flex-column  col-12 p-5">
+                                        <p:selectOneRadio id="customRadio" value="#{relatoriosTimeOutBean.filtro}"
+                                                          layout="lineDirection">
+
+                                            <f:selectItem itemLabel="Dia" itemValue="DIA"/>
+                                            <f:selectItem itemLabel="Semana" itemValue="SEMANA"/>
+                                            <f:selectItem itemLabel="Mês" itemValue="MES"/>
+
+                                            <p:ajax listener="#{relatoriosTimeOutBean.pesquisar()}" event="change"
+                                                    update="@form" process="@form"
+                                                    disabled="#{empty relatoriosTimeOutBean.mapRelatorio}"/>
+
+
+                                        </p:selectOneRadio>
+                                    </div>
+                                    <!--   <p:outputLabel for="dia"  >Dia:</p:outputLabel>
+
+                                       <div class="col-12 md:col-2">
+
+                                           <p:radioButton id="dia" for="customRadio" itemIndex="0"/>
+
+                                       </div>
+
+                                   </div>
+
+                                   <div class="field grid">
+
+                                       <p:outputLabel for="semana"  styleClass="col-12 mb-6 md:col-8 mb-md:col-0">Semana:</p:outputLabel>
+
+                                       <div class="col-12 md:col-2">
+
+                                           <p:radioButton id="semana" for="customRadio" itemIndex="1"/>
+
+                                       </div>
+
+                                   </div>
+
+                                   <div class="field grid">
+
+                                       <p:outputLabel for="mes"
+                                                      styleClass="col-12 mb-6 md:col-8 mb-md:col-0">Mes:</p:outputLabel>
+
+                                       <div class="col-12 md:col-2">
+
+                                           <p:radioButton id="mes" for="customRadio" itemIndex="2"/>
+
+                                       </div>
+
+                                   </div>-->
+
+                                </p:fieldset>
+
+                            </div>
+
+                        </div>
+
+                        <div class="mt-5 ">
+
+
+                            <p:commandButton styleClass="mr-3 raised-button"
+                                             actionListener="#{relatoriosTimeOutBean.pesquisar()}"
+                                             value="Pesquisar" id="btnPesquisar" icon="pi pi-search"
+                                             update="@form"/>
+
+                            <p:commandButton id="btnExportarPesquisa" icon="pi pi-upload"
+                                             styleClass="outlined-button" value="#{msg.exportar}"
+                                             ajax="false"
+                                             disabled="#{empty relatoriosTimeOutBean.listFinal}"
+                                             immediate="true"
+                                             rendered="#{sessionScope['usuario'].permissaoExportar}">
+
+                                <p:dataExporter target="tableStatus" type="xls"
+                                                fileName="pos_atendimento"/>
+
+                            </p:commandButton>
+
+
+                        </div>
+
+
+                    </div>
+
+
+                    <div class="mt-4">
+
+                        <div class="card">
+
+                            <h:panelGroup id="png" layout="block"
+                                          rendered="#{not empty relatoriosTimeOutBean.mapRelatorio}">
+
+                                <p:dataTable value="#{relatoriosTimeOutBean.listFinal}"
+                                             var="relatorio" id="tableStatus" paginator="true" rows="20"
+                                             styleClass="ui-datatable-striped ui-datatable-sm"
+                                             paginatorPosition="bottom"
+                                             emptyMessage="#{msg.emptyMessage}"
+                                             paginatorTemplate="{CurrentPageReport}  {FirstPageLink} {PreviousPageLink} {PageLinks} {NextPageLink} {LastPageLink}"
+                                             currentPageReportTemplate="[#{msg.totalDeRegistros}: {totalRecords}]">
+
+                                    <p:ajax event="page" global="false"/>
+
+                                    <p:ajax event="sort" global="false"/>
+
+                                    <p:columns var="su" footerText="#{relatoriosTimeOutBean.retornoFooter(su.header)}"
+                                               value="#{relatoriosTimeOutBean.columns}" sortBy="#{relatorio[su.indice]}"
+                                               headerText="#{su.header}">
+
+                                        <p:outputLabel value="#{relatorio[su.indice]}"/>
+
+                                    </p:columns>
+
+                                </p:dataTable>
+
+                            </h:panelGroup>
+
+                            <h:panelGroup id="png3" layout="block"
+                                          rendered="#{empty relatoriosTimeOutBean.mapRelatorio}"
+                                          styleClass="field col-12 md:col-12">
+
+                                <p:outputLabel
+                                        value="#{relatoriosTimeOutBean.mapRelatorio eq null ? '' : 'Nehum registro encontrado.'} "/>
+
+                            </h:panelGroup>
+
+                        </div>
+
+                    </div>
+
+                </h:panelGroup>
+
+            </h:form>
+        </div>
+    </ui:define>
+
+</ui:composition>

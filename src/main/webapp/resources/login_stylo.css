@@ -1,0 +1,121 @@
+
+
+
+
+.login-body {
+/* background: url("#{resource['img:fundo_estrelas.jpg']}") !important;  */
+box-sizing:border-box;
+background: #f0f0f0; 
+/*  background: #122e4f;  */
+/* background: #ebeeef; */
+  margin: auto;
+ }
+ .login-body .login-panel button {
+    display: block;
+    margin-bottom: 20px;
+    width: 100%;
+}
+
+
+.login-body .login-panel .p-col-12 {
+    padding: 6px 50px;
+}
+
+
+
+ 
+ .login-body .login-panel a {
+    color: #757575;
+    -moz-transition: color 0.3s;
+    -o-transition: color 0.3s;
+    -webkit-transition: color 0.3s;
+    transition: color 0.3s;
+}
+
+
+
+/* #F1F1F1 */
+
+.login-body .login-panel {
+    width: 500px;
+    margin: 0 auto;
+    background-color: #ffffff;
+    margin-top: 100px;
+       border-radius: 6px; 
+        box-shadow: 0 0 20px 0 rgba(0, 0, 0, 0.2), 0 5px 5px 0 rgba(0, 0, 0, 0.24);
+}
+
+.login-body .login-panel .input-wrapper input {
+    padding-right: 22px;
+    width: 100%;
+}
+
+.login-body .login-panel .input-wrapper i {
+    position: absolute;
+    color: #bdc3c9;
+    top: 10px;
+    right: 8px;
+    font-size: 16px;
+}
+
+.login-body .login-panel .input-wrapper {
+    position: relative;
+}
+
+.login-body .login-panel .p-col-12.logo-container {
+   /*  padding: 50px 50px 25px 50px; */
+ 	 padding: 15px 25px 0px 50px;
+ /*    border-bottom: 8px solid #dee4e9; */
+    border-bottom: 2px solid #163963;
+    margin-bottom: 20px;
+}
+
+
+
+.login-body .login-panel .p-col-12.logo-container .login-icon {
+    float: right;
+    height: 50px;
+}
+
+.login-body .login-panel .p-col-12.logo-container .logo {
+    height: 50px;
+}
+
+.login-body .login-panel .p-col-12.logo-container h2 {
+    color: #7d8286;
+    font-size: 16px;
+    font-weight: 300;
+    margin-top: 12px;
+    margin-bottom: 0;
+}
+
+
+body .button-container .ui-button.ui-state-hover {
+    background: #122e4f;
+    border-color: #122e4f;
+   
+}
+
+
+body .button-container .ui-button {
+    background: #163963;
+    border: 1px solid #163963;
+  
+}
+
+
+
+@media (max-width: 640px){
+.login-body .login-panel .p-col-12 {
+    padding: 15px 50px;
+}
+}
+
+@media (max-width: 640px){
+.login-body .login-panel {
+    margin-top: 100px;
+    width: 100%;
+}
+}
+
+

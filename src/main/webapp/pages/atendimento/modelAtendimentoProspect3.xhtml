@@ -1,0 +1,119 @@
+<ui:fragment xmlns="http://www.w3.org/1999/xhtml"
+	xmlns:h="http://java.sun.com/jsf/html"
+	xmlns:f="http://java.sun.com/jsf/core"
+	xmlns:o="http://omnifaces.org/ui"
+	xmlns:pe="http://primefaces.org/ui/extensions"
+	xmlns:ui="http://java.sun.com/jsf/facelets"
+	xmlns:p="http://primefaces.org/ui">
+
+
+  <p:dialog widgetVar="dlgAtendimentoPropect" id="dlgAtendimentoPropect"	width="600px" header="Cliente Prospect" style="margin:5px" modal="true">
+
+	<h:form prependId="false" id="formProspect">
+		<p:focus context="console"  />
+			<div class="p-grid ui-panelgrid-blank form-group p-m-1 ">
+
+				<p:fieldset  styleClass="p-col-12 p-mb-4">
+
+					<f:facet name="legend">
+					
+						<p:selectOneRadio id="console"	unselectable="false" value="#{fichaAtendimentoBean.valorTipoPesquisaProspect}">
+						
+							<f:selectItem itemLabel="NOVO" itemValue="NOVO" />
+							<f:selectItem itemLabel="ADIANTAR" itemValue="ADIANTAR" />
+							
+							<p:ajax update="@this txtCpf" process="@this" global="false" />
+							
+						</p:selectOneRadio>
+						
+					</f:facet>
+
+					<div class="p-col-12 ">
+				
+					<div class="ui-fluid">
+
+						<div class="p-field ">
+
+							<p:outputLabel value="PESQUISAR POR" />
+
+							<p:selectOneButton unselectable="false"	value="#{fichaAtendimentoBean.valorPesquisaProspect}">
+
+								<f:selectItem itemLabel="CPF" itemValue="CPF" />
+								<f:selectItem itemLabel="TELEFONE" itemValue="TELEFONE" />
+								
+								<f:ajax execute="@this" render="@form"   listener="#{fichaAtendimentoBean.buscarCampanhasProspect()}" />
+
+							</p:selectOneButton>
+
+						</div>
+ 							<p:separator/>
+
+						<h:panelGroup class="p-field" rendered="#{fichaAtendimentoBean.valorPesquisaProspect eq 'CPF'}">
+
+							<p:outputLabel for="txtCpf" value="CPF" />
+
+							<p:inputText id="txtCpf"  maxlength="11"	value="#{fichaAtendimentoBean.cpf}"	onkeypress="return somenteNumeros(event)" required="true" validatorMessage="CPF invalido" requiredMessage="Requerido">
+
+							<f:validator validatorId="converter.CpfValidator" />
+
+								<p:ajax  listener="#{fichaAtendimentoBean.buscarCampanhasProspect()}" update="panelSelectCam @this txtCpf msgCpf" process="@this" />
+
+							</p:inputText>
+							
+							<p:message for="txtCpf" id="msgCpf"/>
+
+						</h:panelGroup>
+						
+						<h:panelGroup class="p-field" rendered="#{fichaAtendimentoBean.valorPesquisaProspect eq 'TELEFONE'}">
+
+							<p:outputLabel for="txtNumeroTelefone" value="TELEFONE" />
+
+							<p:inputText id="txtNumeroTelefone"  maxlength="11"	value="#{fichaAtendimentoBean.numeroTelefone}"	onkeypress="return somenteNumeros(event)" required="true"  requiredMessage="Requerido" >
+							
+								<p:ajax  listener="#{fichaAtendimentoBean.buscarCampanhasProspect()}" update="panelSelectCam @this msgNumero" process="@this" />
+
+							</p:inputText>
+							
+							<p:message for="txtNumeroTelefone" id="msgNumero"/>
+
+						</h:panelGroup>
+
+						<h:panelGroup styleClass="p-field" layout="block"	id="panelSelectCam">
+
+							<p:outputLabel for="selectCam"> Campanha</p:outputLabel>
+
+							<p:selectOneMenu id="selectCam"	value="#{fichaAtendimentoBean.idCampanhaPropect}" filter="true"	filterMatchMode="contains" required="true" requiredMessage="Requerido">
+								
+								<f:selectItem itemLabel="#{msg.selecione}" itemValue="" />
+								
+								<f:selectItems	value="#{fichaAtendimentoBean.listCampanhasProspect}" var="campanha" itemLabel="#{campanha[1]}" itemValue="#{campanha[0]}" />
+
+							</p:selectOneMenu>
+							
+							<p:message for="selectCam" />
+
+						</h:panelGroup>
+
+					</div>
+
+				</div>
+					</p:fieldset>
+
+			</div>
+
+				<p:commandButton  id="btn" style="width: 100%" value="Iniciar Atendimento" action="#{fichaAtendimentoBean.buscarAtendimentoProspect()}" update=":formConteudo @form" partialSubmit="true" process="@this txtCpf panelSelectCam"/>
+
+			<f:facet name="footer">
+
+				<p:messages for="btn" />
+				
+			</f:facet>
+
+		</h:form>
+		
+	</p:dialog>
+	
+
+
+
+</ui:fragment>

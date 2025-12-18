@@ -1,0 +1,114 @@
+<ui:composition xmlns="http://www.w3.org/1999/xhtml"
+                xmlns:ui="http://java.sun.com/jsf/facelets"
+                xmlns:p="http://primefaces.org/ui"
+                xmlns:cc="http://java.sun.com/jsf/composite/componentes"
+                template="/WEB-INF/template.xhtml">
+
+    <ui:define name="viewname">
+
+        <div class="bcca-breadcrumb">
+            <div class="bcca-breadcrumb-item bg-primary-500 hover:bg-primary-700">
+                <p:link outcome="/pages/supervisor/backoffice" styleClass="uppercase"
+                        style="text-decoration: none">BACKOFFICE</p:link>
+            </div>
+            <div class="bcca-breadcrumb-item uppercase">SUPERVISOR</div>
+        </div>
+
+    </ui:define>
+
+    <ui:define name="content">
+
+        <p:growl id="grl" widgetVar="grl" globalOnly="true" escape="false" showSummary="false" life="8000"
+                 showDetail="true" sticky="false">
+
+            <p:autoUpdate/>
+
+        </p:growl>
+
+        <p:growl id="grlNo" widgetVar="grl" escape="false" showSummary="false" life="8000" showDetail="true"
+                 sticky="false"/>
+
+        <div class="card">
+
+            <div class="ui-fluid formgrid grid">
+
+                <p:tabView style="width:100%;" id="tabView" widgetVar="tabView">
+
+                    <p:ajax event="tabChange" listener="#{supervisorBackofficeBean.onChangeTab}"
+                            update="formPacotePesquisa" global="false"/>
+
+                    <p:tab title="Atendimento" styleClass="tab-padding " id="tabAtendimento">
+
+                        <ui:include src="/pages/supervisor/backofficePesquisa.xhtml"/>
+
+                    </p:tab>
+
+                    <p:tab title="Agendamento" id="tabAgendamento">
+
+                        <ui:include src="/pages/supervisor/backofficeAgendamento.xhtml"/>
+
+                    </p:tab>
+
+                    <p:tab title="Campanha" id="tabCampanha">
+
+                        <ui:include src="/pages/supervisor/backofficeCampanha.xhtml"/>
+
+                    </p:tab>
+
+                    <p:tab title="Pendências" id="tabPendencias">
+
+                        <ui:include src="/pages/supervisor/backofficePendencia.xhtml"/>
+
+                    </p:tab>
+
+                    <p:tab title="Controle de Pausas" id="tabPausas">
+
+
+                        <ui:include src="/pages/supervisor/backofficeControlePausa.xhtml"/>
+
+                    </p:tab>
+
+                    <p:tab title="Controle de Usuários Bloqueados" id="tabUsuariosBloqueados">
+
+                        <ui:include src="/pages/supervisor/backofficeUsuarioBloqueados.xhtml"/>
+
+                    </p:tab>
+
+                    <p:tab title="Integração" id="tabCalculadora"
+                           rendered="#{supervisorBackofficeBean.integracaoAmbec ne null}">
+                        <ui:include src="/pages/supervisor/backofficeCauculadoraConsignado.xhtml"/>
+                    </p:tab>
+
+                    <p:tab title="Pacotes" id="tabPacote">
+                        <ui:include src="/pages/supervisor/backofficePacote.xhtml"/>
+                    </p:tab>
+
+                </p:tabView>
+
+            </div>
+
+        </div>
+
+    </ui:define>
+
+    <ui:define name="modal">
+
+        <ui:include src="/pages/supervisor/backofficeAtendimentoEditar.xhtml"/>
+        <ui:include src="/pages/supervisor/backofficeAtendimentoTrocarAgendamento.xhtml"/>
+        <ui:include src="/pages/supervisor/backofficeAtendimentoVisualizar.xhtml"/>
+        <ui:include src="/pages/supervisor/dialogDesloqueioPausa.xhtml"/>
+        <ui:include src="/pages/supervisor/atendimentoAudioSupervisor.xhtml"/>
+        <ui:include src="/pages/supervisor/backofficePacote.xhtml"/>
+        <ui:include src="/pages/supervisor/progressoRelatorio.xhtml"/>
+        <ui:include src="/pages/supervisor/modalSupervisorAmbec.xhtml"/>
+        <ui:include src="/pages/supervisor/modalBeneficio.xhtml"/>
+        <ui:include src="/pages/supervisor/modalAnexarGravacaoSupervisor.xhtml"/>
+        <ui:include src="/pages/supervisor/modalCalculadoraSupConsignado.xhtml"/>
+        <cc:dialogQustionario atendimento="#{supervisorBackofficeBean.atendimentoVisualizar}"
+                              managedBean="#{supervisorBackofficeBean}" visualizar="true" altura="400px"
+                              id="dlgFormulario"/>
+
+    </ui:define>
+
+
+</ui:composition>

@@ -1,0 +1,138 @@
+<ui:fragment xmlns="http://www.w3.org/1999/xhtml"
+	xmlns:h="http://java.sun.com/jsf/html"
+	xmlns:f="http://java.sun.com/jsf/core"
+	xmlns:o="http://omnifaces.org/ui"
+		xmlns:matriz="http://java.sun.com/jsf/composite/componentes"
+	xmlns:ui="http://java.sun.com/jsf/facelets"
+	xmlns:p="http://primefaces.org/ui">
+
+	<!-- DLG MODAL -->
+
+		<h:form id="formPendente" prependId="false" >
+		
+		<h:panelGroup styleClass="grid col-12  mt-3"  layout="block">
+
+			<div class="field col-12 md:col-4">
+
+				<p:outputLabel value="Período Inicio Agendamento" />
+
+				<p:datePicker id="calendarDataInicioAgendamento" value="#{acompanhamentoMinhasConsistencias.dataInicioAgendamento}" showButtonBar="true" showIcon="true" readonlyInput="true" pattern="dd/MM/yyyy" locale="pt_BR" monthNavigator="true" yearNavigator="true" />
+
+			</div>
+
+			<div class="field col-12 md:col-4">
+
+				<p:outputLabel value="Período Fim Agendamento" />
+
+				<p:datePicker id="calendarDataFimAgendamento" value="#{acompanhamentoMinhasConsistencias.dataFimAgendamento}" showButtonBar="true" showIcon="true" readonlyInput="true" pattern="dd/MM/yyyy" locale="pt_BR" monthNavigator="true" yearNavigator="true" />
+
+			</div>
+
+			<div class="field col-12 ">
+
+				<p:outputLabel value="&#160;&#160;" id="txtPesquisaAgendamento" />
+
+				<div>
+				
+					<p:commandButton value="Pesquisar" icon="pi pi-search"	styleClass="ui-button-raised mr-3" actionListener="#{acompanhamentoMinhasConsistencias.pesquisarMeusAgendamentos()}" update="@form" />
+
+					<p:commandButton id="btnExportarAgendamento" icon="pi pi-upload" styleClass="ui-button-raised ui-button-outlined mr-3" value="#{msg.exportar}" ajax="false" disabled="#{empty acompanhamentoMinhasConsistencias.listHistoricosAgendamentos}" immediate="true" rendered="#{sessionScope['usuario'].permissaoExportar}">
+
+						<p:dataExporter target="tableAtendimentosAgendamento" type="xls" fileName="agendamentos" />
+
+					</p:commandButton>
+
+
+				</div>
+
+			</div>
+		
+		</h:panelGroup>
+		
+				<h:panelGroup styleClass="mt-3"  layout="block">
+					
+					<div class="col-12 ui-fluid ">
+					
+				<p:dataTable id="tableAgendamentos" var="atendimento" rows="5"	paginator="true" paginatorPosition="bottom"	value="#{acompanhamentoMinhasConsistencias.listHistoricosMeusAgendamentos}"
+							emptyMessage="#{acompanhamentoMinhasConsistencias.listHistoricosMeusAgendamentos eq null? '' : msg.emptyMessage}"	currentPageReportTemplate="[#{msg.totalDeRegistros}: {totalRecords}]"
+							paginatorTemplate="{CurrentPageReport}  {FirstPageLink} {PreviousPageLink} {PageLinks} {NextPageLink} {LastPageLink} {Exporters}" styleClass="ui-datatable-striped ui-datatable-sm">
+		
+									<p:ajax event="page"  />
+				
+									<p:ajax event="sort" global="false" />
+				
+									<p:column headerText="Data" sortBy="#{atendimento[2]}" width="10%">
+				
+										<h:outputLabel value="#{atendimento[2]}">
+				
+											<f:convertDateTime pattern="dd/MM/yyyy HH:mm:ss" />
+				
+										</h:outputLabel>
+				
+									</p:column>
+									
+									<p:column headerText="Cliente" sortBy="#{atendimento[3]}" width="30%">
+				
+										<h:outputLabel value="#{atendimento[3]}">
+													
+				
+										</h:outputLabel>
+				
+									</p:column>
+									
+									<p:column headerText="CPF" sortBy="#{atendimento[6]}" width="10%">
+				
+											<h:outputLabel value="#{atendimento[6]}">
+													
+				
+										</h:outputLabel>
+				
+									</p:column>
+									
+										<p:column headerText="Adesão" sortBy="#{atendimento[7]}" width="10%">
+				
+											<h:outputLabel value="#{atendimento[7]}">
+													
+				
+										</h:outputLabel>
+				
+									</p:column>
+																	
+									
+									<p:column headerText="Status" sortBy="#{atendimento[4]}" width="15%">
+				
+											<h:outputLabel value="#{atendimento[4]}">
+				
+										</h:outputLabel>
+				
+									</p:column>
+									
+																
+									<p:column headerText="Ação" width="5%">
+									
+										<p:commandButton icon="pi pi-chevron-circle-right"	styleClass="rounded-button ui-button-flat"	oncomplete="PF('dlgConfirmarAntecipacaoNaoTrabalhado').show();"		 global="false" id="btnAdiantarAtn" title="Antecipar Atendimento">
+
+																<f:setPropertyActionListener value="#{atendimento[1]}"	target="#{acompanhamentoMinhasConsistencias.idAtendimento}" />
+
+										</p:commandButton>
+									</p:column>
+		
+							</p:dataTable>
+							
+								<p:confirmDialog id="dlgConfirmarAntecipacaoNaoTrabalhado" widgetVar="dlgConfirmarAntecipacaoNaoTrabalhado" message="Iniciar Atendimento?" header="Confirmar" appendTo="@(body)" >
+
+									<p:commandButton id="simConfirmaNaotrabalhado" value="Sim" icon="pi pi-check" action="#{acompanhamentoMinhasConsistencias.adiantarFichaAtendimentoNaoTrabalado()}" oncomplete="PF('dlgConfirmarAntecipacaoNaoTrabalhado').hide();" immediate="true">
+
+									</p:commandButton>
+
+									<p:commandButton id="naoConfirmaNaotrabalhado" type="button" icon="pi pi-times"	onclick="PF('dlgConfirmarAntecipacaoNaoTrabalhado').hide();" value="Não" />
+
+								</p:confirmDialog>
+					 </div>
+		
+				 </h:panelGroup>
+
+		</h:form>
+
+
+</ui:fragment>

@@ -1,0 +1,85 @@
+<ui:composition xmlns="http://www.w3.org/1999/xhtml"
+                xmlns:h="http://java.sun.com/jsf/html"
+                xmlns:ui="http://java.sun.com/jsf/facelets"
+                xmlns:p="http://primefaces.org/ui" template="/WEB-INF/template.xhtml">
+
+
+    <ui:define name="viewname">
+
+        <div class="bcca-breadcrumb">
+            <div class="bcca-breadcrumb-item bg-primary-500 hover:bg-primary-700 ">
+                <p:link outcome="/pages/supervisor/monitorAtendimentos" styleClass="uppercase"
+                        style="text-decoration: none">MONITOR ATENDIMENTOS</p:link>
+            </div>
+            <div class="bcca-breadcrumb-item uppercase">SUPERVISOR</div>
+        </div>
+
+    </ui:define>
+
+    <ui:define name="content">
+
+        <p:growl id="grl" widgetVar="grl" globalOnly="true" escape="false" showSummary="false" life="8000"
+                 showDetail="true" sticky="false">
+
+            <p:autoUpdate/>
+
+        </p:growl>
+
+        <p:growl id="grlNo" widgetVar="grl" escape="false" showSummary="false" life="8000" showDetail="true"
+                 sticky="false"/>
+
+        <h:form id="formMonitorAtendimentos" prependId="false">
+
+            <p:poll listener="#{supervisorMonitorAtendimentoBean.pesquisar()}" update="tableAtendimentos" interval="60"
+                    global="false"/>
+
+
+            <div class="card">
+
+                <div class="col-12">
+
+                    <p:dataTable id="tableAtendimentos" var="atendimento" rows="30" paginator="true"
+                                 paginatorPosition="bottom" value="#{supervisorMonitorAtendimentoBean.listAtendimentos}"
+                                 emptyMessage="#{supervisorMonitorAtendimentoBean.listAtendimentos eq null? '' : msg.emptyMessage}"
+                                 currentPageReportTemplate="[#{msg.totalDeRegistros}: {totalRecords}]" styleClass="ui-datatable-sm ui-datatable-striped"
+                                 paginatorTemplate="{CurrentPageReport}  {FirstPageLink} {PreviousPageLink} {PageLinks} {NextPageLink} {LastPageLink} {Exporters}">
+
+                        <p:ajax event="page" global="false"/>
+
+
+                        <p:column headerText="Usuário" width="30%">
+
+                            <h:outputLabel value="#{atendimento[0]}"/>
+
+                        </p:column>
+
+                        <p:column headerText="Equipe" width="30%">
+
+                            <h:outputLabel value="#{atendimento[1]}"/>
+
+                        </p:column>
+                        <p:column headerText="Campanha" width="30%">
+
+                            <h:outputLabel value="#{atendimento[2]}"/>
+
+                        </p:column>
+
+                        <p:column headerText="Status" width="10%">
+
+                            <h:outputLabel value="#{atendimento[3]}"/>
+
+                        </p:column>
+
+
+                    </p:dataTable>
+
+                </div>
+
+            </div>
+
+        </h:form>
+
+
+    </ui:define>
+
+</ui:composition>

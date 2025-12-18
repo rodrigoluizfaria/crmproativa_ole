@@ -1,0 +1,135 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+<html xmlns="http://www.w3.org/1999/xhtml"
+	xmlns:h="http://java.sun.com/jsf/html"
+	xmlns:f="http://java.sun.com/jsf/core"
+	xmlns:ui="http://java.sun.com/jsf/facelets"
+	xmlns:p="http://primefaces.org/ui"
+	xmlns:pe="http://primefaces.org/ui/extensions"
+	xmlns:c="http://java.sun.com/jsp/jstl/core"
+	xmlns:cc="http://java.sun.com/jsf/composite/componentes"
+	xmlns:composite="http://java.sun.com/jsf/composite">
+
+<composite:interface>
+
+		<composite:attribute name="idTable" />
+
+		<composite:attribute name="managedBean" type="com.proativaservicos.bean.GenericBean" />
+	
+		<composite:attribute name="idDlg" type="java.lang.String" default="dlgAnexarAudio" />
+		<composite:attribute name="enviarAudios" method-signature="void action()" default="#{cc.attrs.managedBean.enviarAudios}" />
+		
+		<composite:attribute name="onTrocarAudio" method-signature="void action()" default="#{cc.attrs.managedBean.onTrocarAudio}" />
+		<composite:attribute name="onTrocarAudio" method-signature="void action(java.lang.String)" default="#{cc.attrs.managedBean.excluirAnexoArquivo(java.lang.String)}" />
+
+	
+		<composite:attribute name="audios" type="java.util.List" default="#{cc.attrs.managedBean.audios}" />
+
+	
+</composite:interface>
+
+<composite:implementation>
+
+	<!-- DLG MODAL -->
+	<p:dialog id="#{cc.attrs.idDlg}" widgetVar="#{cc.attrs.idDlg}" modal="false"	styleClass="dialog-formulario" draggable="true" resizable="false" closable="true"  width="50%" responsive="true" header="Conciliar Áudio" appendTo="@(body)">
+
+		<h:form id="formAnexarAudio" prependId="false">
+		
+			<div class="col-12">
+						
+				<div class="card no-gutter" >
+				
+				<div class="card-header">
+				
+					<h4>Selecione os áudios</h4>
+				
+				</div>
+				
+					<p><i class="pi pi-info-circle"></i> Formato permitido: .wav</p>
+					
+					<h:panelGroup rendered="#{not empty cc.attrs.audios}" id="pnpQuntidadeAnexo">
+					
+						<p> Arquivos anexados: #{cc.attrs.audios.size()} </p>
+					
+					
+					</h:panelGroup>
+									
+					<p:fileUpload cancelLabel="Cancelar"   chooseIcon=" fa fa-file-audio-o" multiple="true"  update="@form" uploadLabel="Enviar" label="Selecionar" listener="#{cc.attrs.enviarAudio}"  /> 
+								
+					<p:messages globalOnly="true" id="msgUpload" />
+				
+				</div>
+		
+			 
+			 </div>
+			 
+			 <h:panelGroup styleClass="col-12" rendered="#{not empty cc.audios}" layout="block">
+						
+				<div class="card no-gutter widget-overview-box widget-overview-box-3 col-12" >
+				
+				<div class="card-header">
+				
+					<h3>Arquivos anexados</h3>
+				
+				</div>
+				
+				
+						 <p:dataTable var="audio" id="#{cc.attrs.idTable}" reflow="true"  draggableRows="true"
+							value="#{cc.attrs.audios}" paginator="true" rows="5" 
+							paginatorPosition="bottom" emptyMessage="#{msg.emptyMessage}" rowIndexVar="indice"
+							paginatorTemplate="{CurrentPageReport}  {FirstPageLink} {PreviousPageLink} {PageLinks} {NextPageLink} {LastPageLink} {Exporters}"
+							currentPageReportTemplate="[Total de áudios: {totalRecords}]">
+
+   							<p:ajax event="rowReorder" listener="#{cc.attrs.onTrocarAudio}" update="tableAnexo" global="false"/>
+   							
+   							<p:column headerText="Posição" sortBy="#{indice}" width="10%">
+
+								<h:outputText value="#{indice}" />
+
+							</p:column>
+
+							<p:column headerText="Arquivo" sortBy="#{audio.nomeArquivoOriginal}">
+
+								<h:outputText value="#{audio.nomeArquivoOriginal}" />
+
+							</p:column>
+
+							<p:column headerText="Tamanho" sortBy="#{audio.tamanhoArquivo}">
+
+								<h:outputText value="#{audio.tamanhoArquivo / 1000} KB" >
+									<f:convertNumber pattern="#0.000" />
+								</h:outputText>
+
+							</p:column>
+
+							<p:column style="text-align:center;width:50px" exportable="false">
+
+								<p:commandButton icon="pi pi-times-circle" tabindex="Excluir" actionListener="#{cc.attrs.excluirAnexoArquivo(audio.nomeArquivoOriginal)}" process="@this" global="false" update="@form" styleClass="rounded-button text-button  p-mr-2"  >
+
+								</p:commandButton>
+
+							</p:column>
+
+
+						</p:dataTable>
+			
+				</div>
+				
+				
+				</h:panelGroup>
+
+			<div class="ui-fluid formgrid grid col-12" style="text-align: right; padding-right: 0px; padding-bottom: 15px">
+
+				<div class="col-12" style="text-align: right; padding-right: 0px;">
+				
+					<p:commandButton value="Sair" icon="pi pi-times" onclick="PF('dlgAnexarAudio').hide();" />
+					
+				</div>
+				
+			</div>
+			
+		</h:form>
+
+	</p:dialog>
+</composite:implementation>
+</html>

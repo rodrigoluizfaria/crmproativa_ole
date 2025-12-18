@@ -1,0 +1,71 @@
+<ui:fragment xmlns="http://www.w3.org/1999/xhtml"
+	xmlns:h="http://java.sun.com/jsf/html"
+	xmlns:f="http://java.sun.com/jsf/core"
+	xmlns:o="http://omnifaces.org/ui"
+	xmlns:pe="http://primefaces.org/ui/extensions"
+	xmlns:ui="http://java.sun.com/jsf/facelets"
+	xmlns:p="http://primefaces.org/ui">
+
+
+  <p:dialog widgetVar="dlgAtendimentoPropect" id="dlgAtendimentoPropect"	width="500px" header="Cliente Prospect" style="margin:5px" modal="true">
+
+	<h:form prependId="false" id="formProspect">
+	
+			<div class="p-grid ui-panelgrid-blank form-group p-m-1 card">
+
+				<div class="p-col-12 ">
+
+					<div class="ui-fluid">
+
+						<div class="p-field">
+
+							<p:outputLabel for="txtCpf">CPF</p:outputLabel>
+
+							<p:inputText id="txtCpf"  maxlength="11"	value="#{fichaAtendimentoBean.cpf}"	onkeypress="return somenteNumeros(event)" required="true"	validatorMessage="CPF invalido" requiredMessage="Requerido">
+
+								<f:validator validatorId="converter.CpfValidator" />
+
+								<p:ajax event="blur" listener="#{fichaAtendimentoBean.buscarCampanhasProspect()}" update="panelSelectCam @this msgCa" process="@this" global="false"/>
+
+							</p:inputText>
+							
+							<p:message for="txtCpf" id="msgCa"/>
+
+						</div>
+
+						<h:panelGroup styleClass="p-field" layout="block"	id="panelSelectCam">
+
+							<p:outputLabel for="selectCam"> Campanha</p:outputLabel>
+
+							<p:selectOneMenu id="selectCam"	value="#{fichaAtendimentoBean.idCampanhaPropect}" filter="true"	filterMatchMode="contains" required="true" requiredMessage="Requerido">
+								
+								<f:selectItem itemLabel="#{msg.selecione}" itemValue="" />
+								
+								<f:selectItems	value="#{fichaAtendimentoBean.listCampanhasProspect}" var="campanha" itemLabel="#{campanha[1]}" itemValue="#{campanha[0]}" />
+
+							</p:selectOneMenu>
+							
+							<p:message for="selectCam" />
+
+						</h:panelGroup>
+
+					</div>
+
+				</div>
+
+			</div>
+
+				<p:commandButton  id="btn" style="width: 100%" value="Iniciar Atendimento" actionListener="#{fichaAtendimentoBean.buscarAtendimentoProspect()}" update=":formConteudo @form" partialSubmit="true" process="@this txtCpf panelSelectCam"/>
+
+			<f:facet name="footer">
+
+				<p:messages for="btn" />
+				
+			</f:facet>
+
+		</h:form>
+		
+	</p:dialog>
+
+
+</ui:fragment>

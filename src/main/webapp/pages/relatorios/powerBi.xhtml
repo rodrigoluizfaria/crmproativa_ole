@@ -1,0 +1,196 @@
+<ui:composition xmlns="http://www.w3.org/1999/xhtml"
+                xmlns:h="http://java.sun.com/jsf/html"
+	                xmlns:ui="http://java.sun.com/jsf/facelets"
+                xmlns:p="http://primefaces.org/ui" template="/WEB-INF/template.xhtml">
+
+
+    <ui:define name="viewname">
+
+        <div class="bcca-breadcrumb">
+            <div class="bcca-breadcrumb-item bg-primary-500 hover:bg-primary-700">
+                <p:link outcome="/pages/relatorios/powerBi" styleClass="uppercase"
+                        style="text-decoration: none">B.I</p:link>
+            </div>
+            <div class="bcca-breadcrumb-item uppercase">RELATÓRIOS</div>
+        </div>
+
+    </ui:define>
+
+    <ui:define name="content">
+
+        <div class="p-grid justify-center ">
+
+            <p:growl id="grl" widgetVar="grl" globalOnly="true" escape="false"
+                     showSummary="false" life="8000" showDetail="true" sticky="false">
+
+                <p:autoUpdate/>
+
+            </p:growl>
+
+            <h:form prependId="false" id="formConteudo">
+
+                <h:panelGroup id="panelRelatorio">
+
+                    <h:panelGroup styleClass="col-12 card"
+                                  style="display: inline-block; align-items: center; flex-wrap: wrap"
+                                  rendered="#{sessionScope['usuario'].perfil eq 'ADMIN'}" layout="block">
+
+                        <div class=" ui-toolbar-group-right">
+
+                            <p:commandButton update="dlgRelatorioBi" value="Novo" styleClass="ui-button-raised"
+                                             process="@this panelRelatorio" actionListener="#{relatorioBiBean.novo()}"/>
+
+                        </div>
+
+                    </h:panelGroup>
+
+
+                    <div class="grid formgrid ui-fluid">
+
+                        <ui:repeat var="relatorio" value="#{relatorioBiBean.listRelatorioBi}">
+
+                            <div class="col-12 md:col-6">
+
+                                <div class="card">
+
+                                    <h:panelGroup layout="block" styleClass="card-header"
+                                                  style="display: inline-flex;width: 100%;">
+
+                                        <div>
+                                            <h4>#{relatorio.descricao}</h4>
+                                        </div>
+
+                                        <h:panelGroup style="float: right;"
+                                                      rendered="#{sessionScope['usuario'].perfil eq 'ADMIN'}">
+
+                                            <p:commandButton styleClass="ui-button-flat mr-3"
+                                                             icon="fa fa-w fa-pen-to-square " iconPos="right"
+                                                             update="dlgRelatorioBi"
+                                                             process="@this panelRelatorio"
+                                                             oncomplete="PF('dlgRelatorioBi').show();"
+                                                             action="#{relatorioBiBean.editar(relatorio)}">
+
+                                            </p:commandButton>
+
+                                            <p:commandButton styleClass="ui-button-flat ui-button-danger"
+                                                             icon="fa fw fa-trash-can" iconPos="right" update="@form"
+                                                             process="@this panelRelatorio"
+                                                             actionListener="#{relatorioBiBean.excluir(relatorio)}"
+                                                             partialSubmit="true">
+
+                                                <p:confirm header="Confirmação"
+                                                           message="Deseja remover esse relatório?"
+                                                           icon="pi pi-info-circle"/>
+
+                                            </p:commandButton>
+                                        </h:panelGroup>
+
+
+                                    </h:panelGroup>
+
+                                    <iframe width="#{relatorio.largura}%" height="#{relatorio.altura}"
+                                            src="#{relatorio.url}" frameborder="0" allowFullScreen="true"></iframe>
+
+                                </div>
+
+                            </div>
+
+                        </ui:repeat>
+
+                    </div>
+
+                </h:panelGroup>
+
+
+                <p:confirmDialog global="true" showEffect="fade" hideEffect="fade" responsive="true" width="350">
+                    <p:commandButton value="Não" type="button" styleClass="ui-confirmdialog-no ui-button-flat"/>
+                    <p:commandButton value="Sim" type="button" styleClass="ui-confirmdialog-yes"/>
+
+                </p:confirmDialog>
+
+            </h:form>
+
+            <h:form id="formDialog" prependId="false">
+
+                <p:dialog widgetVar="dlgRelatorioBi" id="dlgRelatorioBi" width="40%"
+                          header="Configuração Relatório BI" modal="true" resizable="false"
+                          draggable="false" closable="false" appendTo="@(body)">
+
+
+                    <div class="p-grid justify-center ">
+
+                    <div class="grid formgrid ui-fluid p-4" >
+
+                            <div class="field col-12 mb-5 ">
+
+                                <p:outputLabel id="lvlUrl" value="Url" for="txtUrl"/>
+
+                                <p:inputText id="txtUrl" value="#{relatorioBiBean.relatorioBi.url}" required="true"
+                                             requiredMessage="#{msg.requerido}"/>
+
+                                <p:messages for="txtUrl"/>
+
+                            </div>
+
+                            <div class="field col-12 md:col-4">
+
+                                <p:outputLabel id="lblDescricao" value="Descrição" for="txtDescricaoRelatorio"/>
+
+                                <p:inputText id="txtDescricaoRelatorio"
+                                             value="#{relatorioBiBean.relatorioBi.descricao}"/>
+
+                            </div>
+
+
+                        <div class="field col-12 md:col-4">
+
+                                <p:outputLabel id="lblLargura" value="Largura (em porcentagem)" for="txtLargura"/>
+
+                                <p:inputText id="txtLargura"
+                                             value="#{relatorioBiBean.relatorioBi.largura}" maxlength="5"
+                                             onkeypress="return somenteNumeros(event)"/>
+
+                                <p:messages for="txtLargura"/>
+
+                            </div>
+
+                        <div class="field col-12 md:col-4">
+
+                                <p:outputLabel id="lblAltura" value="Altura" for="txtAltura"/>
+
+                                <p:inputText id="txtAltura" value="#{relatorioBiBean.relatorioBi.altura}" maxlength="5"
+                                             onkeypress="return somenteNumeros(event)"/>
+
+                                <p:messages for="txtAltura"/>
+
+                            </div>
+
+                        </div>
+
+
+                    <div class="mt-5">
+
+
+                                <div class="text-center">
+
+                                    <p:commandButton type="button" styleClass="mr-3 ui-button-raised"
+                                                     onclick="PF('dlgRelatorioBi').hide();" value="Fechar"/>
+
+                                    <p:commandButton value="Salvar" process="@this dlgRelatorioBi" partialSubmit="true" styleClass="ui-button-raised"
+                                                     update=":formDialog:dlgRelatorioBi formConteudo"
+                                                     action="#{relatorioBiBean.salvar()}"/>
+
+                                </div>
+
+
+
+                    </div>
+                    </div>
+
+                </p:dialog>
+
+            </h:form>
+        </div>
+    </ui:define>
+
+</ui:composition>

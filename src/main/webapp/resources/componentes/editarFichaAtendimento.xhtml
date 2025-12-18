@@ -1,0 +1,499 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+<html xmlns="http://www.w3.org/1999/xhtml"
+	  xmlns:h="http://java.sun.com/jsf/html"
+	  xmlns:f="http://java.sun.com/jsf/core"
+	  xmlns:ui="http://java.sun.com/jsf/facelets"
+	  xmlns:p="http://primefaces.org/ui"
+	  xmlns:c="http://java.sun.com/jsp/jstl/core"
+	  xmlns:cc="http://java.sun.com/jsf/composite/componentes"
+	  xmlns:composite="http://java.sun.com/jsf/composite">
+
+<composite:interface>
+
+	<composite:attribute name="idTable" />
+
+	<composite:attribute name="managedBean" type="com.proativaservicos.bean.GenericBean" />
+
+	<composite:attribute name="atendimento" type="com.proativaservicos.model.GenericAtendimento" />
+
+	<composite:attribute name="historico" type="com.proativaservicos.model.GenericHistoricoAtendimento" />
+
+	<composite:attribute name="tipo" type="java.lang.String" />
+
+	<composite:attribute name="listOperadores" type="java.util.List" default="#{cc.attrs.managedBean.listOperadoresEditar}" />
+
+
+</composite:interface>
+
+<composite:implementation>
+
+	<h:form id="formEditarAtendimentor" prependId="false">
+
+	<h:panelGroup styleClass="col-12 ui-toolbar ui-widget ui-widget-header ui-corner-all" style="display: inline-block; align-items: center; flex-wrap: wrap"  >
+
+		<p:commandButton value="Conciliar áudio" icon="fa fw fa-headset" update="formAnexarAudio"  onclick="PF('dlgAnexarAudio').show();" actionListener="#{cc.attrs.managedBean.abrirModalConciliarAudio()}"  process="@this" styleClass="ui-button-secondary ui-button-raised ui-button-outlined" global="false" />
+
+
+		<div class=" ui-toolbar-group-right">
+				
+					<p:commandButton value="Salvar" icon="pi pi-save" styleClass=" ui-button-raised mr-3" actionListener="#{cc.attrs.managedBean.salvarAtendimento()}" update="@form #{cc.attrs.idTable}" />
+
+					<p:commandButton value="Fechar" icon="pi pi-times" onclick="PF('dlgVisualizarEditar').hide();" process="@this" styleClass="ui-button-secondary ui-button-raised" global="false" />
+			
+				
+			</div>
+
+	</h:panelGroup>
+
+		<div class="grid">
+
+			<div class="  col-12">
+
+				<div class="card " style="box-shadow: 0 3px 5px -1px rgb(0 0 0 / 20%), 0 5px 8px 0 rgb(0 0 0 / 14%), 0 1px 14px 0 rgb(0 0 0 / 12%);" >
+
+					<div class="ui-fluid formgrid grid">
+
+						<div class="field col-12 md:col-3">
+
+							<p:outputLabel value="Campanha" id="lblEdicaoAtendimento" styleClass="lbl-bold" />
+
+							<div>
+
+								<h:outputText value="#{cc.attrs.atendimento.campanha.descricao}"  />
+
+							</div>
+
+						</div>
+
+
+						<div class="field col-12 md:col-3">
+
+							<p:outputLabel value="Cliente" styleClass="lbl-bold" />
+
+							<p:inputText value="#{cc.attrs.atendimento.nome}" required="true" requiredMessage="#{msg.requerido}" id="txtNomeEdicao"	maxlength="150" />
+
+							<p:message for="txtNomeEdicao" />
+
+
+						</div>
+
+						<div class="field col-12 md:col-2">
+
+							<p:outputLabel value="CPF" styleClass="lbl-bold" />
+
+							<p:inputText value="#{cc.attrs.atendimento.cpf}" onkeypress="return somenteNumeros(event)" maxlength="11" id="txtCpfEditor">
+
+								<f:validator validatorId="converter.CpfValidator" />
+
+							</p:inputText>
+
+							<p:message for="txtCpfEditor" />
+
+						</div>
+
+						<div class="field col-12 md:col-2">
+
+							<p:outputLabel value="Dt. Nascimento" styleClass="lbl-bold" />
+
+							<p:inputMask value="#{cc.attrs.atendimento.dataNascimento}" mask="99/99/9999">
+
+								<f:convertDateTime pattern="dd/MM/yyyy" />
+
+								<p:ajax process="@this" partialSubmit="true" update="txtIdade"	global="false" />
+
+							</p:inputMask>
+
+						</div>
+
+						<div class="field col-12 md:col-2">
+
+							<p:outputLabel value="Idade" styleClass="lbl-bold" />
+
+							<div>
+							
+								<h:outputText value="#{cc.attrs.managedBean.idade}" id="txtIdade" />
+								
+							</div>
+
+						</div>
+
+
+
+						<div class="col-12 md:col-12">
+
+							<div class="grid">
+
+								<div class="col-12 md:col-4">
+
+									<p:dataTable rows="2" paginator="true" lazy="false"
+										value="#{cc.attrs.atendimento.listaTelefones}"
+										paginatorPosition="bottom" emptyMessage="#{msg.emptyMessage}"
+										currentPageReportTemplate="[ #{msg.totalDeRegistros}: {totalRecords} ]"
+										paginatorTemplate="{CurrentPageReport}  {FirstPageLink} {PreviousPageLink} {PageLinks} {NextPageLink} {LastPageLink}"
+										var="tel" id="tableTelEditar"
+										styleClass="ui-datatable-sm ui-datatable-striped ">
+
+										<p:ajax event="page" global="false" />
+
+										<f:facet name="header">
+										
+											<p:outputLabel value="Telefones" />
+											
+										</f:facet>
+
+										<p:column headerText="#{msg.ddd}" style="text-align:center" width="10%">
+
+											<p:outputLabel value="#{tel.ddd}" />
+
+										</p:column>
+
+										<p:column headerText="Número" style="text-align:center" width="30%">
+
+											<p:outputLabel value="#{tel.numero}" />
+
+										</p:column>
+
+										<p:column headerText="Status" width="40%" style="text-align:center">
+
+											<p:selectOneMenu id="selectOneEditarStatusTel" value="#{tel.statusTelefone}" requiredMessage="Requerido" style="width:100%" converter="omnifaces.SelectItemsConverter">
+
+												<f:selectItem itemLabel="Selecione" />
+
+												<f:selectItems value="#{cc.attrs.managedBean.listStatusTelefone}" var="status" itemLabel="#{status.descricao}"	itemValue="#{status}" />
+
+												<p:ajax event="change" listener="#{cc.attrs.managedBean.onStatusTelefone(tel,tel.statusTelefone.id)}" global="false" update="tableTelEditar" process="@this tableTelEditar" />
+
+											</p:selectOneMenu>
+
+										</p:column>
+
+									</p:dataTable>
+
+								</div>
+
+								<div class="col-12 md:col-4">
+
+									<div class="grid">
+
+										<h:panelGroup id="panelManifesto" layout="block" styleClass="field col-12 md:col-12">
+
+											<p:outputLabel for="txtManifentos" value="Manifesto do Atendimento" />
+
+											<p:inputTextarea autoResize="false" rows="5" cols="10" value="#{cc.attrs.historico.observacao}" id="txtManifentos" style="resize: none;"/>
+
+										</h:panelGroup>
+
+										<div class="field col-12 md:col-6">
+
+											<p:outputLabel value="Status do Atendimento:" for="selectOneStatusAtnEditar" />
+
+											<p:selectOneMenu id="selectOneStatusAtnEditar" value="#{cc.attrs.historico.statusAtendimento}" requiredMessage="Status de Atendimento deve ser selecionado" converter="omnifaces.SelectItemsConverter" required="true"
+															 filter="true" filterMatchMode="contains" autoWidth="false">
+
+												<f:selectItem itemLabel="Selecione" noSelectionOption="true" />
+
+												<f:selectItems value="#{cc.attrs.managedBean.listStatusAtendimento}" var="status" itemLabel="#{status.descricao}" itemValue="#{status}" />
+
+												<p:ajax update="@form" global="false" partialSubmit="true" process="@this" />
+
+											</p:selectOneMenu>
+
+										</div>
+
+										<h:panelGroup id="groupDataAgendamento" layout="block" styleClass="field col-12 md:col-6">
+
+											<p:outputLabel value="Data do Agendamento:" rendered="#{cc.attrs.historico.statusAtendimento.acao eq 'AGENDAR' or cc.attrs.historico.statusAtendimento.acao eq 'AGENDAR_GLOBAL'}" />
+
+											<p:calendar showOn="button" showButtonPanel="true" navigator="true" readonlyInput="true" pattern="dd/MM/yyyy HH:mm" value="#{cc.attrs.historico.agendamento}"
+														rendered="#{cc.attrs.historico.statusAtendimento.acao eq 'AGENDAR' or cc.attrs.historico.statusAtendimento.acao eq 'AGENDAR_GLOBAL'}" />
+
+										</h:panelGroup>
+
+									</div>
+
+								</div>
+
+								<div class="col-12 md:col-4">
+
+									<div class=" grid">
+
+										<h:panelGroup id="groupLojas" rendered="#{cc.attrs.managedBean.listLojas.size() > 1 }" styleClass="field col-12 md:col-6" layout="block">
+
+											<p:outputLabel value="#{msg.loja}:" />
+
+											<p:selectOneMenu id="selectOneLojas" value="#{cc.attrs.atendimento.loja}" converter="omnifaces.SelectItemsConverter" filter="true" filterMatchMode="contains">
+
+												<f:selectItem itemLabel="Selecione" itemValue="" />
+
+												<f:selectItems value="#{cc.attrs.managedBean.listLojas}" var="loja" itemLabel="#{loja.codigoLoja}" itemValue="#{loja}" />
+
+											</p:selectOneMenu>
+
+										</h:panelGroup>
+
+
+										<h:panelGroup id="groupInstituicao" styleClass="field col-12 md:col-6" layout="block">
+
+											<p:outputLabel value="Instituição Financeira:" />
+
+											<p:selectOneMenu id="selectOneInstiuicao" required="true" requiredMessage="#{msg.requerido}" value="#{cc.attrs.atendimento.instituicaoFinanceira}" converter="omnifaces.SelectItemsConverter" filter="true"
+															 filterMatchMode="contains" autoWidth="false">
+
+												<f:selectItem itemLabel="Selecione" itemValue="" />
+
+												<f:selectItems value="#{cc.attrs.managedBean.instituicoesFinanceiras}" var="instituicao" itemLabel="#{instituicao.constante}" itemValue="#{instituicao}" />
+
+											</p:selectOneMenu>
+
+										</h:panelGroup>
+
+										<h:panelGroup id="groupOperadores" layout="block" styleClass="field col-12 md:col-6" rendered="#{cc.attrs.listOperadores ne null and cc.attrs.listOperadores.size() > 1}">
+
+											<p:outputLabel value="Agentes:" id="lblOperador"	for="selectOneOPerador" />
+
+											<p:selectOneMenu id="selectOneOPerador" value="#{cc.attrs.atendimento.usuarioAlteracao}" converter="omnifaces.SelectItemsConverter" filter="true" filterMatchMode="contains" autoWidth="false" required="true"
+															 requiredMessage="#{msg.requerido}">
+
+												<f:selectItem itemLabel="Selecione" itemValue="" />
+
+												<f:selectItems value="#{cc.attrs.listOperadores}" var="operador" itemLabel="#{operador.nome}" itemValue="#{operador}" />
+
+												<p:message for="selectOneOPerador" />
+
+											</p:selectOneMenu>
+
+										</h:panelGroup>
+
+										<h:panelGroup id="groupDataAlteracao" layout="block" styleClass="field col-12 md:col-6">
+
+											<p:outputLabel value="Data da Alteração" id="lblDataGeracao" for="calendarDataGeracao" />
+
+											<p:calendar showOn="button" showButtonPanel="true" id="calendarDataGeracao" navigator="true" readonlyInput="true" pattern="dd/MM/yyyy HH:mm" rendered="true" requiredMessage="#{msg.requerido}"
+														value="#{cc.attrs.atendimento.dataAlteracao}" />
+
+											<p:message for="calendarDataGeracao" />
+
+										</h:panelGroup>
+										
+										<h:panelGroup id="groupTiket" layout="block" styleClass="field col-12 md:col-6">
+
+											<p:outputLabel value="Tiket" id="lblTiket" for="calendarDataGeracao" />
+
+											<p:inputText  id="txtTiket" value="#{cc.attrs.atendimento.tiket}" />
+
+										
+
+										</h:panelGroup>
+
+									</div>
+
+								</div>
+
+							</div>
+
+						</div>
+
+					</div>
+
+				</div>
+
+			</div>
+
+			<!-- BOTORES -->
+ 
+			<div class="col-12" style="padding-top: 0">
+
+				<div class=" shadow-4">
+
+					<p:tabView id="tabviewVisualizarAtn" style="width:100%" widgetVar="tabviewVisualizarAtn">
+
+						<p:tab title="Informações atendimento">
+
+							<c:if test="#{cc.attrs.atendimento.campanha.segmento eq 'EMPRESTIMO' or cc.attrs.atendimento.campanha.segmento eq 'ASSOCIACAO'}">
+
+								<cc:emprestimo id="seqAtnEditar" atendimento="#{cc.attrs.atendimento}" managedBean="#{cc.attrs.managedBean}" viewAtendimento="false" ver="false" />
+
+							</c:if>
+
+							<c:if test="#{cc.attrs.atendimento.campanha.segmento eq 'AGENDAMENTOS'}">
+
+								<cc:agendamento id="seqAtnAgendamento" atendimento="#{cc.attrs.atendimento}" managedBean="#{cc.attrs.managedBean}" viewAtendimento="false" ver="false" />
+
+							</c:if>
+
+						</p:tab>
+
+						<p:tab title="Informações Complementares" rendered="#{not empty cc.attrs.atendimento.listInformacoesComplementares}" id="tabInformacoes">
+
+							<div class="col-12">
+
+								<div class="ui-fluid formgrid grid">
+
+									<ui:repeat var="înformacoes" value="#{cc.attrs.atendimento.listInformacoesComplementaresChaves}">
+
+										<div class="field col-12 md:col-2">
+
+											<p:outputLabel value="#{înformacoes}" styleClass="lbl-bold" />
+
+											<div>
+											
+												<h:inputText value="#{cc.attrs.atendimento.listInformacoesComplementares[înformacoes]}" />
+											</div>
+											
+										</div>
+
+									</ui:repeat>
+
+								</div>
+
+							</div>
+
+
+						</p:tab>
+
+						<p:tab title="Endereços">
+
+							<div class="col-12 md:col-12">
+
+								<p:dataTable id="tableEndereco"  rows="2" value="#{cc.attrs.atendimento.listaEnderecos}" var="endereco" emptyMessage="" styleClass="ui-datatable-sm ui-datatable-striped ui-datatable-gridlines"
+											  reflow="true" lazy="false">
+
+									<p:column headerText="Logradouro" width="30%">
+
+										<p:inputText value="#{endereco.logradouro}" styleClass="txt_input_table" />
+
+									</p:column>
+
+									<p:column headerText="Numero" width="5%">
+
+										<p:inputText value="#{endereco.numero}" styleClass="txt_input_table" />
+
+									</p:column>
+
+									<p:column headerText="Bairro" width="20%">
+
+										<p:inputText value="#{endereco.bairro}" styleClass="txt_input_table" />
+
+									</p:column>
+
+									<p:column headerText="Cidade" width="20%">
+
+										<p:inputText value="#{endereco.cidade}" styleClass="txt_input_table" />
+
+									</p:column>
+
+									<p:column headerText="UF" width="10%">
+
+										<p:inputText value="#{endereco.uf}" styleClass="txt_input_table" />
+
+									</p:column>
+
+									<p:column headerText="Cep" width="10%">
+
+										<p:inputText value="#{endereco.cep}" styleClass="txt_input_table" />
+
+									</p:column>
+
+									<f:facet name="header">
+
+										<p:commandButton value="Adicionar" id="btnAddEnd" immediate="true" title="Adicionar Endereço" update="tableEndereco" styleClass="ui-button-outlined ui-button-raised" actionListener="#{cc.attrs.managedBean.inserirEntidade('ENDERECO',cc.attrs.atendimento)}"
+														 icon="pi pi-plus">
+
+										</p:commandButton>
+
+
+									</f:facet>
+
+								</p:dataTable>
+
+							</div>
+
+						</p:tab>
+
+						<p:tab title="Dados Bancarios">
+
+							<div class="col-12 md:col-12">
+
+								<p:dataTable id="tableDadosBancarios"  lazy="false" value="#{cc.attrs.atendimento.listaDadosBancarios}" var="banco" emptyMessage="" reflow="true" styleClass="ui-datatable-sm ui-datatable-striped ui-datatable-gridlines">
+
+									<p:column headerText="Banco" width="20%">
+
+										<p:selectOneMenu value="#{banco.banco}" autoWidth="false" filter="true" filterMatchMode="contains" style="width: 50%">
+
+											<f:selectItem itemLabel="Selecione" itemValue="" />
+
+											<f:selectItems	value="#{cc.attrs.managedBean.instituicoesFinanceiras}"	var="instituicao" itemLabel="#{instituicao.constante}" itemValue="#{instituicao}" />
+
+
+										</p:selectOneMenu>
+
+									</p:column>
+
+									<p:column headerText="Tipo Conta" width="20%" >
+									
+									<p:selectOneMenu value="#{banco.tipoConta}" autoWidth="false" filter="true" filterMatchMode="contains"  style="width: 50%">
+
+											<f:selectItem itemLabel="Selecione" itemValue="" />
+
+											<f:selectItems	value="#{cc.attrs.managedBean.tiposConta}"	var="tipo" itemLabel="#{tipo.descricao}" itemValue="#{tipo}" />
+
+
+										</p:selectOneMenu>
+
+									<!-- 	<p:inputText value="#{banco.tipoConta}" />
+ -->
+									</p:column>
+
+									<p:column headerText="Agencia" width="10%">
+
+										<p:inputText value="#{banco.agencia}" />
+
+									</p:column>
+
+									<p:column headerText="Digito Agência" width="10%">
+
+										<p:inputText value="#{banco.digitoAgencia}" />
+
+									</p:column>
+
+									<p:column headerText="Conta" width="10%">
+
+										<p:inputText value="#{banco.conta}" />
+
+									</p:column>
+
+									<p:column headerText="Digito Conta" width="10%">
+
+										<p:inputText value="#{banco.digitoConta}" />
+
+									</p:column>
+
+									<f:facet name="header">
+
+										<p:commandButton value="Adicionar" id="btnAddEnd" immediate="true" title="Adicionar Dados Bancários]"	update="tableDadosBancarios" styleClass="ui-button-outlined ui-button-raised" actionListener="#{cc.attrs.managedBean.inserirEntidade('DADOS_BANCARIOS',cc.attrs.atendimento)}"
+														 icon="pi pi-plus">
+
+										</p:commandButton>
+
+									</f:facet>
+
+								</p:dataTable>
+
+							</div>
+
+						</p:tab>
+
+					</p:tabView>
+
+				</div>
+
+			</div>
+
+		</div>
+
+	</h:form>
+
+</composite:implementation>
+
+</html>

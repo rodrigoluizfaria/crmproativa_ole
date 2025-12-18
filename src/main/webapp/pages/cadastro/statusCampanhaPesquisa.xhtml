@@ -1,0 +1,146 @@
+<ui:fragment xmlns="http://www.w3.org/1999/xhtml"
+	xmlns:h="http://java.sun.com/jsf/html"
+	xmlns:f="http://java.sun.com/jsf/core"
+	xmlns:ui="http://java.sun.com/jsf/facelets"
+	xmlns:p="http://primefaces.org/ui" template="/WEB-INF/template.xhtml"
+	xmlns:c="http://java.sun.com/jsp/jstl/core">
+
+
+	<p:growl id="grl" widgetVar="grl" globalOnly="true" escape="false"	showSummary="false" life="8000" showDetail="true" sticky="false">
+
+		<p:autoUpdate />
+	</p:growl>
+
+
+		<h:form id="formPesquisa" prependId="false">
+
+				<div class="card">
+
+					<div class="ui-fluid formgrid grid">
+
+						<div class="field col-12 md:col-3">
+
+							<p:outputLabel for="inputPesqStatusCamDesc"	value="#{msg.descricao}" />
+
+							<p:inputText id="inputPesqStatusCamDesc" value="#{statusCampanhaBean.statusCampanha.descricao}" />
+						</div>
+
+
+						<div class="field col-12 md:col-3">
+
+							<p:outputLabel for="selectOneAcao" value="#{msg.acao}" />
+
+							<p:selectOneMenu id="selectOneAcao"
+								value="#{statusCampanhaBean.statusCampanha.acao}">
+
+								<f:selectItem itemLabel="#{msg.selecione}"
+									noSelectionOption="true" />
+
+								<f:selectItems value="#{statusCampanhaBean.acaoCamapanha}"
+									var="acao" itemLabel="#{acao}" itemValue="#{acao.name()}" />
+
+							</p:selectOneMenu>
+
+						</div>
+
+							<div class="field col-12 md:col-3">
+
+							<p:outputLabel for="selectOneAtivo" value="#{msg.acesso}" />
+
+							<p:selectOneMenu id="selectOneAtivo"
+								value="#{statusCampanhaBean.statusCampanha.acesso}">
+
+								<f:selectItem itemLabel="Selecione" noSelectionOption="true" />
+
+								<f:selectItems value="#{statusCampanhaBean.tipoAcessoEnum}"
+									var="acesso" itemLabel="#{acesso.constante}"
+									itemValue="#{acesso}" />
+
+							</p:selectOneMenu>
+
+						</div>
+
+					</div>
+
+
+					<div class="mt-5">
+
+							<p:commandButton id="btnPesquisa" value="#{msg.pesquisar}"
+								action="#{statusCampanhaBean.pesquisar()}" styleClass="mr-3 ui-button-raised"
+								update=":formPesquisa:tableStatus grl" icon="pi pi-search" />
+
+							<p:commandButton id="btnExportar" icon="pi pi-file-excel"
+								value="#{msg.exportar}" ajax="false"
+								onclick="disableModalLoading()"
+											 styleClass="mr-3 ui-button-raised ui-button-outlined"
+								rendered="#{sessionScope['usuario'].permissaoExportar}"
+								disabled="#{empty statusCampanhaBean.listStatusCampanha}">
+
+								<p:dataExporter target="tableStatus" type="xls"
+									fileName="statusCampanha" />
+
+							</p:commandButton>
+
+							<p:commandButton id="btnNovo" value="#{msg.novo}"
+											 styleClass="mr-3 ui-button-raised ui-button-outlined"
+								actionListener="#{statusCampanhaBean.novo()}" ajax="false"
+								icon="pi pi-plus-circle" />
+
+						</div>
+
+
+
+				</div>
+
+			<div class=" mt-4">
+
+				<div class="card">
+
+					<p:dataTable value="#{statusCampanhaBean.listStatusCampanha}"
+						var="status" id="tableStatus" paginator="true" rows="10"
+						styleClass="ui-datatable-striped ui-datatable-gridlines"
+						paginatorPosition="bottom" emptyMessage="#{msg.emptyMessage}"
+						paginatorTemplate="{CurrentPageReport}  {FirstPageLink} {PreviousPageLink} {PageLinks} {NextPageLink} {LastPageLink}"
+						currentPageReportTemplate="[#{msg.totalDeRegistros}: {totalRecords}]">
+
+						<p:column headerText="#{msg.descricao}">
+
+							<h:outputText value="#{status.descricao}" />
+
+						</p:column>
+
+						<p:column headerText="#{msg.acao}">
+
+							<h:outputText value="#{status.acao}" />
+
+						</p:column>
+
+						<p:column headerText="#{msg.acesso}">
+
+							<h:outputText value="#{status.acesso.constante}" />
+
+						</p:column>
+
+						<p:column styleClass="text-center" exportable="false" width="5%">
+
+							<p:commandButton icon="fa fw fa-edit" title="alterar"
+								styleClass="ui-button-flat"
+								action="#{statusCampanhaBean.editar(status)}" ajax="false">
+
+							</p:commandButton>
+
+						</p:column>
+
+					</p:dataTable>
+
+				</div>
+
+			</div>
+
+
+
+		</h:form>
+
+
+
+</ui:fragment>

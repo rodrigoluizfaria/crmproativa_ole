@@ -1,0 +1,124 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml"
+	xmlns:h="http://java.sun.com/jsf/html"
+	xmlns:f="http://java.sun.com/jsf/core"
+	xmlns:ui="http://java.sun.com/jsf/facelets"
+	xmlns:p="http://primefaces.org/ui">
+
+<h:head>
+	<f:facet name="first">
+		<meta http-equiv="X-UA-Compatible" content="IE=edge" />
+		<meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
+		<meta name="viewport"
+			content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=0" />
+		<meta name="apple-mobile-web-app-capable" content="yes" />
+	</f:facet>
+	<title>CRM PROATIVA</title>
+	<h:outputScript name="js/layout.js" library="paradise-layout" />
+	<h:outputScript name="js/ripple.js" library="paradise-layout" />
+
+	<link type="image/x-icon" rel="icon"
+		href="#{resource['img/favicon.ico']}" />
+</h:head>
+
+<h:body styleClass="login-body">
+
+	<div class="login-panel ui-fluid">
+
+		<div class="login-panel-header" style="background-color: #163963">
+			<p:graphicImage name="img/favicon_login.ico" style="height: 53px" />
+		</div>
+
+		<div class="login-panel-content">
+
+			<h:form id="form">
+
+				<p:growl id="grl" globalOnly="true" />
+
+				<div class="ui-g">
+
+					<div class="ui-g-12">
+
+						<h1>Login de Acesso</h1>
+
+					</div>
+
+					<div class="ui-g-12">
+
+
+						<div class="ui-inputgroup">
+
+							<span class="ui-inputgroup-addon"><i
+								class="material-icons">person</i></span>
+
+							<h:panelGroup styleClass="md-inputfield">
+
+								<p:inputText autocomplete="off" id="txtLogin" required="true"
+									value="#{loginBean.strLogin}"
+									requiredMessage="Obrigatorio." />
+
+								<label>#{msg.usuario}</label>
+
+								<p:message for="txtLogin"  />
+
+							</h:panelGroup>
+
+						</div>
+
+					</div>
+
+					<div class="ui-g-12">
+
+
+						<div class="ui-inputgroup">
+
+							<span class="ui-inputgroup-addon"><i
+								class="material-icons">lock</i></span>
+
+							<h:panelGroup styleClass="md-inputfield">
+
+								<p:password autocomplete="off" value="#{loginBean.senha}"
+									id="psw" required="true" requiredMessage="Obrigatorio." />
+
+								<label>#{msg.senha}</label>
+								
+								<p:message for="psw"/>
+
+							</h:panelGroup>
+
+						</div>
+
+					</div>
+
+					<div class="ui-g-6 "></div>
+
+					<div class="ui-g-6 password-reset">
+
+						<h:outputLink>Resetar Senha</h:outputLink>
+
+					</div>
+<p:messages id="msgg"/>
+					<div class="ui-g-12">
+
+						<p:commandButton id="bntLogin" value="Entrar"
+							icon="ui-icon-person" actionListener="#{loginBean.login()}"
+							update="@form" />
+
+					</div>
+
+					<div class="ui-g-12"></div>
+
+				</div>
+
+			</h:form>
+
+		</div>
+
+	</div>
+
+	<h:outputStylesheet name="css/layout-moody.css"
+		library="paradise-layout" />
+
+</h:body>
+
+</html>

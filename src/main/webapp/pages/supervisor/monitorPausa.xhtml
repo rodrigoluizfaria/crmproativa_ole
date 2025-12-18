@@ -1,0 +1,191 @@
+<ui:composition xmlns="http://www.w3.org/1999/xhtml"
+                xmlns:h="http://java.sun.com/jsf/html"
+                xmlns:f="http://java.sun.com/jsf/core"
+                xmlns:ui="http://java.sun.com/jsf/facelets"
+                xmlns:o="http://omnifaces.org/ui"
+                xmlns:matriz="http://java.sun.com/jsf/composite/componentes"
+                xmlns:p="http://primefaces.org/ui" template="/WEB-INF/template.xhtml">
+
+    <ui:define name="viewname">
+
+        <div class="bcca-breadcrumb">
+            <div class="bcca-breadcrumb-item bg-primary-500 hover:bg-primary-700 ">
+                <p:link outcome="/pages/supervisor/monitorAgendamentos" styleClass="uppercase"
+                        style="text-decoration: none">MONITOR PAUSA </p:link>
+            </div>
+            <div class="bcca-breadcrumb-item uppercase">SUPERVISOR</div>
+        </div>
+
+    </ui:define>
+
+    <ui:define name="content">
+
+        <p:growl id="grl" widgetVar="grl" globalOnly="true" escape="false"
+                 showSummary="false" life="3000" showDetail="true" sticky="false">
+
+            <p:autoUpdate/>
+
+        </p:growl>
+
+        <p:growl id="grlNo" widgetVar="grl" escape="false" showSummary="false"
+                 life="8000" showDetail="true" sticky="false"/>
+
+        <h:form id="formMonitorPausa" prependId="false">
+
+            <p:poll listener="#{supervisorMonitorPausaBean.pesquisar()}"
+                    update="@form" interval="30" global="true"/>
+
+
+            <div class="card">
+
+
+                <div class="ui-fluid formgrid grid">
+
+                    <matriz:selectEmpresa id="cmpEmpresa"
+                                          managedBean="#{supervisorMonitorPausaBean}"
+                                          value="#{supervisorMonitorPausaBean.empresa}" ajax="true"
+                                          update="@form" filter="true" exibirSelecione="false" style="col-12 md:col-3"/>
+
+
+                    <div class="field col-12 md:col-2">
+
+                        <p:outputLabel value="Equipe"/>
+
+                        <p:selectOneMenu id="selectEquipe"
+                                         value="#{supervisorMonitorPausaBean.equipe}" filter="true"
+                                         filterMatchMode="contains">
+
+                            <f:selectItem itemLabel="Selecione" itemValue=""/>
+                            <f:selectItems value="#{supervisorMonitorPausaBean.listEquipes}"
+                                           var="equipe" itemLabel="#{equipe.nome}"
+                                           itemValue="#{equipe.id}"/>
+
+                            <p:ajax listener="#{supervisorMonitorPausaBean.pesquisar()}"
+                                    update="@form" global="false"/>
+
+                        </p:selectOneMenu>
+
+                    </div>
+
+
+                </div>
+            </div>
+
+
+            <div class="mt-4">
+
+                <h:panelGroup styleClass="" layout="block" rendered="#{!empty supervisorMonitorPausaBean.listUsuarios}">
+
+                    <div class=" grid">
+
+                        <ui:repeat var="var"
+                                   value="#{supervisorMonitorPausaBean.listUsuarios}">
+
+                            <div class="col-12 md:col-3">
+
+                                <div
+                                        class="card no-gutter widget-overview-box widget-overview-box-1 #{var[6] == true ? 'widget-overview-box-red' : 'widget-overview-box-blue'}">
+
+									<span class="overview-icon #{var[6] == true ? 'overview-icon-red' : 'overview-icon-blue'} ">
+
+										<o:graphicImage
+                                                value="#{supervisorMonitorPausaBean.retornarFoto(var[1], var[2])}"
+                                                dataURI="true" height="20" style="margin-top:3px"/>
+									</span>
+
+                                    <span
+                                        class="overview-title  #{var[6] == true ? 'overview-title-red' : 'overview-title-blue'}">#{var[0]}
+									</span>
+
+
+                                    <h:panelGroup style="float: right;" rendered="#{var[6] == true}">
+
+                                        <p:commandButton id="btnDesbloquear"
+                                                         oncomplete="PF('dlgDesbloqueioUsuario').show();"
+                                                         update=":dlgDesbloqueioUsuario" icon="pi pi-check"
+                                                         styleClass="rounded-button ui-button-outlined"
+                                                         title="Desbloquear">
+
+                                            <f:setPropertyActionListener value="#{var[7]}"
+                                                                         target="#{supervisorMonitorPausaBean.idControlePausa}"/>
+
+                                        </p:commandButton>
+
+                                    </h:panelGroup>
+
+                                    <div class="grid overview-detail">
+
+                                        <div class=" #{var[6] == true ? 'md:col-4' : 'md:col-6'} ">
+                                            <div class="overview-number">Motivo da Pausa:</div>
+                                            <div class="overview-subtext">#{var[3]}</div>
+                                        </div>
+
+                                        <div class="#{var[6] == true ? 'md:col-4' : 'md:col-6'}">
+                                            <div class="overview-number">Decorrido:</div>
+                                            <div class="overview-subtext">#{var[5]}</div>
+                                        </div>
+
+                                        <h:panelGroup rendered="#{var[6] == true}"
+                                                      class="md:col-4 p-border">
+                                            <div class="overview-number">Tempo Pausa:</div>
+                                            <div class="overview-subtext">#{var[4]}min</div>
+                                        </h:panelGroup>
+
+                                    </div>
+
+                                </div>
+
+                            </div>
+
+                        </ui:repeat>
+
+                    </div>
+
+                </h:panelGroup>
+
+            </div>
+
+        </h:form>
+
+        <p:dialog id="dlgDesbloqueioUsuario" widgetVar="dlgDesbloqueioUsuario"
+                  width="500" header="Desloqueio de Usuario" modal="true"
+                  resizable="false" draggable="false" appendTo="@(body)">
+
+            <h:form id="formDialofControlePausa" prependId="false">
+
+                <div class="ui-fluid formgrid grid col-12">
+
+                    <div class="field col-12 ">
+
+                        <p:outputLabel value="Motivo" for="txtMotivo" id="lblMotivo"/>
+
+                        <p:inputTextarea id="txtMotivo"
+                                         value="#{supervisorMonitorPausaBean.justificativa}"
+                                         required="true" requiredMessage="#{msg.requerido}"/>
+
+                        <p:message for="txtMotivo"/>
+
+                    </div>
+
+
+                    <div class="field col-12 ">
+
+                        <p:commandButton value="Salvar" icon="pi pi-check"
+                                         actionListener="#{supervisorMonitorPausaBean.desbloquearPausa()}"
+                                         update="@form :formMonitorPausa"
+                                         id="btnDesbloqueioControleUsuario"
+                                         styleClass="ui-button-raised mr-3"/>
+
+
+                    </div>
+
+                </div>
+
+            </h:form>
+
+        </p:dialog>
+
+
+    </ui:define>
+
+</ui:composition>

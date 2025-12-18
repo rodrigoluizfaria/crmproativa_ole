@@ -1,0 +1,279 @@
+<ui:fragment xmlns="http://www.w3.org/1999/xhtml"
+             xmlns:h="http://java.sun.com/jsf/html"
+             xmlns:f="http://java.sun.com/jsf/core"
+             xmlns:ui="http://java.sun.com/jsf/facelets"
+             xmlns:matriz="http://java.sun.com/jsf/composite/componentes"
+             xmlns:pe="http://primefaces.org/ui/extensions"
+             xmlns:p="http://primefaces.org/ui" template="/WEB-INF/template.xhtml">
+
+    <p:growl id="grl" widgetVar="grl" globalOnly="true" escape="false"
+             showSummary="false" life="8000" showDetail="true" sticky="false">
+
+        <p:autoUpdate/>
+
+    </p:growl>
+
+    <h:form id="formCadastro">
+
+
+        <div class="card">
+
+            <div class="ui-fluid formgrid grid">
+
+                <matriz:selectEmpresa id="cmpEmpresa"
+                                      managedBean="#{expedienteBean}" style="col-12 md:col-2"
+                                      value="#{expedienteBean.expediente.empresa}" update="@form"
+                                      filter="true"
+                                      rendered="#{sessionScope['usuario'].empresa.possuiFiliais}"/>
+
+
+                <div class="field col-12 md:col-2">
+
+                    <p:outputLabel for="txtDescricao" id="lblDescricao"
+                                   value="#{msg.descricao}"/>
+
+                    <p:inputText id="txtDescricao"
+                                 value="#{expedienteBean.expediente.descricao}" required="true"
+                                 requiredMessage="#{msg.requerido}"/>
+
+                    <p:message for="txtDescricao"/>
+
+                </div>
+
+                <div class="field col-12 md:col-2">
+
+                    <p:outputLabel for="txtTolerancia" id="lblTolerancia"
+                                   value="#{msg.tempoTolerencia} (em min.)"/>
+
+                    <p:inputText id="txtTolerancia"
+                                 value="#{expedienteBean.expediente.tolerancia}"
+                                 placeholder="em segundos"
+                                 onkeypress="return somenteNumeros(event)" maxlength="3"/>
+
+                </div>
+
+                <div class="field col-12 md:col-2">
+
+                    <p:outputLabel for="selectOneAtivo" value="#{msg.acesso}"/>
+
+                    <p:selectOneMenu id="selectOneAtivo"
+                                     value="#{expedienteBean.expediente.acesso}">
+
+                        <f:selectItems value="#{expedienteBean.tipoAcessoEnum}" var="a"
+                                       itemLabel="#{a.constante}" itemValue="#{a}"/>
+
+                    </p:selectOneMenu>
+
+                </div>
+
+
+                <div class="col-12 ">
+
+                    <p:dataTable id="tableExpedientesCadastro"
+                                 value="#{expedienteBean.listExpedientesDiaSemanaCadastro}"
+                                 var="expediente" widgetVar="wgtExpedientesCadastro"
+                                 emptyMessage="#{msg.emptyMessage}">
+
+                        <p:column headerText="#{msg.horaEntrada} " width="15%">
+
+                            <h:outputText value="#{expediente.horaEntrada}">
+
+                                <f:convertDateTime type="time" timeZone="America/Sao_Paulo"/>
+
+                            </h:outputText>
+
+                        </p:column>
+
+                        <p:column headerText="#{msg.horaSaida}" width="15%">
+
+                            <h:outputText value="#{expediente.horaSaida}">
+
+                                <f:convertDateTime type="time"/>
+
+                            </h:outputText>
+
+                        </p:column>
+
+                        <p:column headerText="#{msg.diasDeSemana}" width="65%">
+
+                            <h:outputText
+                                    value="#{expedienteBean.getListDiasSemanaValue(expediente.listDiasSemanaSelecionado)}"/>
+
+                        </p:column>
+
+                        <p:column width="10%" style="text-align:right">
+
+                            <f:facet name="header">
+
+                                <p:commandButton id="btnNovoExpediente" icon="pi pi-plus"
+                                                 ajax="true" immediate="true" value="Adicionar"
+                                                 actionListener="#{expedienteBean.adicionarNovoExpediente()}"
+                                                 update="dlgCadastroExpediente formCadastro"
+                                                 oncomplete="PF('dlgCadastroExpediente').show();"
+                                                 styleClass="ui-button-outlined ui-button-secondary ui-button-raised"/>
+
+                            </f:facet>
+
+                            <p:commandButton id="btnEditarExpediente"
+                                             icon="fa fw fa-edit"
+                                             actionListener="#{expedienteBean.editarExpediente(expediente)}"
+                                             oncomplete="PF('dlgCadastroExpediente').show();" ajax="true"
+                                             update="dlgCadastroExpediente formCadastroExpediente"
+                                             styleClass="rounded-button ui-button-outlined mr-2 ui-button-flat"
+                                             immediate="true"/>
+
+                            <p:commandButton id="btnRemoverExpediente" icon="pi pi-times"
+                                             ajax="true" styleClass="rounded-button ui-button-outlined ui-button-flat"
+                                             actionListener="#{expedienteBean.removerExpediente(expediente)}"
+                                             update="tableExpedientesCadastro" immediate="true"/>
+
+                        </p:column>
+
+                    </p:dataTable>
+
+
+                </div>
+
+                <div class="mt-5 pl-3">
+
+                    <p:commandButton id="btnSalvar" value="Salvar" styleClass="mr-3 ui-button-raised"
+                                     update="@form grl" action="#{expedienteBean.salvar()}"
+                                     icon="pi pi-save"/>
+
+                    <p:commandButton id="btnVoltar" value="Voltar" styleClass="mr-3 ui-button-outlined ui-button-raised"
+                                     actionListener="#{expedienteBean.voltar()}" immediate="true"
+                                     ajax="false" icon="pi pi-arrow-circle-left"/>
+
+
+                </div>
+
+            </div>
+        </div>
+
+        <p:blockUI block="formCadastro" trigger="btnSalvar">
+            Carregando<br/>
+            <p:graphicImage name="paradise-layout/images/loading_flat.gif"/>
+
+        </p:blockUI>
+
+
+    </h:form>
+
+    <h:form id="formCadastroExpediente" prependId="false">
+
+        <p:dialog id="dlgCadastroExpediente" modal="true"
+                  widgetVar="dlgCadastroExpediente" resizable="false" closable="true"
+                  header="#{msg.cadastroExpediente}" focus="focusFake" width="600px">
+
+            <p:inputText type="hidden" id="focusFake"/>
+
+            <div class="col-12 ">
+
+                <div class="grid ui-fluid formgrid">
+
+                    <div class="field col-12 md:col-6">
+
+                        <div class="field grid">
+
+                            <p:outputLabel id="lblHoraEntrada" value="#{msg.horaEntrada}"
+                                           for="txtHoraEntrada" styleClass="col-fixed"/>
+
+                            <div class="col">
+
+                                <pe:timePicker id="txtHoraEntrada"
+                                               value="#{expedienteBean.novoExpedienteDiaSemana.horaEntrada}"
+                                               mode="popup" required="true" requiredMessage="#{msg.requerido}"
+                                               showOn="button" size="10" locale="pt_BR" style="width:100%"/>
+
+                            </div>
+
+                            <p:message id="msgHoraEntrada" for="txtHoraEntrada"/>
+
+                        </div>
+
+                    </div>
+
+                    <div class="field col-12 md:col-6 ">
+
+                        <div class="field grid">
+
+                            <p:outputLabel id="lblHoraSaida" value="#{msg.horaSaida}"
+                                           for="txtHoraSaida" styleClass="col-fixed"/>
+
+                            <div class="col">
+
+                                <pe:timePicker id="txtHoraSaida"
+                                               value="#{expedienteBean.novoExpedienteDiaSemana.horaSaida}"
+                                               mode="popup" required="true" requiredMessage="#{msg.requerido}"
+                                               showOn="button" size="8"/>
+
+                            </div>
+
+                            <p:message id="msgHoraSaida" for="txtHoraSaida"/>
+
+                        </div>
+
+                    </div>
+
+                    <div class="mt-2 ">
+
+                        <p:fieldset legend="#{msg.diasDeSemana} *"
+                                    styleClass="fild-set-default-sem-borda p-3">
+
+
+                            <p:selectManyCheckbox id="rdDias"
+                                                  value="#{expedienteBean.novoExpedienteDiaSemana.listDiasSemanaSelecionado}"
+                                                  layout="grid" columns="7" required="true"
+                                                  requiredMessage="#{msg.requerido}"
+                                                  converter="omnifaces.SelectItemsConverter">
+
+                                <f:selectItems value="#{expedienteBean.diasSemanaEnum}"
+                                               var="diaSemana" itemLabel="#{diaSemana.descricao}"
+                                               itemValue="#{diaSemana}"/>
+
+                            </p:selectManyCheckbox>
+
+                            <p:message id="msgDias" for="rdDias"/>
+
+                        </p:fieldset>
+
+                    </div>
+
+                    <p:messages id="msgDiasError"/>
+
+                    <div class=" text-center  col-12 mt-5">
+
+                        <p:commandButton icon="pi pi-save"
+                                         value="#{msg.btnAdd}" styleClass="mr-3 ui-button-raised"
+                                         actionListener="#{expedienteBean.adicionarExpediente()}"
+                                         update="@form grl msgDiasError"/>
+
+                        <p:commandButton id="btnClose" icon="pi pi-times" global="false"
+                                         styleClass="ui-button-raised ui-button-outlined"
+                                         value="Fechar" onclick="PF('dlgCadastroExpediente').hide();"
+                                         update="@form grl msgDiasError"/>
+
+
+                    </div>
+
+                </div>
+
+            </div>
+
+
+            <script>
+
+                PrimeFacesExt.locales.TimePicker['pt_BR'] = {
+                    hourText: 'Horas',
+                    minuteText: 'Minutos',
+                    amPmText: ['AM', 'PM'],
+                    closeButtonText: 'Fechar',
+                    nowButtonText: 'Agora',
+                    deselectButtonText: 'Limpar seleção'
+                };
+
+            </script>
+
+        </p:dialog>
+    </h:form>
+</ui:fragment>

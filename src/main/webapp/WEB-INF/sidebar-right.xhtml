@@ -1,0 +1,54 @@
+<ui:composition 
+	xmlns="http://www.w3.org/1999/xhtml" 
+	xmlns:h="http://java.sun.com/jsf/html" 
+	xmlns:f="http://java.sun.com/jsf/core"
+	 xmlns:o="http://omnifaces.org/ui"
+    xmlns:ui="http://java.sun.com/jsf/facelets" 
+    xmlns:p="http://primefaces.org/ui" xmlns:d="http://primefaces.org/diamond">
+
+    <div class="layout-sidebar-right" style="width: 40rem;">
+    
+        <h5 style="border: 1px solid #dee2e6;padding: 10px;">
+       
+         <p:graphicImage name="img/bot/bot_duvida_cor.png"  />
+        
+      Chat dúvidas
+        
+        </h5>
+        
+        <h:form>
+          
+           <div class="widget-chat">
+                      
+                        <ul id="ul_bot">
+                                           
+                        
+                        </ul>
+                        
+                         <div style="text-align: center;" id="load_bot">
+                       		 <p:graphicImage  name="img/bot_load.gif" />
+                        </div>
+                        
+                        <div class="new-message" style=" border: 1px solid #dee2e6;">
+                          
+                            <div class="message-attachment">
+                                
+                                <p:commandButton  styleClass="rounded-button text-button" icon="fa fa-paper-plane fa-2x" type="button" onclick="enviarMenssagemBot();" disabled="true" />
+                            </div>
+                            <div class="message-input" style="top: 4px;">
+                            
+                                <input type="text" id="txt" placeholder="Digite sua dúvida " class="ui-inputfield" style="float:left" disabled="disabled" />
+                                
+                            </div>
+                        </div>
+                          <br/>
+                        <i class="fa fa-asterisk" aria-hidden="true" /> beta
+                        <br/>
+                       <i class="fa fa-info-circle" aria-hidden="true" /> Em fase de testes, por enquanto não está disponível digitar sua dúvida.
+                    </div>
+        
+        </h:form>
+        
+    </div>
+    
+</ui:composition>

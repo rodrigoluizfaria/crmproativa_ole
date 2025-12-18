@@ -1,0 +1,356 @@
+<ui:fragment xmlns="http://www.w3.org/1999/xhtml"
+             xmlns:ui="http://java.sun.com/jsf/facelets"
+             xmlns:h="http://java.sun.com/jsf/html"
+             xmlns:f="http://java.sun.com/jsf/core"
+             xmlns:p="http://primefaces.org/ui">
+
+    <p:poll listener="#{projecaoDashBean.pesquisar()}" update="@form" interval="200" global="false"/>
+
+    <div class="card border-primary-100  border-round border-left-3" style="margin-bottom: 0.3rem;padding-bottom: 0">
+
+        <div class="col-12" style="padding-bottom: 0.1rem">
+
+            <h:panelGroup
+                    styleClass="ui-fluid grid   ui-widget ui-widget-header ui-corner-all flex justify-content-between flex-wrap"
+                    style="padding: 0;display: flex; justify-content: space-between;flex-wrap: wrap;"
+                    id="panelSelecione" layout="block">
+
+                <div class="field col-12 md:col-2" style="padding-right: 0;">
+
+                    <p:outputLabel value="Situação" id="lblSituacao"/>
+
+                    <p:selectOneButton id="radioSituacao" required="true" requiredMessage="#{msg.requerido}"
+                                       value="#{projecaoDashBean.situacaoEnum}" unselectable="false">
+
+                        <f:selectItem id="situacaoConcluido" itemValue="CONCLUIDO" itemLabel="CONCLUÍDO"/>
+                        <f:selectItem id="situacaoRealizada" itemValue="REALIZADO" itemLabel="REALIZADO"/>
+
+                    </p:selectOneButton>
+
+                    <p:message for="radioSituacao"/>
+
+                </div>
+
+
+                <div class="#{sessionScope['usuario'].perfil.name() ne 'OPERADOR' ? ' field col-12 md:col-3 ' : ' field col-12 md:col-5 '}"
+                     style="padding-right: 0;">
+
+                    <p:outputLabel value="Período" id="lblPeriodo"/>
+
+                    <p:selectOneButton id="radioPeriodo" required="true" requiredMessage="#{msg.requerido}"
+                                       value="#{projecaoDashBean.periodoEnum}" unselectable="false">
+
+                        <f:selectItem id="peridoSelecione" itemValue="DATA" itemLabel="SELECIONE"/>
+                        <f:selectItem id="peridoDiario" itemValue="DIARIO" itemLabel="DIÁRIO"/>
+                        <f:selectItem id="periodoSemanal" itemValue="SEMANAL" itemLabel="SEMANAL"/>
+                        <f:selectItem id="periodoMensal" itemValue="MENSAL" itemLabel="MENSAL"/>
+                        <p:ajax event="change" process="@this" update="panelSelecione" global="false"/>
+
+                    </p:selectOneButton>
+
+
+                    <p:message for="radioPeriodo"/>
+
+                    <h:panelGroup id="grpPeriodo" layout="block" rendered="#{projecaoDashBean.periodoEnum eq 'DATA'}">
+
+                        <p:outputLabel for="range" value="Selecione o Período"/>
+                        <p:datePicker id="range" selectionMode="range" value="#{projecaoDashBean.listData}"
+                                      required="true" requiredMessage="Selecione o Intervalo"/>
+
+                    </h:panelGroup>
+
+                    <p:message for="range" id="msgRange"/>
+
+                </div>
+
+                <h:panelGroup layout="block" class="field col-12 md:col-3" id="panelSupervisor"
+                              rendered="#{sessionScope['usuario'].perfil.name() ne 'OPERADOR' and sessionScope['usuario'].perfil.name() eq 'SUPERVISOR' }"
+                              style="padding-right: 0;">
+
+                    <p:outputLabel value="Filtro Visualização" id="lblGraficoSupervisor"/>
+
+                    <p:selectOneButton id="radioGraficoSupervisor" value="#{projecaoDashBean.graficoEnum}"
+                                       required="true" requiredMessage="#{msg.requerido}" unselectable="false">
+
+                        <!-- 	<f:selectItem id="graficoEmpresa" itemValue="EMPRESA" itemLabel="Empresa" />
+
+                        <f:selectItem id="graficoProduto" itemValue="PRODUTO" itemLabel="Produto" /> -->
+
+                        <f:selectItem id="graficoOperadorSup" itemValue="AGENTE" itemLabel="AGENTE"/>
+
+                        <f:selectItem id="graficoEquipeSup" itemValue="EQUIPE" itemLabel="EQUIPE"/>
+
+                    </p:selectOneButton>
+
+                    <p:message for="radioGraficoSupervisor"/>
+
+                </h:panelGroup>
+
+
+                <h:panelGroup layout="block" class="field col-12 md:col-3" id="panelAdm"
+                              rendered="#{sessionScope['usuario'].perfil.name() ne 'OPERADOR' and  sessionScope['usuario'].perfil.name() ne 'SUPERVISOR' }"
+                              style="padding-right: 0;">
+
+                    <p:outputLabel value="Filtro Visualização" id="lblGrafico"/>
+
+                    <p:selectOneButton id="radioGrafico" value="#{projecaoDashBean.graficoEnum}" required="true"
+                                       requiredMessage="#{msg.requerido}" unselectable="false">
+
+                        <f:selectItem id="graficoEmpresa" itemValue="EMPRESA" itemLabel="EMPRESA"/>
+
+                        <f:selectItem id="graficoProduto" itemValue="PRODUTO" itemLabel="PRODUTO"/>
+
+                        <f:selectItem id="graficoOperador" itemValue="AGENTE" itemLabel="AGENTE"/>
+
+                        <f:selectItem id="graficoEquipe" itemValue="EQUIPE" itemLabel="EQUIPE"/>
+
+                    </p:selectOneButton>
+
+                    <p:message for="radioGrafico"/>
+
+                </h:panelGroup>
+
+
+                <div class="#{sessionScope['usuario'].perfil.name() ne 'OPERADOR' ? 'field col-12 md:col-2' : 'field col-12 md:col-3' } "
+                     style="padding-right: 0;">
+
+                    <p:outputLabel value="Tipo" id="lblTipo"/>
+
+                    <p:selectOneButton id="radioTipo" value="#{projecaoDashBean.tipoDadosEnum}" required="true"
+                                       requiredMessage="#{msg.requerido}" unselectable="false">
+
+                        <f:selectItem id="tipoQtidade" itemValue="QUANTIDADE" itemLabel="QUANTIDADE"/>
+
+                        <f:selectItem id="tipoValor" itemValue="VALOR" itemLabel="VALOR"/>
+
+                    </p:selectOneButton>
+
+                    <p:message for="radioTipo"/>
+
+                </div>
+
+                <div class="field col-12 md:col-2 mt-5 ">
+
+                    <p:outputLabel value="&#160;&#160;"/>
+
+                    <p:commandButton value="VISUALIZAR" styleClass=" ui-button-raised" icon="pi pi-eye"
+                                     actionListener="#{projecaoDashBean.pesquisar()}" global="true" update="@form"/>
+
+                </div>
+
+            </h:panelGroup>
+
+        </div>
+
+    </div>
+
+    <h:panelGroup layout="block" class="grid mt-1" rendered="#{sessionScope['usuario'].perfil.name() eq 'OPERADOR'}"
+                  id="groupDadosPendencia">
+
+        <div class="col-12 md:col-4">
+
+            <div class="card card-p ">
+
+                <div class="border-bottom-2 border-primary-300 pl-3 pb-2">
+
+				<span class="span-fa">
+				
+					<i class="fa fw fa-calendar-times" style="font-size: 1.5rem;"/>
+					
+				</span> <span class="overview-title  text-xl font-medium">Pendências</span>
+                </div>
+
+                <div class="grid overview-detail p-2 mt-1">
+
+                    <div class="col-6 text-center" title="Total de agendamentos atrasados.">
+
+                        <div class="overview-number text-2xl">#{sessionScope['usuario'].quantidadeAgendamentos}</div>
+                        <div class="overview-subtext text-xl">Agendamentos atrasados</div>
+
+                    </div>
+
+                    <div class="col-6 text-center" title="Total de atendimentos pendentes.">
+
+                        <div class="overview-number text-2xl">#{sessionScope['usuario'].quantidadePendentes}</div>
+                        <div class="overview-subtext text-xl">Atendimentos pendentes</div>
+
+                    </div>
+
+                </div>
+
+            </div>
+
+        </div>
+
+        <div class="col-12 md:col-4">
+
+            <div class="card card-p ">
+
+                <div class="border-bottom-2 border-primary-300 pl-3 pb-2">
+
+				<span class="span-fa"> <i class="fa fw fa-calendar-day"/>
+
+			    	</span> <span class="overview-title  text-xl font-medium">Agendamentos</span>
+                </div>
+
+                <div class="grid overview-detail p-2 mt-1">
+                    <div class="col-6 text-center">
+                        <div class="overview-number text-2xl">#{inicialBean.totalAgendamentos}</div>
+                        <div class="overview-subtext text-xl">Agendamentos de hoje</div>
+                    </div>
+                    <div class="col-6 text-center">
+                        <div class="overview-number text-2xl">#{inicialBean.proximosDias}</div>
+                        <div class="overview-subtext text-xl">Próximos 15 dias</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+
+        <h:panelGroup styleClass="col-12 md:col-4" layout="block" rendered="#{not empty projecaoDashBean.listMapDados}">
+
+            <div class="card card-p">
+
+                <ui:repeat var="data" value="#{projecaoDashBean.listMapDados}">
+
+                    <div class="border-bottom-2 border-primary-300 pl-3 pb-2">
+
+				    	<span class="span-fa"> <i class="fa fw fa-dollar" />
+                              <span class="overview-title  text-xl font-medium">Produção</span>
+					
+					</span>
+
+                    </div>
+
+                    <div class="grid overview-detail p-2 mt-1">
+
+                        <div class="col-6 text-center">
+
+                            <div class="overview-number text-2xl">#{data['producao']}</div>
+                            <div class="overview-subtext text-xl">Produção</div>
+
+                        </div>
+
+                        <div class="col-6 text-center">
+                            <div class="overview-number text-2xl">#{data['quantidade']}</div>
+                            <div class="overview-subtext text-xl">Quantidade</div>
+
+                        </div>
+
+                    </div>
+
+                </ui:repeat>
+
+            </div>
+
+        </h:panelGroup>
+
+    </h:panelGroup>
+
+    <div class="col-12 mt-3">
+
+        <h:panelGroup layout="block" class="grid dashboard card"
+                      rendered="#{not empty projecaoDashBean.listMapDados and sessionScope['usuario'].perfil.name() ne 'OPERADOR' }"
+                      id="groupDados">
+
+            <div class="col-12 md:col-6">
+
+                <p:barChart model="#{projecaoDashBean.barModel}" style="width: 100%; height: 600px;"/>
+
+            </div>
+
+            <div class="col-12  md:col-6">
+
+                <div class=" ">
+
+                    <div class="div-table col-12">
+
+                        <div class="div-table-head div-table-row-box col-12">
+
+                            <div class="div-table-col-head  #{projecaoDashBean.tipoDadosEnum eq 'VALOR' ? 'col-4' : 'col-3'} ">#{projecaoDashBean.graficoEnum}
+
+                            </div>
+
+
+                            <div class="div-table-col-head  #{projecaoDashBean.tipoDadosEnum eq 'VALOR' ? 'col-2' : 'col-3'}">META</div>
+
+                            <div class="div-table-col-head  #{projecaoDashBean.tipoDadosEnum eq 'VALOR' ? 'col-2' : 'col-3'}">PROJEÇÃO</div>
+
+                            <h:panelGroup styleClass="div-table-col-head  col-2" layout="block"
+                                          rendered="#{projecaoDashBean.tipoDadosEnum eq 'VALOR'}">
+
+                                ATENDIMENTOS
+
+                            </h:panelGroup>
+
+
+                            <div class="div-table-col-head  #{projecaoDashBean.tipoDadosEnum eq 'VALOR' ? 'col-2' : 'col-3'}">PRODUÇÃO</div>
+
+                        </div>
+
+
+                        <ui:repeat var="data" value="#{projecaoDashBean.listMapDados}">
+
+
+                            <div class="div-table-row div-table-row-box col-12">
+
+                                <div class="div-table-fist-col #{projecaoDashBean.tipoDadosEnum eq 'VALOR' ? 'col-4' : 'col-3'}">
+
+                                    <div style="margin-top: 9px">#{data['nome']}</div>
+
+
+                                </div>
+
+                                <div class="div-table-col #{projecaoDashBean.tipoDadosEnum eq 'VALOR' ? 'col-2' : 'col-3'}">
+
+                                    <div>#{data['meta']}</div>
+
+                                    <div class="col-table-footer"><h:outputText value="&amp;nbsp;" escape="false"/>
+                                    </div>
+
+
+                                </div>
+
+                                <div class="div-table-col #{projecaoDashBean.tipoDadosEnum eq 'VALOR' ? 'col-2' : 'col-3'}">
+
+                                    <div>#{data['projecao']}</div>
+
+                                    <div class="col-table-footer"><small> #{data['percentualProjecao']} % </small></div>
+
+                                </div>
+
+                                <h:panelGroup styleClass="div-table-col  col-2"
+                                              rendered="#{projecaoDashBean.tipoDadosEnum eq 'VALOR'}" layout="block">
+
+                                    <div>#{data['quantidade']}</div>
+
+                                    <div class="col-table-footer"><h:outputText value="&amp;nbsp;" escape="false"/>
+                                    </div>
+
+                                </h:panelGroup>
+
+
+                                <div class="div-table-col #{projecaoDashBean.tipoDadosEnum eq 'VALOR' ? 'col-2' : 'col-3'}">
+
+                                    <div>#{data['producao']}</div>
+
+                                    <div class="col-table-footer"><small> #{data['percentualProducao']} % </small></div>
+                                </div>
+
+                            </div>
+
+                        </ui:repeat>
+
+                    </div>
+
+
+                </div>
+
+
+            </div>
+
+        </h:panelGroup>
+    </div>
+
+
+</ui:fragment>

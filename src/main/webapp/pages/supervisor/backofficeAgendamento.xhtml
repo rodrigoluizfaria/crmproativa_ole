@@ -1,0 +1,176 @@
+<ui:fragment xmlns="http://www.w3.org/1999/xhtml"
+	xmlns:h="http://java.sun.com/jsf/html"
+	xmlns:f="http://java.sun.com/jsf/core"
+	xmlns:ui="http://java.sun.com/jsf/facelets"
+	xmlns:matriz="http://java.sun.com/jsf/composite/componentes"
+	xmlns:p="http://primefaces.org/ui">
+
+	<h:form id="formBackofficeAgenda" prependId="false">
+
+		<div class="grid col-12 tab-padding">
+
+			<div class="col-12">
+
+				<p:spacer height="20" />
+
+			</div>
+
+			<matriz:selectEmpresa id="selectEmpresaAgendamento" style="col-12 md:col-3" managedBean="#{supervisorBackofficeBean}" value="#{supervisorBackofficeBean.empresa}" ajax="true" update="@form" filter="true" exibirSelecione="true" selecioneItemLabel="Selecione" required="true" />
+
+			<div class="field col-12 md:col-3">
+
+				<p:outputLabel value="Equipe" />
+
+				<p:selectOneMenu id="selectEquipeAgendamento" value="#{supervisorBackofficeBean.equipeAgendamento}" filter="true" filterMatchMode="contains">
+
+					<f:selectItem itemLabel="Selecione" itemValue="" />
+
+					<f:selectItems value="#{supervisorBackofficeBean.listEquipes}"	var="equipe" itemLabel="#{equipe.nome}" itemValue="#{equipe.id}" />
+				
+					<p:ajax listener="#{supervisorBackofficeBean.onChangeEquipe(supervisorBackofficeBean.equipeAgendamento)}" update="selectOperadorAgendamento" global="false" />
+
+				</p:selectOneMenu>
+
+			</div>
+
+			<div class="field col-12 md:col-3">
+
+				<p:outputLabel value="Operador" />
+
+				<p:selectOneMenu id="selectOperadorAgendamento" value="#{supervisorBackofficeBean.operadorAgendamento}" filter="true" filterMatchMode="contains">
+
+					<f:selectItem itemLabel="Selecione" itemValue="" />
+
+					<f:selectItems value="#{supervisorBackofficeBean.listOperador}" var="operador" itemLabel="#{operador.nome}" itemValue="#{operador.id}" />
+
+				</p:selectOneMenu>
+
+			</div>
+
+			<div class="field col-12 md:col-3">
+
+				<p:outputLabel value="Status" />
+
+				<p:selectOneMenu id="selectStatusAgendamento" value="#{supervisorBackofficeBean.statusAtendimentoAgendamento}" filter="true" filterMatchMode="contains">
+
+					<f:selectItem itemLabel="Selecione" itemValue="" />
+
+					<f:selectItems value="#{supervisorBackofficeBean.listStatusAtendimentoAgendados}" var="status" itemLabel="#{status.descricao}" itemValue="#{status.id}" />
+
+				</p:selectOneMenu>
+
+			</div>
+
+			<div class="field col-12 md:col-3">
+
+				<p:outputLabel value="Cpf" />
+
+				<p:inputText id="txtCpfAgendamento"	value="#{supervisorBackofficeBean.cpf}" />
+
+			</div>
+
+
+			<div class="field col-12 md:col-3">
+
+				<p:outputLabel value="Período Inicio Agendamento" />
+
+				<p:datePicker id="calendarDataInicioAgendamento" value="#{supervisorBackofficeBean.dataInicioAgendamento}" showButtonBar="true" showIcon="true" readonlyInput="true" pattern="dd/MM/yyyy" locale="pt_BR"/>
+
+			</div>
+
+			<div class="field col-12 md:col-3">
+
+				<p:outputLabel value="Período Fim Agendamento" />
+
+				<p:datePicker id="calendarDataFimAgendamento" value="#{supervisorBackofficeBean.dataFimAgendamento}" showButtonBar="true" showIcon="true" readonlyInput="true" pattern="dd/MM/yyyy" locale="pt_BR" />
+
+			</div>
+
+			<div class="field col-12 md:col-12">
+
+				<p:outputLabel value="&#160;&#160;" id="txtPesquisaAgendamento" />
+
+				<div>
+				
+					<p:commandButton value="Pesquisar" icon="pi pi-search"	styleClass="ui-button-raised mr-3" actionListener="#{supervisorBackofficeBean.pesquisarAgendamentos()}" update="@form" />
+
+					<p:commandButton id="btnExportarAgendamento" icon="pi pi-upload" styleClass="ui-button-outlined ui-button-raised mr-3" value="#{msg.exportar}" ajax="false" disabled="#{empty supervisorBackofficeBean.listHistoricosAgendamentos}" immediate="true" rendered="#{sessionScope['usuario'].permissaoExportar}">
+
+						<p:dataExporter target="tableAtendimentosAgendamento" type="xls" fileName="agendamentos" />
+
+					</p:commandButton>
+
+					<p:commandButton value="Trocar agendamento" actionListener="#{supervisorBackofficeBean.abrirDlgTrocaAgendamento()}" update="formTrocarAgendamento" styleClass="ui-button-outlined ui-button-raised"/>
+
+				</div>
+
+			</div>
+		
+			<div class="col-12">
+
+				<p:spacer height="10" />
+
+			</div>
+
+			<div class="col-12">
+
+				<p:dataTable id="tableAtendimentosAgendamento" var="agendamento"
+					rows="15" paginator="true" paginatorPosition="bottom" rowKey="#{agendamento[1]}" selection="#{supervisorBackofficeBean.listAgendamentosSelecionados}"
+					value="#{supervisorBackofficeBean.listHistoricosAgendamentos}"
+					emptyMessage="#{supervisorBackofficeBean.listAtendimentos eq null? '' : msg.emptyMessage}"
+					currentPageReportTemplate="[#{msg.totalDeRegistros}: {totalRecords}]"
+					paginatorTemplate="{CurrentPageReport}  {FirstPageLink} {PreviousPageLink} {PageLinks} {NextPageLink} {LastPageLink} {Exporters}"
+					styleClass="ui-datatable-sm ui-datatable-striped ui-datatable-gridlines">
+
+					<p:ajax event="page" global="false" />
+
+					<p:ajax event="sort" global="false" />
+
+					<p:column selectionMode="multiple"	style="width:16px;text-align:center" exportable="false" />
+
+					<p:column headerText="Data Agendamento" sortBy="#{agendamento[3]}" width="17%">
+
+						<h:outputLabel value="#{agendamento[3]}" />
+
+					</p:column>
+
+					<p:column headerText="CPF" sortBy="#{agendamento[7]}" width="13%">
+
+						<h:outputLabel value="#{agendamento[7]}" />
+
+					</p:column>
+
+					<p:column headerText="Nome" sortBy="#{agendamento[4]}" width="30%">
+
+						<h:outputLabel value="#{agendamento[4]}" />
+
+					</p:column>
+
+
+					<p:column headerText="Status" sortBy="#{agendamento[5]}" width="15%">
+
+						<h:outputLabel value="#{agendamento[5]}" />
+
+					</p:column>
+
+					<p:column headerText="Usuário" sortBy="#{agendamento[6]}" width="25%">
+
+						<h:outputLabel value="#{agendamento[6]}" />
+
+					</p:column>
+
+					<p:column width="5%" exportable="false">
+
+						<p:commandButton styleClass="rounded-button ui-button-flat" title="Visualizar" icon="fa fa-list-alt" onclick="PF('dlgVisualizarAtendimento').show()" update=":formVisualizar"	action="#{supervisorBackofficeBean.visualizarAtendimento(agendamento[1])}" />
+
+					</p:column>
+
+				</p:dataTable>
+
+			</div>
+
+		</div>
+
+	</h:form>
+
+</ui:fragment>

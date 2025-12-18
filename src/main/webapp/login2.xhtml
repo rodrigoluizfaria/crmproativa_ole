@@ -1,0 +1,241 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml"
+	xmlns:h="http://xmlns.jcp.org/jsf/html"
+	xmlns:f="http://xmlns.jcp.org/jsf/core"
+	xmlns:pe="http://primefaces.org/ui/extensions"
+	xmlns:p="http://primefaces.org/ui">
+
+<h:head>
+
+	<f:facet name="first">
+		<meta http-equiv="X-UA-Compatible" content="IE=edge" />
+		<meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
+		<meta name="viewport"
+			content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=0" />
+		<meta name="apple-mobile-web-app-capable" content="yes" />
+	</f:facet>
+
+	<title>Proativa CRM</title>
+
+</h:head>
+
+<h:body styleClass="login-body">
+
+	<p:growl id="grl" globalOnly="true" />
+
+	<h:form id="formPrincipal" prependId="false">
+
+		<p:remoteCommand id="redirecionar" name="redirecionarLoginSucesso"
+			immediate="true" action="/pages/inicial.xhtml?faces-redirect=true" />
+
+
+		<div class="login-panel p-grid">
+
+
+			<div class="ui-g">
+
+				<h:panelGroup id="pngPrincipal" layout="block">
+
+					<div class="col-12logo-container">
+
+						<p:graphicImage name="images/logo1.png" library="paradise-layout"
+							styleClass="logo2" />
+
+						<p:graphicImage name="images/login/icon-login.png"	library="paradise-layout" styleClass="login-icon" />
+						<h2>Bem vindo.</h2>
+				
+					</div>
+
+					<div class="p-col-12">
+
+						<p:outputLabel for="username" value="Usuario" />
+
+						<div class="input-wrapper">
+
+
+							<p:inputText id="username" placeholder="Usuario" required="true"
+								value="#{loginBean.strLogin}" requiredMessage="Obrigatorio." />
+							<i class="pi pi-user" />
+
+
+
+						</div>
+
+						<p:message for="username" />
+
+					</div>
+
+
+					<div class="p-col-12">
+
+						<p:outputLabel for="password" value="Senha" />
+
+
+
+						<div class="input-wrapper">
+
+							<p:password id="password" placeholder="senha"
+								value="#{loginBean.senha}" requiredMessage="Obrigatorio."
+								required="true" />
+
+							<i class="pi pi-lock" />
+						</div>
+						<p:message for="password" />
+					</div>
+
+					<div class="col-12chkbox-container">
+
+						<div class="col-12chkbox-container">
+							<div class="p-col-6">
+								<h:outputLink value="#" onclick="PF('dlgInf').show();">
+                                Resetar Senha
+                            </h:outputLink>
+							</div>
+						</div>
+
+
+					</div>
+
+
+					<div class="col-12button-container">
+						<p:commandButton actionListener="#{loginBean.login()}"
+							process="@this password username"
+							update="@form grl dlgAlterarSenha" value="Entrar"
+							styleClass="blue-btn raised-btn" id="btnLogin"
+							onstart="PF('blockUIWidget').block()"
+							oncomplete="PF('blockUIWidget').unblock();loginRetorno(xhr, status, args)">
+
+
+						</p:commandButton>
+					</div>
+
+
+				</h:panelGroup>
+			</div>
+
+
+		</div>
+
+
+		<pe:blockUI widgetVar="blockUIWidget" cssOverlay="{opacity:0.5}"
+			target="pngPrincipal">
+
+			<h:panelGrid columns="2">
+
+				<h:graphicImage library="img" name="ajax-loader.gif"
+					style="margin-right: 12px; vertical-align: middle;" />
+
+				<h:outputText value="Aguarde..." style="white-space: nowrap;" />
+
+			</h:panelGrid>
+
+		</pe:blockUI>
+
+	</h:form>
+
+
+	<p:dialog id="dlgAlterarSenha" widgetVar="dlgAlterarSenha"
+		visible="false" modal="true" resizable="false" width="300"
+		header="Nova Senha" draggable="false">
+
+		<h:form id="formNovaSenha" prependId="false">
+
+			<h:inputHidden value="#{loginBean.strLogin}" id="loginNovo" />
+
+			<div class="ui-fluid ui-g">
+
+				<h:panelGroup id="pngGroupUsr">
+
+					<div class="ui-g-12 ui-md-12 ui-lg-12">
+
+						<p:outputLabel for="newPsw" value="Nova Senha" id="lblNewPsw" />
+
+						<p:password id="newPsw" placeholder="senha" match="newReptPsw"
+							validatorMessage="As senhas não correspondem."
+							value="#{loginBean.novaSenha}" requiredMessage="Obrigatorio."
+							required="true" />
+
+
+					</div>
+
+					<div class="ui-g-12 ui-md-12 ui-lg-12">
+
+						<p:outputLabel for="newReptPsw" value="Confirmar nova Senha"
+							id="lblReptPsw" />
+
+						<p:password id="newReptPsw" placeholder="senha"
+							value="#{loginBean.confirmaSenha}" requiredMessage="Obrigatorio."
+							required="true" />
+
+					</div>
+
+					<div class="ui-g-12 ui-md-12 ui-lg-12">
+						<p:messages id="msg" />
+					</div>
+
+					<div class="ui-g-12 ui-md-12 ui-lg-12">
+
+						<p:commandButton value="Salvar" styleClass="blue-btn raised-btn"
+							icon="fa fa-fw fa-save"
+							actionListener="#{loginBean.alterarSenha()}"
+							onstart="PF('blockUIWidget1').block()" update="grl pngGroupUsr"
+							oncomplete="PF('blockUIWidget1').unblock()" />
+
+						<p:spacer width="10" />
+
+						<p:commandButton value="Sair" type="button"
+							styleClass="blue-btn raised-btn" icon="fa fa-fw fa-close"
+							onclick="PF('dlgAlterarSenha').hide();" />
+
+
+					</div>
+
+
+
+				</h:panelGroup>
+			</div>
+		</h:form>
+
+	</p:dialog>
+
+	<pe:blockUI target="dlgAlterarSenha" widgetVar="blockUIWidget1">
+		<h:panelGrid columns="2">
+			<h:graphicImage library="img" name="ajax-loader.gif"
+				style="margin-right: 12px; vertical-align: middle;" />
+			<h:outputText value="Aguarde..." style="white-space: nowrap;" />
+		</h:panelGrid>
+	</pe:blockUI>
+
+
+
+	<p:dialog header="Info" modal="true" id="dlgInf" widgetVar="dlgInf"
+		resizable="false" draggable="false">
+		<div style="padding: 15px">
+			<span style="font-weight: normal; font-size: 19px">Prezado,</span>
+			<p></p>
+			<span style="font-weight: normal; font-size: 19px">Para
+				resetar sua senha solicite o suporte.</span>
+			<p></p>
+		</div>
+	</p:dialog>
+
+
+
+</h:body>
+
+<h:outputStylesheet name="stylo.css" />
+
+<h:outputScript name="js/script.js" />
+
+
+
+<!--  <h:outputStylesheet name="login_stylo.css"/> -->
+
+<h:outputStylesheet name="css/layout-blue.css" library="paradise-layout" />
+
+<h:outputStylesheet name="css/primeicons.css" library="paradise-layout" />
+<h:outputStylesheet name="css/primeflex.min.css" library="paradise-layout" />
+<!-- 	
+<h:outputStylesheet name="css/layout-horizon.css" library="paradise-layout" />  -->
+
+</html>

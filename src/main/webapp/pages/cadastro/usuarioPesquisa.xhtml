@@ -1,0 +1,253 @@
+<ui:fragment xmlns="http://www.w3.org/1999/xhtml"
+             xmlns:h="http://java.sun.com/jsf/html"
+             xmlns:f="http://java.sun.com/jsf/core"
+             xmlns:ui="http://java.sun.com/jsf/facelets"
+             xmlns:comboempresa="http://java.sun.com/jsf/composite/componentes"
+             xmlns:p="http://primefaces.org/ui"
+             template="/WEB-INF/template.xhtml">
+
+
+
+
+
+    <p:growl id="grl" widgetVar="grl" globalOnly="true" escape="false" showSummary="false" life="8000" showDetail="true"
+             sticky="false">
+
+        <p:autoUpdate/>
+
+    </p:growl>
+
+    <h:form id="formCadastro" prependId="false">
+
+            <div class="card ">
+
+                <div class="formgrid ui-fluid grid">
+
+                    <comboempresa:selectEmpresa id="cmpEmpresa" managedBean="#{usuarioBean}" ajax="true"
+                                                style="md:col-3"
+                                                value="#{usuarioBean.usuario.empresa}" filter="true" required="true"
+                                                exibirSelecione="false" update="@form"/>
+
+                    <div class="field col-12 md:col-3">
+
+                        <p:outputLabel value="#{msg.cpf}" for="inpCadastCpf"/>
+
+                        <p:inputMask mask="999.999.999-99" id="inpCadastCpf" requiredMessage="Requerido"
+                                     value="#{usuarioBean.usuario.cpf}"/>
+
+                    </div>
+
+                    <div class="field col-12 md:col-3">
+
+
+                        <p:outputLabel value="#{msg.nome}" for="inpCastUsr"/>
+
+                        <p:inputText value="#{usuarioBean.usuario.nome}" id="inpCastUsr"
+                                     requiredMessage="Requerido"/>
+
+
+                    </div>
+
+                    <div class="field col-12 md:col-3">
+
+                        <p:outputLabel value="#{msg.login}:" for="inpCadastLogin"/>
+
+                        <p:inputText value="#{usuarioBean.usuario.login}" id="inpCadastLogin"/>
+
+                    </div>
+
+                    <div class="field col-12 md:col-3">
+
+                        <p:outputLabel value="#{msg.perfil}: " for="selectOnePerfil"/>
+
+                        <p:selectOneMenu id="selectOnePerfil" value="#{usuarioBean.usuario.perfil}">
+
+                            <f:selectItem itemLabel=""/>
+
+                            <f:selectItems value="#{usuarioBean.perfis}" var="perfil"
+                                           itemLabel="#{perfil.constante}" itemValue="#{perfil}"/>
+
+                        </p:selectOneMenu>
+
+                    </div>
+
+                    <div class="field col-12 md:col-3">
+
+                        <p:outputLabel value="${msg.acesso}: " for="selectOneCadstAcesso"/>
+
+                        <p:selectOneMenu id="selectOneCadstAcesso" value="#{usuarioBean.usuario.ativo}">
+
+                            <f:selectItem itemLabel="" noSelectionOption="true"/>
+
+                            <f:selectItems value="#{usuarioBean.tipoAcessoEnum}" var="acesso"
+                                           itemLabel="#{acesso.constante}" itemValue="#{acesso}"/>
+
+                        </p:selectOneMenu>
+
+                    </div>
+
+                    <div class="field col-12 md:col-3">
+
+                        <p:outputLabel value="Equipe " for="selectOneEquipe"/>
+
+                        <p:selectOneMenu id="selectOneEquipe" value="#{usuarioBean.usuario.equipe}"
+                                         converter="converterEquipe" filter="true" filterMatchMode="contains">
+
+                            <f:selectItem itemLabel="" noSelectionOption="true" escape="true"/>
+
+                            <f:selectItems value="#{usuarioBean.listEquipe}" var="equipe" itemLabel="#{equipe.nome}"
+                                           itemValue="#{equipe}"/>
+
+                        </p:selectOneMenu>
+
+                    </div>
+
+
+                </div>
+
+                <div class="mt-5">
+
+
+                    <p:commandButton value="#{msg.pesquisar}" actionListener="#{usuarioBean.pesquisarUsuario()}"
+                                     icon="pi pi-search" styleClass="mr-3  ui-button-raised" update="tableUsr grl"
+                                     id="btnPesquisa" ajax="true"/>
+
+                    <p:commandButton id="btnExportar" icon="pi pi-file-excel" value="#{msg.exportar}"
+                                     rendered="#{sessionScope['usuario'].permissaoExportar}"
+                                     disabled="#{empty usuarioBean.listUsuario}"
+                                     styleClass="mr-3 ui-button-outlined ui-button-raised">
+
+                        <p:dataExporter type="xls" target="tableUsr" fileName="usuarios"/>
+
+                    </p:commandButton>
+
+                    <p:commandButton value="#{msg.novo}" styleClass="ui-button-outlined ui-button-raised"
+                                     action="#{usuarioBean.novoUsuario()}" icon="pi pi-plus-circle" ajax="false"
+                                     id="btnNovo"/>
+
+
+                </div>
+
+            </div>
+
+        <div class=" mt-4">
+
+            <div class="card">
+
+                    <p:dataTable value="#{usuarioBean.listUsuario}" var="usr"
+                                 id="tableUsr" rows="15" paginator="true"
+                                 styleClass="ui-datatable-striped ui-datatable-gridlines ui-datatable-sm"
+                                 paginatorPosition="bottom" emptyMessage="#{msg.emptyMessage}"
+                                 currentPageReportTemplate="[#{msg.totalDeRegistros}: {totalRecords}]"
+                                 paginatorTemplate="{CurrentPageReport}  {FirstPageLink} {PreviousPageLink} {PageLinks} {NextPageLink} {LastPageLink}">
+
+                        <p:ajax event="page" global="false"/>
+                        <p:ajax event="sort" global="false"/>
+
+                        <p:column headerText="#{msg.nome}" sortBy="#{usr.nome}">
+
+                            <p:outputLabel value="#{usr.nome}"/>
+
+                        </p:column>
+
+                        <p:column headerText="#{msg.cpf}" sortBy="#{usr.cpf}">
+
+                            <p:outputLabel value="#{usr.cpf}"/>
+
+                        </p:column>
+
+                        <p:column headerText="#{msg.login}" sortBy="#{usr.login}">
+
+                            <p:outputLabel value="#{usr.login}"/>
+
+                        </p:column>
+
+                        <p:column headerText="#{msg.perfil}" sortBy="#{usr.perfil.constante}">
+
+                            <p:outputLabel value="#{usr.perfil.constante}"/>
+
+                        </p:column>
+
+                        <p:column headerText="#{msg.pontoAtendimento}" sortBy="#{usr.pontoAtendimento.ramal}">
+
+                            <p:outputLabel value="#{usr.pontoAtendimento.ramal}"/>
+
+                        </p:column>
+
+                        <p:column headerText="#{msg.equipe}" sortBy="#{usr.equipe.nome}">
+
+                            <p:outputLabel value="#{usr.equipe.nome}"/>
+
+                        </p:column>
+
+                        <p:column headerText="#{msg.empresa}" sortBy="#{usr.empresa.nome}">
+
+                            <p:outputLabel value="#{usr.empresa.nome}"/>
+
+                        </p:column>
+
+                        <p:column headerText="#{msg.acesso}" sortBy="#{usr.ativo.constante}">
+
+                            <p:outputLabel value="#{usr.ativo.constante}"/>
+
+                        </p:column>
+
+                        <p:column style="text-align:center;width:5%" exportable="false">
+
+                            <p:commandButton id="btnUsuarioExport" action="#{usuarioBean.editarUsuario(usr.id)}"
+                                             ajax="false" styleClass="ui-button-flat ui-button-secondary"
+                                             icon="fa fe fa-edit">
+
+                            </p:commandButton>
+
+                            <p:commandButton id="btnUsuarioDetalhar" immediate="true" update=":dlgDetalhesUsuario"
+                                             actionListener="#{usuarioBean.buscarDetalhesUsuario(usr.id)}"
+                                             oncomplete="PF('dlgDetalhesUsuario').show();"
+                                             styleClass="ui-button-flat ui-button-secondary" icon="pi pi-list">
+
+                            </p:commandButton>
+
+                        </p:column>
+
+                    </p:dataTable>
+
+                </div>
+
+            </div>
+
+
+            <p:dialog modal="true" id="dlgDetalhesUsuario" widgetVar="dlgDetalhesUsuario" draggable="false"
+                      appendTo="@(body)" header="Campanhas Associadas" width="700">
+
+                <div class="col-12">
+
+                    <p:dataTable value="#{usuarioBean.listaDetalheUsuario}" var="cam"
+                                 id="tableUsrDetalhes" rows="15" paginator="true" styleClass="ui-datatable-striped "
+                                 paginatorPosition="bottom" emptyMessage="#{msg.emptyMessage}"
+                                 currentPageReportTemplate="[#{msg.totalDeRegistros}: {totalRecords}]"
+                                 paginatorTemplate="{CurrentPageReport}  {FirstPageLink} {PreviousPageLink} {PageLinks} {NextPageLink} {LastPageLink}">
+
+                        <p:ajax event="page" global="false"/>
+
+
+                        <p:column headerText="Campanha" width="50%">
+
+                            <p:outputLabel value="#{cam[0]}"/>
+
+                        </p:column>
+
+                        <p:column headerText="Status da Campanha" width="30%">
+
+                            <p:outputLabel value="#{cam[1]}"/>
+
+                        </p:column>
+                    </p:dataTable>
+                </div>
+
+            </p:dialog>
+
+
+
+    </h:form>
+</ui:fragment>
+

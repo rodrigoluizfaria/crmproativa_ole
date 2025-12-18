@@ -1,0 +1,80 @@
+<ui:fragment xmlns="http://www.w3.org/1999/xhtml"
+             xmlns:h="http://java.sun.com/jsf/html"
+             xmlns:f="http://java.sun.com/jsf/core"
+             xmlns:o="http://omnifaces.org/ui"
+             xmlns:ui="http://java.sun.com/jsf/facelets"
+             xmlns:p="http://primefaces.org/ui">
+
+
+    <p:dialog id="dlgConsistencias" widgetVar="dlgConsistencias" modal="true" draggable="true" resizable="false"
+              closable="true" width="40%" responsive="true"
+              header="Adicionar Consistência - Responsabilidade Corban ou Cliente" appendTo="@(body)">
+
+        <h:form id="formConsistencia" prependId="false">
+
+            <div class="col-12" style="padding-bottom: 0px;">
+
+                <div class=" no-gutter">
+
+                    <div class=" ui-fluid">
+
+                        <h:panelGroup layout="block" styleClass="field grid" id="groupLojasAudio"
+                                      rendered="#{not empty fichaAtendimentoBackofficeBean.atendimentoBackoffice}">
+
+                            <div class="col-12 mb-2 md:col-2 mb-md-0 div-vertical p-p-5"
+                                 style=" background-color: #ffff;">
+
+                                <p:outputLabel value="Consistencias:"/>
+
+                            </div>
+
+                            <div class="col-12 md:col-10 ">
+
+                                <p:selectCheckboxMenu id="selectConcistModal" label="Selecione"
+                                                      value="#{fichaAtendimentoBackofficeBean.idConsistencias}"
+                                                      filter="true" filterMatchMode="contains" multiple="true"
+                                                      required="true" requiredMessage="Obrigatório.">
+
+                                    <f:selectItem itemLabel="#{msg.selecione}" itemValue=""/>
+
+                                    <f:selectItems value="#{fichaAtendimentoBackofficeBean.listConsistencia}"
+                                                   var="consistencia"
+                                                   itemLabel="#{consistencia.codigoConcistencia} - #{of:abbreviate(consistencia.descricao, 100)}"
+                                                   itemValue="#{consistencia.id}"/>
+
+                                </p:selectCheckboxMenu>
+
+                                <p:message for="selectConcistModal"/>
+
+                            </div>
+
+
+                        </h:panelGroup>
+
+                    </div>
+
+                    <div class="ui-fluid formgrid grid grid  ">
+
+                        <div class="col-12  mt-1  text-center">
+
+                            <p:commandButton value="Adicionar" icon="pi pi-plus" styleClass="mr-2 ui-button-raised"
+                                             action="#{fichaAtendimentoBackofficeBean.onInserirConsistencias()}"
+                                             update="grConsistencias card @form " partialSubmit="true"/>
+                            <p:commandButton value="Fechar" type="button" onclick="PF('dlgConsistencias').hide();"
+                                             icon="pi pi-times" styleClass="ui-button-raised"/>
+
+                        </div>
+
+
+                    </div>
+
+                </div>
+
+            </div>
+
+
+        </h:form>
+
+    </p:dialog>
+
+</ui:fragment>

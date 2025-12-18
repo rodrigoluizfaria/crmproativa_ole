@@ -1,0 +1,300 @@
+<ui:fragment xmlns="http://www.w3.org/1999/xhtml"
+             xmlns:h="http://java.sun.com/jsf/html"
+             xmlns:f="http://java.sun.com/jsf/core"
+             xmlns:ui="http://java.sun.com/jsf/facelets"
+             xmlns:matriz="http://java.sun.com/jsf/composite/componentes"
+             xmlns:p="http://primefaces.org/ui">
+
+
+    <script type="text/javascript">
+        //<![CDATA[
+
+        function start() {
+
+            PF('statusDialogBack').show();
+
+            console.log('START, chamando');
+
+        }
+
+        function stop() {
+
+            PF('statusDialogBack').hide();
+            console.log('Stop, chamando');
+
+        }
+
+        function handleTabChange(i) {
+
+            PF('tabView').select(i);
+
+
+        }
+
+        //]]>
+
+    </script>
+
+    <h:form id="formPacotePesquisa" prependId="false">
+
+
+        <div class="grid col-12 mt-4">
+
+
+            <matriz:selectEmpresa id="cmpEmpresaPacote" style="col-12 md:col-3"
+                                  managedBean="#{supervisorBackofficeBean}" value="#{supervisorBackofficeBean.empresa}"
+                                  ajax="true" update="@form" filter="true" exibirSelecione="true"
+                                  selecioneItemLabel="Selecione" required="true"/>
+
+            <div class="field col-12 md:col-3">
+
+                <p:outputLabel value="Campanha"/>
+
+                <p:selectOneMenu id="selectCampanhaPacotePesquisa" value="#{supervisorBackofficeBean.campanhaPesquisa}"
+                                 filter="true" filterMatchMode="contains" autoWidth="false">
+
+                    <f:selectItem itemLabel="Selecione" itemValue=""/>
+
+                    <f:selectItems value="#{supervisorBackofficeBean.listCampanha}" var="campanha"
+                                   itemLabel="#{campanha.descricao}" itemValue="#{campanha.id}"/>
+
+                </p:selectOneMenu>
+
+            </div>
+
+            <div class="field col-12 md:col-3">
+
+                <p:outputLabel value="Produto"/>
+
+                <p:selectOneMenu id="selectPacoteProduto" value="#{supervisorBackofficeBean.produto}" filter="true"
+                                 filterMatchMode="contains" autoWidth="false">
+
+                    <f:selectItem itemLabel="Selecione" itemValue=""/>
+
+                    <f:selectItems value="#{supervisorBackofficeBean.listProdutos}" var="produto"
+                                   itemLabel="#{produto.descricao}" itemValue="#{produto.id}"/>
+
+                </p:selectOneMenu>
+
+            </div>
+
+            <div class="field col-12 md:col-3">
+
+                <p:outputLabel value="Equipe"/>
+
+                <p:selectOneMenu id="selectPacoteEquipe" value="#{supervisorBackofficeBean.equipe}" filter="true"
+                                 filterMatchMode="contains" autoWidth="false">
+
+                    <f:selectItem itemLabel="Selecione" itemValue=""/>
+
+                    <f:selectItems value="#{supervisorBackofficeBean.listEquipes}" var="equipe"
+                                   itemLabel="#{equipe.nome}" itemValue="#{equipe.id}"/>
+
+                    <p:ajax listener="#{supervisorBackofficeBean.onChangeEquipe(supervisorBackofficeBean.equipe)}"
+                            update="selectOperador" global="false"/>
+
+                </p:selectOneMenu>
+
+            </div>
+
+
+            <div class="field col-12 md:col-3">
+
+                <p:outputLabel value="Status"/>
+
+                <p:selectOneMenu id="selectPacoteStatus" value="#{supervisorBackofficeBean.statusAtendimento}"
+                                 filter="true" filterMatchMode="contains" autoWidth="false">
+
+                    <f:selectItem itemLabel="Selecione" itemValue=""/>
+
+                    <f:selectItems value="#{supervisorBackofficeBean.listStatusAtendimento}" var="status"
+                                   itemLabel="#{status.descricao}" itemValue="#{status.id}"/>
+
+                </p:selectOneMenu>
+
+            </div>
+
+            <div class="field col-12 md:col-3">
+
+                <p:outputLabel value="Data inicio"/>
+
+                <p:datePicker id="calendarDataInicioPacote" value="#{supervisorBackofficeBean.dataInicio}"
+                              showButtonBar="true" showIcon="true" readonlyInput="true" pattern="dd/MM/yyyy"/>
+
+
+            </div>
+
+            <div class="field col-12 md:col-3">
+
+                <p:outputLabel value="Data fim"/>
+
+                <p:datePicker id="calendarDataFimPacote" value="#{supervisorBackofficeBean.dataFim}"
+                              showButtonBar="true" showIcon="true" readonlyInput="true" pattern="dd/MM/yyyy"/>
+
+
+            </div>
+
+
+            <div class="col-12 mt-3" style=" padding-top: 0;">
+
+                <div style="display: table;">
+
+                    <p:selectBooleanCheckbox value="#{supervisorBackofficeBean.pacoteGlobal}"
+                                             itemLabel="Permitir todos usuários download"
+                                             style="width: 100%;display: flex;margin-bottom: 5px;"/>
+
+                    <p:selectBooleanCheckbox value="#{supervisorBackofficeBean.pesquisarTelefone}"
+                                             itemLabel="Pesquisar telefones" style="width: 100%;display: flex;"/>
+
+                </div>
+
+            </div>
+
+            <div class="field col-12">
+
+                <p:outputLabel value="&#160;&#160;"/>
+
+
+                <div>
+
+                    <p:commandButton value="Criar pacote" icon="fa fa-box" styleClass="ui-button-raised mr-3"
+                                     action="#{supervisorBackofficeBean.gerarPacotes()}"
+                                     update="tablePacoteAtendimentos"/>
+
+                </div>
+
+            </div>
+
+            <div class="col-12 mt-3">
+
+                <p:dataTable id="tablePacoteAtendimentos" var="atendimento" rows="10" paginator="true"
+                             paginatorPosition="bottom" value="#{supervisorBackofficeBean.listaPacotes}"
+                             emptyMessage="#{msg.emptyMessage}" rowKey="#{atendimento.id}"
+                             currentPageReportTemplate="[#{msg.totalDeRegistros}: {totalRecords}]"
+                             styleClass="ui-datatable-sm ui-datatable-striped"
+                             paginatorTemplate="{CurrentPageReport}  {FirstPageLink} {PreviousPageLink} {PageLinks} {NextPageLink} {LastPageLink} {Exporters}">
+
+                    <p:ajax event="page" global="flase"/>
+
+                    <p:ajax event="sort" global="false"/>
+
+                    <p:column width="5%">
+                        <p:rowToggler/>
+                    </p:column>
+
+                    <p:column headerText="Arquivo" sortBy="#{atendimento.identificador}" width="30%">
+
+                        <h:outputLabel
+                                value="#{atendimento.quantidadeLinhas eq null ? 'Nenhum atendimento encontrado.' : atendimento.identificador}">
+
+
+                        </h:outputLabel>
+
+                    </p:column>
+
+                    <p:column headerText="Atendimentos" sortBy="#{atendimento.quantidadeLinhas}">
+
+                        <h:outputLabel
+                                value="#{atendimento.quantidadeLinhas eq null ? '0' : atendimento.quantidadeLinhas}">
+
+
+                        </h:outputLabel>
+
+                    </p:column>
+
+                    <p:column headerText="Criação" sortBy="#{atendimento.dataInicial}" width="30%">
+
+                        <h:outputLabel value="#{atendimento.dataInicial}">
+
+                            <f:convertDateTime pattern="dd/MM/yyyy HH:mm:ss"/>
+
+                        </h:outputLabel> por #{atendimento.usuarioSolicitado.nome}
+
+                    </p:column>
+
+                    <p:column headerText="Estado" sortBy="#{atendimento.estadoPacote}">
+
+                        <span class="pacote-badge status-#{atendimento.estadoPacote.nameLower}"
+                              title="#{atendimento.log}">#{atendimento.estadoPacote.constante}</span>
+
+                    </p:column>
+
+                    <p:column headerText="Ações" width="7%">
+
+                        <p:commandButton actionListener="#{supervisorBackofficeBean.onBaixarPacote(atendimento)}"
+                                         disabled="#{atendimento.estadoPacote.name() ne 'CONCLUIDO'}" update="@form"
+                                         title="baixar" ajax="false" icon="fa fa-download"
+                                         styleClass="ui-button-flat rounded-button mr-2 mb-2">
+
+                            <p:fileDownload value="#{supervisorBackofficeBean.fileCsv}"/>
+
+                        </p:commandButton>
+
+                        <p:commandButton action="#{supervisorBackofficeBean.onDeletarPacote(atendimento)}"
+                                         update="@form" title="Deletar" ajax="true" icon="pi pi-trash"
+                                         styleClass="ui-button-flat rounded-button mr-2 mb-2">
+                            <p:confirm header="Confirmação" message="Deseja deletar este pacote?"
+                                       icon="pi pi-exclamation-triangle"/>
+                        </p:commandButton>
+
+                        <p:commandButton actionListener="#{supervisorBackofficeBean.onTornarPublico(atendimento)}"
+                                         disabled="#{!atendimento.meu}" update="tablePacoteAtendimentos"
+                                         title=" #{atendimento.global ? 'Tornar privado' : 'Tornar público'} "
+                                         ajax="true" icon="#{atendimento.global ? 'pi pi-lock-open' : 'pi pi-lock' }"
+                                         styleClass=" ui-button-flat mr-2 mb-2">
+                            <p:confirm header="Confirmação"
+                                       message=" #{atendimento.global ? 'Tornar privado' : 'Tornar público'} este pacote?"
+                                       icon="pi pi-exclamation-triangle"/>
+                        </p:commandButton>
+
+
+                    </p:column>
+
+                    <p:rowExpansion>
+
+                        <p:panelGrid columns="2" columnClasses="label,value" style="width:30%"
+                                     rendered="#{not empty atendimento.parametrosUtilizados}">
+                            <f:facet name="header">
+                                Filtros utilizados:
+                            </f:facet>
+
+                            <h:outputText value="Campanha: "/>
+                            <h:outputText value="#{atendimento.descricaoCampanha}"/>
+
+                            <h:outputText value="Produto: "/>
+                            <h:outputText value="#{atendimento.descricaoProduto}"/>
+
+                            <h:outputText value="Equipe: "/>
+                            <h:outputText value="#{atendimento.descricaoEquipe}"/>
+
+
+                            <h:outputText value="Status atendimento:"/>
+
+                            <h:outputText value="#{atendimento.descricaoStatusAtendimento}"/>
+                            <h:outputText value="Pesquisar telefones:"/>
+                            <h:outputText
+                                    value="#{(atendimento.pesquisarTelefone ne null or atendimento.pesquisarTelefone) ? 'Sim' : 'Não'  }"/>
+
+                            <h:outputText value="Período:"/>
+                            <h:outputText value="#{atendimento.periodo}"/>
+
+                        </p:panelGrid>
+
+                    </p:rowExpansion>
+
+                </p:dataTable>
+
+            </div>
+
+        </div>
+
+        <p:confirmDialog global="true" showEffect="fade" hideEffect="fade">
+            <p:commandButton value="Sim" type="button" styleClass="ui-confirmdialog-yes" icon="pi pi-check"
+                             update="@form"/>
+            <p:commandButton value="Não" type="button" styleClass="ui-confirmdialog-no" icon="pi pi-times"/>
+        </p:confirmDialog>
+
+
+    </h:form>
+
+</ui:fragment>

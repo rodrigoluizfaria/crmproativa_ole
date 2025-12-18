@@ -1,0 +1,148 @@
+<ui:fragment xmlns="http://www.w3.org/1999/xhtml"
+             xmlns:h="http://java.sun.com/jsf/html"
+             xmlns:f="http://java.sun.com/jsf/core"
+             xmlns:ui="http://java.sun.com/jsf/facelets"
+             xmlns:p="http://primefaces.org/ui"
+             xmlns:comboempresa="http://java.sun.com/jsf/composite/componentes"
+             template="/WEB-INF/template.xhtml">
+
+
+    <h:form id="formCadastro">
+
+        <p:growl id="grl" globalOnly="true"/>
+
+        <div class="card">
+
+            <div class="ui-fluid formgrid grid">
+
+                <comboempresa:selectEmpresa id="cmpEmpresa" managedBean="#{equipeBean}"
+                                            value="#{equipeBean.equipe.empresa}" ajax="true" update="@form"
+                                            filter="true" exibirSelecione="true"
+                                            selecioneItemLabel="Selecione" style="md:col-3"/>
+
+                <div class="field col-12 md:col-3">
+
+                    <p:outputLabel for="txtNome" value="#{msg.nome}" id="lblNome"/>
+
+                    <p:inputText id="txtNome" value="#{equipeBean.equipe.nome}" required="true"
+                                 requiredMessage="#{msg.requerido}" maxlength="30"/>
+
+                    <p:message for="txtNome"/>
+
+
+                </div>
+
+                <div class="field col-12 md:col-3">
+
+                    <p:outputLabel for="selectOneAtivo" value="#{msg.acesso}" id="lblAtivo"/>
+
+                    <p:selectOneMenu id="selectOneAtivo" value="#{equipeBean.equipe.ativo}">
+
+                        <f:selectItems value="#{equipeBean.tipoAcessoEnum}" var="acesso" itemLabel="#{acesso.constante}"
+                                       itemValue="#{acesso}"/>
+
+                    </p:selectOneMenu>
+
+                </div>
+
+                <div class="field col-12 md:col-3">
+
+                    <p:outputLabel for="selectChkLoja" value="Loja" id="lblLoja"/>
+
+                    <p:selectCheckboxMenu id="selectChkLoja" value="#{equipeBean.listLojasIdsAssociados}"
+                                          multiple="true" label="Lojas" filter="true" filterMatchMode="startsWith">
+
+                        <f:selectItems value="#{equipeBean.listLojas}" var="loja" itemLabel="#{loja.codigoLoja}"
+                                       itemValue="#{loja.id}"/>
+
+                    </p:selectCheckboxMenu>
+
+                </div>
+
+                <div class="field col-12 md:col-3">
+
+                    <p:outputLabel for="bolTicket" value="Ticket obrigatório" id="lblTicket"/>
+
+                    <div>
+                        <p:selectBooleanButton value="#{equipeBean.equipe.ticketObrigatorio}" id="bolTicket"
+                                               onLabel="Sim" offLabel="Não" style="width:6rem"/>
+                    </div>
+
+                </div>
+
+                <h:panelGroup styleClass="field col-12 md:col-6" layout="block"
+                              rendered="#{equipeBean.integracao ne null}">
+
+                    <p:outputLabel for="bolAmbec" value="#{equipeBean.integracao.tipoIntegracao.constante} "
+                                   id="lblAmbec"/>
+                    <div>
+                        <p:selectBooleanButton value="#{equipeBean.equipe.consultarAmbec}" id="bolAmbec" onLabel="Sim"
+                                               offLabel="Não" style="width:6rem"/>
+                    </div>
+
+                </h:panelGroup>
+
+            </div>
+            <div class="ui-fluid formgrid grid mt-5 align-content-center flex">
+
+                <div class="p-field col-12 md:col-5 mr-8 ">
+
+                    <!--
+                                        <p:outputLabel id="lblSupervisor" value="#{msg.supervisor}" for="pckListSuper"/>
+                    -->
+                    <p:fieldset legend="Supervisores" styleClass="fild-set-default-sem-borda p-3"
+                                style="padding: 0px 20px">
+
+                        <p:pickList id="pckListSuper" responsive="true" value="#{equipeBean.dualListSupervisores}"
+                                    var="supervisor" itemLabel="#{supervisor.nome}" itemValue="#{supervisor}"
+                                    showSourceFilter="true" showTargetFilter="true" filterMatchMode="contains"
+                                    converter="converterUsuario">
+
+                            <f:facet name="sourceCaption">#{msg.naoAssociados}</f:facet>
+                            <f:facet name="targetCaption">#{msg.associados}</f:facet>
+
+                        </p:pickList>
+
+                    </p:fieldset>
+
+                </div>
+
+                <div class="p-field col-12 md:col-5 p-mt-3">
+
+                    <p:fieldset legend="Usuários" styleClass="fild-set-default-sem-borda p-3" style="padding: 0px 20px">
+
+                        <p:pickList id="pckListUser" responsive="true" value="#{equipeBean.dualListUsuarios}"
+                                    var="usuario" itemLabel="#{usuario.nome}" itemValue="#{usuario}"
+                                    showSourceFilter="true" showTargetFilter="true" filterMatchMode="contains"
+                                    converter="converterUsuario">
+
+                            <f:facet name="sourceCaption">#{msg.naoAssociados}</f:facet>
+                            <f:facet name="targetCaption">#{msg.associados}</f:facet>
+
+                        </p:pickList>
+
+                    </p:fieldset>
+
+                </div>
+
+            </div>
+
+            <div class="field col-12 mt-3 text-center">
+
+                <p:commandButton value="Salvar" styleClass="mr-3 ui-button-raised" id="btnSalvar" icon="pi pi-save"
+                                 action="#{equipeBean.salvar()}" update="@form grl"/>
+
+                <p:commandButton value="Voltar" id="btnVoltar" styleClass="ui-button-outlined ui-button-raised"
+                                 icon="pi pi-chevron-circle-left" actionListener="#{equipeBean.voltar()}"
+                                 immediate="true" ajax="false"/>
+
+            </div>
+
+
+        </div>
+
+
+    </h:form>
+
+
+</ui:fragment>

@@ -1,0 +1,119 @@
+<ui:fragment xmlns="http://www.w3.org/1999/xhtml"
+             xmlns:h="http://java.sun.com/jsf/html"
+             xmlns:f="http://java.sun.com/jsf/core"
+             xmlns:o="http://omnifaces.org/ui"
+             xmlns:pe="http://primefaces.org/ui/extensions"
+             xmlns:ui="http://java.sun.com/jsf/facelets"
+             xmlns:p="http://primefaces.org/ui">
+
+
+    <p:dialog widgetVar="dlgAtendimentoPropect" id="dlgAtendimentoPropect" width="650px" header="Cliente Prospect" styleClass="dialog-top"
+              modal="true">
+
+        <h:form prependId="false" id="formProspect">
+
+            <h:panelGroup id="painelNovo" layout="block">
+
+                <div class="ui-fluid grid formgrid p-4">
+
+
+                    <h:panelGroup class="field col-12 md:col-6"
+                                  rendered="#{fichaAtendimentoBackofficeBean.valorPesquisaProspect eq 'CPF'}">
+
+                        <p:outputLabel for="txtCpfProsp" value="CPF"/>
+
+                        <p:inputText id="txtCpfProsp" maxlength="11" value="#{fichaAtendimentoBackofficeBean.cpf}"
+                                     onkeypress="return somenteNumeros(event)" required="true"
+                                     validatorMessage="CPF invalido" requiredMessage="Requerido">
+
+                            <f:validator validatorId="converter.CpfValidator"/>
+
+                        </p:inputText>
+
+                        <p:message for="txtCpf" id="msgCpf"/>
+
+                    </h:panelGroup>
+
+                    <h:panelGroup class="field col-12 md:col-6"
+                                  rendered="#{fichaAtendimentoBackofficeBean.valorPesquisaProspect eq 'ADESAO'}">
+
+                        <p:outputLabel for="txtAdesaoProsp" value="Adesão"/>
+
+
+                        <p:inputText id="txtAdesaoProsp" maxlength="11"
+                                     value="#{fichaAtendimentoBackofficeBean.adesao}"
+                                     onkeypress="return somenteNumeros(event)" required="true"
+                                     requiredMessage="Requerido">
+
+                        </p:inputText>
+
+                        <p:message for="txtAdesaoProsp" id="msgNumero"/>
+
+                    </h:panelGroup>
+
+                    <h:panelGroup styleClass="field col-12 md:col-6" layout="block" id="panelSelectLoja"
+                                  rendered="#{not empty fichaAtendimentoBackofficeBean.valorPesquisaProspect}">
+
+                        <p:outputLabel for="selectLoja" value="Loja"> </p:outputLabel>
+
+                        <p:selectOneMenu id="selectLoja" label="Selecione"
+                                         value="#{fichaAtendimentoBackofficeBean.idLoja}" filter="true"
+                                         filterMatchMode="contains" multiple="true">
+
+                            <f:selectItem itemLabel="#{msg.selecione}" itemValue=""/>
+
+                            <f:selectItems value="#{fichaAtendimentoBackofficeBean.listLojas}" var="loja"
+                                           itemLabel="#{loja.codigoLoja}" itemValue="#{loja.id}"/>
+
+                        </p:selectOneMenu>
+
+                        <p:message for="selectConcist"/>
+
+                    </h:panelGroup>
+
+
+                    <h:panelGroup styleClass="field col-12" layout="block" id="panelSelectCam"
+                                  rendered="#{not empty fichaAtendimentoBackofficeBean.valorPesquisaProspect}">
+
+                        <p:outputLabel for="selectConcist" value="Consistências"> </p:outputLabel>
+
+                        <p:selectCheckboxMenu id="selectConcist" label="Selecione"
+                                              value="#{fichaAtendimentoBackofficeBean.idConsistencias}"
+                                              filter="true" filterMatchMode="contains" multiple="true">
+
+                            <f:selectItem itemLabel="#{msg.selecione}" itemValue=""/>
+
+                            <f:selectItems value="#{fichaAtendimentoBackofficeBean.listConsistencia}"
+                                           var="consistencia"
+                                           itemLabel="#{consistencia.codigoConcistencia} - #{of:abbreviate(consistencia.descricao, 100)}"
+                                           itemValue="#{consistencia.id}"/>
+
+                        </p:selectCheckboxMenu>
+
+                    </h:panelGroup>
+
+
+                </div>
+
+            </h:panelGroup>
+
+
+            <div class="mt-5 text-center">
+
+
+                <p:commandButton id="btn" value="Iniciar Atendimento" styleClass="mr-3 ui-button-raised"
+                                 action="#{fichaAtendimentoBackofficeBean.buscarAtendimentoProspect()}"
+                                 update=":formConteudo @form " partialSubmit="true"/>
+                <p:commandButton id="btnFechar" value="Fechar" type="button"
+                                 onclick="PF('dlgAtendimentoPropect').hide();" icon="pi pi-times"
+                                 styleClass="ui-button-raised ui-button-secondary "/>
+
+
+            </div>
+
+        </h:form>
+
+    </p:dialog>
+
+
+</ui:fragment>

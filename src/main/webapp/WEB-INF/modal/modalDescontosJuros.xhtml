@@ -1,0 +1,74 @@
+<ui:fragment xmlns="http://www.w3.org/1999/xhtml"
+	xmlns:h="http://java.sun.com/jsf/html"
+	xmlns:f="http://java.sun.com/jsf/core"
+	xmlns:o="http://omnifaces.org/ui"
+	xmlns:ui="http://java.sun.com/jsf/facelets"
+	xmlns:p="http://primefaces.org/ui">
+
+	<!--  -->
+	<p:dialog id="modalDescontosJuros" widgetVar="modalDescontosJuros" modal="false" minimizable="true" draggable="true" resizable="true" closable="true" visible="false" width="60%"	header="Descontos juros">
+
+		<h:form id="formDescontosJuros" prependId="false">
+
+			<div class="p-col-12">
+
+				<div >
+
+					<p:dataTable id="tableDescontosJurosModal" rows="10" paginator="true"
+						value="#{sistemaBean.listDescontosJuros}" var="e"
+						currentPageReportTemplate="[#{msg.totalDeRegistros}: {totalRecords}]"
+						paginatorPosition="bottom" emptyMessage="#{msg.emptyMessage}"
+						paginatorTemplate="{CurrentPageReport}  {FirstPageLink} {PreviousPageLink} {PageLinks} {NextPageLink} {LastPageLink}"
+						styleClass="ui-datatable-striped ui-datatable-sm " >
+
+						<p:ajax event="page" global="false" />
+						<p:ajax event="sort" global="false" />
+						<p:ajax event="filter" global="false" />
+						
+						<p:column width="10%" headerText="Entidade" sortBy="#{e.entidade}" filterBy="#{e.entidade}" filterMatchMode="startsWith">
+							<h:outputText value="#{e.entidade}" />
+						</p:column>
+						
+
+						<p:column width="50%" headerText="Nome" sortBy="#{e.nome}" filterBy="#{e.nome}" filterMatchMode="contains" >
+							<h:outputText value="#{e.nome}" />
+						</p:column>
+
+						<p:column headerText="Venc." sortBy="#{e.vencimento}" filterBy="#{e.vencimento}" filterMatchMode="contains" width="10%">
+
+							<p:outputLabel value="#{e.vencimento}" />
+
+						</p:column>
+						
+						<p:column headerText="Juros" sortBy="#{e.juros}" filterBy="#{e.juros}" filterMatchMode="contains" width="10%">
+
+							<h:outputText  value="#{e.juros}" >
+								<f:convertNumber pattern="#0.000" locale="pt_BR"/>
+							</h:outputText>
+
+						</p:column>
+						
+						<p:column headerText="Desc. em Folha" sortBy="#{e.descontoFolha}" filterBy="#{e.descontoFolha}" filterMatchMode="contains" width="10%">
+
+							<h:outputText  value="#{e.descontoFolha}" >
+								<f:convertNumber pattern="#0.000" locale="pt_BR"/>
+							</h:outputText>
+
+						</p:column>
+						
+						<p:column headerText="Data de Corte" sortBy="#{e.dataCorte}" filterBy="#{e.dataCorte}" filterMatchMode="contains" width="10%">
+
+							<p:outputLabel value="#{e.dataCorte}" />
+
+						</p:column>
+
+					</p:dataTable>
+					
+				</div>
+			</div>
+
+		</h:form>
+
+	</p:dialog>
+
+</ui:fragment>

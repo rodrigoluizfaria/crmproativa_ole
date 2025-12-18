@@ -1,0 +1,292 @@
+<ui:fragment xmlns="http://www.w3.org/1999/xhtml"
+			 xmlns:h="http://java.sun.com/jsf/html"
+			 xmlns:f="http://java.sun.com/jsf/core"
+			 xmlns:ui="http://java.sun.com/jsf/facelets"
+			 xmlns:p="http://primefaces.org/ui"
+			 template="/WEB-INF/template.xhtml"
+			 xmlns:c="http://java.sun.com/jsp/jstl/core">
+
+	<p:growl id="grl" widgetVar="grl" globalOnly="true" escape="false"	showSummary="false" life="8000" showDetail="true" sticky="false">
+
+		<p:autoUpdate />
+
+	</p:growl>
+
+
+	<h:form id="cadastroStatusAtn" prependId="false">
+
+		<div class="card">
+
+			<div class="ui-fluid formgrid grid">
+
+				<div class="field col-12 md:col-2">
+
+					<p:outputLabel for="inputPesqStatusAtn" value="Status" />
+
+					<p:inputText id="inputPesqStatusAtn" value="#{statusAtendimentoBean.statusAtendimento.descricao}" />
+
+				</div>
+
+				<div class="field col-12 md:col-2">
+
+					<p:outputLabel for="inputPesqMotivo" value="Motivo" />
+
+					<p:inputText id="inputPesqMotivo" value="#{statusAtendimentoBean.statusAtendimento.motivo.descricao}" />
+
+				</div>
+
+				<div class="field col-12 md:col-2">
+
+					<p:outputLabel for="inputPesqSubMotivo" value="Submotivo" />
+
+					<p:inputText id="inputPesqSubMotivo" value="#{statusAtendimentoBean.statusAtendimento.submotivo.descricao}" />
+
+				</div>
+
+				<div class="field col-12 md:col-2">
+
+
+					<p:outputLabel for="selectOneAcao" value="Ação:" />
+
+					<p:selectOneMenu id="selectOneAcao"	value="#{statusAtendimentoBean.statusAtendimento.acao}">
+
+						<f:selectItem itemLabel="Selecione" noSelectionOption="true" />
+
+						<f:selectItems value="#{statusAtendimentoBean.acaoStatus}" var="acao" itemLabel="#{acao.constante}" itemValue="#{acao.name()}" />
+
+					</p:selectOneMenu>
+
+				</div>
+
+				<div class="field col-12 md:col-2">
+
+
+					<p:outputLabel for="selectOneAtivo" value="Acesso:" />
+
+					<p:selectOneMenu id="selectOneAtivo" value="#{statusAtendimentoBean.statusAtendimento.ativo}">
+
+						<f:selectItem itemLabel="Selecione" noSelectionOption="true" />
+
+						<f:selectItems value="#{statusAtendimentoBean.tipoAcessoEnum}" var="acesso" itemLabel="#{acesso.constante}" itemValue="#{acesso}" />
+
+					</p:selectOneMenu>
+
+				</div>
+			</div>
+
+			<div class="mt-5">
+
+				<p:commandButton value="#{msg.pesquisar}" styleClass="mr-3 ui-button-raised " id="btnPesquisar" update="@form" icon="pi pi-search" actionListener="#{statusAtendimentoBean.pesquisar()}" />
+
+				<p:commandButton id="btnExportar" icon="pi pi-file-excel" value="#{msg.exportar}" ajax="false" 	styleClass="mr-3 ui-button-raised ui-button-outlined" disabled="#{empty statusAtendimentoBean.listStatusAtendimento}"
+								 immediate="true" rendered="#{sessionScope['usuario'].permissaoExportar}">
+
+					<p:dataExporter target="formCadastroStatusAtn" type="xls" fileName="status_atendimento" />
+
+				</p:commandButton>
+
+				<p:commandButton value="Novo" id="btnNovo" ajax="false"	styleClass="ui-button-raised ui-button-outlined" icon="pi pi-plus-circle"	actionListener="#{statusAtendimentoBean.novo()}" />
+
+			</div>
+
+
+
+		</div>
+
+		<div class=" mt-4">
+
+			<div class="card">
+
+				<p:dataTable id="formCadastroStatusAtn"
+							 value="#{statusAtendimentoBean.listStatusAtendimento}"
+							 var="status" paginator="true" rows="10" rowKey="#{status.id}"
+							 styleClass="ui-datatable-striped ui-datatable-gridlines ui-datatable-sm"
+							 paginatorPosition="bottom" emptyMessage="#{msg.emptyMessage}"
+							 paginatorTemplate="{CurrentPageReport}  {FirstPageLink} {PreviousPageLink} {PageLinks} {NextPageLink} {LastPageLink}"
+							 currentPageReportTemplate="[#{msg.totalDeRegistros}: {totalRecords}]">
+
+
+					<p:column style="width:2rem" exportable="false">
+
+						<p:rowToggler />
+
+					</p:column>
+
+					<p:column headerText="Descrição" sortBy="#{status.descricao}"
+							  width="30%">
+
+						<p:outputLabel value="#{status.descricao}" />
+
+					</p:column>
+
+					<p:column headerText="Ação" sortBy="#{status.acao.constante}"
+							  width="20%">
+
+						<p:outputLabel value="#{status.acao.constante}" />
+
+					</p:column>
+
+					<p:column headerText="Efetivo" sortBy="#{status.efetivo}"
+							  width="8%">
+
+						<p:outputLabel value="#{status.efetivo?'Sim':'Não'}" />
+
+					</p:column>
+
+					<p:column headerText="Target" sortBy="#{status.target}" width="8%">
+
+						<p:outputLabel value="#{status.target?'Sim':'Não'}" />
+
+					</p:column>
+
+					<p:column headerText="CPC" sortBy="#{status.alo}" width="8%">
+
+						<p:outputLabel value="#{status.alo?'Sim':'Não'}" />
+
+					</p:column>
+
+					<p:column headerText="Conversão" sortBy="#{status.convercao}" width="8%">
+
+						<p:outputLabel value="#{status.convercao?'Sim':'Não'}" />
+
+					</p:column>
+
+					<p:column headerText="Agendamento" sortBy="#{status.agendamento}"
+							  width="8%">
+
+						<p:outputLabel value="#{status.agendamento?'Sim':'Não'}" />
+
+					</p:column>
+
+					<p:column headerText="Sem interesse" sortBy="#{status.semInteresse}" width="8%">
+
+						<p:outputLabel value="#{status.semInteresse?'Sim':'Não'}" />
+
+					</p:column>
+
+					<p:column headerText="Backoffice" sortBy="#{status.semInteresse}"
+							  width="8%">
+
+						<p:outputLabel
+								value="#{(not empty status.backoffice and status.backoffice.booleanValue()) ? 'Sim':'Não'}" />
+
+					</p:column>
+
+
+					<p:column headerText="Acesso" sortBy="#{status.ativo}" width="10%">
+
+						<p:outputLabel value="#{status.ativo.constante}" />
+
+					</p:column>
+
+					<p:column style="text-align:center;" exportable="false" width="5%">
+
+						<p:commandButton styleClass="ui-button-flat ui-button-secondary mr-2" icon="fa fw fa-edit" actionListener="#{statusAtendimentoBean.editar(status)}"	ajax="false">
+
+						</p:commandButton>
+
+						<p:commandButton styleClass="ui-button-flat ui-button-secondary" rendered="#{not empty status.listMotivos}"
+										 icon="pi pi-list" global="false" process="@this" actionListener="#{statusAtendimentoBean.onClickMotivo(status)}"
+										 update="dilogStatus" oncomplete="PF('dilogStatus').show();"
+										 disabled="#{empty status.listMotivos}">
+
+							<f:setPropertyActionListener value="#{status}"	target="#{statusAtendimentoBean.statusAtendimentoSelecionado}" />
+
+						</p:commandButton>
+
+					</p:column>
+
+					<p:rowExpansion>
+
+							<div class="field col-12 md:col-4 p-4">
+
+								<p:dataTable var="motivo" value="#{status.listMotivos}"
+											 styleClass="ui-datatable-sm ui-datatable-striped ui-datatable-gridlines"
+											 rowExpandMode="single" emptyMessage="#{msg.emptyMessage}">
+
+									<f:facet name="header">
+										Lista Motivos
+									</f:facet>
+
+									<p:column headerText="Motivo" >
+										<h:outputText value=" #{motivo.descricao}" />
+									</p:column>
+
+								</p:dataTable>
+
+							</div>
+
+					</p:rowExpansion>
+
+				</p:dataTable>
+
+			</div>
+
+		</div>
+
+	</h:form>
+
+	<p:dialog header="Lista Motivos" width="50%" closable="true" modal="true" id="dilogStatus" widgetVar="dilogStatus">
+
+		<p:dataTable id="dataTableStatus"
+					 value="#{statusAtendimentoBean.statusAtendimentoSelecionado.listMotivos}" lazy="false"
+					 var="motivos" paginator="true" rows="10" rowKey="#{motivos.id}"
+					 styleClass="ui-datatable-striped ui-datatable-gridlines ui-datatable-sm "
+					 paginatorPosition="bottom" emptyMessage="#{msg.emptyMessage}"
+					 paginatorTemplate="{CurrentPageReport}  {FirstPageLink} {PreviousPageLink} {PageLinks} {NextPageLink} {LastPageLink}"
+					 currentPageReportTemplate="[#{msg.totalDeRegistros}: {totalRecords}]">
+
+			<p:column style="width:2rem" exportable="false">
+
+				<p:rowToggler   />
+
+			</p:column>
+
+			<p:column headerText="Descrição" sortBy="#{motivos.descricao}" >
+
+				<p:outputLabel value="#{motivos.descricao}" />
+
+			</p:column>
+
+			<p:column headerText="Ação" sortBy="#{motivos.acao}" >
+
+				<p:outputLabel value="#{motivos.acao}" />
+
+			</p:column>
+
+			<p:rowExpansion>
+
+				<div class="field col-12 md:col-8 p-4">
+
+						<p:dataTable var="sub" value="#{motivos.listSubMotivos}"
+									 styleClass="ui-datatable-sm ui-datatable-striped ui-datatable-gridlines"
+									 rowExpandMode="single" emptyMessage="#{msg.emptyMessage}">
+
+							<f:facet name="header">
+								Lista Submotivos
+							</f:facet>
+
+							<p:column headerText="Submotivo" >
+								<h:outputText value=" #{sub.descricao}" />
+							</p:column>
+
+							<p:column headerText="Ação" >
+								<h:outputText value=" #{sub.acao}" />
+							</p:column>
+
+						</p:dataTable>
+
+					</div>
+
+
+
+			</p:rowExpansion>
+
+		</p:dataTable>
+
+	</p:dialog>
+
+	<!-- FIM DIV ui-g-12 ui-lg-12 -->
+
+
+</ui:fragment>

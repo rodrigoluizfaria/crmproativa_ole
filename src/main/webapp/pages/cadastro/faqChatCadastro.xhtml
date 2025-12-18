@@ -1,0 +1,355 @@
+<ui:fragment xmlns="http://www.w3.org/1999/xhtml"
+             xmlns:h="http://java.sun.com/jsf/html"
+             xmlns:f="http://java.sun.com/jsf/core"
+             xmlns:ui="http://java.sun.com/jsf/facelets"
+             xmlns:o="http://omnifaces.org/ui"
+             xmlns:matriz="http://java.sun.com/jsf/composite/componentes"
+             xmlns:p="http://primefaces.org/ui" template="/WEB-INF/template.xhtml">
+
+
+    <p:growl id="grl" widgetVar="grl" globalOnly="true" escape="false"
+             showSummary="false" life="8000" showDetail="true" sticky="false">
+
+        <p:autoUpdate/>
+
+    </p:growl>
+
+    <h:panelGroup id="pgCadastroFaq" styleClass="p-col-12" layout="block"
+                  rendered="#{faqChatBean.tipoPagina eq 'CADASTRO'}">
+
+        <h:form id="formCadastro" prependId="false">
+
+            <h:panelGroup id="groupPrincipal">
+
+                <div class="ui-fluid formgrid grid">
+
+                    <div class="field col-12 ">
+
+                        <div class="card">
+
+                            <div class="field col-12 md:col-6">
+
+                                <p:fieldset legend="Menu principal (instiuição financeira.)"
+                                            styleClass="fild-set-default-sem-borda" style="padding: 0px 20px;"
+                                            id="fieldPrincipal">
+
+                                    <div class="ui-fluid formgrid grid">
+
+                                        <div class="field col-12 md:col-6 ">
+
+                                            <p:outputLabel for="selectOnePrincipal" value="Grupo inicial"/>
+
+                                            <p:selectOneMenu id="selectOnePrincipal"
+                                                             value="#{faqChatBean.grupoFaq.grupoPrincipal}"
+                                                             required="true" requiredMessage="Requerido"
+                                                             converter="omnifaces.SelectItemsConverter">
+
+                                                <f:selectItem itemLabel="Selecione" noSelectionOption="true"/>
+
+                                                <f:selectItems value="#{faqChatBean.listGruposPricipal}" var="grupo"
+                                                               itemLabel="#{grupo.descricao}" itemValue="#{grupo}"/>
+
+                                                <p:ajax process="@this" global="false"/>
+
+                                            </p:selectOneMenu>
+
+                                            <p:message for="selectOnePrincipal"/>
+
+                                        </div>
+
+                                        <div class=" field col-12 md:col-4 ">
+
+                                            <p:outputLabel value=""/>
+
+                                            <p:commandButton value="Novo" style="margin-top: 1.8rem !important;"
+                                                             styleClass=" ui-button-raised ui-button-outlined ui-button-secondary"
+                                                             icon="pi pi-plus-circle" process="@this"
+                                                             oncomplete="PF('panelGrupoPrincipal').show('#{component.clientId}')"
+                                                             update="panelGrupoPrincipal"
+                                                             actionListener="#{faqChatBean.onAdicionarGrupoPrincipal()}"/>
+
+
+                                        </div>
+                                    </div>
+                                </p:fieldset>
+                            </div>
+
+                            <div class="field col-12 ">
+
+                                <p:fieldset legend="Submenu de perguntas (produto)"
+                                            styleClass="fild-set-default-sem-borda" style="padding: 0px 20px;"
+                                            id="fieldGrupo">
+
+                                    <div class="ui-fluid formgrid grid">
+
+                                        <matriz:selectEmpresa id="cmbEmpresa"
+                                                              managedBean="#{faqChatBean}"
+                                                              value="#{faqChatBean.empresa}"
+                                                              filter="true" style="col-12 md:col-3"/>
+
+                                        <div class="field col-12 md:col-6">
+
+                                            <p:outputLabel for="inputDesc" value="Descrição"/>
+
+                                            <p:inputText id="inputDesc"
+                                                         value="#{faqChatBean.grupoFaq.descricao}" maxlength="50"
+                                                         required="true" requiredMessage="#{msg.requerido}"/>
+
+                                            <p:message for="inputDesc"/>
+
+                                        </div>
+
+
+                                        <div class="field col-12 md:col-6">
+
+                                            <p:outputLabel for="inputUrl"
+                                                           value="Palavras chave (separador por [ , ])"/>
+
+                                            <p:inputText id="inputUrl"
+                                                         value="#{faqChatBean.grupoFaq.palavraChave}" maxlength="100"/>
+
+
+                                        </div>
+
+                                        <div class="field col-12 md:col-6">
+
+                                            <p:outputLabel for="selectOneAtivo" value="Acesso:"/>
+
+                                            <p:selectOneMenu id="selectOneAtivo"
+                                                             value="#{faqChatBean.grupoFaq.ativo}" required="true"
+                                                             requiredMessage="Requerido">
+
+                                                <f:selectItem itemLabel="Selecione" noSelectionOption="true"/>
+
+                                                <f:selectItems value="#{faqChatBean.tipoAcessoEnum}"
+                                                               var="acesso" itemLabel="#{acesso.constante}"
+                                                               itemValue="#{acesso}"/>
+
+                                            </p:selectOneMenu>
+
+                                            <p:message for="selectOneAtivo"/>
+
+                                        </div>
+
+                                    </div>
+
+
+                                </p:fieldset>
+
+                            </div>
+
+                        </div>
+
+
+                    </div>
+
+                    <h:panelGroup styleClass="field col-12 " id="panelPerguntas" layout="block">
+
+                        <div class="card">
+
+                            <p:tabView id="tab">
+
+                                <p:tab title="Perguntas e respostas">
+
+                                    <div class="field col-12 ">
+
+                                        <h:panelGroup layout="block" styleClass="mt-3"
+                                                      style="display: flow-root;width: 100%;">
+
+                                            <h:panelGroup style="float: right;">
+
+                                                <p:commandButton
+                                                        styleClass="secondary-button raised-button ui-button-outlined ui-button-secondary"
+                                                        icon="pi pi-plus-circle" update="formTableLog"
+                                                        actionListener="#{faqChatBean.onOpenDialogPergunta()}"
+                                                        process="@this" value="Adicionar pergunta" id="btnAddPergunta"
+                                                        oncomplete="PF('dlgPergunta').show();"/>
+
+                                            </h:panelGroup>
+
+                                        </h:panelGroup>
+
+                                        <p:fieldset legend="Lista de Perguntas"
+                                                    styleClass="fild-set-default-sem-borda pb-3"
+                                                    style="padding: 0px 20px;" id="fieldListPerguntaPrincipal">
+
+                                            <div class="col-12 mb:col-3 ">
+
+                                                <p:dataTable id="tablePerguntasPrincipal" var="pergunta"
+                                                             rows="10" paginator="true" paginatorPosition="bottom"
+                                                             value="#{faqChatBean.grupoFaq.listFaqPergunta}"
+                                                             emptyMessage="#{faqChatBean.grupoFaq.listFaqPergunta eq null? '' : msg.emptyMessage}"
+                                                             currentPageReportTemplate="[#{msg.totalDeRegistros}: {totalRecords}]"
+                                                             paginatorTemplate="{CurrentPageReport}  {FirstPageLink} {PreviousPageLink} {PageLinks} {NextPageLink} {LastPageLink} {Exporters}"
+                                                             styleClass="ui-datatable-gridlines ui-datatable-striped ui-datatable-sm"
+                                                             editable="true" draggableRows="true">
+
+                                                    <p:ajax event="page" global="false"/>
+
+                                                    <p:ajax event="sort" global="false"/>
+
+                                                    <p:ajax event="rowReorder" listener="#{faqChatBean.onRowReorder}"
+                                                            process="@this tablePerguntasPrincipal" partialSubmit="true"
+                                                            update="tablePerguntasPrincipal" global="false"/>
+
+                                                    <p:ajax event="rowEdit" listener="#{faqChatBean.onRowEdit}"
+                                                            process="@this tablePerguntasPrincipal" partialSubmit="true"
+                                                            update="tablePerguntasPrincipal"/>
+
+                                                    <p:ajax event="rowEditCancel" listener="#{faqChatBean.onRowCancel}"
+                                                            process="@this tablePerguntasPrincipal" partialSubmit="true"
+                                                            update="tablePerguntasPrincipal"/>
+
+                                                    <p:column headerText="Ordem" sortBy="#{pergunta.ordem}" width="10%">
+
+                                                        <h:outputText value="#{pergunta.ordem}"/>
+
+                                                    </p:column>
+
+                                                    <p:column headerText="Pergunta" sortBy="#{pergunta.pergunta}">
+
+                                                        <h:outputText value="#{pergunta.pergunta}"/>
+
+                                                    </p:column>
+
+                                                    <p:column headerText="Resposta" sortBy="#{pergunta.resposta}">
+
+                                                        <h:outputLabel value="#{pergunta.resposta}">
+
+                                                        </h:outputLabel>
+
+                                                    </p:column>
+
+                                                    <p:column width="6%" headerText="Ação">
+
+                                                        <div style="text-align: center; display: flex;">
+
+                                                            <p:commandButton id="btnREdit" icon="fa fw fa-edit"
+                                                                             title="Editar"
+                                                                             styleClass=" rounded-button text-button"
+                                                                             oncomplete="PF('dlgPergunta').show();"
+                                                                             process="@this tablePerguntasPrincipal"
+                                                                             partialSubmit="true" update="panelDialog"
+                                                                             actionListener="#{faqChatBean.onEdit(pergunta)}"/>
+
+                                                            <p:commandButton id="btnRemoverPrincipal"
+                                                                             icon="pi pi-trash" title="deletar"
+                                                                             styleClass=" rounded-button ui-button-flat"
+                                                                             process="@this tablePerguntasPrincipal"
+                                                                             partialSubmit="true"
+                                                                             update="tablePerguntasPrincipal"
+                                                                             actionListener="#{faqChatBean.onRemove(pergunta)}"/>
+
+                                                        </div>
+
+                                                    </p:column>
+
+                                                </p:dataTable>
+
+                                            </div>
+
+                                        </p:fieldset>
+
+                                    </div>
+
+                                </p:tab>
+
+                                <p:tab title="Equipes">
+
+                                    <div class="field col-12 md:col-6">
+
+                                        <p:pickList id="pckListEquipe" value="#{faqChatBean.dualListEquipes}"
+                                                    styleClass="p-mt-5" var="equipe" itemLabel="#{equipe.nome}"
+                                                    itemValue="#{equipe}" responsive="true" showSourceFilter="true"
+                                                    showTargetFilter="true">
+
+                                            <f:facet name="sourceCaption">#{msg.naoAssociados}</f:facet>
+                                            <f:facet name="targetCaption">#{msg.associados}</f:facet>
+
+                                            <o:converter converterId="omnifaces.ListConverter"
+                                                         list="#{faqChatBean.listEquipes}"/>
+
+                                        </p:pickList>
+
+                                    </div>
+
+                                </p:tab>
+
+                            </p:tabView>
+
+                        </div>
+
+                    </h:panelGroup>
+
+                </div>
+
+                <div class="field col-12  " style="padding-left: 0; text-align: center;">
+
+                    <div class="card">
+
+                        <p:commandButton value="Salvar" styleClass="mr-3 ui-button-raised" id="btnSalvar"
+                                         process="@this groupPrincipal" action="#{faqChatBean.salvar()}"
+                                         update="@form grl" icon="pi pi-save"/>
+
+                        <p:commandButton value="Voltar" id="btnVoltar"
+                                         styleClass="ui-button-outlined ui-button-raised" ajax="false"
+                                         action="#{faqChatBean.voltar()}" immediate="true"
+                                         icon="pi pi-arrow-circle-left"/>
+                    </div>
+
+                </div>
+
+            </h:panelGroup>
+
+            <h:panelGroup id="overlay">
+
+                <p:overlayPanel id="panelGrupoPrincipal" hideEffect="fade"
+                                widgetVar="panelGrupoPrincipal" styleClass="col-4"
+                                showCloseIcon="true">
+
+
+                    <div class="ui-fluid formgrid grid">
+
+                        <div class="col-12 mt-4">
+
+                            <p:fieldset styleClass=" fild-set-default-sem-borda"
+                                        style="padding: 15px 10px;" title="Cadastrar"
+                                        legend="Cadastrar novo Grupo Principal">
+
+                                <div class="field col-12 ">
+
+                                    <p:outputLabel value="Decrição do Grupo Principal"
+                                                   for="txtDescricaoGruproPrincipal"/>
+
+                                    <p:inputText id="txtDescricaoGruproPrincipal" required="true"
+                                                 requiredMessage="#{msg.requirido}"
+                                                 value="#{faqChatBean.grupoFaqPrincipal.descricao}"/>
+
+                                </div>
+
+                                <div class="col-12 ">
+
+                                    <p:commandButton value="Salvar" update="selectOnePrincipal"
+                                                     icon="pi pi-save"
+                                                     actionListener="#{faqChatBean.salvarGrupoPrincipal()}"
+                                                     onclick="PF('panelGrupoPrincipal').hide('#{component.clientId}')"
+                                                     process="@this txtDescricaoGruproPrincipal"
+                                                     styleClass="ui-button-raised mr-2"/>
+
+                                </div>
+
+                            </p:fieldset>
+
+                        </div>
+
+                    </div>
+
+                </p:overlayPanel>
+
+            </h:panelGroup>
+
+        </h:form>
+
+    </h:panelGroup>
+
+</ui:fragment>

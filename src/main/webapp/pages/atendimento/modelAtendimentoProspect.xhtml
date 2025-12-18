@@ -1,0 +1,182 @@
+<ui:fragment xmlns="http://www.w3.org/1999/xhtml"
+	xmlns:h="http://java.sun.com/jsf/html"
+	xmlns:f="http://java.sun.com/jsf/core"
+
+	xmlns:ui="http://java.sun.com/jsf/facelets"
+	xmlns:p="http://primefaces.org/ui">
+
+
+  <p:dialog widgetVar="dlgAtendimentoPropect" id="dlgAtendimentoPropect"	width="600px" header="Cliente Prospect" style="padding-top: 0px;" modal="true">
+
+	<h:form prependId="false" id="formProspect">
+	
+		<p:focus context="console"  />
+		
+			<div class="grid ui-panelgrid-blank form-group m-1 ">
+
+				<p:fieldset  styleClass="col-12 mb-4 fild-set-default-sem-borda p-3">
+
+					<f:facet name="legend">
+					
+						<p:selectOneRadio id="console"	unselectable="false" value="#{fichaAtendimentoBean.valorTipoPesquisaProspect}" disabled="false">
+						
+							<f:selectItem itemLabel="NOVO" itemValue="NOVO" />
+							<f:selectItem itemLabel="ADIANTAR" itemValue="ADIANTAR" />
+							
+							<p:ajax update="@form" process="@this" global="false" />
+							
+						</p:selectOneRadio>
+						
+					</f:facet>
+
+					<h:panelGroup id="painelNovo" styleClass="col-12" layout="block" rendered="#{fichaAtendimentoBean.valorTipoPesquisaProspect eq 'NOVO'}">
+				
+					<div class="ui-fluid grid formgrid">
+
+						<div class="field col-12 ">
+
+							<p:outputLabel value="Pesquisar por:" />
+
+							<p:selectOneButton unselectable="false"	value="#{fichaAtendimentoBean.valorPesquisaProspect}">
+
+								<f:selectItem itemLabel="CPF" itemValue="CPF" />
+								<f:selectItem itemLabel="TELEFONE" itemValue="TELEFONE" />
+								
+								<f:ajax execute="@this" render="@form"   listener="#{fichaAtendimentoBean.buscarCampanhasProspect()}" />
+
+							</p:selectOneButton>
+
+						</div>
+
+						<h:panelGroup class="field col-12" rendered="#{fichaAtendimentoBean.valorPesquisaProspect eq 'CPF'}">
+
+							<p:outputLabel for="txtCpf" value="CPF" />
+
+							<p:inputText id="txtCpf"  maxlength="11"	value="#{fichaAtendimentoBean.cpf}"	onkeypress="return somenteNumeros(event)" required="true" validatorMessage="CPF invalido" requiredMessage="Requerido">
+
+							<f:validator validatorId="converter.CpfValidator" />
+
+								<p:ajax  listener="#{fichaAtendimentoBean.buscarCampanhasProspect()}" update="panelSelectCam @this txtCpf msgCpf" process="@this" />
+
+							</p:inputText>
+							
+							<p:message for="txtCpf" id="msgCpf"/>
+
+						</h:panelGroup>
+						
+						<h:panelGroup class="field col-12" rendered="#{fichaAtendimentoBean.valorPesquisaProspect eq 'TELEFONE'}">
+
+							<p:outputLabel for="txtNumeroTelefone" value="TELEFONE" />
+
+							<p:inputText id="txtNumeroTelefone"  maxlength="11"	value="#{fichaAtendimentoBean.numeroTelefone}"	onkeypress="return somenteNumeros(event)" required="true"  requiredMessage="Requerido" >
+							
+								<p:ajax  listener="#{fichaAtendimentoBean.buscarCampanhasProspect()}" update="panelSelectCam @this msgNumero" process="@this" />
+
+							</p:inputText>
+							
+							<p:message for="txtNumeroTelefone" id="msgNumero"/>
+
+						</h:panelGroup>
+
+						<h:panelGroup styleClass="field col-12" layout="block"	id="panelSelectCam">
+
+							<p:outputLabel for="selectCam"> CAMPANHA</p:outputLabel>
+
+							<p:selectOneMenu id="selectCam"	value="#{fichaAtendimentoBean.idCampanhaPropect}" filter="true"	filterMatchMode="contains" required="true" requiredMessage="Requerido">
+								
+								<f:selectItem itemLabel="#{msg.selecione}" itemValue="" />
+								
+								<f:selectItems	value="#{fichaAtendimentoBean.listCampanhasProspect}" var="campanha" itemLabel="#{campanha[1]}" itemValue="#{campanha[0]}" />
+
+							</p:selectOneMenu>
+							
+							<p:message for="selectCam" />
+
+						</h:panelGroup>
+
+					</div>
+
+				</h:panelGroup>
+				
+				
+				<h:panelGroup id="painelAdiantar" styleClass="col-12" layout="block" rendered="#{fichaAtendimentoBean.valorTipoPesquisaProspect eq 'ADIANTAR'}">
+				
+					<div class="ui-fluid formgrid grid">
+
+						<div class="field col-12">
+
+							<p:outputLabel value="Pesquisar por:" />
+
+							<p:selectOneButton unselectable="false"	value="#{fichaAtendimentoBean.valorPesquisaProspect}">
+
+								<f:selectItem itemLabel="CPF" itemValue="CPF" />
+								<f:selectItem itemLabel="TELEFONE" itemValue="TELEFONE" />
+								
+								<f:ajax execute="@this" render="@form"   listener="#{fichaAtendimentoBean.buscarCampanhasProspect()}"  />
+
+							</p:selectOneButton>
+
+						</div>
+
+						<h:panelGroup class="field col-12" rendered="#{fichaAtendimentoBean.valorPesquisaProspect eq 'CPF'}">
+
+							<p:outputLabel for="txtCpfAdiantar" value="CPF" />
+
+							<p:inputText id="txtCpfAdiantar"  maxlength="11"	value="#{fichaAtendimentoBean.cpf}"	onkeypress="return somenteNumeros(event)" required="true" validatorMessage="CPF invalido" requiredMessage="Requerido">
+
+							<f:validator validatorId="converter.CpfValidator" />
+
+
+							</p:inputText>
+							
+							<p:message for="txtCpfAdiantar" id="msgCpfAdiantar"/>
+
+						</h:panelGroup>
+						
+						<h:panelGroup class="field col-12" rendered="#{fichaAtendimentoBean.valorPesquisaProspect eq 'TELEFONE'}">
+
+							<p:outputLabel for="txtNumeroTelefoneAdiantar" value="TELEFONE" />
+
+							<p:inputText id="txtNumeroTelefoneAdiantar"  maxlength="11"	value="#{fichaAtendimentoBean.numeroTelefone}"	onkeypress="return somenteNumeros(event)" required="true"  requiredMessage="Requerido" >
+							
+
+							</p:inputText>
+							
+							<p:message for="txtNumeroTelefoneAdiantar" id="msgNumeroAdiantar"/>
+
+						</h:panelGroup>
+
+					</div>
+
+				</h:panelGroup>
+				
+				<p:messages  id="msgGlobal"/>
+				
+					</p:fieldset>
+
+			</div>
+			
+			<div class="ui-fluid formgrid grid justify-center">
+
+				<div class="field col-12  mt-1 text-center  ">
+				
+					<p:commandButton id="btn" value="Iniciar Atendimento" styleClass="ui-button-raised mr-3" action="#{fichaAtendimentoBean.buscarAtendimentoProspect()}"	update=":formConteudo @form dlgFormulario:formFormulario panelPapCard panelSimulacaoRefin" partialSubmit="true"
+						
+						rendered="#{fichaAtendimentoBean.valorTipoPesquisaProspect eq 'NOVO'}" />
+						
+					<p:commandButton id="btnAdiantar" value="Adiantar Atendimento"	styleClass="ui-button-raised mr-3"	action="#{fichaAtendimentoBean.adiantarAtendimentoProspect()}"	update=":formConteudo @form" partialSubmit="true"
+						
+						rendered="#{fichaAtendimentoBean.valorTipoPesquisaProspect eq 'ADIANTAR'}" />
+						
+					<p:commandButton id="btnFechar" styleClass="ui-button-raised" value="Fechar" type="button"	onclick="PF('dlgAtendimentoPropect').hide();" icon="pi pi-times" />
+
+				</div>
+				
+			</div>
+			
+		</h:form>
+		
+	</p:dialog>
+
+
+</ui:fragment>

@@ -1,0 +1,656 @@
+<ui:fragment xmlns="http://www.w3.org/1999/xhtml"
+             xmlns:h="http://java.sun.com/jsf/html"
+             xmlns:f="http://java.sun.com/jsf/core"
+             xmlns:p="http://primefaces.org/ui"
+             xmlns:c="http://java.sun.com/jsp/jstl/core"
+             xmlns:of="http://omnifaces.org/functions"
+             xmlns:ui="http://java.sun.com/jsf/facelets"
+             xmlns:cc="http://java.sun.com/jsf/composite/componentes"
+>
+
+    <!-- DLG MODAL -->
+    <p:dialog id="dlgVisualizarAtendimento" widgetVar="dlgVisualizarAtendimento" modal="true" draggable="false"
+              resizable="false" closable="false" width="95%" styleClass="modalAtendimento" responsive="true"
+              header="Informações do Atendimento" appendTo="@(body)" style="background-color: #F2F8FA;" height="600">
+
+        <h:form id="formVisualizar" prependId="false">
+
+            <h:panelGroup styleClass="col-12 ui-toolbar ui-widget ui-widget-header ui-corner-all"
+                          style="display: inline-block; align-items: center; flex-wrap: wrap" layout="block">
+
+                <p:commandButton value="Visualizar Respostas" icon="pi pi-align-justify" global="false"
+                                 rendered="#{supervisorBackofficeBean.formularioQuestionarioController.idQuestionario ne null}"
+                                 update="dlgFormulario:formFormulario" oncomplete="PF('dlgFormulario').show();"
+                                 actionListener="#{supervisorBackofficeBean.formularioQuestionarioController.selecionarFormulario(supervisorBackofficeBean.atendimentoVisualizar)}"
+                                 styleClass="ui-button-outlined ui-button-secondary ui-button-raised mr-3"/>
+
+                <p:commandButton value="Conciliar Audios" icon="pi pi-align-justify" global="false"
+                                 rendered="#{supervisorBackofficeBean.formularioQuestionarioController.idQuestionario ne null}"
+                                 update="dlgFormulario:formFormulario" oncomplete="PF('dlgFormulario').show();"
+                                 actionListener="#{supervisorBackofficeBean.formularioQuestionarioController.selecionarFormulario(supervisorBackofficeBean.atendimentoVisualizar)}"
+                                 styleClass="ui-button-outlined ui-button-secondary ui-button-raised mr-3"/>
+
+           <!--     <p:commandButton value="Blacklist AMBEC" icon="fa fw fa-rectangle-list"
+                                 rendered="#{supervisorBackofficeBean.integracaoAmbec ne null}"
+                                    update="dlgSupAmbec"
+                                 actionListener="#{supervisorBackofficeBean.consultarBeneficioAmbec()}"
+                                 styleClass="ui-button-outlined ui-button-secondary ui-button-raised mr-3"/>-->
+
+                <p:commandButton value="Calculadora consignado" icon="fa fw fa-rectangle-list"
+                                 rendered="#{supervisorBackofficeBean.integracaoAmbec ne null}"
+                                 update="dlgAtnCalculadora"
+                                 actionListener="#{supervisorBackofficeBean.consultarCalculadoraConsignado()}"
+                                 styleClass="ui-button-outlined ui-button-secondary ui-button-raised mr-3"/>
+
+
+                <div class=" ui-toolbar-group-right ">
+
+                    <p:commandButton value="Novo Atendimento" icon="pi pi-plus-circle"
+                                     styleClass=" ui-button-raised mr-3"
+                                     oncomplete="PF('dlgVisualizarAtendimento').hide()">
+
+                        <p:confirm header="Confirmar" message="Deseja, Gerar um novo Atendimento?"
+                                   icon="pi pi-exclamation-triangle"/>
+
+                    </p:commandButton>
+
+                    <p:commandButton value="Fechar" icon="pi pi-times" onclick="PF('dlgVisualizarAtendimento').hide();"
+                                     process="@this" styleClass="ui-button-secondary ui-button-raised " global="false"/>
+
+                </div>
+
+
+            </h:panelGroup>
+
+            <div class="grid">
+
+                <div class="col-12">
+
+                    <div class="card "
+                         style="box-shadow: 0 3px 5px -1px rgb(0 0 0 / 20%), 0 5px 8px 0 rgb(0 0 0 / 14%), 0 1px 14px 0 rgb(0 0 0 / 12%);">
+
+                        <div class="ui-fluid formgrid grid">
+
+                            <div class="col-12">
+
+                                <div class="col-12" style="padding: 10px">
+
+                                    <div class="ui-fluid formgrid grid">
+
+                                        <div class="field col-12 md:col-3">
+
+                                            <p:outputLabel value="Cliente" styleClass="lbl-bold"/>
+
+                                            <div>
+
+                                                <h:outputText
+                                                        value="#{supervisorBackofficeBean.atendimentoVisualizar.nome}"
+                                                        style="resize: none;"/>
+
+                                            </div>
+
+                                        </div>
+
+                                        <div class="field col-12 md:col-3">
+
+                                            <p:outputLabel value="Campanha" styleClass="lbl-bold"/>
+
+                                            <div>
+
+                                                <h:outputText
+                                                        value="#{supervisorBackofficeBean.atendimentoVisualizar.campanha.descricao}"/>
+
+                                            </div>
+
+                                        </div>
+
+                                        <div class="field col-12 md:col-2">
+
+                                            <p:outputLabel value="CPF" styleClass="lbl-bold"/>
+
+                                            <div>
+                                                <h:outputText
+                                                        value="#{supervisorBackofficeBean.atendimentoVisualizar.cpf}"/>
+                                            </div>
+
+                                        </div>
+
+                                        <div class="field col-12 md:col-2">
+
+                                            <p:outputLabel value="Dt. Nascimento" styleClass="lbl-bold"/>
+
+                                            <div>
+
+                                                <h:outputText
+                                                        value="#{supervisorBackofficeBean.atendimentoVisualizar.dataNascimento}">
+
+                                                    <f:convertDateTime pattern="dd/MM/yyy"/>
+
+                                                </h:outputText>
+
+                                            </div>
+
+                                        </div>
+
+                                        <div class="field col-12 md:col-1">
+
+                                            <p:outputLabel value="Idade" styleClass="lbl-bold"/>
+
+                                            <div>
+                                                <h:outputText value="#{supervisorBackofficeBean.idade}"/>
+                                            </div>
+
+                                        </div>
+
+                                        <div class="field col-12 md:col-1">
+
+                                            <p:outputLabel value="Tiket" styleClass="lbl-bold"/>
+
+                                            <div>
+                                                <h:outputText
+                                                        value="#{supervisorBackofficeBean.atendimentoVisualizar.tiket}"/>
+                                            </div>
+
+                                        </div>
+
+                                    </div>
+
+                                </div>
+
+                            </div>
+
+                            <div></div>
+
+                            <div class="col-12 md:col-8">
+
+                                <p:dataTable id="tableHistorico" lazy="false"
+                                             value="#{supervisorBackofficeBean.atendimentoVisualizar.listaHistoricos}"
+                                             var="historico" rows="3" paginator="true" reflow="true"
+                                             paginatorPosition="bottom" rowIndexVar="index"
+                                             styleClass="ui-datatable-sm ui-datatable-striped ui-datatable-gridlines"
+                                             emptyMessage="#{fichaAtendimentoBean.listHistoricoAtendimento eq null ? '' :  msg.emptyMessage}"
+                                             currentPageReportTemplate="[#{msg.totalDeRegistros}: {totalRecords}]"
+                                             paginatorTemplate="{CurrentPageReport}  {FirstPageLink} {PreviousPageLink} {PageLinks} {NextPageLink} {LastPageLink} {Exporters}">
+
+                                    <f:facet name="header">
+                                        <p:outputLabel value="Histórico"/>
+                                    </f:facet>
+
+                                    <p:ajax event="page" global="false"/>
+
+                                    <p:column headerText="Status" width="20%">
+
+                                        <h:outputLabel value="#{historico.statusAtendimento.descricao}"/>
+
+                                    </p:column>
+
+                                    <p:column headerText="Operador" width="20%">
+
+                                        <h:outputLabel value="#{historico.usuario.nome}"/>
+
+                                    </p:column>
+
+                                    <p:column headerText="Data" width="20%">
+
+                                        <h:outputLabel value="#{historico.dataCadastro}">
+
+                                            <f:convertDateTime pattern="dd/MM/yyyy HH:mm:ss"/>
+
+                                        </h:outputLabel>
+
+                                    </p:column>
+
+                                    <p:column headerText="Manifesto" width="40%">
+
+                                        <h:outputLabel value="#{of:abbreviate(historico.observacao,100)}"/>
+
+                                    </p:column>
+
+                                </p:dataTable>
+
+                            </div>
+
+                            <div class="col-12 md:col-4">
+
+                                <p:dataTable rows="3" paginator="true" lazy="false"
+                                             value="#{supervisorBackofficeBean.atendimentoVisualizar.listaTelefonesOrdenada}"
+                                             paginatorPosition="bottom" emptyMessage="#{msg.emptyMessage}"
+                                             currentPageReportTemplate="[ #{msg.totalDeRegistros}: {totalRecords} ]"
+                                             paginatorTemplate="{CurrentPageReport}  {FirstPageLink} {PreviousPageLink} {PageLinks} {NextPageLink} {LastPageLink}"
+                                             var="tel" id="tableTel"
+                                             styleClass="ui-datatable-sm ui-datatable-striped ui-datatable-gridlines"
+                                             reflow="true">
+
+                                    <f:facet name="header">
+
+                                        <p:outputLabel value="Telefones"/>
+
+                                    </f:facet>
+
+                                    <p:ajax event="page" global="false"/>
+
+                                    <p:column headerText="#{msg.ddd}" style="text-align:center" width="20%">
+
+                                        <p:outputLabel value="#{tel.ddd}"/>
+
+                                    </p:column>
+
+                                    <p:column headerText="Número" style="text-align:center" width="30%">
+
+                                        <p:outputLabel value="#{tel.numero}"/>
+
+                                    </p:column>
+
+                                    <p:column headerText="Status" width="50%" style="text-align:center">
+
+                                        <p:outputLabel value="#{tel.statusTelefone.descricao}"/>
+
+                                    </p:column>
+
+                                </p:dataTable>
+
+                            </div>
+
+                        </div>
+
+                        <!-- PANEL -->
+
+                    </div>
+
+                </div>
+
+
+                <div class="col-12">
+
+                    <div class="box shadow-4">
+
+                        <p:tabView id="tabviewVisualizarAtn" style="width:100%" widgetVar="tabviewVisualizarAtn">
+
+                            <p:tab title="Informações atendimento">
+
+                                <c:if test="#{supervisorBackofficeBean.atendimentoVisualizar.campanha.segmento eq 'EMPRESTIMO' or supervisorBackofficeBean.atendimentoVisualizar.campanha.segmento eq 'ASSOCIACAO' or supervisorBackofficeBean.atendimentoVisualizar.campanha.segmento eq 'PORTABILIDADE'}">
+
+                                    <cc:emprestimo id="seqAtn"
+                                                   atendimento="#{supervisorBackofficeBean.atendimentoVisualizar}"
+                                                   managedBean="#{supervisorBackofficeBean}" ver="true"
+                                                   viewAtendimento="false"/>
+
+                                </c:if>
+
+                                <c:if test="#{supervisorBackofficeBean.atendimentoVisualizar.campanha.segmento eq 'AGENDAMENTOS'}">
+
+                                    <cc:agendamento atendimento="#{supervisorBackofficeBean.atendimentoVisualizar}"
+                                                    managedBean="#{supervisorBackofficeBean}" id="segAgendamento"
+                                                    ver="true" viewAtendimento="false"/>
+
+                                </c:if>
+
+                            </p:tab>
+
+                            <p:tab title="Informações Complementares"
+                                   rendered="#{not empty supervisorBackofficeBean.atendimentoVisualizar.listInformacoesComplementares}"
+                                   id="tabInformacoes">
+
+                                <div class="col-12">
+
+                                    <div class="ui-fluid formgrid grid">
+
+                                        <ui:repeat var="înformacoes"
+                                                   value="#{supervisorBackofficeBean.atendimentoVisualizar.listInformacoesComplementaresChaves}">
+
+                                            <div class="field col-12 md:col-2 ">
+
+                                                <div class="border-reapet border-left col-12" style="padding: 5px 10px">
+
+                                                    <p:outputLabel value="#{înformacoes}" styleClass="lbl-bold"/>
+
+                                                    <div style="margin-top: 5px">
+
+                                                        <h:outputText
+                                                                value="#{supervisorBackofficeBean.atendimentoVisualizar.listInformacoesComplementares[înformacoes]}"/>
+
+                                                    </div>
+
+                                                </div>
+
+                                            </div>
+
+                                        </ui:repeat>
+
+                                    </div>
+
+                                </div>
+
+                            </p:tab>
+
+                            <p:tab title="Endereços">
+
+                                <div class="col-12 md:col-12">
+
+                                    <p:dataTable id="tableEndereco" lazy="false"
+                                                 value="#{supervisorBackofficeBean.atendimentoVisualizar.listaEnderecos}"
+                                                 var="endereco" rows="5" paginator="true"
+                                                 paginatorPosition="bottom" emptyMessage="#{msg.emptyMessage}"
+                                                 styleClass="ui-datatable-sm ui-datatable-striped ui-datatable-gridlines"
+                                                 reflow="true"
+                                                 currentPageReportTemplate="[#{msg.totalDeRegistros}: {totalRecords}]"
+                                                 paginatorTemplate="{CurrentPageReport}  {FirstPageLink} {PreviousPageLink} {PageLinks} {NextPageLink} {LastPageLink} {Exporters}">
+
+                                        <p:ajax event="page" global="false"/>
+
+                                        <p:column headerText="Logradouro" width="30%">
+
+                                            <p:outputLabel value="#{endereco.logradouro}"/>
+
+                                        </p:column>
+
+                                        <p:column headerText="Numero" width="5%">
+
+                                            <p:outputLabel value="#{endereco.numero}"/>
+
+                                        </p:column>
+
+                                        <p:column headerText="Bairro" width="20%">
+
+                                            <p:outputLabel value="#{endereco.bairro}"/>
+
+                                        </p:column>
+
+                                        <p:column headerText="Cidade" width="20%">
+
+                                            <p:outputLabel value="#{endereco.cidade}"/>
+
+                                        </p:column>
+
+                                        <p:column headerText="UF" width="10%">
+
+                                            <p:outputLabel value="#{endereco.uf}"/>
+
+                                        </p:column>
+
+                                        <p:column headerText="Cep" width="10%">
+
+                                            <p:outputLabel value="#{endereco.cep}"/>
+
+                                        </p:column>
+
+                                    </p:dataTable>
+
+                                </div>
+
+                            </p:tab>
+
+                            <p:tab title="Dados Bancarios">
+
+                                <div class="col-12 md:col-12">
+
+                                    <p:dataTable id="tableDadosBancarios" lazy="false"
+                                                 value="#{supervisorBackofficeBean.atendimentoVisualizar.listaDadosBancarios}"
+                                                 var="banco" rows="5" paginator="true"
+                                                 paginatorPosition="bottom" emptyMessage="#{msg.emptyMessage}"
+                                                 currentPageReportTemplate="[#{msg.totalDeRegistros}: {totalRecords}]"
+                                                 paginatorTemplate="{CurrentPageReport}  {FirstPageLink} {PreviousPageLink} {PageLinks} {NextPageLink} {LastPageLink} {Exporters}"
+                                                 styleClass="ui-datatable-sm ui-datatable-striped ui-datatable-gridlines"
+                                                 reflow="true">
+
+                                        <p:column headerText="Banco" width="20%">
+
+                                            <p:outputLabel value="#{banco.banco.constante}"/>
+
+                                        </p:column>
+
+                                        <p:column headerText="Tipo Conta" width="20%">
+
+                                            <p:outputLabel value="#{banco.tipoConta.descricao}"/>
+
+                                        </p:column>
+
+                                        <p:column headerText="Agencia" width="10%">
+
+                                            <p:outputLabel value="#{banco.agencia}"/>
+
+                                        </p:column>
+
+                                        <p:column headerText="Digito Agência" width="10%">
+
+                                            <p:outputLabel value="#{banco.digitoAgencia}"/>
+
+                                        </p:column>
+
+                                        <p:column headerText="Conta" width="10%">
+
+                                            <p:outputLabel value="#{banco.conta}"/>
+
+                                        </p:column>
+
+                                        <p:column headerText="Digito Conta" width="10%">
+
+                                            <p:outputLabel value="#{banco.digitoConta}"/>
+
+                                        </p:column>
+
+                                    </p:dataTable>
+
+                                </div>
+
+                            </p:tab>
+
+                            <p:tab title="Histórico Contratos">
+
+                                <div class="ui-fluid formgrid grid">
+
+                                    <div class="col-12 md:col-7">
+
+                                        <p:dataTable id="tableHistoricoContrato" lazy="false"
+                                                     value="#{supervisorBackofficeBean.atendimentoVisualizar.contrato.historicos}"
+                                                     var="historico" rows="5" paginator="true"
+                                                     paginatorPosition="bottom" emptyMessage=""
+                                                     currentPageReportTemplate="[#{msg.totalDeRegistros}: {totalRecords}]"
+                                                     paginatorTemplate="{CurrentPageReport}  {FirstPageLink} {PreviousPageLink} {PageLinks} {NextPageLink} {LastPageLink} {Exporters}"
+                                                     styleClass="ui-datatable-sm ui-datatable-striped ui-datatable-gridlines"
+                                                     reflow="true">
+
+                                            <f:facet name="header">
+
+                                                <p:outputLabel value="Histórico Contratos"/>
+
+                                            </f:facet>
+
+                                            <p:ajax event="page" global="false"/>
+
+                                            <p:column headerText="Data Cadastro" style="text-align:center" width="13%">
+
+                                                <p:outputLabel value="#{historico.dataCadastro}">
+
+                                                    <f:convertDateTime pattern="dd/MM/yyyy"/>
+
+                                                </p:outputLabel>
+
+                                            </p:column>
+
+                                            <p:column headerText="Usuário" style="text-align:center" width="30%">
+
+                                                <p:outputLabel value="#{historico.usuarioCadastro.nome}"/>
+
+                                            </p:column>
+
+                                            <p:column headerText="Status" width="24%" style="text-align:center">
+
+                                                <p:outputLabel value="#{historico.statusContrato.descricao}"/>
+
+                                            </p:column>
+
+                                            <p:column headerText="Observação" width="24%" style="text-align:center">
+
+                                                <p:outputLabel value="#{historico.observacao}"/>
+
+                                            </p:column>
+
+                                        </p:dataTable>
+
+                                    </div>
+
+                                    <div class="col-12 md:col-5">
+
+                                        <p:dataTable id="tablePendenciaContrato" lazy="false"
+                                                     value="#{supervisorBackofficeBean.atendimentoVisualizar.contrato.pendencias}"
+                                                     var="pendencia" rows="5" paginator="true"
+                                                     paginatorPosition="bottom" emptyMessage=""
+                                                     currentPageReportTemplate="[#{msg.totalDeRegistros}: {totalRecords}]"
+                                                     paginatorTemplate="{CurrentPageReport}  {FirstPageLink} {PreviousPageLink} {PageLinks} {NextPageLink} {LastPageLink} {Exporters}"
+                                                     styleClass="ui-datatable-sm" reflow="true">
+
+
+                                            <f:facet name="header">
+
+                                                <p:outputLabel value="Pendência Contratos"/>
+
+                                            </f:facet>
+
+                                            <p:ajax event="page" global="false"/>
+
+                                            <p:column headerText="Data Cadastro" style="text-align:center" width="15%">
+
+                                                <p:outputLabel value="#{pendencia.dataCadastro}">
+
+                                                    <f:convertDateTime pattern="dd/MM/yyyy"/>
+
+                                                </p:outputLabel>
+
+                                            </p:column>
+
+                                            <p:column headerText="Usuário" style="text-align:center" width="30%">
+
+                                                <p:outputLabel value="#{pendencia.usuarioCadastro.nome}"/>
+
+                                            </p:column>
+
+                                            <p:column headerText="Observação" width="55%" style="text-align:center">
+
+                                                <p:outputLabel value="#{of:abbreviate(pendencia.observacao,100)}"/>
+
+                                            </p:column>
+
+                                        </p:dataTable>
+
+                                    </div>
+
+                                </div>
+
+                            </p:tab>
+
+                            <p:tab id="tabHistorico" title="Histórico de Atendimento">
+
+                                <div class="ui-fluid formgrid grid col-12 ">
+
+                                    <div class="col-12 md:col-2">
+
+                                        <div class="ui-fluid formgrid grid">
+
+                                            <div class="field col-12 md:col-12">
+
+                                                <p:outputLabel value="Consultar Historico"/>
+
+                                                <div>
+
+                                                    <p:commandButton value="consultar" icon="pi pi-search"
+                                                                     styleClass="ui-button-raised"
+                                                                     actionListener="#{supervisorBackofficeBean.buscarHistoricosAtendimentos()}"
+                                                                     update="tableHistorico" process="@this"
+                                                                     partialSubmit="true"/>
+                                                </div>
+
+                                            </div>
+
+                                        </div>
+
+                                    </div>
+
+                                    <div class="col-12 md:col-10">
+
+                                        <p:dataTable id="tableHistorico" lazy="false"
+                                                     value="#{supervisorBackofficeBean.listHistoricosAtendimentos}"
+                                                     styleClass="ui-datatable-sm ui-datatable-striped ui-datatable-gridlines"
+                                                     var="historico" rows="8" paginator="true"
+                                                     paginatorPosition="bottom"
+                                                     emptyMessage="#{supervisorBackofficeBean.listHistoricosAtendimentos eq null ? '' :  msg.emptyMessage}"
+                                                     currentPageReportTemplate="[#{msg.totalDeRegistros}: {totalRecords}]"
+                                                     paginatorTemplate="{CurrentPageReport}  {FirstPageLink} {PreviousPageLink} {PageLinks} {NextPageLink} {LastPageLink} {Exporters}">
+                                            <p:ajax event="page" global="false"/>
+
+                                            <p:column headerText="Campanha">
+                                                <h:outputLabel value="#{historico[0]}"/>
+                                            </p:column>
+
+                                            <p:column headerText="ID do Atendimento">
+                                                <h:outputLabel value="#{historico[1]}"/>
+                                            </p:column>
+
+                                            <p:column headerText="Operador">
+                                                <h:outputLabel value="#{historico[2]}"/>
+                                            </p:column>
+
+                                            <p:column headerText="Status do Atendimento">
+                                                <h:outputLabel value="#{historico[3]}"/>
+                                            </p:column>
+
+                                            <p:column headerText="Data do Cadastro">
+
+                                                <h:outputLabel value="#{historico[4]}">
+                                                    <f:convertDateTime pattern="dd/MM/yyyy HH:mm:ss"/>
+                                                </h:outputLabel>
+
+                                            </p:column>
+
+                                            <p:column headerText="Data do Agendamento">
+
+                                                <h:outputLabel value="#{historico[5]}">
+                                                    <f:convertDateTime pattern="dd/MM/yyyy HH:mm:ss"/>
+                                                </h:outputLabel>
+
+                                            </p:column>
+
+                                            <p:column headerText="Manifesto">
+
+                                                <h:outputLabel value="#{historico[6]}"/>
+
+                                            </p:column>
+
+                                        </p:dataTable>
+
+                                    </div>
+
+                                </div>
+
+
+                            </p:tab>
+
+                            <p:tab id="idFormulario" title="Formulário"
+                                   rendered="#{not empty supervisorBackofficeBean.formularioQuestionarioController  and supervisorBackofficeBean.formularioQuestionarioController.idQuestionario != null}">
+
+                            </p:tab>
+
+
+                        </p:tabView>
+
+                    </div>
+                </div>
+            </div>
+
+            <p:confirmDialog global="true" showEffect="fade" hideEffect="fade" responsive="true" width="350">
+
+                <p:commandButton value="Não" styleClass="ui-confirmdialog-no ui-button-outlined" type="button"/>
+
+                <p:commandButton value="Sim" styleClass="ui-confirmdialog-yes"
+                                 action="#{supervisorBackofficeBean.gerarNovaProposta()}" immediate="true"/>
+
+            </p:confirmDialog>
+
+        </h:form>
+
+        <!-- <ui:include	src="/pages/supervisor/modalAnexarGravacaoSupervisor.xhtml" /> -->
+
+    </p:dialog>
+
+
+</ui:fragment>

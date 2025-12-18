@@ -1,0 +1,116 @@
+<ui:fragment xmlns="http://www.w3.org/1999/xhtml"
+	xmlns:h="http://java.sun.com/jsf/html"
+	xmlns:f="http://java.sun.com/jsf/core"
+	xmlns:o="http://omnifaces.org/ui"
+	xmlns:pe="http://primefaces.org/ui/extensions"
+	xmlns:ui="http://java.sun.com/jsf/facelets"
+	xmlns:matriz="http://java.sun.com/jsf/composite/componentes"
+	xmlns:p="http://primefaces.org/ui">
+
+	<h:form id="formBackofficeControlePausa" prependId="false">
+
+		<div class="grid col-12 tab-padding">
+
+			<div class="col-12">
+
+				<p:spacer height="20" />
+
+			</div>
+
+			<matriz:selectEmpresa id="selectEmpresaControlePausa" style="col-12 md:col-3"	managedBean="#{supervisorBackofficeBean}" value="#{supervisorBackofficeBean.empresa}" ajax="true" update="@form" filter="true" exibirSelecione="true"
+								  required="true" />
+
+			<div class="field col-12 md:col-3">
+
+				<p:outputLabel value="Equipe" />
+
+				<p:selectOneMenu id="selectEquipePausa"	value="#{supervisorBackofficeBean.equipePausa}" filter="true" 	filterMatchMode="contains">
+
+					<f:selectItem itemLabel="Selecione" itemValue="" />
+
+					<f:selectItems value="#{supervisorBackofficeBean.listEquipes}"	var="equipe" itemLabel="#{equipe.nome}" itemValue="#{equipe.id}" />
+										
+				</p:selectOneMenu>
+
+			</div>
+			
+			<div class="field col-12 md:col-12">
+
+				<p:outputLabel value="&#160;&#160;" id="txtPesquisaEspacoPausa" />
+
+				<div>
+				
+					<p:commandButton value="Pesquisar" id="btnPesquisarPausa" icon="pi pi-search" styleClass="ui-button-raised mr-3" actionListener="#{supervisorBackofficeBean.pesquisarPausas()}" update="@form" />
+					
+				</div>
+
+			</div>
+
+		
+		<div class="col-10 mt-3">
+
+				<p:dataTable id="tableBkoControlePausa" var="controle" rows="15"	paginator="true" paginatorPosition="bottom"	value="#{supervisorBackofficeBean.listPausas}"
+					emptyMessage="#{supervisorBackofficeBean.listPausas eq null? '' : msg.emptyMessage}"	currentPageReportTemplate="[#{msg.totalDeRegistros}: {totalRecords}]"
+					paginatorTemplate="{CurrentPageReport}  {FirstPageLink} {PreviousPageLink} {PageLinks} {NextPageLink} {LastPageLink} {Exporters}" >
+
+					<p:ajax event="page" global="false" />
+
+					<p:ajax event="sort" global="false" />
+					
+
+					<p:column headerText="Operador" sortBy="#{controle[1]}" >
+
+						<h:outputLabel value="#{controle[1]}" />
+
+					</p:column>
+
+					<p:column headerText="Pausa" sortBy="#{controle[4]}"	>
+
+						<h:outputLabel value="#{controle[4]}" />
+
+					</p:column>
+					
+					<p:column headerText="Data" sortBy="#{controle[3]}">
+						
+						<h:outputText value="#{controle[3]}" >
+						
+							<f:convertDateTime dateStyle="medium" locale="pt_BR" type="date" timeZone="GMT-3" pattern=" dd/MM/yyyy HH:mm:ss"/>
+							
+						</h:outputText>
+						
+					</p:column>
+										
+					<p:column headerText="Tempo" sortBy="#{controle[5]}" >
+					
+						<h:outputLabel value="#{controle[5]} min" />
+
+					</p:column>
+					
+						<p:column headerText="Tempo Corrido" sortBy="#{supervisorBackofficeBean.converterTempoCorrido(controle[3])}"	width="20%">
+					
+						<h:outputLabel value="#{supervisorBackofficeBean.converterTempoCorrido(controle[3])} min" />
+
+					</p:column>
+					
+					<p:column headerText="Ação">
+					
+						<p:commandButton value="Desbloquear"  icon="pi pi-unlock" styleClass="rounded-button text-button mr-2 mb-2"  oncomplete="PF('dlgDesbloqueioUsuario').show()" update=":dlgDesbloqueioUsuario">
+							
+							<f:setPropertyActionListener value="#{controle[2]}" target="#{supervisorBackofficeBean.controlePausa}" />
+							<f:setPropertyActionListener value="CONTROLE_PAUSA" target="#{supervisorBackofficeBean.dialogModal}" />
+						
+						</p:commandButton>
+						
+					</p:column>
+										
+
+				</p:dataTable>
+
+			</div>
+		
+</div>
+	
+
+	</h:form>
+
+</ui:fragment>

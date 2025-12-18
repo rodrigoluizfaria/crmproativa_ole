@@ -1,0 +1,234 @@
+<ui:composition xmlns="http://www.w3.org/1999/xhtml"
+                xmlns:h="http://java.sun.com/jsf/html"
+                xmlns:f="http://java.sun.com/jsf/core"
+                xmlns:ui="http://java.sun.com/jsf/facelets"
+                xmlns:pro="http://proativaservicos.com/functions"
+                xmlns:matriz="http://java.sun.com/jsf/composite/componentes"
+                xmlns:p="http://primefaces.org/ui" template="/WEB-INF/template.xhtml">
+
+
+    <ui:define name="viewname">
+        <div class="bcca-breadcrumb">
+            <div class="bcca-breadcrumb-item bg-primary-500 hover:bg-primary-700">
+                <p:link outcome="/pages/coordenador/logAtendimento"
+                        style="text-decoration: none">LOG ATENDIMENTOS</p:link>
+            </div>
+            <div class="bcca-breadcrumb-item ">COORDENADOR</div>
+        </div>
+
+    </ui:define>
+
+
+    <ui:define name="content">
+
+        <p:growl id="grl" widgetVar="grl" globalOnly="true" escape="false"
+                 showSummary="false" life="8000" showDetail="true" sticky="false">
+
+            <p:autoUpdate/>
+
+        </p:growl>
+
+        <div class="p-grid p-justify-center ">
+
+            <h:form id="form" prependId="false">
+
+                <div class="card">
+
+                    <div class="ui-fluid formgrid grid">
+
+                        <matriz:selectEmpresa id="cmpEmpresa" managedBean="#{coordenadorRegistroAtendimentoBean}"
+                                              value="#{coordenadorRegistroAtendimentoBean.empresa}" ajax="true"
+                                              update=":form:selectCampanha :form:statusCam"
+                                              filter="true" style="col-12 md:col-3"/>
+
+                        <div class="field col-12 md:col-3">
+
+                            <p:outputLabel for="statusCam" value="Status da Campanha:"/>
+
+                            <p:selectOneMenu id="statusCam" value="#{coordenadorRegistroAtendimentoBean.statusCampanha}"
+                                             disabled="#{coordenadorRegistroAtendimentoBean.empresa eq null}"
+                                             filter="true" filterMatchMode="contains">
+
+                                <f:selectItem itemLabel="Selecione" itemValue=""/>
+
+                                <f:selectItems value="#{coordenadorRegistroAtendimentoBean.listStatusCampanhas}"
+                                               var="statusCam" itemLabel="#{statusCam.descricao}"
+                                               itemValue="#{statusCam.id}"/>
+
+                                <p:ajax global="false" process="@this" update="selectCampanha"
+                                        listener="#{coordenadorRegistroAtendimentoBean.changeSelectCampanha()}"
+                                        partialSubmit="true"/>
+
+                            </p:selectOneMenu>
+
+                        </div>
+
+                        <div class="field col-12 md:col-3">
+
+                            <p:outputLabel for="selectCampanha" value="Campanha"/>
+
+                            <p:selectOneMenu id="selectCampanha"
+                                             value="#{coordenadorRegistroAtendimentoBean.idCampanha}"
+                                             disabled="#{coordenadorRegistroAtendimentoBean.empresa eq null}"
+                                             filter="true" filterMatchMode="contains" autoWidth="false">
+
+                                <f:selectItem itemLabel="Selecione" noSelectionOption="true"/>
+
+                                <f:selectItems value="#{coordenadorRegistroAtendimentoBean.listCampanhas}" var="cam"
+                                               itemLabel="#{cam.descricao}" itemValue="#{cam.id}"/>
+
+                            </p:selectOneMenu>
+
+                        </div>
+
+                        <div class="field col-12 md:col-3">
+
+                            <p:outputLabel value="CPF" for="txtCpf"/>
+
+                            <p:inputText id="txtCpf" value="#{coordenadorRegistroAtendimentoBean.strCpf}"
+                                         onkeypress="return somenteNumeros(event)" required="true"
+                                         requiredMessage="#{msg.requerido}"/>
+                            <p:message for="txtCpf"/>
+
+                        </div>
+
+
+                        <div class="field col-12 md:col-3">
+
+                            <p:outputLabel value="Data inicio" for="calendarDataInicioPesquisa"/>
+
+                            <p:datePicker id="calendarDataInicioPesquisa"
+                                          value="#{coordenadorRegistroAtendimentoBean.dataInicio}" showButtonBar="true"
+                                          showIcon="true" readonlyInput="true" pattern="dd/MM/yyyy" locale="pt_BR"
+                                          required="true" requiredMessage="#{msg.requerido}"/>
+
+                            <p:message for="calendarDataInicioPesquisa"/>
+
+                        </div>
+
+                        <div class="field col-12 md:col-3">
+
+                            <p:outputLabel value="Data fim" for="calendarDataFimPesquisa"/>
+
+                            <p:datePicker id="calendarDataFimPesquisa"
+                                          value="#{coordenadorRegistroAtendimentoBean.dataFim}" showButtonBar="true"
+                                          showIcon="true" required="true" requiredMessage="#{msg.requerido}"
+                                          readonlyInput="true" pattern="dd/MM/yyyy" locale="pt_BR"/>
+
+                            <p:message for="calendarDataFimPesquisa"/>
+
+                        </div>
+
+
+                        <div class="field col-12 md:col-3">
+
+                            <p:outputLabel value="&#160;&#160;" id="txtPesquisaEspaco"/>
+
+                            <div>
+                                <p:commandButton value="Pesquisar" id="btnPesquisar"
+                                                 action="#{coordenadorRegistroAtendimentoBean.pesquisar()}"
+                                                 update="@form" icon="pi pi-search" styleClass="raised-button"/>
+
+                                <p:spacer width="10"/>
+
+                                <p:commandButton id="btnExportarPesquisa" icon="pi pi-upload"
+                                                 styleClass="outlined-button" value="#{msg.exportar}" ajax="false"
+                                                 disabled="#{empty coordenadorRegistroAtendimentoBean.listResults}"
+                                                 immediate="true"
+                                                 rendered="#{sessionScope['usuario'].permissaoExportar}">
+
+                                    <p:dataExporter target="tableLogAtendimento" type="xls"
+                                                    fileName="relatorioLogAtendimento_#{coordenadorRegistroAtendimentoBean.strCpf}"/>
+
+                                </p:commandButton>
+
+                            </div>
+
+                        </div>
+
+
+                    </div>
+
+                </div>
+
+
+                <div class="mt-2">
+
+                    <div class="card">
+
+                        <p:dataTable id="tableLogAtendimento" var="result" rows="20"
+                                     paginator="true" paginatorPosition="bottom"
+                                     styleClass="ui-datatable-striped ui-datatable-gridlines"
+                                     value="#{coordenadorRegistroAtendimentoBean.listResults}"
+                                     emptyMessage="#{coordenadorRegistroAtendimentoBean.listResults eq null? '' : msg.emptyMessage}"
+                                     currentPageReportTemplate="[#{msg.totalDeRegistros}: {totalRecords}]"
+                                     paginatorTemplate="{CurrentPageReport}  {FirstPageLink} {PreviousPageLink} {PageLinks} {NextPageLink} {LastPageLink} ">
+
+                            <p:ajax event="page" global="false"/>
+                            <p:ajax event="sort" global="false"/>
+
+                            <p:column headerText="Data" sortBy="#{result[0]}" width="10%">
+                                <h:outputText value="#{result[0]}">
+
+                                    <f:convertDateTime pattern="dd/MM/yyyy HH:mm"/>
+                                </h:outputText>
+                            </p:column>
+
+                            <p:column headerText="Campanha" sortBy="#{result[1]}" width="20%">
+                                <h:outputText value="#{result[1]}"/>
+                            </p:column>
+
+                            <p:column headerText="Atendimento" sortBy="#{result[2]}"
+                                      width="10%">
+                                <h:outputText value="#{result[2]}"/>
+                            </p:column>
+
+                            <p:column headerText="Usuario" sortBy="#{result[3]}" width="15%">
+                                <h:outputText value="#{result[3]}"/>
+                            </p:column>
+
+                            <p:column headerText="Evento" sortBy="#{result[4]}" width="35%">
+                                <h:outputText value="#{result[4]}"/>
+                            </p:column>
+
+                            <p:column headerText="Dados Enviado" sortBy="#{result[5]}" width="10%" exportable="false">
+
+                                <p:commandLink styleClass="rounded-button text-button p-mr-2 p-mb-2" title="baixar"
+                                               rendered="#{not empty result[5]}" ajax="false"
+                                               actionListener="#{coordenadorRegistroAtendimentoBean.baixarArquivoTxt(result[5])}">
+
+                                    <i class="pi pi-download"/>
+
+                                    <p:fileDownload value="#{coordenadorRegistroAtendimentoBean.file}"/>
+
+                                </p:commandLink>
+
+                            </p:column>
+
+
+                            <p:column headerText="Dados Retorno" width="10%" exportable="false">
+
+                                <p:commandLink styleClass="rounded-button text-button" rendered="#{not empty result[6]}"
+                                               title="baixar" ajax="false"
+                                               actionListener="#{coordenadorRegistroAtendimentoBean.baixarArquivoTxt(result[6])}">
+
+                                    <i class="pi pi-download"/>
+
+                                    <p:fileDownload value="#{coordenadorRegistroAtendimentoBean.file}"/>
+
+                                </p:commandLink>
+
+                            </p:column>
+
+
+                        </p:dataTable>
+
+                    </div>
+
+                </div>
+            </h:form>
+        </div>
+    </ui:define>
+
+
+</ui:composition>

@@ -1,0 +1,1376 @@
+<ui:fragment xmlns="http://www.w3.org/1999/xhtml"
+             xmlns:h="http://xmlns.jcp.org/jsf/html"
+             xmlns:f="http://xmlns.jcp.org/jsf/core"
+             xmlns:ui="http://xmlns.jcp.org/jsf/facelets"
+             xmlns:p="http://primefaces.org/ui"
+             xmlns:comboempresa="http://xmlns.jcp.org/jsf/composite/componentes"
+             xmlns:pro="http://proativaservicos.com/functions"
+             xmlns:o="http://omnifaces.org/ui"
+             xmlns:of="http://omnifaces.org/functions"
+             template="/WEB-INF/template.xhtml">
+
+
+    <p:growl id="grl" widgetVar="grl" globalOnly="true" escape="false" showSummary="false" life="8000" showDetail="true"
+             sticky="false">
+
+        <p:autoUpdate/>
+
+    </p:growl>
+
+    <style type="text/css">
+        .ui-datalist {
+
+            margin-bottom: 20px;
+        }
+
+        .ui-datalist-item {
+            padding: 8px;
+        }
+    </style>
+
+    <script>
+        //<![CDATA[
+        function start() {
+            PF('statusDialog').show();
+        }
+
+        function stop() {
+            PF('statusDialog').hide();
+        }
+
+        //]]>
+    </script>
+
+    <p:dialog modal="true" widgetVar="statusDialog" header="Status" draggable="false" closable="false"
+              resizable="false">
+        <i class="pi pi-spinner pi-spin" style="font-size:3rem"></i>
+    </p:dialog>
+
+    <h:form id="form" prependId="false" enctype="multipart/form-data">
+
+        <div class="card">
+
+            <div class="ui-fluid ">
+
+                <div class="formgrid grid">
+
+                    <comboempresa:selectEmpresa id="cmpEmpresa" managedBean="#{campanhaBean}"
+                                                value="#{campanhaBean.campanha.empresa}" ajax="true" style="md:col-2"
+                                                update="linhaFila tabView " filter="false" exibirSelecione="true"/>
+
+                    <div class="field col-12 md:col-2">
+
+                        <p:outputLabel for="nomeCampanha" value="Nome da Campanha:"/>
+
+                        <p:inputText id="nomeCampanha" value="#{campanhaBean.campanha.descricao}" required="true"
+                                     requiredMessage="Requerido"/>
+
+                        <p:message for="nomeCampanha"/>
+
+                    </div>
+
+                    <div class="field col-12 md:col-2">
+
+                        <p:outputLabel for="mascaraCampanha" value="Máscara Campanha:"/>
+
+                        <i class="pi pi-info-circle p-ml-2" id="track"
+                           title="Este campo se informado será exibido na tela ficha atendimento, no campo  [Campanha]."/>
+
+                        <p:inputText id="mascaraCampanha" value="#{campanhaBean.campanha.mascara}"/>
+
+
+                    </div>
+
+                    <div class="field col-12 md:col-2">
+
+                        <p:outputLabel for="statusCam" value="Status da Campanha:"/>
+
+                        <p:selectOneMenu id="statusCam" value="#{campanhaBean.campanha.status}"
+                                         converter="converterStatusCamanha" required="true" requiredMessage="Requerido">
+
+                            <f:selectItem itemLabel="Selecione" noSelectionOption="true"/>
+
+                            <f:selectItems value="#{campanhaBean.listStatusCampanha}" var="statusCam"
+                                           itemLabel="#{statusCam.descricao}" itemValue="#{statusCam}"/>
+
+                        </p:selectOneMenu>
+
+                        <p:message for="statusCam"/>
+
+                    </div>
+
+                    <div class="field col-12 md:col-2">
+
+                        <p:outputLabel for="tipoCam" value="Tipo de Campanha:"/>
+
+                        <p:selectOneMenu id="tipoCam" value="#{campanhaBean.campanha.tipoCampanha}" required="true"
+                                         requiredMessage="#{msg.requerido}" converter="omnifaces.SelectItemsConverter">
+
+                            <f:selectItem itemLabel="Selecione" noSelectionOption="true"/>
+
+                            <f:selectItems value="#{campanhaBean.tipoCampanha}" var="tipoCam"
+                                           itemLabel="#{tipoCam.constante}" itemValue="#{tipoCam}"/>
+
+                            <p:ajax event="change" process="@this" listener="#{campanhaBean.onBuscarIntegracaoDiscador()}"
+                                    global="true" update="linhaFila groupCampanha3c groupArgus formFila" partialSubmit="true"/>
+
+                        </p:selectOneMenu>
+
+                        <p:message for="tipoCam"/>
+
+                    </div>
+
+                    <div class="field col-12 md:col-2">
+
+                        <p:outputLabel for="tipoDiscagem" value="Tipo de Discagem:"/>
+
+                        <p:selectOneMenu id="tipoDiscagem" value="#{campanhaBean.campanha.tipoDiscagem}" required="true"
+                                         requiredMessage="#{msg.requerido}" converter="omnifaces.SelectItemsConverter">
+
+                            <f:selectItem itemLabel="Selecione" noSelectionOption="true"/>
+
+                            <f:selectItems value="#{campanhaBean.tipoDiscagem}" var="tipoDiscagem"
+                                           itemLabel="#{tipoDiscagem.constante}" itemValue="#{tipoDiscagem}"/>
+
+                        </p:selectOneMenu>
+
+                        <p:message for="tipoDiscagem"/>
+
+                    </div>
+
+                    <div class="field col-12 md:col-2">
+
+                        <p:outputLabel for="selectSegmento" value="Segmento:"/>
+
+                        <p:selectOneMenu id="selectSegmento" value="#{campanhaBean.campanha.segmento}" required="true"
+                                         requiredMessage="#{msg.requerido}" converter="omnifaces.SelectItemsConverter">
+
+                            <f:selectItem itemLabel="Selecione" noSelectionOption="true"/>
+
+                            <f:selectItems value="#{campanhaBean.segmento}" var="tipoDiscagem"
+                                           itemLabel="#{tipoDiscagem.constante}" itemValue="#{tipoDiscagem}"/>
+
+                        </p:selectOneMenu>
+
+                        <p:message for="selectSegmento"/>
+
+                    </div>
+
+
+                    <div class="field col-12 md:col-2">
+
+                        <h:outputLabel for="selectInstituicaoFinanceira" value="Instituição Financeira:"/>
+
+                        <p:selectOneMenu id="selectInstituicaoFinanceira"
+                                         value="#{campanhaBean.campanha.instituicaoFinanceira}" required="true"
+                                         requiredMessage="#{msg.requerido}" autoWidth="false" filter="true"
+                                         filterMatchMode="contains" converter="omnifaces.SelectItemsConverter">
+
+                            <f:selectItem itemLabel="Selecione" noSelectionOption="true"/>
+
+                            <f:selectItems value="#{campanhaBean.instituicoesFinanceiras}" var="instituicao"
+                                           itemLabel="#{instituicao.constante}" itemValue="#{instituicao}"/>
+
+                            <p:ajax event="change" update="groupSaque" global="false" process="@this"
+                                    listener="#{campanhaBean.onInstituicaoFinanceiraChange()}"/>
+
+                        </p:selectOneMenu>
+
+                        <p:message for="selectInstituicaoFinanceira"/>
+
+                    </div>
+
+
+                    <div class="field col-12 md:col-2">
+
+                        <p:outputLabel id="lblDataInicio" value="#{msg.dataDeInicio}" for="txtDataInicio"/>
+
+                        <p:calendar id="txtDataInicio" value="#{campanhaBean.campanha.dataInicioCampanha}"
+                                    locale="pt_BR" navigator="true" pattern="dd/MM/yyyy HH:mm" readonlyInput="true"
+                                    required="false" requiredMessage="#{msg.requerido}" showButtonPanel="true"/>
+
+                        <p:message for="txtDataInicio"/>
+
+                    </div>
+
+                    <div class="field col-12 md:col-2">
+
+                        <p:outputLabel id="lblDataTermino" value="#{msg.dataDeTermino}"/>
+
+                        <p:calendar id="txtDataTermino" value="#{campanhaBean.campanha.dataFimCampanha}" locale="pt_BR"
+                                    navigator="true" pattern="dd/MM/yyyy HH:mm" readonlyInput="true"/>
+
+                    </div>
+
+                    <div class="field col-12 md:col-2">
+
+                        <p:outputLabel id="lblAgendamentoInicio" value="#{msg.agendamentoInicio}"
+                                       for="txtAgendamentoInicio"/>
+
+                        <p:calendar id="txtAgendamentoInicio" value="#{campanhaBean.campanha.dataInicioAgendamento}"
+                                    locale="pt_BR" navigator="true" pattern="dd/MM/yyyy HH:mm" readonlyInput="true"
+                                    onchange="validaData(this);" required="false" requiredMessage="#{msg.requerido}"/>
+
+                        <p:message for="txtAgendamentoInicio"/>
+
+                    </div>
+
+                    <div class="field col-12 md:col-2">
+
+                        <p:outputLabel id="lblAgendamentoTermino" value="#{msg.agendamentoTermino}"/>
+
+                        <p:calendar id="txtAgendamentoTermino" value="#{campanhaBean.campanha.dataFimAgendamento}"
+                                    locale="pt_BR" navigator="true" pattern="dd/MM/yyyy HH:mm"
+                                    readonlyInput="true" validatorMessage="Data precisa ser maior que a data atual"/>
+
+                        <p:message for="txtAgendamentoTermino"/>
+
+                    </div>
+
+
+                    <h:panelGroup id="linhaFila" styleClass="col-12" layout="block">
+
+                        <h:panelGroup id="groupFila" layout="block" styleClass="formgrid grid"
+                                      rendered="#{campanhaBean.campanha.tipoCampanha.name() eq 'PREDITIVA'}">
+
+                            <div class="field col-12 md:col-2">
+
+                                <p:outputLabel id="lblFila" value="Fila"/>
+
+                                <p:selectOneMenu id="selectFila" value="#{campanhaBean.campanha.fila}" filter="true"
+                                                 filterMatchMode="startsWith"
+                                                 converter="omnifaces.SelectItemsConverter" autoWidth="false"
+                                                 rendered="true" requiredMessage="#{msg.requerido}">
+
+                                    <f:selectItem itemLabel="Selecione" noSelectionOption="true"/>
+
+                                    <f:selectItems value="#{campanhaBean.listFilas}" var="fila" itemLabel="#{fila.nome}"
+                                                   itemValue="#{fila}"/>
+
+                                </p:selectOneMenu>
+
+                                <p:message for="selectFila"/>
+
+                            </div>
+
+                            <div class="field col-2">
+
+                                <div class="formgrid grid">
+
+                                    <div class="field col-12 md:col-2">
+
+                                        <p:outputLabel id="lblFilaBtn" for="btnFila" value="&#160;"/>
+
+                                        <div>
+
+                                            <p:commandButton id="btnFila" icon="pi pi-folder-open" title="Cadastro fila"
+                                                             update="formFila"
+                                                             styleClass="rounded-button outlined-button"
+                                                             onclick="PF('dlgFila').show()" global="false"/>
+
+                                        </div>
+                                    </div>
+
+                                    <div class="field col-10">
+
+                                        <p:outputLabel id="lblQtdadeDiscagem" for="txtDiscagem"
+                                                       value="Quantidade Rediscagem:"/>
+
+                                        <div>
+
+                                            <p:inputText id="txtDiscagem"
+                                                         value="#{campanhaBean.campanha.quantdadeRediscagem}"
+                                                         title="Quantidades enviadas para o discador a cada fim de atedimento fim de fila. padrão 3"/>
+
+                                        </div>
+
+                                    </div>
+
+                                </div>
+
+                            </div>
+
+                        </h:panelGroup>
+
+
+                        <!-- CAMPANHA 3C -->
+
+                        <h:panelGroup id="groupCampanha3c" layout="block" styleClass="formgrid grid" rendered="#{campanhaBean.campanha.tipoCampanha.name() eq 'PREDITIVA_3C'}">
+
+                            <div class="field col-12 md:col-2">
+
+                                <p:outputLabel id="lblCampanhas3c" value="Campanhas 3C+" for="comboCampanha3c"/>
+
+                                <p:selectOneMenu id="comboCampanha3c" value="#{campanhaBean.campanha.campanhaData3c}"
+                                                 filter="true" filterMatchMode="startsWith"
+                                                 converter="omnifaces.SelectItemsConverter" autoWidth="false"
+                                                 required="true"
+                                                 rendered="true" requiredMessage="#{msg.requerido}">
+
+                                    <f:selectItem itemLabel="Selecione" noSelectionOption="true"/>
+
+                                    <f:selectItems value="#{campanhaBean.campanhas3c}" var="c"
+                                                   itemLabel="#{c.name}" itemValue="#{c}"/>
+
+                                </p:selectOneMenu>
+
+                                <p:message for="comboCampanha3c"/>
+
+                            </div>
+
+                        </h:panelGroup>
+
+
+                    <!-- CAMPANHA Argus -->
+
+                        <h:panelGroup id="groupArgus" layout="block" styleClass="formgrid grid" rendered="#{campanhaBean.campanha.tipoCampanha.name() eq 'PREDITIVA_ARGUS'}">
+
+                            <div class="field col-12 md:col-2">
+
+                                <p:outputLabel id="lblArgus" value="Skills" for="comboArgus"/>
+
+                                <p:selectOneMenu id="comboArgus" value="#{campanhaBean.campanha.skillIten}"
+                                                 filter="true" filterMatchMode="startsWith"
+                                                 converter="omnifaces.SelectItemsConverter" autoWidth="false"
+                                                 required="true"
+                                                 rendered="true" requiredMessage="#{msg.requerido}">
+
+                                    <f:selectItem itemLabel="Selecione" noSelectionOption="true"/>
+
+                                    <f:selectItems value="#{campanhaBean.retornoGetSkillsItens}" var="r"
+                                                   itemLabel="#{r.descricaoSkill}" itemValue="#{r}"/>
+
+                                </p:selectOneMenu>
+
+                                <p:message for="groupArgus"/>
+
+                            </div>
+
+                        </h:panelGroup>
+
+                    </h:panelGroup>
+
+                    <h:panelGroup id="groupSaque" layout="block" styleClass="col-12 formgrid grid">
+
+
+                        <h:panelGroup id="panelSaque" layout="block" styleClass="field col-12 md:col-2">
+
+                            <p:outputLabel id="lblTipoConsulta" for="selectTipoConsulta" value="Tipo de consulta"/>
+
+                            <p:selectOneMenu id="selectTipoConsulta" value="#{campanhaBean.tipoConsultaEscolhido}"
+                                             converter="omnifaces.SelectItemsConverter" filter="true">
+
+                                <f:selectItem itemLabel="Selecione" noSelectionOption="true"/>
+
+                                <f:selectItems itemLabel="#{v.constante}" var="v" itemValue="#{v}"
+                                               value="#{campanhaBean.listaTipoConsultasDisponiveis}"/>
+
+                                <p:ajax event="change" listener="#{campanhaBean.pesquisarConsultaSaque()}"
+                                        global="false" update="groupSaque"/>
+
+                            </p:selectOneMenu>
+
+                        </h:panelGroup>
+
+
+                        <h:panelGroup id="panelIntegra" rendered="#{not empty campanhaBean.listConsultaSaque}"
+                                      layout="block" styleClass="field col-12 md:col-2">
+
+                            <p:outputLabel id="lblIntegracao" for="selectIntegracao" value="Serviços de Integração"/>
+
+                            <p:selectOneMenu id="selectIntegracao" value="#{campanhaBean.campanha.integrarWs}"
+                                             autoWidth="false" converter="omnifaces.SelectItemsConverter" filter="true">
+
+                                <f:selectItem itemLabel="Selecione" noSelectionOption="true"/>
+
+                                <f:selectItems
+                                        itemLabel="#{v.tipoIntegracao.fornecedor} - #{v.tipoIntegracao.constante} - #{v.usr}"
+                                        var="v" itemValue="#{v}" value="#{campanhaBean.listConsultaSaque}"/>
+
+                                <p:ajax event="change" update=":form:groupSaque"/>
+
+                            </p:selectOneMenu>
+
+                        </h:panelGroup>
+
+                        <h:panelGroup id="panelIntegraMaster" rendered="#{not empty campanhaBean.listConsultaMaster}"
+                                      layout="block" styleClass="field col-12 md:col-2">
+
+                            <p:outputLabel id="lblIntegracaoMaster" for="selectIntegracaoMaster" value="Serviços de Integração"/>
+
+                            <p:selectOneMenu id="selectIntegracaoMaster" value="#{campanhaBean.campanha.integrarWs}"
+                                             autoWidth="false" converter="omnifaces.SelectItemsConverter" filter="true">
+
+                                <f:selectItem itemLabel="Selecione" noSelectionOption="true"/>
+
+                                <f:selectItems
+                                        itemLabel="#{v.tipoIntegracao.constante} - #{v.usr}"
+                                        var="v" itemValue="#{v}" value="#{campanhaBean.listConsultaMaster}"/>
+
+                                <p:ajax event="change" update=":form:groupSaque"/>
+
+                            </p:selectOneMenu>
+
+                        </h:panelGroup>
+
+
+                        <h:panelGroup id="panelIntegraSeguroPap"
+                                      rendered="#{not empty campanhaBean.listConsultaSeguroPapCard}" layout="block"
+                                      styleClass="field col-12 md:col-2">
+
+                            <p:outputLabel id="lblIntegracaoSeguroPap" for="selectIntegracaoSeguroPap"
+                                           value="Serviços de Integração"/>
+
+                            <p:selectOneMenu id="selectIntegracaoSeguroPap" value="#{campanhaBean.campanha.integrarWs}"
+                                             autoWidth="false" converter="omnifaces.SelectItemsConverter" filter="true">
+
+                                <f:selectItem itemLabel="Selecione" noSelectionOption="true"/>
+
+                                <f:selectItems
+                                        itemLabel="#{v.tipoIntegracao.fornecedor} - #{v.tipoIntegracao.constante} - #{v.usr}"
+                                        var="v" itemValue="#{v}" value="#{campanhaBean.listConsultaSeguroPapCard}"/>
+
+                                <p:ajax event="change" update=":form:groupSaque" process="@this"/>
+
+                            </p:selectOneMenu>
+
+                        </h:panelGroup>
+
+                        <h:panelGroup id="panelIntegraRefin" rendered="#{not empty campanhaBean.listConsultaRefin}"
+                                      layout="block" styleClass="field col-12 md:col-2">
+
+                            <p:outputLabel id="lblIntegracaoRefin" for="selectIntegracaoRefin"
+                                           value="Serviços de Integração"/>
+
+                            <p:selectOneMenu id="selectIntegracaoRefin" value="#{campanhaBean.campanha.integrarWs}"
+                                             autoWidth="false" converter="omnifaces.SelectItemsConverter" filter="true">
+
+                                <f:selectItem itemLabel="Selecione" noSelectionOption="true"/>
+
+                                <f:selectItems
+                                        itemLabel="#{v.tipoIntegracao.fornecedor} - #{v.tipoIntegracao.constante} - #{v.usr}"
+                                        var="v" itemValue="#{v}" value="#{campanhaBean.listConsultaRefin}"/>
+
+                                <p:ajax event="change" update=":form:groupSaque"
+                                        listener="#{campanhaBean.onChangComboRefin()}"/>
+
+                            </p:selectOneMenu>
+
+                        </h:panelGroup>
+
+
+                        <h:panelGroup id="panelIntegraBeneficio"
+                                      rendered="#{not empty campanhaBean.listConsultaBeneficio}" layout="block"
+                                      styleClass="field col-12 md:col-2">
+
+                            <p:outputLabel for="selectIntegracaoBeneficio" value="Serviços de Integração"/>
+
+                            <p:selectOneMenu id="selectIntegracaoBeneficio" value="#{campanhaBean.campanha.integrarWs}"
+                                             autoWidth="false" converter="omnifaces.SelectItemsConverter" filter="true">
+
+                                <f:selectItem itemLabel="Selecione" noSelectionOption="true"/>
+
+                                <f:selectItems
+                                        itemLabel="#{v.tipoIntegracao.fornecedor} - #{v.tipoIntegracao.constante} - #{v.usr}"
+                                        var="v" itemValue="#{v}" value="#{campanhaBean.listConsultaBeneficio}"/>
+
+                                <p:ajax event="change" update=":form:groupSaque"/>
+
+                            </p:selectOneMenu>
+
+                        </h:panelGroup>
+
+
+                        <h:panelGroup id="panelIntegraRefinProduto"
+                                      rendered="#{not empty campanhaBean.listConsultaRefin}" layout="block"
+                                      styleClass="field col-12 md:col-2">
+
+
+                            <p:outputLabel id="lblIntegracaoRefinProduto" for="selectIntegracaoRefin"
+                                           value="Tabela Refin"/>
+
+                            <p:selectOneMenu id="selectIntegracaoRefinProduto" value="#{campanhaBean.codTabelaRefin}"
+                                             autoWidth="false" converter="omnifaces.SelectItemsConverter" filter="true">
+
+                                <f:selectItem itemLabel="Selecione" noSelectionOption="true"/>
+
+                                <f:selectItems itemLabel="#{v.descricao}" var="v" itemValue="#{v.codigo}"
+                                               value="#{campanhaBean.listProdutosRefin}"/>
+
+                            </p:selectOneMenu>
+
+                        </h:panelGroup>
+
+
+                        <h:panelGroup id="panelValorSaque" rendered="#{not empty campanhaBean.listConsultaSaque or not empty campanhaBean.listConsultaMaster}"
+                                      layout="block" styleClass="col-12 md:col-4 formgrid grid">
+
+                            <div class="field col-12 md:col-6">
+
+                                <p:outputLabel value="Valor saque mínimo" for="txtValorSaqueMinimo"
+                                               id="lblValorSaqueMinimo"/>
+
+                                <p:inputNumber decimalSeparator="," thousandSeparator="."
+                                               value="#{campanhaBean.campanha.valorSaque}"
+                                               tabindex="Informe o valor minimo de saque" id="txtValorSaqueMinimo"/>
+
+                            </div>
+
+                            <div class="field col-12 md:col-6">
+
+                                <p:outputLabel value="Valor saque maximo" for="txtSaqueMaximo" id="lblSaqueMaximo"/>
+
+                                <p:inputNumber decimalSeparator="," thousandSeparator="."
+                                               value="#{campanhaBean.campanha.valorSaqueMaximo}"
+                                               tabindex="Informe o valor maximo de saque" id="txtSaqueMaximo"/>
+
+                            </div>
+
+                        </h:panelGroup>
+
+                        <!-- SEGURO -->
+
+                        <h:panelGroup id="panelValorSeguro"
+                                      rendered="#{not empty campanhaBean.listConsultaSeguroPapCard}" layout="block"
+                                      styleClass="col-12 md:col-4 formgrid grid">
+
+                            <div class="field col-12 md:col-6">
+
+                                <p:outputLabel value="Valor Parcela mínimo" for="txtSeguroMinimo" id="lblSeguroMinimo"/>
+
+                                <p:inputNumber decimalSeparator="," thousandSeparator="."
+                                               value="#{campanhaBean.campanha.valorSaque}"
+                                               tabindex="Informe o valor minimo seguro" id="txtSeguroMinimo"/>
+
+                            </div>
+
+                            <div class="field col-12 md:col-6">
+
+                                <p:outputLabel value="Valor Parcela máxima" for="txtSeguroMaximo"
+                                               id="lblParcelaMaxima"/>
+
+                                <p:inputNumber decimalSeparator="," thousandSeparator="."
+                                               value="#{campanhaBean.campanha.valorSaqueMaximo}"
+                                               tabindex="Informe o valor seguro" id="txtSeguroMaximo"/>
+
+                            </div>
+
+                        </h:panelGroup>
+
+                        <!-- SEGURO -->
+
+                        <!-- REFIN VALOR MAXIMO -->
+
+                        <h:panelGroup id="panelValorRefin" rendered="#{not empty campanhaBean.listConsultaRefin }"
+                                      layout="block" styleClass="col-12 md:col-4 formgrid grid">
+
+                            <div class="p-field col-12p-md-6">
+
+                                <p:outputLabel value="Valor Parcela mínimo" for="txtRefinMinimo" id="lblRefinMinimo"/>
+
+                                <p:inputNumber decimalSeparator="," thousandSeparator="."
+                                               value="#{campanhaBean.campanha.valorSaque}"
+                                               tabindex="Informe o valor minimo de saque" id="txtRefinMinimo"/>
+
+                            </div>
+
+                            <div class="field col-12 md:col-6">
+
+                                <p:outputLabel value="Valor Parcela máxima" for="txtRefinMaximo"
+                                               id="lblParcelaRefinMaxima"/>
+
+                                <p:inputNumber decimalSeparator="," thousandSeparator="."
+                                               value="#{campanhaBean.campanha.valorSaqueMaximo}"
+                                               tabindex="Informe o valor maximo de saque" id="txtRefinMaximo"/>
+
+                            </div>
+
+                        </h:panelGroup>
+
+                        <!-- REFIN VALOR MAXIMO FIM -->
+
+                        <h:panelGroup id="panelConsultaSeguro" layout="block" styleClass="field col-12 md:col-1"
+                                      rendered="#{not empty campanhaBean.listConsultaSaque and campanhaBean.campanha.integrarWs.tipoIntegracao.fornecedor eq 'BMG'}">
+
+                            <p:outputLabel value="Consultar Seguro" id="lblConsultaSeguro"/>
+
+                            <div>
+
+                                <p:selectBooleanCheckbox value="#{campanhaBean.campanha.consultaSeguro}"
+                                                         id="chkConsultaSeguro"/>
+
+                            </div>
+
+                        </h:panelGroup>
+
+                        <h:panelGroup id="panelConsultaSeguroPap" layout="block" styleClass="field col-12 md:col-2"
+                                      rendered="#{not empty campanhaBean.listConsultaSeguroPapCard and campanhaBean.campanha.integrarWs.tipoIntegracao.fornecedor eq 'BMG'}">
+
+                            <p:outputLabel value="Consultar #{campanhaBean.tipoConsultaEscolhido.constante}" id="lblConsultaSeguroPap"/>
+
+                            <div>
+
+                                <p:selectBooleanCheckbox value="#{campanhaBean.campanha.consultaSeguro}"
+                                                         id="chkConsultaSeguroPap"/>
+
+                            </div>
+
+                        </h:panelGroup>
+
+                        <h:panelGroup id="panelConsultaSaque" layout="block" styleClass="field col-12 md:col-2"
+                                      rendered="#{not empty campanhaBean.listConsultaSaque and campanhaBean.tipoConsultaEscolhido eq 'SAQUE'}">
+
+                            <p:outputLabel value="Consultar Saque" id="lblConsultaSaque"/>
+
+                            <div>
+                                <p:selectBooleanCheckbox value="#{campanhaBean.campanha.consultaSaque}"
+                                                         id="chkConsultaSaque"/>
+                            </div>
+
+                        </h:panelGroup>
+
+                        <h:panelGroup id="panelConsultaSaqueMaster" layout="block" styleClass="field col-12 md:col-2"
+                                      rendered="#{not empty campanhaBean.listConsultaMaster and campanhaBean.tipoConsultaEscolhido eq 'SAQUE_MASTER'}">
+
+                            <p:outputLabel value="Consultar Saque" />
+
+                            <div>
+                                <p:selectBooleanCheckbox value="#{campanhaBean.campanha.consultaSaque}"
+                                                         id="chkConsultaSaqueMaster"/>
+                            </div>
+
+                        </h:panelGroup>
+
+                        <h:panelGroup id="panelConsultRefinText" layout="block" styleClass="field col-12 md:col-2"
+                                      rendered="#{not empty campanhaBean.listConsultaRefin and campanhaBean.tipoConsultaEscolhido eq 'REFIN'}">
+
+                            <p:outputLabel value="Consultar Refin" id="lblonsultaRefinSaque"
+                                           for="chkConsultaRefinSaque"/>
+
+                            <div>
+                                <p:selectBooleanCheckbox value="#{campanhaBean.campanha.consultarRefin}"
+                                                         id="chkConsultaRefinSaque" required="true"
+                                                         requiredMessage="Selecione Para consuitar."/>
+
+                                <p:message for="chkConsultaRefinSaque"/>
+                            </div>
+
+
+                        </h:panelGroup>
+
+                        <h:panelGroup id="panelConsultBeneficio" layout="block" styleClass="field col-12 md:col-2"
+                                      rendered="#{not empty campanhaBean.listConsultaBeneficio and campanhaBean.tipoConsultaEscolhido eq 'CARTAO_BENEFICIO'}">
+
+                            <p:outputLabel value="Validar Cartão Benefício" for="chkConsultaBeneficio"/>
+
+                            <div>
+                                <p:selectBooleanCheckbox value="#{campanhaBean.campanha.consultarCartaoBeneficio}"
+                                                         id="chkConsultaBeneficio" required="true"
+                                                         requiredMessage="Selecione Para consuitar."/>
+
+                                <p:message for="chkConsultaRefinSaque"/>
+                            </div>
+
+
+                        </h:panelGroup>
+
+                        <h:panelGroup id="panelIntegraRefinAgendar"
+                                      rendered="#{not empty campanhaBean.listConsultaRefin or not empty campanhaBean.listConsultaBeneficio or not empty campanhaBean.listConsultaSaque or not empty campanhaBean.listConsultaSeguroPapCard or not empty campanhaBean.listConsultaMaster}"
+                                      layout="block" styleClass="field col-12 md:col-2">
+
+                            <div class="field col-12 md:col-6">
+
+                                <p:outputLabel value="Agendar Consulta"/>
+
+                                <div>
+                                    <p:selectBooleanCheckbox value="#{campanhaBean.campanha.agendarConsulta}">
+                                        <p:ajax process="@this" update="panelIntegraRefinDataAgendar"
+                                                global="false"> </p:ajax>
+                                    </p:selectBooleanCheckbox>
+
+
+                                </div>
+
+                            </div>
+
+                        </h:panelGroup>
+
+                        <h:panelGroup id="panelIntegraRefinDataAgendar"
+                                      rendered="#{not empty campanhaBean.listConsultaRefin or not empty campanhaBean.listConsultaBeneficio or not empty campanhaBean.listConsultaSaque or not empty campanhaBean.listConsultaSeguroPapCard or not empty campanhaBean.listConsultaMaster}"
+                                      layout="block" styleClass="field col-12 md:col-2">
+
+
+                            <p:outputLabel value="Data Agendamento consulta"
+                                           rendered="#{campanhaBean.campanha.agendarConsulta}"/>
+
+                            <p:calendar value="#{campanhaBean.campanha.agendamento}" timeInput="true"
+                                        timeControlType="select" locale="pt_BR" navigator="true"
+                                        pattern="dd/MM/yyyy HH:mm"
+                                        validatorMessage="Data precisa ser maior que a data atual"
+                                        rendered="#{campanhaBean.campanha.agendarConsulta}"/>
+
+                            <p:message for="txtAgendamentoTermino"/>
+
+                        </h:panelGroup>
+
+                    </h:panelGroup>
+
+                    <h:panelGroup id="linhaDataCadastro" styleClass="field col-12 grid justify-content-end pl-8"
+                                  layout="block" style="flex: auto">
+
+                        <div class="field col-12 md:col-2">
+
+                            <div>
+                                <p:outputLabel id="lblDataCadastro" value="#{msg.dataCadastro}"/>
+                            </div>
+
+                            <h:outputText id="txtDataCadastro" value="#{campanhaBean.campanha.dataCadastro}">
+
+                                <f:convertDateTime pattern="dd/MM/yyyy HH:mm:ss"/>
+
+                            </h:outputText>
+
+                        </div>
+
+                    </h:panelGroup>
+
+                </div>
+
+            </div>
+        </div>
+
+
+        <div class="card" style="padding: 0.5rem 0;">
+
+            <div>
+                <!-- TAB VIEW -->
+                <h:panelGroup id="panelCampanha" layout="block">
+
+                    <p:tabView id="tabView">
+
+                        <p:tab title="Importação" titletip="Test">
+
+
+                            <div class="col-12">
+
+                                <div class="formgrid grid">
+
+                                    <h:panelGroup styleClass="field col-12 md:col-3" layout="block"
+                                                  style="padding-top: 15px;margin-bottom: 0;">
+
+                                        <i class='pi pi-file-excel'/>
+
+                                        <p:outputLabel value="&#160;&#160;Selecione o Arquivo .csv"/>
+
+                                        <p:fileUpload auto="true" value="#{campanhaBean.file}"
+                                                      label="Escolha" allowTypes="/(\.|\/)(CSV|csv)$/"
+                                                      invalidFileMessage="São permitidas somente CSV (csv,CSV)"
+                                                      update="nomeArquivo " sizeLimit="20000000"
+                                                      listener="#{campanhaBean.handleFileUpload}" id="fileUpload"
+                                                      mode="advanced" invalidSizeMessage="tamanho maximo excedido: "/>
+
+
+                                    </h:panelGroup>
+
+                                    <h:panelGroup styleClass="field col-12 md:col-9" layout="block"
+                                                  style="margin-bottom: 0;">
+
+                                        <h:panelGrid columns="2" cellpadding="5" cellspacing="5">
+
+                                            <p:outputLabel value="Consultar CPF" id="lblConsultaCpf"/>
+
+                                            <p:selectBooleanButton value="#{campanhaBean.campanha.consultaCpf}"
+                                                                   onIcon="pi pi-check" offIcon="pi pi-times"/>
+
+                                            <p:outputLabel value="Nome do Arquivo:"/>
+
+                                            <p:outputLabel styleClass="font-bold text-lg"
+                                                           value=" #{campanhaBean.strNomeArquivo}" id="nomeArquivo"/>
+
+                                        </h:panelGrid>
+
+                                    </h:panelGroup>
+
+
+                                </div>
+
+                                <h:panelGroup id="tableImportacao" styleClass="col-12 " layout="block">
+
+                                    <h:panelGroup layout="block"
+                                                  rendered="#{campanhaBean.campanha.tipoCampanha ne 'PREDITIVA_3C'}">
+
+                                        <p:dataTable emptyMessage="Sem registros"
+                                                     value="#{campanhaBean.campanha.listImportacao}" var="importacao"
+                                                     styleClass="ui-datatable-sm ui-datatable-striped">
+
+                                            <f:facet name="header"> Historico de Importações</f:facet>
+
+
+                                            <p:column headerText="Data Importação" width="20%">
+
+                                                <p:outputLabel value="#{importacao.dataInicio}"/>
+
+                                            </p:column>
+
+                                            <p:column headerText="Arquivo" width="20%">
+
+                                                <p:outputLabel value="#{importacao.nomeArquivo}"/>
+
+                                            </p:column>
+
+                                            <p:column headerText="Qtidade Linhas:" width="10%">
+
+                                                <p:outputLabel value="#{importacao.qtidadeLinhas}"/>
+
+                                            </p:column>
+
+                                            <p:column headerText="Qtidade Importado:" width="10%">
+
+                                                <p:outputLabel value="#{importacao.qtidadeImportado}"/>
+
+                                            </p:column>
+
+                                            <p:column headerText="Importado Discador:" width="10%">
+
+                                                <p:outputLabel value="#{importacao.quantidadeImportadoDiscador}"/>
+
+                                            </p:column>
+
+                                            <p:column headerText="Não Importado Discador:" width="10%">
+
+                                                <p:outputLabel value="#{importacao.quantidadeNaoImportadoDiscador}"/>
+
+                                            </p:column>
+
+                                            <p:column headerText="Retrabalhado:" width="10%">
+
+                                                <p:outputLabel
+                                                        value="#{importacao.quantidadeImportadoDiscadorRetrabalhado}"/>
+
+                                            </p:column>
+
+                                            <p:column headerText="Status Importação:" width="20%">
+
+                                                <p:outputLabel value="#{importacao.statusImportacao.constante}"/>
+
+                                            </p:column>
+
+                                            <p:column headerText="Log Importação:" width="20%">
+
+                                                <p:outputLabel value="#{of:abbreviate(importacao.log,100)}"/>
+
+                                            </p:column>
+                                            <p:column headerText="" width="7%">
+
+
+                                            </p:column>
+
+                                            <p:column headerText="" width="7%">
+
+                                                <p:commandButton title="Log de importação discador"
+                                                                 icon="fa fw fa-table-list" process="@this"
+                                                                 styleClass="ui-button-secondary ui-button-flat rounded-button  mr-3 mb-2"
+                                                                 update=":formTableLog:dlgLayoutLog"
+                                                                 actionListener="#{campanhaBean.onPesquisarLogImportacao(importacao)}"/>
+
+                                                <p:commandButton title="Reconsultar arquivo"
+                                                                 process="@this" icon="fa fw fa-rotate-right"
+                                                                 styleClass="ui-button-secondary ui-button-flat rounded-button p-mr-2 p-mb-2"
+                                                                 update=":formTableLog:dlgLayoutLog"
+                                                                 action="#{campanhaBean.reconsultarWebservice(importacao)}">
+                                                    <p:confirm header="Confirmar"
+                                                               message="Este ação irá limpar os campos observação e valor maximo. Confirma ?"
+                                                               icon="pi pi-exclamation-triangle"/>
+                                                </p:commandButton>
+
+
+                                            </p:column>
+
+                                        </p:dataTable>
+
+                                    </h:panelGroup>
+
+
+                                    <h:panelGroup layout="block"
+                                                  rendered="#{campanhaBean.campanha.tipoCampanha eq 'PREDITIVA_3C'}">
+
+                                        <p:dataTable id="tableImportacao3c" emptyMessage="Sem registros"
+                                                     value="#{campanhaBean.campanha.listImportacao}" var="importacao"
+                                                     rowKey="#{importacao.id}"
+                                                     styleClass="ui-datatable-sm ui-datatable-striped">
+
+                                            <f:facet name="header"> Historico de Importações</f:facet>
+
+
+                                            <p:ajax event="rowToggle" update="tableImportacao3c"
+                                                    process="@this tableImportacao3c"
+                                                    listener="#{campanhaBean.onBuscarLogImportacao(importacao.id)}"/>
+
+                                            <p:column style="width:2rem">
+                                                <p:rowToggler/>
+                                            </p:column>
+
+                                            <p:column headerText="Data Importação" width="20%">
+
+                                                <p:outputLabel value="#{importacao.dataInicio}"/>
+
+                                            </p:column>
+
+                                            <p:column headerText="Arquivo" width="20%">
+
+                                                <p:outputLabel value="#{importacao.nomeArquivo}"/>
+
+                                            </p:column>
+
+                                            <p:column headerText="Qtidade Linhas:" width="10%">
+
+                                                <p:outputLabel value="#{importacao.qtidadeLinhas}"/>
+
+                                            </p:column>
+
+                                            <p:column headerText="Qtidade Importado:" width="10%">
+
+                                                <p:outputLabel value="#{importacao.qtidadeImportado}"/>
+
+                                            </p:column>
+
+                                            <p:column headerText="Importado Discador:" width="10%">
+
+                                                <p:outputLabel value="#{importacao.quantidadeImportadoDiscador}"/>
+
+                                            </p:column>
+
+                                            <p:column headerText="Não Importado Discador:" width="10%">
+
+                                                <p:outputLabel value="#{importacao.quantidadeNaoImportadoDiscador}"/>
+
+                                            </p:column>
+
+                                            <p:column headerText="Retrabalhado:" width="10%">
+
+                                                <p:outputLabel
+                                                        value="#{importacao.quantidadeImportadoDiscadorRetrabalhado}"/>
+
+                                            </p:column>
+
+                                            <p:column headerText="Status Importação:" width="20%">
+
+                                                <p:outputLabel value="#{importacao.statusImportacao.constante}"/>
+
+                                            </p:column>
+
+                                            <p:column headerText="Log Importação:" width="20%">
+
+                                                <p:outputLabel value="#{of:abbreviate(importacao.log,100)}"/>
+
+                                            </p:column>
+                                            <p:column headerText="" width="7%">
+
+
+                                            </p:column>
+
+                                            <p:column headerText="" width="7%">
+
+                                                <p:commandButton id="btnLog" title="Log de importação discador"
+                                                                 icon="fa fw fa-table-list" process="@this"
+                                                                 styleClass="ui-button-secondary ui-button-flat rounded-button  mr-3 mb-2"
+                                                                 update=":formTableLog:dlgLayoutLog"
+                                                                 actionListener="#{campanhaBean.onPesquisarLogImportacao(importacao)}"/>
+
+                                                <p:commandButton id="btnReconsulta" title="Reconsultar arquivo"
+                                                                 process="@this" icon="fa fw fa-rotate-right"
+                                                                 styleClass="ui-button-secondary ui-button-flat rounded-button p-mr-2 p-mb-2"
+                                                                 update=":formTableLog:dlgLayoutLog"
+                                                                 action="#{campanhaBean.reconsultarWebservice(importacao)}">
+                                                    <p:confirm header="Confirmar"
+                                                               message="Este ação irá limpar os campos observação e valor maximo. Confirma ?"
+                                                               icon="pi pi-exclamation-triangle"/>
+                                                </p:commandButton>
+
+
+                                            </p:column>
+
+                                            <p:rowExpansion>
+
+                                                <div class=" field col-12 md:col-8 mt-2 p-4 pl-8">
+
+                                                    <p:dataTable emptyMessage="Sem registros"
+                                                                 value="#{importacao.listLogImportacaoDiscador}"
+                                                                 var="log"
+                                                                 paginatorPosition="bottom"
+                                                                 styleClass="default ui-datatable-striped"
+                                                                 currentPageReportTemplate="[#{msg.totalDeRegistros}: {totalRecords}]"
+                                                                 paginatorTemplate="{CurrentPageReport}  {FirstPageLink} {PreviousPageLink} {PageLinks} {NextPageLink} {LastPageLink}"
+                                                                 rows="10" paginator="true">
+
+
+                                                        <p:ajax event="page" global="false"/>
+                                                        <p:ajax event="sort" global="false"/>
+
+                                                        <p:column headerText="Cod Status" width="10%"
+                                                                  sortBy="#{log.httpStatus}">
+
+                                                            <p:outputLabel value="#{log.httpStatus}"/>
+
+                                                        </p:column>
+
+                                                        <p:column headerText="Tipo da Integração" width="15%"
+                                                                  sortBy="#{log.tipoIntegracao.constante}">
+
+                                                            <p:outputLabel value="#{log.tipoIntegracao.constante}"/>
+
+                                                        </p:column>
+
+                                                        <p:column headerText="Retorno" width="40%"
+                                                                  sortBy="#{log.dadoRetorno}">
+
+                                                            <p:outputLabel value="#{of:abbreviate(log.dadoRetorno,100)}"
+                                                                           title="#{log.dadoRetorno}"/>
+
+                                                        </p:column>
+
+                                                        <p:column headerText="Retrabalhado" sortBy="#{log.retrabalhar}"
+                                                                  width="10%">
+
+                                                            <p:outputLabel
+                                                                    value="#{log.retrabalhar eq true ? 'SIM' : NÃO}"/>
+
+                                                        </p:column>
+
+
+                                                        <p:column headerText="Data Envio" width="20%"
+                                                                  sortBy="#{log.dataEnvio}">
+
+                                                            <p:outputLabel value="#{log.dataEnvio}">
+
+                                                                <f:convertDateTime pattern="dd/MM/yyyy HH:mm:ss"
+                                                                                   timeZone="GMT-03:00"/>
+
+                                                            </p:outputLabel>
+
+                                                        </p:column>
+
+                                                        <p:column headerText="Lista 3C+" width="7%">
+
+
+                                                            <p:commandButton value="Exportar"
+                                                                             title="Baixar arquivo de envio do 3C+"
+                                                                             onclick="PrimeFaces.monitorDownload(start, stop);"
+                                                                             rendered="#{not empty log.nomeArquivo}"
+                                                                             icon="pi pi-cloud-download" actionListener="#{campanhaBean.exportarCampanha3cCSV(log.nomeArquivo)}"
+                                                                             styleClass="ui-button-secondary ui-button-flat rounded-button  mr-3 mb-2"
+                                                                             ajax="false">
+
+                                                                <p:fileDownload value="#{campanhaBean.arquivoMailing3c}"/>
+
+                                                            </p:commandButton>
+
+                                                        </p:column>
+
+                                                    </p:dataTable>
+
+                                                </div>
+
+                                            </p:rowExpansion>
+
+                                        </p:dataTable>
+
+                                    </h:panelGroup>
+
+                                </h:panelGroup>
+
+                            </div>
+
+                        </p:tab>
+
+                        <p:tab title="Equipes">
+
+
+                            <div class="col-6 formgrid grid mt-5">
+
+                                <p:pickList id="pckListEquipe" value="#{campanhaBean.dualListEquipes}" var="equipe"
+                                            itemLabel="#{equipe.nome}" itemValue="#{equipe}" responsive="true"
+                                            showSourceFilter="true"
+                                            showTargetFilter="true">
+
+                                    <f:facet name="sourceCaption">#{msg.naoAssociados}</f:facet>
+                                    <f:facet name="targetCaption">#{msg.associados}</f:facet>
+
+                                    <o:converter converterId="omnifaces.ListConverter"
+                                                 list="#{campanhaBean.listEquipes}"/>
+
+                                </p:pickList>
+
+                            </div>
+
+                        </p:tab>
+
+                        <p:tab title="Produtos">
+
+                            <div class="col-6 formgrid grid mt-5">
+
+                                <p:pickList id="pckListProduto" value="#{campanhaBean.dualListProduto}" var="produto"
+                                            itemLabel="#{produto.descricao}" itemValue="#{produto}" responsive="true"
+                                            showSourceFilter="true" showTargetFilter="true">
+
+                                    <f:facet name="sourceCaption">#{msg.naoAssociados}</f:facet>
+                                    <f:facet name="targetCaption">#{msg.associados}</f:facet>
+
+                                    <o:converter converterId="omnifaces.ListConverter"
+                                                 list="#{campanhaBean.listProdutos}"/>
+
+                                </p:pickList>
+
+                            </div>
+
+                        </p:tab>
+
+                        <p:tab title="Status Atendimento">
+
+                            <div class="col-6 formgrid grid mt-5">
+
+                                <p:pickList id="pckListStatusAtendimento"
+                                            value="#{campanhaBean.dualListStatusAtendimento}" var="status"
+                                            itemLabel="#{status.descricao}" itemValue="#{status}" responsive="true"
+                                            showSourceFilter="true" showTargetFilter="true">
+
+                                    <f:facet name="sourceCaption">#{msg.naoAssociados}</f:facet>
+                                    <f:facet name="targetCaption">#{msg.associados}</f:facet>
+
+                                    <o:converter converterId="omnifaces.ListConverter"
+                                                 list="#{campanhaBean.listStatusAtendimentos}"/>
+
+                                </p:pickList>
+
+                            </div>
+
+                        </p:tab>
+
+                        <p:tab title="Status Telefone">
+
+
+                            <div class="col-6 formgrid grid mt-5">
+
+                                <p:pickList id="pckListStatusTelefone" value="#{campanhaBean.dualListStatusTelefone}"
+                                            var="status"
+                                            itemLabel="#{status.descricao}" itemValue="#{status}" responsive="true"
+                                            showSourceFilter="true" showTargetFilter="true">
+
+                                    <f:facet name="sourceCaption">#{msg.naoAssociados}</f:facet>
+                                    <f:facet name="targetCaption">#{msg.associados}</f:facet>
+
+                                    <o:converter converterId="omnifaces.ListConverter"
+                                                 list="#{campanhaBean.listStatusTelefone}"/>
+
+                                </p:pickList>
+
+                            </div>
+
+                        </p:tab>
+
+                        <p:tab title="Pausas">
+
+
+                            <div class="col-6 formgrid grid mt-5">
+
+                                <p:pickList id="pckListPausa" value="#{campanhaBean.dualListPausa}" var="pausa"
+                                            itemLabel="#{pausa.descricao}" itemValue="#{pausa}" responsive="true"
+                                            showSourceFilter="true"
+                                            showTargetFilter="true">
+
+                                    <f:facet name="sourceCaption">#{msg.naoAssociados}</f:facet>
+                                    <f:facet name="targetCaption">#{msg.associados}</f:facet>
+
+                                    <o:converter converterId="omnifaces.ListConverter"
+                                                 list="#{campanhaBean.listPausa}"/>
+
+                                </p:pickList>
+
+                            </div>
+
+                        </p:tab>
+
+                        <p:tab title="Forma Pagamento">
+
+
+                            <div class="col-6 formgrid grid mt-5">
+
+                                <p:pickList id="pckListFormaPagamento" value="#{campanhaBean.dualListFormaPagamento}"
+                                            var="forma" itemLabel="#{forma.descricao}" itemValue="#{forma}"
+                                            responsive="true" showSourceFilter="true" showTargetFilter="true">
+
+                                    <f:facet name="sourceCaption">#{msg.naoAssociados}</f:facet>
+                                    <f:facet name="targetCaption">#{msg.associados}</f:facet>
+
+                                    <o:converter converterId="omnifaces.ListConverter"
+                                                 list="#{campanhaBean.listFormaPagamento}"/>
+
+                                </p:pickList>
+
+                            </div>
+
+                        </p:tab>
+
+                        <p:tab title="Formulários">
+
+
+                            <div class="col-6 formgrid grid mt-5">
+
+                                <p:pickList id="pckListFormulario" value="#{campanhaBean.dualListQuestionario}"
+                                            var="formulario" itemLabel="#{formulario.descricao}"
+                                            itemValue="#{formulario}"
+                                            responsive="true" showSourceFilter="true" showTargetFilter="true">
+
+                                    <f:facet name="sourceCaption">#{msg.naoAssociados}</f:facet>
+                                    <f:facet name="targetCaption">#{msg.associados}</f:facet>
+
+                                    <o:converter converterId="omnifaces.ListConverter"
+                                                 list="#{campanhaBean.listFormularios}"/>
+
+                                </p:pickList>
+
+                            </div>
+
+                        </p:tab>
+
+                        <p:tab title="Orientação">
+
+                            <div class="ui-fluid formgrid grid mt-5">
+
+                                <div class="field col-12 md:col-9">
+
+                                    <!-- <p:textEditor widgetVar="editor1" height="300"
+                                                     allowImages="false" style="margin-bottom:10px"
+                                                     value="#{campanhaBean.campanha.orientacao}" secure="false">
+
+                                           <f:facet name="toolbar">
+                                                   <span class="ql-formats">
+                                                       <button class="ql-bold" />
+                                                       <button class="ql-italic" />
+                                                       <button class="ql-underline" />
+                                                       <button class="ql-strike" />
+                                                   </span>
+                                               <span class="ql-formats">
+                                                       <select class="ql-font" />
+                                                       <select class="ql-size" />
+                                                   </span>
+
+                                               <span class="ql-formats">
+                                                   <select class="ql-color"/>
+                                                       <select class="ql-background"/>
+                                                   </span>
+                                               <span class="ql-formats">
+                                                       <button class="ql-script" value="sub"/>
+                                                       <button class="ql-script" value="super"/>
+                                                   </span>
+                                               <span class="ql-formats">
+                                                       <button class="ql-header" value="1"/>
+                                                       <button class="ql-header" value="2"/>
+                                                       <button class="ql-blockquote"/>
+                                                       <button class="ql-code-block"/>
+                                                   </span>
+                                               <span class="ql-formats">
+                                                       <button class="ql-list" value="ordered"/>
+                                                       <button class="ql-list" value="bullet"/>
+                                                       <button class="ql-indent" value="-1"/>
+                                                       <button class="ql-indent" value="+1"/>
+                                                   </span>
+                                               <span class="ql-formats">
+                                                       <button class="ql-direction" value="rtl"/> <select
+                                                       class="ql-align"/>
+                                                   </span>
+                                           </f:facet>
+
+
+                                       </p:textEditor>
+   -->
+                                </div>
+
+                                <div class="field col-12 md:col-3">
+
+                                    <p:dataList value="#{campanhaBean.variaveisSctiptOrientacao}" var="script"
+                                                type="definition">
+
+                                        <f:facet name="header">
+                                            Variaveis
+                                        </f:facet>
+
+                                        <span class="p-mb-3">	${script.id} - #{script.constante} - (#{script.descricao})</span>
+
+                                    </p:dataList>
+
+                                </div>
+
+                            </div>
+
+                        </p:tab>
+
+                        <p:tab title="Informação Atendimento">
+
+                            <div class="ui-fluid formgrid grid mt-5">
+
+                                <div class="field col-12 md:col-6">
+
+                                    <p:inputTextarea cols="50" rows="10" queryDelay="750"
+                                                     minQueryLength="4" id="informacoes" maxlength="100"
+                                                     counterTemplate="{0} caracteres restantes" counter="display"
+                                                     value="#{campanhaBean.campanha.menssagemAtendimento}"/>
+
+                                    <h:outputText id="display"/>
+
+                                </div>
+
+                            </div>
+
+                        </p:tab>
+
+                    </p:tabView>
+
+
+                </h:panelGroup>
+
+                <div class="field col-12 mt-3 text-center">
+
+                    <p:commandButton value="Salvar" styleClass="mr-3 ui-button-raised" id="btnSalvar" icon="pi pi-save"
+                                     action="#{campanhaBean.preImportar}" update=":formTable:tableImportacao"/>
+
+                    <p:commandButton value="Voltar" id="btnVoltar" icon="pi pi-chevron-circle-left"
+                                     styleClass="ui-button-outlined ui-button-raised mr-3"
+                                     actionListener="#{campanhaBean.voltar()}"
+                                     ajax="false" immediate="true" update="@form"/>
+
+
+                    <p:commandButton value="Exportar" id="btnExportar"
+                                     onclick="PrimeFaces.monitorDownload(start, stop);"
+                                     icon="pi pi-file-excel" styleClass="ui-button-outlined ui-button-raised"
+                                     ajax="false"
+                                     rendered="#{campanhaBean.campanha.id ne null}">
+
+                        <p:fileDownload value="#{campanhaBean.arquivoExtrator}"/>
+
+                    </p:commandButton>
+
+
+                </div>
+
+
+            </div>
+
+        </div>
+
+
+        <p:confirmDialog global="true">
+
+            <p:commandButton value="Sim" type="button" styleClass="ui-confirmdialog-yes" icon="pi pi-check"/>
+            <p:commandButton value="Não" type="button" styleClass="ui-confirmdialog-no" icon="pi pi-times"/>
+
+        </p:confirmDialog>
+
+
+    </h:form>
+
+    <ui:include src="/pages/cadastro/campanhaFila.xhtml"/>
+    <ui:include src="/pages/cadastro/campanhaDialogLogImportacao.xhtml"/>
+
+</ui:fragment>
+

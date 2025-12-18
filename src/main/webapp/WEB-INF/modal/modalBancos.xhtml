@@ -1,0 +1,46 @@
+<ui:fragment xmlns="http://www.w3.org/1999/xhtml"
+	xmlns:h="http://java.sun.com/jsf/html"
+	xmlns:f="http://java.sun.com/jsf/core"
+	xmlns:o="http://omnifaces.org/ui"
+	xmlns:ui="http://java.sun.com/jsf/facelets"
+	xmlns:p="http://primefaces.org/ui">
+
+	<!--  -->
+	<p:dialog id="dlgBancos" widgetVar="dlgBancos" modal="false" minimizable="true" draggable="true" resizable="true" closable="true" visible="false" width="60%" header="Bancos">
+
+		<h:form id="formBanco" prependId="false">
+
+			<div class="p-col-12">
+
+				<div >
+
+					<p:dataTable id="listaBanco" rows="10" paginator="true"
+						value="#{sistemaBean.bancos}" var="b"
+						currentPageReportTemplate="[#{msg.totalDeRegistros}: {totalRecords}]"
+						paginatorPosition="bottom" emptyMessage="#{msg.emptyMessage}"
+						paginatorTemplate="{CurrentPageReport}  {FirstPageLink} {PreviousPageLink} {PageLinks} {NextPageLink} {LastPageLink}"
+						styleClass="ui-datatable-striped ui-datatable-sm " >
+
+						<p:ajax event="page" global="false" />
+						<p:ajax event="sort" global="false" />
+						<p:ajax event="filter" global="false" />
+
+						<p:column width="10%" headerText="Codigo" sortBy="#{b.numeroBanco}" 	filterBy="#{b.numeroBanco}" filterMatchMode="startsWith">
+							<h:outputText value="#{b.numeroBanco}" />
+						</p:column>
+
+						<p:column headerText="Banco" sortBy="#{b.constante}" filterBy="#{b.constante}" filterMatchMode="contains">
+
+							<p:outputLabel value="#{b.constante}" />
+
+						</p:column>
+
+					</p:dataTable>
+				</div>
+			</div>
+
+		</h:form>
+
+	</p:dialog>
+
+</ui:fragment>

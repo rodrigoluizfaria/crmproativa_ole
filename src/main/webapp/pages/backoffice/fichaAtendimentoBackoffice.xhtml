@@ -1,0 +1,1796 @@
+<ui:composition xmlns="http://www.w3.org/1999/xhtml"
+                xmlns:h="http://java.sun.com/jsf/html"
+                xmlns:f="http://java.sun.com/jsf/core"
+                xmlns:ui="http://java.sun.com/jsf/facelets"
+                xmlns:cc="http://java.sun.com/jsf/composite/componentes"
+                xmlns:c="http://java.sun.com/jsp/jstl/core"
+                xmlns:of="http://omnifaces.org/functions"
+                xmlns:p="http://primefaces.org/ui" template="/WEB-INF/template.xhtml">
+
+
+
+    <ui:define name="viewname">
+        <div class="bcca-breadcrumb">
+            <div class="bcca-breadcrumb-item bg-primary-500 hover:bg-primary-700">
+                <p:link outcome="/pages/backoffice/acompanhamentoConsistencias"
+                        style="text-decoration: none">ATENDIMENTO BACKOFFICE
+                <i class="fa fa-headset text-white"></i>
+                </p:link>
+            </div>
+            <div class="bcca-breadcrumb-item ">BACKOFFICE</div>
+        </div>
+
+    </ui:define>
+
+    <ui:define name="content">
+
+        <p:growl id="grl" widgetVar="grl" globalOnly="true" escape="false" showSummary="false" life="8000"
+                 showDetail="true" sticky="false">
+
+            <p:autoUpdate/>
+
+        </p:growl>
+
+        <p:growl id="grl2" widgetVar="grl2" escape="false" showSummary="false" life="8000" showDetail="true"
+                 sticky="false">
+
+        </p:growl>
+
+        <h:outputScript name="js/pst-phone.js?v1" rendered="#{fichaAtendimentoBackofficeBean.carregarPstJS}"/>
+
+
+        <h:form id="formVonix" prependId="false" rendered="#{fichaAtendimentoBackofficeBean.carregarVonixJS}">
+
+
+            <h:outputScript target="head" library="js" name="vonix-1.6.min.js"/>
+
+            <h:outputScript target="head" library="js" name="vonix-integra_bko.js"/>
+
+            <h:outputScript target="head" library="js" name="script.js"/>
+
+            <script type="text/javascript">
+
+                //<![CDATA[
+
+
+                console.log("Iniciando scripts vonix");
+
+                var servidor = "#{fichaAtendimentoBean.usuario.pontoAtendimento.pabx.url}";
+                var login = "#{fichaAtendimentoBean.usuario.pontoAtendimento.ramal}";
+
+                var isAutomatico = false;
+
+                console.log("Servidor: " + servidor + " | Login: " + login + " | Preditivo: " + isAutomatico);
+                iniciarIntegraVonixAtivo(servidor, login, isAutomatico);
+
+                //]]>
+            </script>
+
+            <style>
+                .table-integrado {
+                    background-color: #d9edf7 !important;
+                    background-image: none !important;
+                    color: #31708f !important;
+                    border-color: #bce8f1;
+                }
+
+                .table-cancelada {
+                    color: #8a6d3b !important;
+                    background-color: #fcf8e3 !important;
+                    border-color: #faebcc !important;
+                }
+
+            </style>
+
+        </h:form>
+
+        <h:form prependId="false" id="formConteudo">
+
+            <h:panelGroup rendered="#{not empty fichaAtendimentoBackofficeBean.atendimentoBackoffice}"
+                          id="groupAtendimento">
+
+                <div class="col-12">
+
+                    <div class="">
+
+                        <div class="ui-fluid  formgrid grid">
+
+                            <div class="field col-12 md:col-3 ">
+
+                                <div class="card" style="display: inline-flex; padding: 0px; width: 100%">
+
+                                    <div style="border-right: 1px solid #dee2e6; padding: 15px;">
+
+                                        <i class="pi pi-user" aria-hidden="true" style="font-size: 2rem"></i>
+                                    </div>
+
+                                    <div style="padding: 19px 10px 0px 10px;">
+
+                                        <h5 style="font-weight: bold;">CLIENTE:    #{fichaAtendimentoBackofficeBean.atendimentoBackoffice.nome}</h5>
+
+                                    </div>
+
+                                </div>
+
+                            </div>
+
+                            <div class="field col-12 md:col-3 ">
+
+                                <div class="card" style="display: inline-flex; padding: 0px; width: 100%;">
+
+                                    <div style="border-right: 1px solid #dee2e6; padding: 15px;">
+
+                                        <i class="pi pi-file" aria-hidden="true" style="font-size: 2rem"></i>
+                                    </div>
+
+                                    <div style="padding: 19px 10px 0px 10px;">
+
+                                        <h5 style="font-weight: bold;">ADESÃO: #{fichaAtendimentoBackofficeBean.atendimentoBackoffice.adesao}</h5>
+
+                                    </div>
+
+                                </div>
+
+                            </div>
+
+                            <div class="field col-12 md:col-3 ">
+
+                                <h:panelGroup styleClass="card" id="card"
+                                              style="display: inline-flex; padding: 0px; width: 100%; cursor: pointer;"
+                                              layout="block" onclick="PF('panel').toggle()">
+
+                                    <div style="border-right: 1px solid #dee2e6; padding: 15px;">
+
+                                        <i class="pi pi-tags" aria-hidden="true" style="font-size: 2rem"></i>
+                                    </div>
+
+                                    <div style="padding: 19px 10px 0px 10px;">
+
+                                        <h5 style="font-weight: bold;">NÚMERO DE CONSISTÊNCIAS:    #{fichaAtendimentoBackofficeBean.atendimentoBackoffice.listConsistencias.size()}</h5>
+
+                                    </div>
+
+                                </h:panelGroup>
+
+                            </div>
+
+                            <div class="field col-12 md:col-3 ">
+
+                                <div class="card" style="display: inline-flex; padding: 0px; width: 100%;">
+
+                                    <div style="border-right: 1px solid #dee2e6; padding: 15px;">
+
+                                        <i class="pi pi-file" aria-hidden="true" style="font-size: 2rem"></i>
+                                    </div>
+
+                                    <div style="padding: 19px 10px 0px 10px;">
+                                        <h5 style="font-weight: bold;">LOJA: #{fichaAtendimentoBackofficeBean.atendimentoBackoffice.codLoja}</h5>
+                                    </div>
+
+                                </div>
+
+                            </div>
+
+                        </div>
+
+                    </div>
+
+                </div>
+
+                <div class="ui-fluid formgrid grid">
+
+                    <div class="field col-8">
+
+                        <div class="ui-fluid formgrid grid">
+
+                            <div class=" col-12">
+
+                                <p:panel header="Dados da importação" toggleable="true" closable="false"
+                                         toggleSpeed="500" closeSpeed="500" widgetVar="panelDadosPessoais"
+                                         id="panelDadosPessoais">
+
+                                    <f:facet name="header">
+                                        <i class="fa fa-table" aria-hidden="true"/> Dados da importação
+                                    </f:facet>
+
+                                    <div class="ui-fluid formgrid grid">
+
+                                        <div class="field col-12 md:col-4">
+
+                                            <p:outputLabel value="CPF" for="txtCpf"/>
+                                            <p:inputText
+                                                    value="#{fichaAtendimentoBackofficeBean.atendimentoBackoffice.cpf}"
+                                                    id="txtCpf" maxlength="11" required="true"
+                                                    requiredMessage="Requerido"/>
+                                            <p:message for="txtCpf"/>
+
+                                        </div>
+
+                                        <div class="field col-12 md:col-4">
+
+                                            <p:outputLabel value="Nome" for="txtNome"/>
+                                            <p:inputText
+                                                    value="#{fichaAtendimentoBackofficeBean.atendimentoBackoffice.nome}"
+                                                    id="txtNome" required="true" requiredMessage="Requerido"/>
+                                            <p:message for="txtNome"/>
+
+                                        </div>
+
+                                        <div class="field col-12 md:col-4">
+
+                                            <p:outputLabel value="Adesão" for="txtAdesao"/>
+                                            <p:inputText
+                                                    value="#{fichaAtendimentoBackofficeBean.atendimentoBackoffice.adesao}"
+                                                    id="txtAdesao" required="true" requiredMessage="Requerido">
+                                                <p:ajax process="@this" event="blur" global="false"/>
+                                            </p:inputText>
+                                            <p:message for="txtAdesao"/>
+                                        </div>
+
+                                        <div class="field col-12 md:col-2">
+
+                                            <p:outputLabel value="Matricula:" for="txtMatricula"/>
+                                            <p:inputText
+                                                    value="#{fichaAtendimentoBackofficeBean.atendimentoBackoffice.matricula}"
+                                                    id="txtMatricula"/>
+
+
+                                        </div>
+
+                                        <div class="field col-12 md:col-2">
+
+                                            <p:outputLabel value="Entidade:" for="txtEntidade"/>
+
+                                            <p:inputText
+                                                    value="#{fichaAtendimentoBackofficeBean.atendimentoBackoffice.entidade}"
+                                                    id="txtEntidade"/>
+
+                                        </div>
+
+                                        <div class="field col-12 md:col-4">
+
+                                            <p:outputLabel value="Serviço" for="txtServico"/>
+                                            <p:inputText
+                                                    value="#{fichaAtendimentoBackofficeBean.atendimentoBackoffice.servico}"
+                                                    id="txtServico"/>
+
+                                        </div>
+
+                                        <div class="field col-12 md:col-3">
+
+                                            <p:outputLabel value="Valor" for="txtValor"/>
+                                            <p:inputNumber id="txtValor"
+                                                           value="#{fichaAtendimentoBackofficeBean.atendimentoBackoffice.valor}"
+                                                           decimalSeparator="," thousandSeparator="." decimalPlaces="2"
+                                                           maxValue="999999" requiredMessage="#{msg.requerido}"
+                                                           required="true"/>
+                                            <p:message for="txtValor"/>
+                                        </div>
+
+                                        <div class="field col-12 md:col-3">
+
+                                            <p:outputLabel value="Status Extrator:  " for="txtStatusExtrator"
+                                                           styleClass="mr-3"
+                                                           rendered="#{not empty fichaAtendimentoBackofficeBean.atendimentoBackoffice.statusExtrator}"/>
+                                            <p:outputLabel
+                                                    value=" #{fichaAtendimentoBackofficeBean.atendimentoBackoffice.statusExtrator}"
+                                                    id="txtStatusExtrator"/>
+
+                                        </div>
+
+                                    </div>
+
+                                </p:panel>
+
+                            </div>
+
+                            <div class="col-12 mt-3">
+
+                                <div class="">
+
+                                    <p:panel header="Registrar" toggleable="true" closable="false" toggleSpeed="500"
+                                             closeSpeed="500" widgetVar="panelRegistrar" id="panelRegistrar"
+                                             footer="Protocolo: #{fichaAtendimentoBackofficeBean.atendimentoBackoffice.protocolo}">
+
+                                        <f:facet name="header">
+                                            <i class="fa fa-pencil" aria-hidden="true"/> Registrar
+                                        </f:facet>
+
+                                        <div class="ui-fluid  formgrid grid">
+
+                                            <div class="field col-12 md:col-4">
+
+                                                <div class="ui-fluid formgrid grid">
+
+                                                    <div class="field col-12">
+
+                                                        <p:outputLabel value="Observação" for="txtManifentos"/>
+
+                                                        <p:inputTextarea autoResize="false" style="resize: none;"
+                                                                         rows="5" cols="10"
+                                                                         value="#{fichaAtendimentoBackofficeBean.historicoAtendimentoBackoffice.observacao}"
+                                                                         id="txtManifentos"/>
+
+
+                                                    </div>
+
+
+                                                    <h:panelGroup id="groupProduto" layout="block"
+                                                                  styleClass="field col-12" style="margin-bottom: 0px;">
+
+                                                        <p:outputLabel value="Produto"/>
+
+                                                        <p:selectOneMenu id="selectOneProduto"
+                                                                         value="#{fichaAtendimentoBackofficeBean.atendimentoBackoffice.produto}"
+                                                                         converter="omnifaces.SelectItemsConverter"
+                                                                         filter="true" filterMatchMode="contains"
+                                                                         autoWidth="false">
+
+                                                            <f:selectItem itemLabel="Selecione"
+                                                                          noSelectionOption="true"/>
+
+                                                            <f:selectItems
+                                                                    value="#{fichaAtendimentoBackofficeBean.listProdutos}"
+                                                                    var="produto" itemLabel="#{produto.descricao}"
+                                                                    itemValue="#{produto}"/>
+
+                                                        </p:selectOneMenu>
+
+
+                                                    </h:panelGroup>
+
+                                                </div>
+
+
+                                            </div>
+
+                                            <h:panelGroup id="panelStatusAtendimento" layout="block"
+                                                          styleClass="ui-fluid  formgrid grid col-4"
+                                                          style="padding-right: 0;">
+
+                                                <h:panelGroup id="groupStatusAtendimento" layout="block"
+                                                              styleClass="field col-12 ">
+
+                                                    <p:outputLabel value="Status do Atendimento"/>
+
+                                                    <p:selectOneMenu id="selectOneStatusAtn"
+                                                                     value="#{fichaAtendimentoBackofficeBean.historicoAtendimentoBackoffice.status}"
+                                                                     converter="omnifaces.SelectItemsConverter"
+                                                                     filter="true" filterMatchMode="contains"
+                                                                     autoWidth="false">
+
+                                                        <f:selectItem itemLabel="Selecione" itemValue=""/>
+
+                                                        <f:selectItems
+                                                                value="#{fichaAtendimentoBackofficeBean.listStatusAtendimentos}"
+                                                                var="status" itemLabel="#{status.descricao}"
+                                                                itemValue="#{status}"/>
+
+                                                        <p:ajax update="panelStatusAtendimento" global="false"
+                                                                process="@this" partialSubmit="true"
+                                                                listener="#{fichaAtendimentoBackofficeBean.onChangeStatus}"/>
+
+                                                    </p:selectOneMenu>
+
+                                                    <p:message for="selectOneStatusAtn"/>
+
+                                                </h:panelGroup>
+
+
+                                                <h:panelGroup id="groupMotivo" layout="block" styleClass="field col-12 "
+                                                              rendered="#{not empty fichaAtendimentoBackofficeBean.historicoAtendimentoBackoffice.status.listMotivos}">
+
+                                                    <p:outputLabel value="Motivo"/>
+
+                                                    <p:selectOneMenu id="selectOneMotivo"
+                                                                     value="#{fichaAtendimentoBackofficeBean.historicoAtendimentoBackoffice.motivo}"
+                                                                     requiredMessage="Motivo deve ser selecionado"
+                                                                     converter="omnifaces.SelectItemsConverter"
+                                                                     filter="true" filterMatchMode="contains"
+                                                                     autoWidth="false">
+
+                                                        <f:selectItem itemLabel="Selecione" itemValue=""/>
+
+                                                        <f:selectItems
+                                                                value="#{fichaAtendimentoBackofficeBean.historicoAtendimentoBackoffice.status.listMotivos}"
+                                                                var="status" itemLabel="#{status.descricao}"
+                                                                itemValue="#{status}"/>
+
+                                                        <p:ajax update="panelStatusAtendimento groupAgendamento"
+                                                                global="false" process="@this" partialSubmit="true"
+                                                                listener="#{fichaAtendimentoBackofficeBean.onSelectMotivo}">
+                                                            <f:param name="OBRIGATORIO_VALIDATOR" value="true"/>
+                                                        </p:ajax>
+
+                                                    </p:selectOneMenu>
+
+                                                    <p:message for="selectOneMotivo"/>
+
+                                                </h:panelGroup>
+
+
+                                                <h:panelGroup id="groupSubMotivo" layout="block"
+                                                              styleClass="field col-12"
+                                                              rendered="#{not empty fichaAtendimentoBackofficeBean.historicoAtendimentoBackoffice.motivo.listSubMotivos}">
+
+                                                    <p:outputLabel value="Submotivo"/>
+
+                                                    <p:selectOneMenu id="selectOneSubMotivo"
+                                                                     value="#{fichaAtendimentoBackofficeBean.historicoAtendimentoBackoffice.submotivo}"
+                                                                     requiredMessage="Submotivo deve ser selecionado"
+                                                                     converter="omnifaces.SelectItemsConverter"
+                                                                     required="true" filter="true"
+                                                                     filterMatchMode="contains" autoWidth="false">
+
+                                                        <f:selectItems
+                                                                value="#{fichaAtendimentoBackofficeBean.historicoAtendimentoBackoffice.motivo.listSubMotivos}"
+                                                                var="status" itemLabel="#{status.descricao}"
+                                                                itemValue="#{status}"/>
+
+                                                        <p:ajax update="groupAgendamento" global="false" process="@this"
+                                                                partialSubmit="true"/>
+
+                                                    </p:selectOneMenu>
+
+                                                    <p:message for="selectOneSubMotivo"/>
+
+                                                </h:panelGroup>
+
+                                                <h:panelGroup id="groupAgendamento" styleClass="field col-12 md:col-12">
+
+                                                    <h:panelGroup id="groupAgendamento2" layout="block"
+                                                                  style="padding: 0" styleClass="'field col-12"
+                                                                  rendered="#{not empty fichaAtendimentoBackofficeBean.historicoAtendimentoBackoffice.submotivo and (fichaAtendimentoBackofficeBean.historicoAtendimentoBackoffice.submotivo.acao eq 'AGENDAR' or fichaAtendimentoBackofficeBean.historicoAtendimentoBackoffice.submotivo.acao eq 'AGENDAR_GLOBAL')}">
+
+                                                        <p:outputLabel value="Data do Agendamento:"/>
+
+                                                        <p:calendar showOn="button" showButtonPanel="true"
+                                                                    navigator="true" readonlyInput="true"
+                                                                    pattern="dd/MM/yyyy HH:mm"
+                                                                    value="#{fichaAtendimentoBackofficeBean.historicoAtendimentoBackoffice.agendamento}"/>
+
+                                                    </h:panelGroup>
+
+                                                </h:panelGroup>
+
+                                            </h:panelGroup>
+
+                                            <h:panelGroup layout="block" styleClass="ui-fluid  formgrid grid col-4"
+                                                          rendered="#{not empty fichaAtendimentoBackofficeBean.listLojas}">
+
+                                                <h:panelGroup id="groupLojas" layout="block" styleClass="field col-12 ">
+
+                                                    <p:outputLabel value="Loja"/>
+
+                                                    <p:selectOneMenu id="selectOneLojas"
+                                                                     value="#{fichaAtendimentoBackofficeBean.atendimentoBackoffice.loja}"
+                                                                     requiredMessage="Loja deve ser selecionado"
+                                                                     converter="omnifaces.SelectItemsConverter"
+                                                                     required="true" filter="true"
+                                                                     filterMatchMode="contains" autoWidth="false">
+
+                                                        <f:selectItem itemLabel="Selecione" noSelectionOption="true"/>
+
+                                                        <f:selectItems
+                                                                value="#{fichaAtendimentoBackofficeBean.listLojas}"
+                                                                var="loja" itemLabel="#{loja.codigoLoja}"
+                                                                itemValue="#{loja}"/>
+
+                                                    </p:selectOneMenu>
+
+                                                    <p:message for="selectOneLojas"/>
+
+                                                </h:panelGroup>
+
+                                            </h:panelGroup>
+
+                                        </div>
+
+                                    </p:panel>
+
+                                </div>
+
+                            </div>
+
+                            <div class="col-12  mt-3">
+
+                                <div class="">
+
+                                    <p:panel header="Consistências" id="panelConsistencias" collapsed="false"
+                                             toggleable="true" closable="false" toggleSpeed="500" closeSpeed="500"
+                                             widgetVar="panel">
+
+                                        <f:facet name="header">
+
+                                            <i class="fa fa-tag" aria-hidden="true"/> Consistencias
+
+                                            <!-- 	<h:panelGroup rendered="#{not empty fichaAtendimentoBackofficeBean.atendimentoBackoffice.listConsistencias}">
+                                                    Adicionar Consistencia
+                                                    <p:commandButton value="Adicionar"  styleClass="ml-5" icon="pi pi-plus-circle" onclick="PF('dlgConsistencias').show();"  process="@this" update="formConsistencia  card" />
+                                                </h:panelGroup> -->
+
+                                        </f:facet>
+
+
+                                        <h:panelGroup id="grConsistencias">
+
+                                            <h:panelGroup
+                                                    rendered="#{empty fichaAtendimentoBackofficeBean.atendimentoBackoffice.listConsistencias}">
+                                                Nenhuma consistencia encontrada,
+                                                <p:commandButton value="Atualiza" styleClass="ml-5" icon="pi pi-refresh"
+                                                                 actionListener="#{fichaAtendimentoBackofficeBean.onPesquisarConsistencias}"
+                                                                 process="@this" update="grConsistencias  card"/>
+                                            </h:panelGroup>
+
+
+                                            <div class="ui-fluid  formgrid grid">
+
+                                                <div class="col-12 mb-2">
+
+                                                    <div class=" ui-toolbar-grouright">
+
+
+                                                        <p:commandButton value="Adicionar"
+                                                                         styleClass=" ui-button-outlined ui-button-secondary"
+                                                                         icon="pi pi-plus-circle"
+                                                                         onclick="PF('dlgConsistencias').show();"
+                                                                         process="@this"
+                                                                         update="formConsistencia  card"/>
+
+
+                                                    </div>
+                                                </div>
+
+                                                <div class="col-12">
+
+                                                    <p:dataTable
+                                                            value="#{fichaAtendimentoBackofficeBean.atendimentoBackoffice.listConsistencias}"
+                                                            var="c" id="tableConsistencia"
+                                                            emptyMessage="Nenhum registro encontrado."
+                                                            rendered="#{not empty fichaAtendimentoBackofficeBean.atendimentoBackoffice.listConsistencias}">
+
+                                                        <p:column headerText="Código">
+
+                                                            <h:outputText value="#{c.codigoConcistencia}"/>
+
+                                                        </p:column>
+
+                                                        <p:column headerText="Descrição">
+
+                                                            <h:outputText value="#{c.descricao}"/>
+
+                                                        </p:column>
+
+                                                        <p:column headerText="Convênio">
+
+                                                            <h:outputText value="#{c.convenio}"/>
+
+
+                                                        </p:column>
+
+                                                        <p:column headerText="Prazo">
+
+                                                            <h:outputText value="#{c.prazo}"/>
+
+                                                        </p:column>
+
+                                                        <p:column headerText="Banco">
+
+                                                            <h:outputText value="#{c.instituicaoFinanceira}"/>
+
+                                                        </p:column>
+
+                                                        <p:column headerText="Tratada">
+
+                                                            <p:selectBooleanButton onLabel="Sim" offLabel="Não"
+                                                                                   onIcon="pi pi-check"
+                                                                                   offIcon="pi pi-times"
+                                                                                   style="width:6rem"
+                                                                                   value="#{c.tratada}">
+
+                                                                <p:ajax process="@this" global="false"
+                                                                        listener="#{fichaAtendimentoBackofficeBean.onAtualizarConsistencia(c)}"/>
+
+                                                            </p:selectBooleanButton>
+
+                                                        </p:column>
+
+                                                        <p:column headerText="Anexos" width="7%">
+
+                                                            <p:commandButton icon="pi pi-paperclip" global="false"
+                                                                             process="@this"
+                                                                             update="panelArquivosEnviados tableConsistencia"
+                                                                             styleClass="ui-button-outlined ui-button-secondary mr-2"
+                                                                             onclick="PF('arquivos').show('#{component.clientId}')">
+                                                                <f:setPropertyActionListener value="#{c}"
+                                                                                             target="#{fichaAtendimentoBackofficeBean.consistenciaSelecionada}"/>
+                                                            </p:commandButton>
+
+
+                                                        </p:column>
+
+                                                    </p:dataTable>
+                                                </div>
+                                            </div>
+
+
+                                            <p:overlayPanel widgetVar="arquivos" dismissable="false"
+                                                            showCloseIcon="true" dynamic="true" id="arquivos"
+                                                            style="width:600px">
+
+                                                <h5>Anexar arquivo na Consistencia:    #{fichaAtendimentoBackofficeBean.consistenciaSelecionada.codigoConcistencia}</h5>
+
+                                                <div class="col-12">
+
+                                                    <p:fileUpload cancelLabel="Cancelar"
+                                                                  chooseIcon=" fa fa-file-audio-o" multiple="true"
+                                                                  update="panelArquivosEnviados tableConsistencia"
+                                                                  uploadLabel="Enviar" label="Selecione o arquivo"
+                                                                  process="@this txtAdesao"
+                                                                  listener="#{fichaAtendimentoBackofficeBean.enviarArquivo}"
+                                                                  allowTypes="/(\.|\/)(gif|jpe?g|png|pdf|doc|docx)$/"
+                                                                  invalidFileMessage="Arquivos permitidos gif,jpg,jpge,png,pdf,doc,docx"
+                                                                  invalidSizeMessage="Tamanho maximo permitido 5mb"
+                                                                  fileLimit="5"
+                                                                  fileLimitMessage="Ultrapassou o numero máximo de arquivo: 5"
+                                                                  sizeLimit="5000000"/>
+
+                                                </div>
+
+                                                <h:panelGroup layout="block" id="panelArquivosEnviados">
+
+                                                    <p:dataTable
+                                                            value="#{fichaAtendimentoBackofficeBean.consistenciaSelecionada.arquivos}"
+                                                            var="arquivo" id="tableArquivos"
+                                                            styleClass="ui-datatable-striped ui-datatable-sm "
+                                                            emptyMessage="#{msg.emptyMessage}">
+
+                                                        <p:column headerText="Arquivo">
+                                                            <p:outputLabel value="#{arquivo}"/>
+                                                        </p:column>
+
+                                                        <p:column headerText="Ação" width="20%"
+                                                                  style="text-align:center">
+
+                                                            <p:commandButton id="btnArquivos" icon="pi pi-times"
+                                                                             styleClass="rounded-button ui-button-flat"
+                                                                             actionListener="#{fichaAtendimentoBackofficeBean.removerAnexo(arquivo)}"
+                                                                             process="@this"
+                                                                             update="tableArquivos msgArquivos"/>
+
+                                                        </p:column>
+
+                                                        <f:facet name="footer">
+                                                            Total de anexos:    #{fichaAtendimentoBackofficeBean.consistenciaSelecionada.arquivos.size()}
+                                                        </f:facet>
+
+                                                    </p:dataTable>
+
+                                                    <p:messages id="msgArquivos" for="btnArquivos"/>
+
+                                                </h:panelGroup>
+
+                                            </p:overlayPanel>
+                                        </h:panelGroup>
+                                    </p:panel>
+
+                                </div>
+
+                            </div>
+
+                            <div class="col-12 mt-3">
+
+                                <div class="">
+
+                                    <p:panel header="Histórico" id="panelHistoricos" collapsed="true" toggleable="true"
+                                             closable="true" toggleSpeed="500" closeSpeed="500"
+                                             widgetVar="panelHistoricos">
+
+                                        <f:facet name="header">
+                                            <i class="fa fa-history"></i> Histórico
+                                        </f:facet>
+
+                                        <h:panelGroup id="grHistoricos">
+
+                                            <p:dataTable id="tableHistoricoBko"
+                                                         value="#{fichaAtendimentoBackofficeBean.atendimentoBackoffice.listHistoricos}"
+                                                         var="historico" rows="5" paginator="true"
+                                                         paginatorPosition="bottom"
+                                                         emptyMessage="#{msg.emptyMessage}"
+                                                         styleClass="ui-datatable-sm ui-datatable-striped ui-datatable-gridlines"
+                                                         currentPageReportTemplate="[#{msg.totalDeRegistros}: {totalRecords}]"
+                                                         paginatorTemplate="{CurrentPageReport}  {FirstPageLink} {PreviousPageLink} {PageLinks} {NextPageLink} {LastPageLink} {Exporters}">
+
+
+                                                <p:ajax event="page" global="false"/>
+
+                                                <p:column headerText="Data" width="10%">
+
+                                                    <p:outputLabel value="#{historico.dataCadastro}"/>
+
+                                                </p:column>
+
+                                                <p:column headerText="Status" width="20%">
+
+                                                    <p:outputLabel value="#{historico.status.descricao}"/>
+
+                                                </p:column>
+                                                <p:column headerText="Motivo" width="20%">
+
+                                                    <p:outputLabel value="#{historico.motivo.descricao}"/>
+
+                                                </p:column>
+
+                                                <p:column headerText="Submotivo" width="20%">
+
+                                                    <p:outputLabel value="#{historico.submotivo.descricao}"/>
+
+                                                </p:column>
+
+                                                <p:column headerText="Observação" width="30%">
+
+                                                    <p:outputLabel value="#{historico.observacao}"/>
+
+                                                </p:column>
+
+
+                                            </p:dataTable>
+
+                                        </h:panelGroup>
+
+                                    </p:panel>
+
+                                </div>
+
+                            </div>
+
+
+                            <div class="col-12 mt-3">
+
+                                <div class="">
+
+                                    <p:panel id="groupBtn" collapsed="true"
+                                             menuTitle="Adicionar atendimento"
+                                             header="#{fichaAtendimentoBackofficeBean.atendimentoBackoffice.atendimento.bko eq true ? 'Atendimento integrado novo' : 'Atendimento integrado.' }"
+                                             toggleable="true" closable="false" toggleSpeed="500"
+                                             closeSpeed="500" widgetVar="panelAtendimentoIntegrado">
+
+                                        <f:facet name="header">
+                                            <i class="fa  fa-address-card-o"
+                                               aria-hidden="true"></i>  #{fichaAtendimentoBackofficeBean.atendimentoBackoffice.atendimento.bko ? 'Atendimento integrado novo' : 'Atendimento integrado.' }
+                                        </f:facet>
+
+                                        <f:facet name="options">
+
+                                            <p:menu rendered="#{fichaAtendimentoBackofficeBean.atendimentoBackoffice.atendimento eq null}"
+                                                    id="groupBtnLeft">
+
+                                                <p:submenu label="Atendimento">
+
+                                                    <p:menuitem value="Adicionar" url="#" icon="pi pi-clone"
+                                                                onclick="PF('panel').toggle()"
+                                                                rendered="#{fichaAtendimentoBackofficeBean.atendimentoBackoffice.atendimento eq null}"/>
+
+                                                </p:submenu>
+
+                                            </p:menu>
+
+                                        </f:facet>
+
+                                        <h:panelGroup styleClass="col-12  mt-2 " style="margin-bottom: 1rem;"
+                                                      layout="block"
+                                                      rendered="#{fichaAtendimentoBackofficeBean.atendimentoBackoffice.atendimento ne null}">
+
+                                            <div class="ui-fluid  formgrid grid">
+
+                                                <h:panelGroup id="panelInformacaoPessoal" layout="block"
+                                                              styleClass="col-12">
+
+                                                    <div class=" formgrid grid">
+
+                                                        <h:panelGroup styleClass="field col-12  md:col-6" layout="block"
+                                                                      id="panelLabelCampanha">
+
+                                                            <p:outputLabel id="lblCampanha" value="Campanha:&#160;"/>
+
+                                                            <div>
+
+                                                                <p:outputLabel id="txtCampanha"
+                                                                               value="#{fichaAtendimentoBackofficeBean.atendimentoBackoffice.atendimento.campanha.descricao}"
+                                                                               style="font-weight:300;font-size:14px;"/>
+
+                                                            </div>
+
+                                                        </h:panelGroup>
+
+                                                        <h:panelGroup styleClass="field col-12  md:col-3"
+                                                                      layout="block">
+
+                                                            <p:outputLabel id="lblDataCampanha"
+                                                                           value="Data Inicio:&#160;"/>
+
+                                                            <div>
+
+                                                                <p:outputLabel id="txtDataCampanha"
+                                                                               value="#{fichaAtendimentoBackofficeBean.atendimentoBackoffice.atendimento.campanha.dataCadastro}"
+                                                                               style="font-weight:300;font-size:12px;">
+
+                                                                    <f:convertDateTime pattern="dd/MM/yyyy"
+                                                                                       timeZone="GMT-3"/>
+
+                                                                </p:outputLabel>
+
+                                                            </div>
+
+                                                        </h:panelGroup>
+
+                                                        <h:panelGroup styleClass="field col-12 md:col-3" layout="block">
+
+                                                            <p:outputLabel value="Atendimento integrado:&#160;"/>
+
+                                                            <div>
+
+                                                                <p:outputLabel
+                                                                        value="#{fichaAtendimentoBackofficeBean.atendimentoBackoffice.atendimento.id}"
+                                                                        style="font-weight:300;font-size:12px;">
+
+                                                                </p:outputLabel>
+
+                                                            </div>
+
+                                                        </h:panelGroup>
+
+                                                        <div class="field col-12 md:col-6">
+
+                                                            <p:outputLabel id="LBLNomeCliente" value="Nome:"/>
+
+                                                            <p:inputText id="txtNomeCliente"
+                                                                         value="#{fichaAtendimentoBackofficeBean.atendimentoBackoffice.atendimento.nome}"
+                                                                         readonly="true"/>
+
+                                                        </div>
+
+                                                        <div class="field col-12  md:col-3">
+
+                                                            <p:outputLabel id="lblCpf" value="CPF"/>
+
+                                                            <p:inputText id="txtCpfAtendimento"
+                                                                         value="#{fichaAtendimentoBackofficeBean.atendimentoBackoffice.atendimento.cpf}"
+                                                                         readonly="true"/>
+
+                                                        </div>
+
+                                                        <div class="field col-12 md:col-3">
+
+                                                            <p:outputLabel id="lblDoc" value="Documento:"/>
+
+                                                            <div>
+
+                                                                <p:inputText id="txtDocAtendimento" style="width:50%"
+                                                                             styleClass="mr-2"
+                                                                             value="#{fichaAtendimentoBackofficeBean.atendimentoBackoffice.atendimento.numeroDocumento}"
+                                                                             readonly="true"/>
+
+                                                                <p:inputText id="txtDocAtendimsnto" style="width:45%"
+                                                                             value="#{fichaAtendimentoBackofficeBean.atendimentoBackoffice.atendimento.orgaoDocumento}"
+                                                                             readonly="true"/>
+
+                                                            </div>
+
+                                                        </div>
+
+                                                        <div class="field col-12 md:col-4">
+
+                                                            <p:outputLabel value="Data Nasc:"/>
+
+                                                            <p:inputMask id="txtDataDeNasc"
+                                                                         value="#{fichaAtendimentoBackofficeBean.atendimentoBackoffice.atendimento.dataNascimento}"
+                                                                         mask="99/99/9999">
+
+                                                                <f:convertDateTime pattern="dd/MM/yyyy"/>
+
+                                                            </p:inputMask>
+
+                                                        </div>
+
+                                                    </div>
+
+                                                </h:panelGroup>
+
+                                            </div>
+
+                                            <h:panelGroup styleClass="col-12 mt-5 " layout="block"
+                                                          id="panelAtendimentos" style="padding: 0;">
+
+                                                <p:tabView id="tabAtendimento" style="width:100%;padding: 0;"
+                                                           widgetVar="tabAtendimento">
+
+                                                    <p:tab title="Informações do Atendimento"
+                                                           id="tabInformacoesAtendimento">
+
+                                                        <cc:emprestimo
+                                                                atendimento="#{fichaAtendimentoBackofficeBean.atendimentoBackoffice.atendimento}"
+                                                                viewAtendimento="false" ver="true"
+                                                                managedBean="#{fichaAtendimentoBean}"
+                                                                id="segEmprestimo"/>
+
+
+                                                    </p:tab>
+
+                                                    <p:tab title="Informações Complementares"
+                                                           rendered="#{not empty fichaAtendimentoBackofficeBean.atendimentoBackoffice.atendimento.listInformacoesComplementares}"
+                                                           id="tabInformacoes">
+
+                                                        <div class="ui-fluid formgrid grid">
+
+                                                            <div class="col-12">
+
+                                                                <div class="formgrid grid">
+
+                                                                    <ui:repeat var="înformacoes"
+                                                                               value="#{fichaAtendimentoBackofficeBean.atendimentoBackoffice.atendimento.listInformacoesComplementaresChaves}">
+
+                                                                        <div class="field col-12  md:col-3">
+
+                                                                            <p:outputLabel value="#{înformacoes}"/>
+
+                                                                            <p:inputText
+                                                                                    value="#{fichaAtendimentoBackofficeBean.atendimentoBackoffice.atendimento.listInformacoesComplementares[înformacoes]}"
+                                                                                    readonly="true"/>
+
+                                                                        </div>
+
+                                                                    </ui:repeat>
+
+                                                                </div>
+
+                                                            </div>
+
+                                                        </div>
+
+                                                    </p:tab>
+
+                                                    <!-- 		TAB ENDERECO -->
+                                                    <p:tab title="Endereço">
+
+                                                        <div class="ui-fluid formgrid grid">
+
+                                                            <div class="col-12 mb-2">
+
+                                                                <div class=" ui-toolbar-grouright">
+
+
+                                                                    <p:commandButton value="Pesquisar"
+                                                                                     rendered="#{empty fichaAtendimentoBackofficeBean.atendimentoBackoffice.atendimento.listaEnderecos}"
+                                                                                     styleClass="ui-button-outlined ui-button-secondary mr-2"
+                                                                                     icon="pi pi-search"
+                                                                                     actionListener="#{fichaAtendimentoBackofficeBean.onPesquisarEndereco}"
+                                                                                     process="@this txtCpf"
+                                                                                     update="tableEndereco"/>
+
+                                                                    <p:commandButton
+                                                                            styleClass="ui-button-outlined ui-button-secondary"
+                                                                            value="adicionar endereço"
+                                                                            id="btnAddEndereco" immediate="true"
+                                                                            title="Adicionar Endereço"
+                                                                            oncomplete="PF('dlgEndereco').show()"
+                                                                            update="dlgDadosBancarios" global="false"
+                                                                            icon="pi pi-plus-circle"
+                                                                            actionListener="#{fichaAtendimentoBackofficeBean.criarEntidade('ENDERECO')}">
+
+                                                                    </p:commandButton>
+
+                                                                </div>
+
+                                                            </div>
+
+                                                            <div class="col-12">
+
+                                                                <p:dataTable id="tableEndereco"
+                                                                             value="#{fichaAtendimentoBackofficeBean.atendimentoBackoffice.atendimento.listaEnderecos}"
+                                                                             var="endereco" rows="5" paginator="true"
+                                                                             paginatorPosition="bottom"
+                                                                             emptyMessage="#{msg.emptyMessage}"
+                                                                             styleClass="ui-datatable-sm ui-datatable-striped ui-datatable-gridlines"
+                                                                             currentPageReportTemplate="[#{msg.totalDeRegistros}: {totalRecords}]"
+                                                                             paginatorTemplate="{CurrentPageReport}  {FirstPageLink} {PreviousPageLink} {PageLinks} {NextPageLink} {LastPageLink} {Exporters}">
+
+                                                                    <p:ajax event="page" global="false"/>
+
+                                                                    <p:column headerText="Logradouro" width="30%">
+
+                                                                        <p:outputLabel value="#{endereco.logradouro}"/>
+
+                                                                    </p:column>
+
+                                                                    <p:column headerText="Numero" width="5%">
+
+                                                                        <p:outputLabel value="#{endereco.numero}"/>
+
+                                                                    </p:column>
+
+                                                                    <p:column headerText="Bairro" width="20%">
+
+                                                                        <p:outputLabel value="#{endereco.bairro}"/>
+
+                                                                    </p:column>
+
+                                                                    <p:column headerText="Cidade" width="20%">
+
+                                                                        <p:outputLabel value="#{endereco.cidade}"/>
+
+                                                                    </p:column>
+
+                                                                    <p:column headerText="UF" width="10%">
+
+                                                                        <p:outputLabel value="#{endereco.uf}"/>
+
+                                                                    </p:column>
+
+                                                                    <p:column headerText="Cep" width="10%">
+
+                                                                        <p:outputLabel value="#{endereco.cep}"/>
+
+                                                                    </p:column>
+
+                                                                    <p:column width="10%">
+
+                                                                        <p:commandButton immediate="true" global="false"
+                                                                                         styleClass=" ui-button-outlined ui-button-secondary"
+                                                                                         title="Alterar Endereço"
+                                                                                         icon="fa fa-fw fa-edit"
+                                                                                         oncomplete="PF('dlgEndereco').show()"
+                                                                                         update=":dlgEndereco">
+
+                                                                            <f:setPropertyActionListener value="U"
+                                                                                                         target="#{fichaAtendimentoBackofficeBean.acao}"/>
+
+                                                                            <f:setPropertyActionListener
+                                                                                    value="#{endereco}"
+                                                                                    target="#{fichaAtendimentoBackofficeBean.endereco}"/>
+
+                                                                        </p:commandButton>
+                                                                    </p:column>
+
+                                                                </p:dataTable>
+
+                                                            </div>
+                                                        </div>
+
+
+                                                    </p:tab>
+                                                    <!-- 		TAB DADOS BANCARIOS -->
+                                                    <p:tab title="Dados Bancários">
+
+                                                        <div class="ui-fluid  formgrid grid">
+
+                                                            <div class="col-12 mb-2">
+
+                                                                <div class=" ui-toolbar-grouright">
+
+                                                                    <p:commandButton value="Pesquisar"
+                                                                                     rendered="#{empty fichaAtendimentoBackofficeBean.atendimentoBackoffice.atendimento.listaDadosBancarios}"
+                                                                                     styleClass=" ui-button-outlined ui-button-secondary mr-2"
+                                                                                     icon="pi pi-search"
+                                                                                     actionListener="#{fichaAtendimentoBackofficeBean.onPesquisarDadosBancarios()}"
+                                                                                     process="@this txtCpf"
+                                                                                     update="tableDadosBancarios"/>
+
+                                                                    <p:commandButton
+                                                                            styleClass=" ui-button-outlined ui-button-secondary"
+                                                                            value="adcionar dados bancários"
+                                                                            id="btnAddDadosBancarios" immediate="true"
+                                                                            title="Adicionar Endereço"
+                                                                            oncomplete="PF('dlgDadosBancarios').show()"
+                                                                            update="dlgDadosBancarios" global="false"
+                                                                            icon="pi pi-plus-circle"
+                                                                            actionListener="#{fichaAtendimentoBackofficeBean.criarEntidade('DADOS_BANCARIOS')}">
+
+                                                                    </p:commandButton>
+
+
+                                                                </div>
+
+                                                            </div>
+
+                                                            <div class="col-12">
+
+                                                                <p:dataTable id="tableDadosBancarios"
+                                                                             value="#{fichaAtendimentoBackofficeBean.atendimentoBackoffice.atendimento.listaDadosBancarios}"
+                                                                             styleClass="ui-datatable-sm ui-datatable-striped ui-datatable-gridlines"
+                                                                             var="banco" paginatorPosition="bottom"
+                                                                             emptyMessage="#{msg.emptyMessage}"
+                                                                             currentPageReportTemplate="[#{msg.totalDeRegistros}: {totalRecords}]"
+                                                                             paginatorTemplate="{CurrentPageReport}  {FirstPageLink} {PreviousPageLink} {PageLinks} {NextPageLink} {LastPageLink} {Exporters}">
+
+                                                                    <p:column headerText="Banco" width="20%">
+
+                                                                        <p:outputLabel
+                                                                                value="#{banco.banco.constante}"/>
+
+                                                                    </p:column>
+
+                                                                    <p:column headerText="Tipo Conta" width="20%">
+
+                                                                        <p:outputLabel
+                                                                                value="#{banco.tipoConta.descricao}"/>
+
+                                                                    </p:column>
+
+                                                                    <p:column headerText="Agencia" width="10%">
+
+                                                                        <p:outputLabel value="#{banco.agencia}"/>
+
+                                                                    </p:column>
+
+                                                                    <p:column headerText="Digito Agência" width="10%">
+
+                                                                        <p:outputLabel value="#{banco.digitoAgencia}"/>
+
+                                                                    </p:column>
+                                                                    <p:column headerText="Conta" width="10%">
+
+                                                                        <p:outputLabel value="#{banco.conta}"/>
+
+                                                                    </p:column>
+
+                                                                    <p:column headerText="Digito Conta" width="10%">
+
+                                                                        <p:outputLabel value="#{banco.digitoConta}"/>
+
+                                                                    </p:column>
+
+                                                                    <p:column width="5%" style="text-align:center"
+                                                                              headerText="editar">
+
+
+                                                                        <p:commandButton immediate="true" global="false"
+                                                                                         styleClass="rounded-button ui-button-flat"
+                                                                                         title="Alterar Dados Bancarios"
+                                                                                         icon="fa fa-fw fa-edit"
+                                                                                         oncomplete="PF('dlgDadosBancarios').show()"
+                                                                                         update=":dlgDadosBancarios">
+
+                                                                            <f:setPropertyActionListener value="U"
+                                                                                                         target="#{fichaAtendimentoBackofficeBean.acao}"/>
+
+                                                                            <f:setPropertyActionListener
+                                                                                    value="#{banco}"
+                                                                                    target="#{fichaAtendimentoBackofficeBean.dadosBancarios}"/>
+
+                                                                        </p:commandButton>
+
+                                                                    </p:column>
+
+
+                                                                </p:dataTable>
+
+                                                            </div>
+
+                                                        </div>
+
+                                                    </p:tab>
+
+                                                    <!-- 		TAB HISTORICO -->
+
+                                                    <p:tab id="tabHistorico" title="Histórico de Atendimento">
+
+                                                        <div class="ui-fluid  formgrid grid col-12 ">
+
+                                                            <div class="col-12  md:col-2">
+
+                                                                <div class="ui-fluid  formgrid grid">
+
+                                                                    <div class="field col-12  md:col-12">
+
+                                                                        <p:outputLabel value="Consultar Historico"/>
+
+                                                                        <div>
+
+                                                                            <p:commandButton value="consultar"
+                                                                                             icon="pi pi-search"
+                                                                                             styleClass="ui-button-raised"
+                                                                                             actionListener="#{fichaAtendimentoBackofficeBean.buscarHistoricosAtendimentos()}"
+                                                                                             update="tableHistorico"
+                                                                                             process="@this txtCpf"
+                                                                                             partialSubmit="true"/>
+
+                                                                        </div>
+
+                                                                    </div>
+
+                                                                </div>
+
+                                                            </div>
+
+                                                            <div class="col-12  md:col-10">
+
+                                                                <p:dataTable id="tableHistorico"
+                                                                             value="#{fichaAtendimentoBackofficeBean.listHistoricoAtendimento}"
+                                                                             var="historico" rows="8" paginator="true"
+                                                                             paginatorPosition="bottom"
+                                                                             styleClass="ui-datatable-sm ui-datatable-striped ui-datatable-gridlines"
+                                                                             emptyMessage="#{fichaAtendimentoBean.listHistoricoAtendimento eq null ? '' :  msg.emptyMessage}"
+                                                                             currentPageReportTemplate="[#{msg.totalDeRegistros}: {totalRecords}]"
+                                                                             paginatorTemplate="{CurrentPageReport}  {FirstPageLink} {PreviousPageLink} {PageLinks} {NextPageLink} {LastPageLink} {Exporters}">
+                                                                    <p:ajax event="page" global="false"/>
+
+                                                                    <p:column headerText="Campanha">
+
+                                                                        <h:outputLabel value="#{historico[0]}"/>
+
+                                                                    </p:column>
+
+                                                                    <p:column headerText="ID do Atendimento">
+
+                                                                        <h:outputLabel value="#{historico[1]}"/>
+
+                                                                    </p:column>
+
+                                                                    <p:column headerText="Usuario">
+
+                                                                        <h:outputLabel value="#{historico[2]}"/>
+
+                                                                    </p:column>
+
+                                                                    <p:column headerText="Status do Atendimento">
+
+                                                                        <h:outputLabel value="#{historico[3]}"/>
+
+                                                                    </p:column>
+
+                                                                    <p:column headerText="Data do Cadastro">
+
+                                                                        <h:outputLabel value="#{historico[4]}">
+                                                                            <f:convertDateTime pattern="dd/MM/yyyy"/>
+                                                                        </h:outputLabel>
+
+                                                                    </p:column>
+
+                                                                    <p:column headerText="Data do Agendamento">
+
+                                                                        <h:outputLabel value="#{historico[5]}">
+                                                                            <f:convertDateTime pattern="dd/MM/yyyy"/>
+                                                                        </h:outputLabel>
+
+                                                                    </p:column>
+
+                                                                    <p:column headerText="Manifesto">
+
+                                                                        <h:outputLabel value="#{historico[6]}"/>
+
+                                                                    </p:column>
+
+                                                                </p:dataTable>
+
+                                                            </div>
+
+                                                        </div>
+
+                                                    </p:tab>
+
+                                                </p:tabView>
+
+                                            </h:panelGroup>
+
+                                        </h:panelGroup>
+
+                                    </p:panel>
+
+                                </div>
+
+                            </div>
+
+                        </div>
+
+                    </div>
+
+                    <div class="field  col-4" style="padding-top: 0; margin-bmargin-bottom: 1px">
+
+                        <div class="card" style="border-top: 1px solid green; margin-bottom: 8px;">
+
+                            <i class="fa fa-phone" aria-hidden="true"/> TELEFONES
+
+                            <p:dataTable
+                                    value="#{fichaAtendimentoBackofficeBean.atendimentoBackoffice.atendimento.listaTelefonesOrdenada}"
+                                    var="t" emptyMessage="Nenhum telefone encontrado" id="tableTelefone">
+
+                                <p:column headerText="DDD" width="5%">
+
+                                    <h:outputText value="#{t.ddd}"/>
+
+                                </p:column>
+
+                                <p:column headerText="Número">
+
+                                    <h:outputText value="#{t.numero}"/>
+
+                                </p:column>
+
+                                <p:column headerText="Status">
+
+                                    <p:selectOneMenu id="selectOneStatusTel" value="#{t.statusTelefone}"
+                                                     converter="omnifaces.SelectItemsConverter" filter="true"
+                                                     filterMatchMode="contains" autoWidth="false">
+                                        <f:selectItem itemLabel="Selecione" noSelectionOption="true"/>
+                                        <f:selectItems value="#{fichaAtendimentoBackofficeBean.listStatusTelefones}"
+                                                       var="status" itemLabel="#{status.descricao}"
+                                                       itemValue="#{status}"/>
+                                        <p:ajax event="change"
+                                                listener="#{fichaAtendimentoBackofficeBean.onStatusTelefone(t,t.statusTelefone.id)}"
+                                                global="false" update="tableTelefone"/>
+                                    </p:selectOneMenu>
+
+                                </p:column>
+
+                                <p:column width="10%">
+
+                                    <f:facet name="header">
+
+                                        <p:commandButton global="false" icon="pi pi-plus" immediate="true"
+                                                         oncomplete="PF('dlgTelefone').show();" update="dlgTelefone"
+                                                         styleClass="mr-2 ui-button-raised ui-button-secondary"
+                                                         title="Adicionar telefone"
+                                                         action="#{fichaAtendimentoBackofficeBean.criarEntidade('TELEFONE')}">
+
+                                        </p:commandButton>
+
+                                    </f:facet>
+
+                                    <p:commandButton type="button" icon="fa fa-phone"
+                                                     title="Discar" global="false"
+                                                     styleClass="ui-button-outlined ui-button-secondary"
+                                                     onclick="vonixDialBack('#{t.ddd}#{t.numero}','#{fichaAtendimentoBackofficeBean.atendimentoBackoffice.nome}','#{fichaAtendimentoBackofficeBean.atendimento.id}');"
+                                                     style="width:30px;text-align:center;" update="@this grl"
+                                                     process="@this" ajax="true" partialSubmit="true"
+                                                     immediate="true"
+                                                     rendered="#{fichaAtendimentoBackofficeBean.usuario.pontoAtendimento.pabx.tipo eq 'VONIX'}">
+                                    </p:commandButton>
+
+                                    <p:commandButton type="button" icon="fa fa-phone"
+                                                     title="Discar" global="false"
+                                                     styleClass=" ui-button-outlined ui-button-secondary"
+                                                     onclick="sendCall('#{fichaAtendimentoBackofficeBean.usuario.pontoAtendimento.pabx.url}','#{fichaAtendimentoBackofficeBean.usuario.pontoAtendimento.ramal}', '#{t.ddd}#{t.numero}','#{fichaAtendimentoBackofficeBean.atendimento.nome}');"
+                                                     style="width:30px;text-align:center;" update="@this grl"
+                                                     process="@this" ajax="true" partialSubmit="true"
+                                                     immediate="true"
+                                                     rendered="#{fichaAtendimentoBackofficeBean.usuario.pontoAtendimento.pabx.tipo eq 'PST_PHONE'}">
+
+                                    </p:commandButton>
+
+
+                                </p:column>
+
+                                <f:facet name="footer">
+
+
+                                    <p:commandButton icon="pi pi-search" id="btnPesquisaTelefone" global="false"
+                                                     update="btnPesquisaTelefone tableTelefone grl2"
+                                                     disabled="#{fichaAtendimentoBackofficeBean.fistTel eq null}"
+                                                     styleClass="mr-3 ui-button-outlined ui-button-secondary"
+                                                     title="Pesquisar telefones"
+                                                     actionListener="#{fichaAtendimentoBackofficeBean.pesquisarTelefones()}"
+                                                     process="@this txtCpf"/>
+                                    Total: #{fichaAtendimentoBackofficeBean.atendimentoBackoffice.atendimento.listaTelefonesOrdenada.size()}
+
+
+                                </f:facet>
+
+                            </p:dataTable>
+
+                        </div>
+
+                        <div class="card">
+
+                            <div class="ui-fluid  formgrid grid">
+
+
+                                <p:commandButton process="@this panelDadosPessoais panelRegistrar" value="Pendentes "
+                                                 styleClass="ui-button-outlined mr-3"/>
+
+
+                                <p:commandButton process="@this panelDadosPessoais panelRegistrar" update="@form"
+                                                 styleClass="ui-button-raised" value="Proximo"
+                                                 actionListener="#{fichaAtendimentoBackofficeBean.buscarProximo()}"/>
+
+
+                            </div>
+
+                        </div>
+
+                        <h:panelGroup styleClass="card" layout="block" id="panelAdesao"
+                                      rendered="#{not empty fichaAtendimentoBackofficeBean.atendimentoBackoffice.listAtendimentosIntegrados}"
+                                      style="border-top: 1px solid #ffc107;">
+
+                            <div style="display: flex;">
+
+                                <div>
+                                    <i class="pi pi-exclamation-circle mr-3" />
+                                </div>
+
+                                <div>
+                                    <h5>#{fichaAtendimentoBackofficeBean.atendimentoBackoffice.listAtendimentosIntegrados.size()} #{fichaAtendimentoBackofficeBean.atendimentoBackoffice.listAtendimentosIntegrados.size() > 1 ? 'adesões': 'adesão'} relacionada.</h5>
+                                </div>
+
+                            </div>
+
+                            <p:dataTable
+                                    value="#{fichaAtendimentoBackofficeBean.atendimentoBackoffice.listAtendimentosIntegrados}"
+                                    var="a">
+
+                                <p:column headerText="Adesão">
+
+                                    <p:commandLink value="#{a.adesao}"
+                                                   disabled="#{a.id eq fichaAtendimentoBackofficeBean.atendimentoBackoffice.id}"
+                                                   style="#{not empty a.status ? 'text-decoration: line-through;color: green': ''}"
+                                                   process="@this" global="false" title="#{a.consistenciaCoban}"
+                                                   update="panelIntegrado"
+                                                   onclick="PF('integrados').show('#{component.clientId}')">
+
+                                        <f:setPropertyActionListener value="#{a}"
+                                                                     target="#{fichaAtendimentoBackofficeBean.atendimentoSelecionado}"/>
+
+                                    </p:commandLink>
+
+                                </p:column>
+
+                                <p:column headerText="Loja">
+
+                                    <p:outputLabel value="#{a.codLoja}"/>
+
+                                </p:column>
+
+                                <p:column>
+
+                                    <p:commandButton styleClass=" ui-button-outlined ui-button-secondary" update="@form"
+                                                     value="tratar" rendered="#{empty a.status}"
+                                                     actionListener="#{fichaAtendimentoBackofficeBean.iniciarOutraTratativa(a)}">
+                                        <p:confirm header="Confirma" message="Iniciar outra tratativa deste cliente?"
+                                                   icon="pi pi-exclamation-triangle"/>
+                                    </p:commandButton>
+
+                                </p:column>
+
+                            </p:dataTable>
+
+
+                            <p:overlayPanel dynamic="true" style="width:400px" widgetVar="integrados"
+                                            showCloseIcon="true">
+
+                                <p:panelGrid columns="2" id="panelIntegrado" style="width:100%">
+
+                                    <f:facet name="header">
+                                        Adesão #{fichaAtendimentoBackofficeBean.atendimentoSelecionado.adesao}
+                                    </f:facet>
+
+                                    <h:outputText value="Status"/>
+
+                                    <h:outputText
+                                            value="#{fichaAtendimentoBackofficeBean.atendimentoSelecionado.status.descricao}"
+                                            rendered="#{not empty fichaAtendimentoBackofficeBean.atendimentoSelecionado.status}"/>
+
+                                    <h:outputText value="Matricula"/>
+
+                                    <h:outputText
+                                            value="#{fichaAtendimentoBackofficeBean.atendimentoSelecionado.matricula}"/>
+
+                                    <h:outputText value="Entidade"/>
+
+                                    <h:outputText
+                                            value="#{fichaAtendimentoBackofficeBean.atendimentoSelecionado.entidade}"/>
+
+                                    <h:outputText value="Loja"/>
+                                    <h:outputText
+                                            value="#{fichaAtendimentoBackofficeBean.atendimentoSelecionado.codLoja}"/>
+
+                                    <h:outputText value="Instituição"/>
+                                    <h:outputText
+                                            value="#{fichaAtendimentoBackofficeBean.atendimentoSelecionado.instituicaoFinanceira.constante}"/>
+
+                                    <h:outputText value="Serviço"/>
+                                    <h:outputText
+                                            value="#{fichaAtendimentoBackofficeBean.atendimentoSelecionado.servico}"/>
+
+                                    <h:outputText value="Códigos Consistências"/>
+                                    <h:outputText
+                                            value="#{fichaAtendimentoBackofficeBean.atendimentoSelecionado.consistenciaCoban}"/>
+
+                                </p:panelGrid>
+
+                            </p:overlayPanel>
+
+                        </h:panelGroup>
+
+
+                        <h:panelGroup styleClass="card" layout="block" id="panelExtratorPendentes"
+                                      style="border-top: 1px solid #a94442;"
+                                      rendered="#{not empty fichaAtendimentoBackofficeBean.listPendentesIntegrados}">
+
+
+                            <i class="pi pi-user-minus"></i> Minha Lista.
+
+                            <p:dataTable value="#{fichaAtendimentoBackofficeBean.listPendentesIntegrados}"
+                                         rowStyleClass="table-#{a[6].toLowerCase()}"
+                                         styleClass="ui-datatable-striped ui-datatable-sm  mt-3" var="a"
+                                         paginatorPosition="bottom" emptyMessage="#{msg.emptyMessage}"
+                                         currentPageReportTemplate="[#{msg.totalDeRegistros}: {totalRecords}]"
+                                         paginatorTemplate="{CurrentPageReport}  {FirstPageLink} {PreviousPageLink} {PageLinks} {NextPageLink} {LastPageLink} {Exporters}"
+                                         rows="5" paginator="true">
+
+                                <p:column headerText="Adesão">
+
+                                    <p:outputLabel value="#{a[7]}" title="#{a[1]}"/>
+
+                                </p:column>
+
+                                <p:column headerText="CPF">
+
+                                    <!-- 	<p:outputLabel value="#{of:abbreviate(a[1], 10)}" />  -->
+                                    <p:outputLabel value="#{a[2]}"/>
+
+                                </p:column>
+
+
+                                <p:column headerText="Extrator">
+
+                                    <p:outputLabel value="#{a[6]}"/>
+
+                                </p:column>
+
+                                <p:column width="5%">
+
+                                    <p:commandButton icon="pi pi-chevron-circle-right"
+                                                     styleClass="ui-button-secondary ui-button-flat" update="@form"
+                                                     title="Iniciar atendimento" process="@form"
+                                                     actionListener="#{fichaAtendimentoBackofficeBean.iniciarAtendimentoPendente(a[0])}">
+                                        <p:confirm header="Confirma" message="Iniciar atendimento?"
+                                                   icon="pi pi-exclamation-triangle"/>
+                                    </p:commandButton>
+
+                                </p:column>
+
+                            </p:dataTable>
+
+
+                        </h:panelGroup>
+
+
+                        <h:panelGroup styleClass="card" layout="block" id="panelAgendados"
+                                      style="border-top: 1px solid #a94442;"
+                                      rendered="#{not empty fichaAtendimentoBackofficeBean.listAgendados}">
+
+                            <p:dataTable value="#{fichaAtendimentoBackofficeBean.listAgendados}" var="a"
+                                         paginatorPosition="bottom" emptyMessage="#{msg.emptyMessage}"
+                                         currentPageReportTemplate="[#{msg.totalDeRegistros}: {totalRecords}]"
+                                         paginatorTemplate="{CurrentPageReport}  {FirstPageLink} {PreviousPageLink} {PageLinks} {NextPageLink} {LastPageLink} {Exporters}"
+                                         rows="5" paginator="true">
+
+                                <f:facet name="header">
+                                    <i class="pi pi-calendar"></i> Agendamentos
+                                </f:facet>
+
+                                <p:column headerText="Cliente">
+
+                                    <p:outputLabel value="#{of:abbreviate(a[1], 15)}" title="#{a[1]}"/>
+
+                                </p:column>
+
+                                <p:column headerText="CPF">
+
+                                    <p:outputLabel value="#{a[3]}"/>
+
+                                </p:column>
+
+                                <p:column headerText="Agendado">
+
+                                    <p:outputLabel value="#{a[8]}">
+                                        <f:convertDateTime pattern="dd/MM/yyyy HH:mm:ss"/>
+                                    </p:outputLabel>
+
+                                </p:column>
+
+                                <p:column width="5%">
+
+                                    <p:commandButton icon="pi pi-chevron-circle-right"
+                                                     styleClass="ui-button-secondary ui-button-flat" update="@form"
+                                                     title="Iniciar atendimento agendado" process="@this @form"
+                                                     actionListener="#{fichaAtendimentoBackofficeBean.iniciarAtendimentoPendente(a[7])}">
+                                        <p:confirm header="Confirma" message="Iniciar atendimento?"
+                                                   icon="pi pi-exclamation-triangle"/>
+                                    </p:commandButton>
+
+                                </p:column>
+
+                            </p:dataTable>
+
+
+                        </h:panelGroup>
+
+
+                        <h:panelGroup styleClass="card" layout="block" id="panelPendencia"
+                                      style="border-top: 1px solid #a94442;"
+                                      rendered="#{not empty fichaAtendimentoBackofficeBean.listPendentes}">
+
+                            <i class="pi pi-user-minus"></i> Atendimentos Pendentes.
+
+                            <p:dataTable value="#{fichaAtendimentoBackofficeBean.listPendentes}" var="a"
+                                         paginatorPosition="bottom" emptyMessage="#{msg.emptyMessage}"
+                                         currentPageReportTemplate="[#{msg.totalDeRegistros}: {totalRecords}]"
+                                         paginatorTemplate="{CurrentPageReport}  {FirstPageLink} {PreviousPageLink} {PageLinks} {NextPageLink} {LastPageLink} {Exporters}"
+                                         rows="5" paginator="true">
+
+                                <p:column headerText="Cliente">
+
+                                    <p:outputLabel value="#{of:abbreviate(a[1], 10)}"/>
+
+                                </p:column>
+
+                                <p:column headerText="CPF">
+
+                                    <p:outputLabel value="#{a[2]}"/>
+
+                                </p:column>
+
+                                <p:column width="5%">
+
+                                    <p:commandButton icon="pi pi-chevron-circle-right"
+                                                     styleClass="ui-button-secondary ui-button-flat" update="@form"
+                                                     title="Iniciar atendimento agendado" process="@form"
+                                                     actionListener="#{fichaAtendimentoBackofficeBean.iniciarAtendimentoPendente(a[0])}">
+                                        <p:confirm header="Confirma" message="Iniciar atendimento?"
+                                                   icon="pi pi-exclamation-triangle"/>
+                                    </p:commandButton>
+
+                                </p:column>
+
+                            </p:dataTable>
+
+
+                        </h:panelGroup>
+
+                    </div>
+
+                </div>
+
+            </h:panelGroup>
+
+            <h:panelGroup rendered="#{empty fichaAtendimentoBackofficeBean.atendimentoBackoffice}">
+
+                <div class="field col-12  md:col-12 ">
+
+                    <div class="card" style="display: inline-flex; padding: 0px; ">
+
+                        <div style="border-right: 1px solid #dee2e6; padding: 15px;">
+
+                            <i class="pi pi-user" aria-hidden="true" style="font-size: 2rem"></i>
+                        </div>
+
+                        <div style="padding: 19px 10px 0px 10px;">
+
+                            <h5 style="font-weight: bold;">Nenhum atendimento disponivel.</h5>
+
+                        </div>
+
+                    </div>
+
+                </div>
+
+                <div class="ui-fluid  formgrid grid">
+
+                    <h:panelGroup styleClass="field col-12  md:col-6 " layout="block"
+                                  rendered="#{not empty fichaAtendimentoBackofficeBean.listAgendados}">
+
+                        <h:panelGroup styleClass="card" layout="block" id="panelAgendadosSemcomtato"
+                                      style="border-top: 1px solid #a94442;">
+
+                            <p:dataTable value="#{fichaAtendimentoBackofficeBean.listAgendados}" var="a"
+                                         paginatorPosition="bottom" emptyMessage="#{msg.emptyMessage}"
+                                         currentPageReportTemplate="[#{msg.totalDeRegistros}: {totalRecords}]"
+                                         paginatorTemplate="{CurrentPageReport}  {FirstPageLink} {PreviousPageLink} {PageLinks} {NextPageLink} {LastPageLink} {Exporters}"
+                                         rows="5" paginator="true">
+
+                                <f:facet name="header">
+                                    <i class="pi pi-calendar"></i> Agendamentos
+                                </f:facet>
+
+                                <p:column headerText="Cliente">
+
+                                    <p:outputLabel value="#{of:abbreviate(a[1], 15)}" title="#{a[1]}"/>
+
+                                </p:column>
+
+                                <p:column headerText="CPF">
+
+                                    <p:outputLabel value="#{a[3]}"/>
+
+                                </p:column>
+
+                                <p:column headerText="Data">
+
+                                    <p:outputLabel value="#{a[5]}">
+                                        <f:convertDateTime pattern="dd/MM/yyyy HH:mm:ss"/>
+                                    </p:outputLabel>
+
+                                </p:column>
+
+                                <p:column width="5%">
+
+                                    <p:commandButton icon="pi pi-chevron-circle-right"
+                                                     styleClass="ui-button-secondary ui-button-flat" update="@form"
+                                                     title="Iniciar atendimento agendado" process="@this"
+                                                     actionListener="#{fichaAtendimentoBackofficeBean.iniciarAtendimento(a[7])}">
+                                        <p:confirm header="Confirma" message="Iniciar atendimento?"
+                                                   icon="pi pi-exclamation-triangle"/>
+                                    </p:commandButton>
+
+                                </p:column>
+
+                            </p:dataTable>
+
+
+                        </h:panelGroup>
+                    </h:panelGroup>
+
+                    <div class="field col-12  md:col-6 ">
+                        <h:panelGroup styleClass="card" layout="block" id="panelPendenciaFinal"
+                                      style="border-top: 1px solid #a94442;"
+                                      rendered="#{ empty fichaAtendimentoBackofficeBean.listPendentes}">
+
+                            <i class="pi pi-user-minus"></i> Atendimentos Pendentes.
+
+                            <p:dataTable value="#{fichaAtendimentoBackofficeBean.listPendentes}" var="a"
+                                         paginatorPosition="bottom" emptyMessage="#{msg.emptyMessage}"
+                                         currentPageReportTemplate="[#{msg.totalDeRegistros}: {totalRecords}]"
+                                         paginatorTemplate="{CurrentPageReport}  {FirstPageLink} {PreviousPageLink} {PageLinks} {NextPageLink} {LastPageLink} {Exporters}"
+                                         rows="5" paginator="true">
+
+                                <p:column headerText="Cliente">
+
+                                    <p:outputLabel value="#{of:abbreviate(a[1], 10)}"/>
+
+                                </p:column>
+
+                                <p:column headerText="CPF">
+
+                                    <p:outputLabel value="#{a[2]}"/>
+
+                                </p:column>
+
+                                <p:column width="5%">
+
+                                    <p:commandButton icon="pi pi-chevron-circle-right"
+                                                     styleClass="ui-button-secondary ui-button-flat" update="@form"
+                                                     title="Iniciar atendimento agendado" process="@form"
+                                                     actionListener="#{fichaAtendimentoBackofficeBean.iniciarAtendimento(a[0])}">
+                                        <p:confirm header="Confirma" message="Iniciar atendimento?"
+                                                   icon="pi pi-exclamation-triangle"/>
+                                    </p:commandButton>
+
+                                </p:column>
+
+                            </p:dataTable>
+
+
+                        </h:panelGroup>
+                    </div>
+                </div>
+            </h:panelGroup>
+
+            <p:confirmDialog global="true" showEffect="fade" hideEffect="fade" responsive="true" width="350">
+                <p:commandButton value="Não" type="button" styleClass="ui-confirmdialog-no ui-button-flat"/>
+                <p:commandButton value="Sim" type="button" styleClass="ui-confirmdialog-yes"/>
+            </p:confirmDialog>
+
+        </h:form>
+
+        <ui:include src="/pages/backoffice/atendimentoBackofficeTelefone.xhtml"/>
+        <ui:include src="/pages/backoffice/modalDadosBancariosBackoffice.xhtml"/>
+        <ui:include src="/pages/backoffice/atendimentoBackofficeEndereco.xhtml"/>
+        <ui:include src="/pages/backoffice/modalInserirConsistencias.xhtml"/>
+    </ui:define>
+
+    <ui:define name="modal">
+
+    </ui:define>
+
+</ui:composition>

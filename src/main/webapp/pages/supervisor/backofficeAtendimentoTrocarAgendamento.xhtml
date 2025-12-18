@@ -1,0 +1,96 @@
+<ui:fragment xmlns="http://www.w3.org/1999/xhtml"
+	xmlns:h="http://java.sun.com/jsf/html"
+	xmlns:f="http://java.sun.com/jsf/core"
+	xmlns:o="http://omnifaces.org/ui"
+	xmlns:ui="http://java.sun.com/jsf/facelets"
+	xmlns:p="http://primefaces.org/ui">
+
+	<!-- DLG MODAL -->
+	<p:dialog id="dlgTrocaAgendamento" widgetVar="dlgTrocaAgendamento" modal="true" draggable="false" resizable="false" closable="true" visible="false" width="800" header="Trocar Agendamento"	appendTo="@(body)">
+
+		<h:form id="formTrocarAgendamento" prependId="false">
+
+			<div class="grid">
+
+<div class="col-12">
+
+				<div class="ui-fluid formgrid grid">
+
+					<div class="field col-12 md:col-4">
+
+						<p:outputLabel value="Operador" id="lblOperadorAgendamento" />
+
+						<p:selectOneMenu id="selectOperador"
+							value="#{supervisorBackofficeBean.operadorAgendamento}" autoWidth="false"	required="true" filterMatchMode="contains"	requiredMessage="#{msg.requerido}" filter="true"	converter="omnifaces.SelectItemsConverter">
+
+							<f:selectItem itemLabel="Selecione" itemValue="" />
+
+							<f:selectItems value="#{supervisorBackofficeBean.listOperador}"	var="operador" itemLabel="#{operador.nome}"	itemValue="#{operador.id}" />
+
+						</p:selectOneMenu>
+						
+						<p:message for="selectOperador" id="msgSelecOperador" />
+
+					</div>
+
+					<div class="field col-12 md:col-4">
+
+						<p:outputLabel value="Data Agendamento" />
+
+						<p:datePicker id="datePickerDataAgendamento" showTime="true" value="#{supervisorBackofficeBean.dataAgendamento}" showButtonBar="true" showIcon="true" readonlyInput="true" 	pattern="dd/MM/yyyy HH:mm" required="true" requiredMessage="#{msg.requerido}"/>
+
+						<p:message for="datePickerDataAgendamento" id="msgDatePickerDataAgendamento" />
+						
+					</div>
+
+					<div class="field col-12 md:col-4">
+
+							<p:outputLabel value="&#160;&#160;" id="txtTrocarEspaco" />
+							
+							<div>
+								<p:commandButton value="Ok" icon="pi pi-check" id="btnOkPausa"	styleClass="ui-button-raised mr-3" update="@form :tabView:formBackofficeAgenda" action="#{supervisorBackofficeBean.trocarOperadorAgendamento()}"  />
+	
+								<p:commandButton value="Fechar" icon="pi pi-times" id="btnCancelPausa" styleClass="ui-button-raised ui-button-outlined"	onclick="PF('dlgTrocaAgendamento').hide();" global="false" process="@this" />
+							</div>
+
+					</div>
+
+				</div>
+
+			
+			</div>
+			
+			<div class="col-12">
+			
+				<p:dataTable id="tableAgendados" var="agendamento" rows="15"	paginator="true" paginatorPosition="bottom"	
+					value="#{supervisorBackofficeBean.listAgendamentosSelecionados}" emptyMessage=""	 styleClass="ui-datatable-sm"
+					currentPageReportTemplate="[#{msg.totalDeRegistros}: {totalRecords}]"
+					paginatorTemplate="{CurrentPageReport}  {FirstPageLink} {PreviousPageLink} {PageLinks} {NextPageLink} {LastPageLink} {Exporters}" >
+
+					<p:ajax event="page" global="false" />
+
+					<p:column headerText="Usuário" >
+
+						<h:outputLabel value="#{agendamento[6]}">
+
+							<f:convertDateTime pattern="dd/MM/yyyy HH:mm:ss" />
+
+						</h:outputLabel>
+
+					</p:column>
+
+					<p:column headerText="Data Agendamento">
+
+						<h:outputLabel value="#{agendamento[3]}" />
+
+					</p:column>
+						
+				</p:dataTable>
+			
+			</div>
+</div>
+		</h:form>
+
+	</p:dialog>
+
+</ui:fragment>

@@ -1,0 +1,56 @@
+<ui:composition xmlns="http://www.w3.org/1999/xhtml" xmlns:f="http://java.sun.com/jsf/core"
+    xmlns:h="http://java.sun.com/jsf/html" xmlns:ui="http://java.sun.com/jsf/facelets"
+    xmlns:p="http://primefaces.org/ui">
+
+    <div class="layout-rightpanel" style="width: 400px;">
+
+        <h5 style="border: 1px solid #dee2e6;padding: 10px;">
+
+            <p:graphicImage name="img/bot/bot_duvida_cor.png"  />
+
+            Chat dúvidas
+
+        </h5>
+
+        <h:form>
+
+            <div class="widget-chat">
+
+                <ul id="ul_bot">
+
+
+                </ul>
+
+                <div style="text-align: center;" id="load_bot">
+                    <p:graphicImage  name="img/bot_load.gif" />
+                </div>
+
+                <div class="new-message" style=" border: 1px solid #dee2e6;">
+
+                    <div class="message-attachment">
+
+                        <p:commandButton  styleClass="rounded-button ui-button-flat" icon="fa fa-paper-plane fa-2x" type="button" onclick="enviarMenssagemBot();" disabled="true" />
+
+                    </div>
+
+                    <div class="message-input" style="top: 4px;">
+
+                        <input type="text" id="txt" placeholder="Digite sua dúvida " class="ui-inputfield" style="float:left" disabled="disabled" />
+
+                    </div>
+                </div>
+
+                <br/>
+                <div class="col-12">
+
+                <br/>
+                <i class="fa fa-info-circle mr-2" aria-hidden="true" /><small>Em fase de testes,  não está disponível digitar sua dúvida.</small>
+                </div>
+            </div>
+
+        </h:form>
+
+
+    </div>
+
+</ui:composition>

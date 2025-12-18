@@ -1,0 +1,925 @@
+<ui:composition xmlns="http://www.w3.org/1999/xhtml"
+	xmlns:h="http://java.sun.com/jsf/html"
+	xmlns:f="http://java.sun.com/jsf/core"
+	xmlns:ui="http://java.sun.com/jsf/facelets"
+	xmlns:c="http://java.sun.com/jsp/jstl/core"
+	xmlns:pe="http://primefaces.org/ui/extensions"
+	xmlns:p="http://primefaces.org/ui" template="/WEB-INF/template.xhtml">
+
+	<ui:define name="title">Index</ui:define>
+
+	<ui:define name="viewname">Atendimento</ui:define>
+
+	<ui:define name="content">
+
+		<h:form prependId="false">
+
+			<h:panelGroup rendered="#{fichaAtendimentoBean.atendimento ne null}">
+
+				<p:growl id="grl" globalOnly="true" />
+
+				<div class="card card-w-title shadow-card">
+
+					<h5>
+						Ficha de Atendimento
+						<p:spacer width="10" />
+						|&#160;&#160; Campanha:
+						<p:outputLabel id="txtDescricaoCampanha"
+							value="#{fichaAtendimentoBean.atendimento.campanha.descricao}"
+							style="font-weight: normal;" />
+						&#160;&#160;
+						  |&#160;&#160; Protocolo: <p:outputLabel id="txtProtocolo"
+							value="#{fichaAtendimentoBean.atendimento.protocolo}"
+							style="font-weight: normal;" />
+					<p:spacer width="10" />
+					<p:spacer width="10" />
+
+
+				<!-- 	<i class="icon-card_membership">face</i> <i
+						class="fa fa-phone-square fa-1x" onclick="PF('dlgVonix').show();"
+						tabindex="Informa Status do Agent" style="" />  -->
+					
+					
+					</h5>
+
+					<div class="ui-g ui-fluid">
+
+						<div class="ui-g-12 ui-md-12 ui-lg-12">
+
+							<div class="ui-g-12 ui-md-12 ui-lg-4">
+
+								<div class="ui-g-12 ui-md-12 ui-lg-4">
+
+									<p:outputLabel id="lblCpfCliente" value="CPF:" />
+
+									<div>
+										<p:outputLabel id="txtCpfCliente"
+											value="#{fichaAtendimentoBean.atendimento.cpf}"
+											style="font-weight:normal" />
+									</div>
+
+								</div>
+
+								<div class="ui-g-12 ui-md-12 ui-lg-8">
+
+									<p:outputLabel id="LBLNomeCliente" value="Nome:&#160;&#160;" />
+
+									<div>
+										<p:outputLabel id="txtNomeCliente"
+											value="#{fichaAtendimentoBean.atendimento.nome}"
+											style="font-weight:normal" />
+									</div>
+
+								</div>
+
+								<div class="ui-g-12 ui-md-12 ui-lg-12"
+									style="padding-left: 1px;">
+
+									<div class="ui-g-12 ui-md-12 ui-lg-8">
+
+										<p:outputLabel id="lblNomeMae" for="txtNomeMae"
+											value="Nome da Mãe" />
+
+										<p:inputText id="txtNomeMae"
+											value="#{fichaAtendimentoBean.atendimento.nomeMae}" />
+
+
+									</div>
+
+									<div class="ui-g-12 ui-md-12 ui-lg-4"></div>
+
+								</div>
+
+								<div class="ui-g-12 ui-md-6 ui-lg-3">
+
+									<p:outputLabel id="lblRgCliente" for="txtRgCliente" value="RG:" />
+
+									<p:inputText id="txtRgCliente"
+										value="#{fichaAtendimentoBean.atendimento.numeroDocumento}"
+										style="font-weight:normal" readonly="true" />
+
+								</div>
+
+								<div class="ui-g-12 ui-md-6  ui-lg-3">
+
+									<p:outputLabel value="Orgão Exp:" />
+
+									<p:inputText
+										value="#{fichaAtendimentoBean.atendimento.orgaoDocumento}" />
+
+								</div>
+
+								<div class="ui-g-12 ui-md-6 ui-lg-3">
+
+									<p:outputLabel value="Data Nasc:" />
+
+									<p:inputMask id="date"
+										value="#{fichaAtendimentoBean.atendimento.dataNascimento}"
+										mask="99/99/9999">
+
+										<f:convertDateTime pattern="MM/dd/yyyy" />
+
+									</p:inputMask>
+								</div>
+
+								<div class="ui-g-12 ui-md-6 ui-lg-2">
+
+									<p:outputLabel value="Idade:" />
+
+									<div>
+										<p:outputLabel
+											value="#{fichaAtendimentoBean.getIdade(fichaAtendimentoBean.atendimento.dataNascimento)}" />
+									</div>
+
+								</div>
+
+								<div class="ui-g-12 ui-md-6 ui-lg-4">
+
+									<p:outputLabel value="Sexo" />
+
+									<p:selectOneMenu id="selectOneSexo">
+
+										<f:selectItem itemLabel="Selecione" noSelectionOption="true" />
+										<f:selectItem itemLabel="Masculido" noSelectionOption="true" />
+										<f:selectItem itemLabel="Feminino" noSelectionOption="true" />
+
+									</p:selectOneMenu>
+
+								</div>
+
+								<div class="ui-g-12 ui-md-6 ui-lg-4">
+
+									<p:outputLabel value="Signo:" />
+
+									<div>
+
+										<p:outputLabel	value="#{fichaAtendimentoBean.atendimento.signo}" />
+									</div>
+
+								</div>
+									<div class="ui-g-12 ui-md-6 ui-lg-4">
+
+									<p:outputLabel value="Tiket:" />
+
+									<div>
+
+										<p:outputLabel	value="#{fichaAtendimentoBean.atendimento.tiket}" />
+									</div>
+
+								</div>
+
+							</div>
+
+							<div class="ui-g-12 ui-md-12 ui-lg-4">
+
+								<p:outputLabel for="txtManifentos" value="Manifesto" />
+
+								<p:inputTextarea autoResize="true" rows="5" cols="20"
+									style="border-width: 1px;border-radius:5px"
+									value="#{fichaAtendimentoBean.historicoAtendimento.observacao}"
+									id="txtManifentos" />
+
+								<div style="width: 50%; margin-top: 15px;">
+
+									<p:outputLabel value="Status do Atendimento:" />
+
+									<p:selectOneMenu id="selectOneStatusAtn"
+										value="#{fichaAtendimentoBean.historicoAtendimento.statusAtendimento}"
+										requiredMessage="Requerido"
+										converter="omnifaces.SelectItemsConverter">
+
+										<f:selectItem itemLabel="Selecione" noSelectionOption="true" />
+										<f:selectItems
+											value="#{fichaAtendimentoBean.listStatusAtendimento}"
+											var="status" itemLabel="#{status.descricao}"
+											itemValue="#{status}" />
+
+									</p:selectOneMenu>
+
+								</div>
+
+								<div style="margin-top: 25px">
+
+									<p:commandButton value="pausa" icon="fa fa-fw fa-pause"
+										id="btnPausa" />
+
+									<p:commandButton value="Consultar Cartão"
+										actionListener="#{fichaAtendimentoBean.buscarCartoesBmg()}"
+										update="@form"
+										process="@this tabAtendimento:txtEntidadePrincipal tabAtendimento:txtOrgaoPrincipal"
+										id="btnCpnsultaCartao" />
+
+									<p:commandButton id="btnProximo" value="Proximo"
+										process="@form" update="@form"
+										icon="fa fa-fw fa-arrow-circle-right"
+										actionListener="#{fichaAtendimentoBean.buscarNovoAtendimento()}" />
+
+								</div>
+
+							</div>
+
+							<div class="ui-g-12 ui-md-12 ui-lg-4">
+
+								<p:dataTable rows="5" paginator="true"
+									value="#{fichaAtendimentoBean.atendimento.listaTelefonesOrdenada}"
+									paginatorPosition="bottom" emptyMessage="#{msg.emptyMessage}"
+									currentPageReportTemplate="[ #{msg.totalDeRegistros}: {totalRecords} ]"
+									paginatorTemplate="{CurrentPageReport}  {FirstPageLink} {PreviousPageLink} {PageLinks} {NextPageLink} {LastPageLink}"
+									var="tel" id="tableStatus">
+
+									<p:ajax event="page" global="false" />
+
+									<p:column headerText="DDD" style="text-align:center"
+										width="10%">
+										<p:outputLabel value="#{tel.ddd}" style="color:red" />
+
+									</p:column>
+
+									<p:column headerText="numero" style="text-align:center"
+										width="30%">
+										<p:outputLabel value="#{tel.numero}" />
+
+									</p:column>
+
+									<p:column headerText="Status" style="text-align:center">
+
+										<p:selectOneMenu id="selectOneCastTipo"
+											value="#{tel.statusTelefone}" 
+											requiredMessage="Requerido" style="width:100%"
+											converter="omnifaces.SelectItemsConverter">
+
+											<f:selectItem itemLabel="Selecione" />
+
+											<f:selectItems value="#{fichaAtendimentoBean.listStatusTelefone}"
+												var="status" itemLabel="#{status.descricao}"
+												itemValue="#{status}" />
+
+										</p:selectOneMenu>
+
+									</p:column>
+
+									<p:column width="30" style="text-align:center">
+
+										<f:facet name="header">
+
+											<p:commandLink style="width:30px;text-align:center">
+
+												<i class="fa fa fa-plus-circle fa-lg"></i>
+
+											</p:commandLink>
+
+										</f:facet>
+
+										<p:commandButton icon="fa fa fa-phone"
+											style="width:30px;text-align:center;border-radius: 50%">
+
+											<f:setPropertyActionListener value="#{emp}"
+												target="#{empresaBean.empresa}" />
+
+										</p:commandButton>
+
+									</p:column>
+
+								</p:dataTable>
+
+							</div>
+
+						</div>
+
+						<div class="ui-g-12 ui-md-12 ui-lg-12">
+
+							<p:tabView id="tabAtendimento">
+
+								<p:tab title="Informações do Atendimento">
+
+									<div style="padding: 20px">
+
+										<p:fieldset legend="Refinanciamento"
+											style="margin-bottom:20px">
+
+											<div class="ui-g-12 ui-md-12 ui-lg-2">
+
+												<p:outputLabel value="Valor Total:" for="txtValorTotal" />
+
+												<p:inputNumber id="txtValorTotal"
+													value="#{fichaAtendimentoBean.atendimento.valorTotal}"
+													decimalSeparator="," thousandSeparator="."
+													decimalPlaces="2" maxValue="999999" />
+
+
+											</div>
+
+											<div class="ui-g-12 ui-md-12  ui-lg-2">
+
+												<p:outputLabel value="Saldo Devedor:" for="txtSaldoDevedor" />
+
+												<p:inputNumber id="txtSaldoDevedor"
+													value="#{fichaAtendimentoBean.atendimento.saldoDevedor}"
+													decimalSeparator="," thousandSeparator="."
+													decimalPlaces="2" maxValue="999999" />
+
+											</div>
+
+											<div class="ui-g-12 ui-md-12  ui-lg-4">
+
+												<p:outputLabel value="Forma de Pagamento:"
+													id="lblFormaPagamento" />
+
+												<p:selectOneMenu id="selectOneFormaPagamento"
+													value="#{fichaAtendimentoBean.atendimento.formaPagamento}"
+													requiredMessage="Requerido"
+													converter="omnifaces.SelectItemsConverter">
+
+													<f:selectItem itemLabel="Selecione"
+														noSelectionOption="true" />
+
+													<f:selectItems
+														value="#{fichaAtendimentoBean.listFormaPagamento}"
+														var="forma" itemLabel="#{forma.descricao}"
+														itemValue="#{forma}" />
+
+
+												</p:selectOneMenu>
+
+											</div>
+
+											<div class="ui-g-12 ui-md-12  ui-lg-4">
+
+												<p:outputLabel value="Produto:" id="lblProduto" />
+
+												<p:selectOneMenu id="selectOneProduto"
+													value="#{fichaAtendimentoBean.atendimento.produto}"
+													requiredMessage="Requerido"
+													converter="omnifaces.SelectItemsConverter">
+
+													<f:selectItem itemLabel="Selecione"
+														noSelectionOption="true" />
+
+													<f:selectItems
+														value="#{fichaAtendimentoBean.listProdutos}"
+														var="produto" itemLabel="#{produto.descricao}"
+														itemValue="#{produto}" />
+
+												</p:selectOneMenu>
+
+											</div>
+
+
+										</p:fieldset>
+
+										<p:fieldset legend="Informações Principais" style="margin-bottom:20px" id="fieldInformacoesPrincipais">
+
+											<div class="ui-g-12 ui-md-12 ui-lg-12">
+
+												<div class="ui-g-12 ui-md-12 ui-lg-2">
+
+													<p:outputLabel value="Entidade Principal:" />
+
+													<p:inputText
+														value="#{fichaAtendimentoBean.atendimento.entidadePrincipal}"
+														id="txtEntidadePrincipal" />
+
+												</div>
+
+												<div class="ui-g-12 ui-md-12 ui-lg-2">
+
+													<p:outputLabel value="Orgão Principal:"
+														id="lblOrgaoPrincipal" />
+
+													<p:inputText
+														value="#{fichaAtendimentoBean.atendimento.orgaoPrincipal}"
+														id="txtOrgaoPrincipal" />
+
+												</div>
+
+												<div class="ui-g-12 ui-md-12 ui-lg-3">
+
+													<p:outputLabel value="Benefício Principal:" />
+
+													<p:inputText
+														value="#{fichaAtendimentoBean.atendimento.beneficioPrincipal}" />
+
+												</div>
+
+
+												<div class="ui-g-12 ui-md-12 ui-lg-2">
+
+													<p:outputLabel value="Desconto Compulsório:"
+														for="txtDescontoCompul" />
+
+
+													<p:inputNumber id="txtDescontoCompul"
+														value="#{fichaAtendimentoBean.atendimento.descontoCompulsorio}"
+														decimalSeparator="," thousandSeparator="."
+														decimalPlaces="2" maxValue="999999" />
+
+												</div>
+
+												<div class="ui-g-12 ui-md-12 ui-lg-2">
+
+													<p:outputLabel value="Margem:" for="txtMargem" />
+
+													<p:inputNumber id="txtMargem"
+														value="#{fichaAtendimentoBean.atendimento.margem}"
+														decimalSeparator="," thousandSeparator="."
+														decimalPlaces="2" maxValue="999999" />
+
+												</div>
+
+											</div>
+
+											<div class="ui-g-12 ui-md-12 ui-lg-12">
+
+												<div class="ui-g-12 ui-md-12 ui-lg-2">
+
+													<p:outputLabel value="Entidade Secundaria:" />
+
+													<p:inputText
+														value="#{fichaAtendimentoBean.atendimento.entidadeSecundaria}" />
+
+												</div>
+
+												<div class="ui-g-12 ui-md-12 ui-lg-2">
+
+													<p:outputLabel value="Orgão Secundario:" />
+
+													<p:inputText
+														value="#{fichaAtendimentoBean.atendimento.orgaoSecundario}" />
+
+												</div>
+
+												<div class="ui-g-12 ui-md-12 ui-lg-3">
+
+													<p:outputLabel value="Benefício Secundario:" />
+
+													<p:inputText
+														value="#{fichaAtendimentoBean.atendimento.beneficioSecundario}" />
+
+												</div>
+
+												<div class="ui-g-12 ui-md-12 ui-lg-2">
+
+													<p:outputLabel value="Desconto Facultativo:"
+														for="txtDescontoFacul" />
+
+
+													<p:inputNumber id="txtDescontoFacul"
+														value="#{fichaAtendimentoBean.atendimento.descontoFacultativo}"
+														decimalSeparator="," thousandSeparator="."
+														decimalPlaces="2" maxValue="999999" />
+
+
+												</div>
+
+											</div>
+
+										</p:fieldset>
+
+										<p:fieldset legend="Informações Complementares"
+											style="margin-bottom:20px">
+
+											<div class="ui-g-12 ui-md-12 ui-lg-2">
+
+												<p:outputLabel value="Salário:" for="txtSalario" />
+
+
+												<p:inputNumber id="txtSalario"
+													value="#{fichaAtendimentoBean.atendimento.salarioCliente}"
+													decimalSeparator="," thousandSeparator="."
+													decimalPlaces="2" maxValue="999999" />
+
+
+
+											</div>
+
+											<div class="ui-g-12 ui-md-12 ui-lg-2">
+
+												<p:outputLabel value="Valor Bruto Contratado:"
+													for="txtValorContrato" />
+
+												<p:inputNumber id="txtValorContrato"
+													value="#{fichaAtendimentoBean.atendimento.valorContrato}"
+													decimalSeparator="," thousandSeparator="."
+													decimalPlaces="2" maxValue="999999" />
+
+											</div>
+
+											<div class="ui-g-12 ui-md-12  ui-lg-2">
+
+												<p:outputLabel value="Valor Emprestimo:"
+													for="txtValorEmprestimo" id="lblValorContrato" />
+
+												<p:inputNumber id="txtValorEmprestimo"
+													value="#{fichaAtendimentoBean.atendimento.valorLiberadoEmprestimo}"
+													decimalSeparator="," thousandSeparator="."
+													decimalPlaces="2" maxValue="999999" />
+
+											</div>
+
+											<div class="ui-g-12 ui-md-12  ui-lg-2">
+
+												<p:outputLabel value="Valor Seguro:" />
+
+
+												<p:inputNumber id="txtSeguro"
+													value="#{fichaAtendimentoBean.atendimento.valorSeguro}"
+													decimalSeparator="," thousandSeparator="."
+													decimalPlaces="2" maxValue="999999" />
+
+											</div>
+
+											<div class="ui-g-12 ui-md-12  ui-lg-2">
+
+												<p:outputLabel value="Valor Máximo:" for="txtValorMaximo" />
+
+												<p:inputNumber id="txtValorMaximo"
+													value="#{fichaAtendimentoBean.atendimento.valorMaxOperacao}"
+													decimalSeparator="," thousandSeparator="."
+													decimalPlaces="2" maxValue="999999" />
+
+
+											</div>
+
+											<div class="ui-g-12 ui-md-12  ui-lg-2">
+
+												<p:outputLabel value="Limite:" for="txtLimite" />
+
+
+												<p:inputNumber id="txtLimite"
+													value="#{fichaAtendimentoBean.atendimento.limite}"
+													decimalSeparator="," thousandSeparator="."
+													decimalPlaces="2" maxValue="999999" />
+
+											</div>
+
+											<div class="ui-g-12 ui-md-12  ui-lg-2">
+
+												<p:outputLabel value="Risco:" for="txtRisco" />
+
+												<p:inputNumber id="txtRisco"
+													value="#{fichaAtendimentoBean.atendimento.risco}"
+													decimalSeparator="," thousandSeparator="."
+													decimalPlaces="2" maxValue="999999" />
+
+
+											</div>
+
+											<div class="ui-g-12 ui-md-12  ui-lg-2">
+
+												<p:outputLabel value="Quantidade de Contratos:" />
+
+												<p:inputText
+													value="#{fichaAtendimentoBean.atendimento.quantidadeContratos}" />
+
+											</div>
+
+											<div class="ui-g-12 ui-md-12  ui-lg-2">
+
+												<p:outputLabel value="Valor Refinanciamento:" for="txtRefin" />
+
+												<p:inputNumber id="txtRefin"
+													value="#{fichaAtendimentoBean.atendimento.valorLiberadoRefinanciamento}"
+													decimalSeparator="," thousandSeparator="."
+													decimalPlaces="2" maxValue="999999" />
+
+											</div>
+
+											<div class="ui-g-12 ui-md-12  ui-lg-2">
+
+												<p:outputLabel value="Taxa" />
+
+												<p:inputNumber id="Input8"
+													value="#{fichaAtendimentoBean.atendimento.taxa}"
+													decimalSeparator="," thousandSeparator="."
+													decimalPlaces="2" maxValue="999999" />
+
+											</div>
+
+										</p:fieldset>
+
+									</div>
+
+								</p:tab>
+
+								<p:tab title="Endereço">
+
+									<div class="div-table" style="width: 100%">
+
+										<p:dataTable id="tableEndereco"
+											value="#{fichaAtendimentoBean.atendimento.listaEnderecos}"
+											var="endereco" rows="15" paginator="true"
+											paginatorPosition="bottom" emptyMessage="#{msg.emptyMessage}"
+											currentPageReportTemplate="[#{msg.totalDeRegistros}: {totalRecords}]"
+											paginatorTemplate="{CurrentPageReport}  {FirstPageLink} {PreviousPageLink} {PageLinks} {NextPageLink} {LastPageLink} {Exporters}">
+
+											<p:column headerText="Logradouro" width="30%">
+
+												<p:outputLabel value="#{endereco.logradouro}" />
+
+											</p:column>
+
+											<p:column headerText="Numero" width="5%">
+
+												<p:outputLabel value="#{endereco.numero}" />
+
+											</p:column>
+
+											<p:column headerText="Bairro" width="20%">
+
+												<p:outputLabel value="#{endereco.bairro}" />
+
+											</p:column>
+											<p:column headerText="Cidade" width="20%">
+
+												<p:outputLabel value="#{endereco.cidade}" />
+
+											</p:column>
+
+											<p:column headerText="Estado" width="10%">
+
+												<p:outputLabel value="#{endereco.uf}" />
+
+											</p:column>
+
+											<p:column headerText="Cep" width="10%">
+
+												<p:outputLabel value="#{endereco.cep}" />
+
+											</p:column>
+
+											<p:column headerText="Cep" width="5%"
+												style="text-align:center">
+
+												<f:facet name="header">
+
+													<p:commandLink style="width:5%;text-align:center">
+
+														<i class="fa fa-fw fa-plus-circle fa-lg"></i>
+
+													</p:commandLink>
+
+
+												</f:facet>
+
+												<p:commandLink style="width:5%;text-align:center">
+
+													<i class="fa fa-fw fa-edit fa-lg"></i>
+
+												</p:commandLink>
+
+											</p:column>
+
+										</p:dataTable>
+
+									</div>
+
+								</p:tab>
+
+								<p:tab title="Dados Bancarios">
+
+									<div class="div-table" style="width: 100%">
+
+										<p:dataTable id="tableDadosBancarios"
+											value="#{fichaAtendimentoBean.atendimento.listaDadosBancarios}"
+											var="banco" rows="15" paginator="true"
+											paginatorPosition="bottom" emptyMessage="#{msg.emptyMessage}"
+											currentPageReportTemplate="[#{msg.totalDeRegistros}: {totalRecords}]"
+											paginatorTemplate="{CurrentPageReport}  {FirstPageLink} {PreviousPageLink} {PageLinks} {NextPageLink} {LastPageLink} {Exporters}">
+
+											<p:column headerText="Banco">
+
+												<p:outputLabel value="#{banco.nomeBanco}" />
+
+											</p:column>
+
+											<p:column headerText="Agencia">
+
+												<p:outputLabel value="#{banco.agencia}" />
+
+											</p:column>
+
+											<p:column headerText="Conta">
+
+												<p:outputLabel value="#{banco.conta}" />
+
+											</p:column>
+
+											<p:column headerText="Digito Conta">
+
+												<p:outputLabel value="#{banco.digitoConta}" />
+
+											</p:column>
+
+											<p:column width="5%" style="text-align:center">
+
+												<f:facet name="header">
+
+													<p:commandLink style="width:30px;text-align:center">
+
+														<i class="fa fa-plus-circle fa-lg"></i>
+
+													</p:commandLink>
+
+
+												</f:facet>
+
+												<p:commandLink style="width:30px;text-align:center">
+
+													<i class="fa fa-fw fa-edit fa-lg"></i>
+
+												</p:commandLink>
+
+
+											</p:column>
+
+
+										</p:dataTable>
+
+									</div>
+
+								</p:tab>
+
+
+								<p:tab title="Emails">
+
+									<div class="div-table" style="width: 50%">
+
+										<p:dataTable id="tableEmails"
+											value="#{fichaAtendimentoBean.atendimento.listaEmails}"
+											var="email" rows="15" paginator="true"
+											paginatorPosition="bottom" emptyMessage="#{msg.emptyMessage}"
+											currentPageReportTemplate="[#{msg.totalDeRegistros}: {totalRecords}]"
+											paginatorTemplate="{CurrentPageReport}  {FirstPageLink} {PreviousPageLink} {PageLinks} {NextPageLink} {LastPageLink} {Exporters}">
+
+											<p:column headerText="Descrição">
+
+												<p:outputLabel value="#{email.descricao}" />
+
+											</p:column>
+
+											<p:column headerText="Email">
+
+												<p:outputLabel value="#{email.email}" />
+
+											</p:column>
+
+											<p:column width="5%" style="text-align:center">
+
+												<f:facet name="header">
+
+													<p:commandLink style="width:30px;text-align:center">
+
+														<i class="fa fa-fw fa-plus-circle fa-lg"></i>
+
+													</p:commandLink>
+
+
+
+												</f:facet>
+
+												<p:commandLink style="width:30px;text-align:center">
+
+													<i class="fa fa-fw fa-edit fa-lg"></i>
+
+												</p:commandLink>
+
+											</p:column>
+
+
+										</p:dataTable>
+
+									</div>
+
+
+								</p:tab>
+
+
+								<p:tab title="Outras Informações">
+
+									<!-- 	<pe:fluidGrid id="fluiGrid"
+										value="#{fichaAtendimentoBean.items}" var="data"
+										resizeBound="false" hGutter="50" vGutter="50"
+										widgetVar="fluidGridWdgt" fitWidth="true">
+
+
+										<pe:fluidGridItem type="input">
+
+											<p:outputLabel for="txt" value="#{data.label}" />
+											
+											<div>
+												<p:outputLabel id="txt" value="#{data.value}"
+													required="#{data.required}" />
+											</div>
+
+										</pe:fluidGridItem>
+
+									</pe:fluidGrid> -->
+
+									<p:fieldset style="margin-bottom:10px;">
+
+										<ui:repeat var="informacoes"
+											value="#{fichaAtendimentoBean.mapInfornacoes}">
+
+											<div class="ui-g-12 ui-md-12 ui-lg-2">
+
+												<p:outputLabel value="#{informacoes.key}" />
+
+												<div>
+
+													<p:inputText value="#{informacoes.value}" />
+
+												</div>
+
+											</div>
+
+										</ui:repeat>
+
+									</p:fieldset>
+
+								</p:tab>
+
+								<p:tab title="Script Atendimento">
+
+									<div style="width: 100%; margin-top: 25px">
+
+										<p:textEditor
+											value="#{fichaAtendimentoBean.atendimento.campanha.scriptInformativo}">
+
+											<f:facet name="toolbar">
+												<span class="ql-formats"> </span>
+											</f:facet>
+
+										</p:textEditor>
+									</div>
+
+								</p:tab>
+
+							</p:tabView>
+
+						</div>
+
+					</div>
+
+				</div>
+
+				<p:dialog widgetVar="dlgSaque" id="dlgSaque" modal="true"
+					header="Cartões Disponiveis." width="1000">
+
+					<div class="ui-g-12 ui-md-12 ui-lg-1" style="text-align: center">
+					</div>
+					<div class="ui-g-12 ui-md-12 ui-lg-10" style="text-align: center">
+
+						<p:dataTable id="tableCartao"
+							value="#{fichaAtendimentoBean.listCatoesBmg}" var="cartao"
+							rows="5" paginator="true" paginatorPosition="bottom"
+							emptyMessage="#{msg.emptyMessage}"
+							currentPageReportTemplate="[#{msg.totalDeRegistros}: {totalRecords}]"
+							paginatorTemplate="{CurrentPageReport}  {FirstPageLink} {PreviousPageLink} {PageLinks} {NextPageLink} {LastPageLink} {Exporters}">
+
+							<p:column headerText="Numero Cartão">
+
+								<p:outputLabel value="#{cartao.cartao.numeroCartao}" />
+
+							</p:column>
+
+							<p:column headerText="Limite Cartão">
+
+								<p:outputLabel value="#{cartao.limite.limiteCartao}" />
+
+							</p:column>
+
+							<p:column headerText="Valor Saque Maximo">
+
+								<p:outputLabel value="#{cartao.limite.valorSaqueMaximo}" />
+
+							</p:column>
+
+
+						</p:dataTable>
+
+					</div>
+					<div class="ui-g-12 ui-md-12 ui-lg-1" style="text-align: center">
+					</div>
+
+				</p:dialog>
+
+			</h:panelGroup>
+
+			<h:panelGroup rendered="#{fichaAtendimentoBean.atendimento eq null}">
+
+				<div class="ui-g ui-fluid">
+
+					<div class="ui-g-12 ui-md-12 ui-lg-12">
+						<p:outputLabel value="Nenhum Atendimento Disponivel...." />
+
+					</div>
+				</div>
+			</h:panelGroup>
+		</h:form>
+
+		<h:outputScript name="js/vonix-integra.js" />
+
+
+	</ui:define>
+
+</ui:composition>

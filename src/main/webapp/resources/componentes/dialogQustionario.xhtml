@@ -1,0 +1,278 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+        "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+<html xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:h="http://java.sun.com/jsf/html"
+      xmlns:f="http://java.sun.com/jsf/core"
+      xmlns:ui="http://java.sun.com/jsf/facelets"
+      xmlns:p="http://primefaces.org/ui"
+      xmlns:pe="http://primefaces.org/ui/extensions"
+      xmlns:c="http://java.sun.com/jsp/jstl/core"
+      xmlns:composite="http://java.sun.com/jsf/composite">
+
+<composite:interface>
+
+    <composite:attribute name="managedBean" type="com.proativaservicos.bean.GenericBean"/>
+
+    <composite:attribute name="atendimento" type="com.proativaservicos.model.GenericAtendimento"/>
+
+    <composite:attribute name="visualizar" type="boolean" default="false"/>
+
+    <composite:attribute name="id" required="true"/>
+
+    <composite:attribute name="altura" type="java.lang.String" default="inherit"/>
+
+</composite:interface>
+
+<composite:implementation>
+
+
+    <p:dialog id="#{cc.attrs.id}" styleClass="dialog-formulario" widgetVar="dlgFormulario" maximizable="true"
+              resizable="true" responsive="true" modal="true" draggable="true" closable="true" visible="false"
+              width="50%" header="Formulario" appendTo="@(body)">
+
+        <h:form prependId="false" id="formFormulario">
+
+            <h:panelGroup id="dlgPanelFormulario">
+
+                <h:panelGroup id="panelPerguntas" layout="block" styleClass="ui-fluid formgrid grid "
+                              style="height: #{cc.attrs.altura}"
+                              rendered="#{not empty cc.attrs.managedBean.formularioQuestionarioController.listRespostas}">
+
+
+                    <div class="col-12">
+
+                        <div class="card border-left-3 border-primary"
+                             style="margin-bottom: 1rem; min-height: 0; border-left-color: #17375c;">
+
+                            <div class="col-12">
+
+                                <span style="font-weight: 900; font-size: 14px">#{cc.attrs.managedBean.formularioQuestionarioController.questionario.descricao}</span>
+
+                            </div>
+
+                        </div>
+
+                        <ui:repeat var="resposta"   value="#{cc.attrs.managedBean.formularioQuestionarioController.listRespostas}">
+
+                            <h:panelGroup id="dlgPanelResposta" styleClass="mb-3"
+                                          rendered="#{cc.attrs.managedBean.formularioQuestionarioController.exibirPergunta(resposta.pergunta)}"
+                                          layout="block" style="border-left-color: #17375c; ">
+
+                                <div class="card border-left-3 border-primary-300">
+
+                                    <div class="ui-fluid formgrid grid">
+
+                                        <div class="field col-12 md:col-6">
+
+                                            <p:outputLabel value="#{resposta.pergunta.descricao}" styleClass="pb-3 font-bold"/>
+
+                                            <h:panelGroup id="dlgPanelText"
+                                                          rendered="#{empty resposta.pergunta.listOpcoes}"
+                                                          layout="block">
+
+                                                <c:if test="#{cc.attrs.visualizar eq true}">
+
+                                                    <div class="field col-12 ">
+
+                                                        <ul style="list-style: none; padding-left: 0px">
+
+                                                            <li>
+                                                                <i class="fa fw fa-edit mr-2"></i>
+                                                                <p:outputLabel value="  #{resposta.texto}"/>
+                                                            </li>
+
+                                                        </ul>
+
+                                                    </div>
+
+                                                </c:if>
+
+                                                <c:if test="#{cc.attrs.visualizar eq false}">
+
+                                                    <p:inputText id="respostaTexto" validator="obrigatorioValidator"
+                                                                 value="#{resposta.texto}" rendered="true"
+                                                                 requiredMessage="Obrigatório">
+
+                                                        <p:ajax global="false">
+                                                            <f:param name="OBRIGATORIO_VALIDATOR" value="true"/>
+                                                        </p:ajax>
+
+                                                    </p:inputText>
+
+                                                    <p:message for="respostaTexto"/>
+
+                                                </c:if>
+
+                                            </h:panelGroup>
+
+                                            <h:panelGroup id="dlgPanelMultplaEscolha"
+                                                          rendered="#{not empty resposta.pergunta.listOpcoes and resposta.pergunta.tipoResposta eq 'SELECAO_UNICA'}">
+
+                                                <c:if test="#{cc.attrs.visualizar eq true}">
+
+                                                    <div class="field col-12 ">
+
+                                                        <ul style="list-style: none; padding-left: 0px">
+
+                                                            <li>
+                                                                <i class="pi pi-check mr-2"></i>
+                                                                <p:outputLabel value="  #{resposta.opcao.descricao}"/>
+                                                            </li>
+
+                                                        </ul>
+
+
+                                                    </div>
+
+                                                </c:if>
+
+                                                <c:if test="#{cc.attrs.visualizar eq false}">
+
+                                                    <p:selectOneRadio id="comboOpcoes" validator="obrigatorioValidator" styleClass="combo-box-for"
+                                                                      layout="pageDirection" value="#{resposta.opcao}"
+                                                                      required="true" requiredMessage="Obrigatório"
+                                                                      rendered="#{not empty resposta.pergunta.listOpcoes}"
+                                                                      converter="omnifaces.SelectItemsConverter">
+
+                                                        <f:selectItems value="#{resposta.pergunta.listOpcoes}" var="op"
+                                                                       itemLabel="#{op.descricao}" itemValue="#{op}"/>
+
+                                                        <p:ajax global="false"
+                                                                process="@this dlgPanelText dlgPanelResposta"
+                                                                partialSubmit="true" update="@form"
+                                                                listener="#{cc.attrs.managedBean.formularioQuestionarioController.onSelect()}">
+
+                                                            <f:param name="OBRIGATORIO_VALIDATOR" value="true"/>
+
+                                                        </p:ajax>
+
+                                                    </p:selectOneRadio>
+
+                                                    <p:message for="comboOpcoes"/>
+
+                                                </c:if>
+
+                                            </h:panelGroup>
+
+                                            <h:panelGroup id="dlgPanelMultplaSelecao"
+                                                          rendered="#{not empty resposta.pergunta.listOpcoes and resposta.pergunta.tipoResposta eq 'SELECAO_MULTIPLA'}">
+
+                                                <c:if test="#{cc.attrs.visualizar eq true}">
+
+                                                    <div class="field col-12 ">
+
+                                                        <ul style="list-style: none; padding-left: 0px">
+
+                                                            <ui:repeat var="op" value="#{resposta.listOpcoes}">
+
+
+                                                                <li><i class="pi pi-check mr-2"></i> <p:outputLabel
+                                                                        value="#{op.descricao}"/></li>
+
+                                                            </ui:repeat>
+
+                                                        </ul>
+
+                                                    </div>
+
+                                                </c:if>
+
+                                                <c:if test="#{cc.attrs.visualizar eq false}">
+
+                                                    <p:selectManyCheckbox id="comboOpcoesMultiplos" columns="1"
+                                                                          layout="responsive"
+                                                                          validator="obrigatorioValidator"
+                                                                          value="#{resposta.opcoes}" required="true"
+                                                                          requiredMessage="Obrigatório"
+                                                                          rendered="#{not empty resposta.pergunta.listOpcoes}"
+                                                                          converter="omnifaces.SelectItemsConverter">
+
+                                                        <f:attribute name="collectionType" value="java.util.HashSet"/>
+
+                                                        <f:selectItems value="#{resposta.pergunta.listOpcoes}" var="op"
+                                                                       itemLabel="#{op.descricao}" itemValue="#{op}"/>
+
+                                                        <p:ajax global="false"
+                                                                process="@this dlgPanelText dlgPanelResposta"
+                                                                partialSubmit="true" update="@form"
+                                                                listener="#{cc.attrs.managedBean.formularioQuestionarioController.onSelect()}">
+
+                                                            <f:param name="OBRIGATORIO_VALIDATOR" value="true"/>
+
+                                                        </p:ajax>
+
+                                                    </p:selectManyCheckbox>
+
+                                                    <p:message for="comboOpcoesMultiplos"/>
+
+                                                </c:if>
+
+                                            </h:panelGroup>
+
+                                        </div>
+
+                                    </div>
+
+                                </div>
+
+                            </h:panelGroup>
+
+                        </ui:repeat>
+
+                    </div>
+
+
+                    <div class="col-12 text-center">
+
+                        <p:commandButton value="Sair" process="@form" type="button" icon="pi pi-times"
+                                         styleClass="ui-button-raised  mr-2 " onclick="PF('dlgFormulario').hide();">
+
+                        </p:commandButton>
+
+                        <c:if test="#{cc.attrs.visualizar eq false}">
+
+                            <p:commandButton value="Salvar formulario" process="@form"
+                                             actionListener="#{cc.attrs.managedBean.formularioQuestionarioController.salvarDialog()}"
+                                             update="@form" icon="pi pi-save"
+                                             styleClass="ui-button-raised  mr-2 ">
+
+                                <f:param name="OBRIGATORIO_VALIDATOR" value="false"/>
+
+                            </p:commandButton>
+
+                        </c:if>
+
+
+                    </div>
+
+                </h:panelGroup>
+
+                <h:panelGroup layout="block" style="height: #{cc.attrs.altura}"
+                              rendered="#{empty cc.attrs.managedBean.formularioQuestionarioController.listRespostas}">
+
+                    <div class="col-12">
+
+                        <div class="card no-gutter widget-overview-box widget-overview-box-3"
+                             style="margin-bottom: 1rem; min-height: 0; border-left-color: #17375c;">
+
+                            <div class="col-12">
+
+                                <span style="font-weight: 900; font-size: 14px">Nenhum resposta encontrada para o cliente: #{cc.attrs.atendimento.nome}</span>
+
+                            </div>
+
+                        </div>
+                    </div>
+
+                </h:panelGroup>
+
+            </h:panelGroup>
+
+        </h:form>
+
+    </p:dialog>
+
+</composite:implementation>
+
+</html>

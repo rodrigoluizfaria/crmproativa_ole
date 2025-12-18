@@ -1,0 +1,245 @@
+<ui:composition xmlns="http://www.w3.org/1999/xhtml"
+                xmlns:h="http://java.sun.com/jsf/html"
+                xmlns:f="http://java.sun.com/jsf/core"
+                xmlns:ui="http://java.sun.com/jsf/facelets"
+
+                xmlns:matriz="http://java.sun.com/jsf/composite/componentes"
+                xmlns:p="http://primefaces.org/ui" template="/WEB-INF/template.xhtml">
+
+
+    <ui:define name="viewname">
+
+        <div class="bcca-breadcrumb">
+            <div class="bcca-breadcrumb-item bg-primary-500 hover:bg-primary-700 ">
+                <p:link outcome="/pages/supervisor/monitorProjecaoAtendimento" styleClass="uppercase"
+                        style="text-decoration: none"> MONITOR PROJEÇÃO ATENDIMENTO</p:link>
+            </div>
+            <div class="bcca-breadcrumb-item uppercase">SUPERVISOR</div>
+        </div>
+
+    </ui:define>
+
+    <ui:define name="content">
+
+        <p:growl id="grl" widgetVar="grl" globalOnly="true" escape="false" showSummary="false" life="8000"
+                 showDetail="true" sticky="false">
+
+            <p:autoUpdate/>
+
+        </p:growl>
+
+        <p:growl id="grlNo" widgetVar="grl" escape="false" showSummary="false" life="8000" showDetail="true"
+                 sticky="false"/>
+
+
+        <h:form id="formMonitorProducao" prependId="false">
+
+            <p:poll listener="#{supervisaoMonitorProjecaoAtendimento.pesquisar()}" update="tableProducao "
+                    interval="300"/>
+
+            <div class="col-12 ">
+
+                <div class="card">
+
+                    <div class="ui-fluid formgrid grid">
+
+                        <matriz:selectEmpresa id="cmpEmpresa" managedBean="#{supervisaoMonitorProjecaoAtendimento}"
+                                              value="#{supervisaoMonitorProjecaoAtendimento.empresa}" ajax="true"
+                                              update="@form" filter="true" exibirSelecione="false"/>
+
+                        <div class="field col-12 md:col-3">
+
+                            <p:outputLabel value="Data Inicio"/>
+
+                            <p:calendar id="inicioCalendar" value="#{supervisaoMonitorProjecaoAtendimento.dataInicio}"
+                                        showOn="button" showButtonPanel="true" navigator="true" pattern="dd/MM/yyyy"
+                                        required="true" requiredMessage="#{msg.requerido}"/>
+                            <p:message for="inicioCalendar"/>
+
+                        </div>
+
+                        <div class="field col-12 md:col-3">
+
+                            <p:outputLabel value="Data Fim"/>
+
+                            <p:calendar id="calendarFim" value="#{supervisaoMonitorProjecaoAtendimento.dataFim}"
+                                        showOn="button" showButtonPanel="true" navigator="true" pattern="dd/MM/yyyy"
+                                        required="true" requiredMessage="#{msg.requerido}"/>
+                            <p:message for="calendarFim"/>
+
+                        </div>
+
+                        <div class="field col-12 md:col-3">
+
+                            <p:outputLabel id="lblPesquisar" value="&#160;"/>
+
+                            <div>
+
+                                <p:commandButton value="Pesquisar" icon="pi pi-search"
+                                                 action="#{supervisaoMonitorProjecaoAtendimento.pesquisar()}"
+                                                 update="@form" styleClass="ui-button-raised mr-3"/>
+
+                                <p:outputLabel id="lblPesquisars" value="&#160;"/>
+
+                                <p:commandButton id="btnExportarPesquisa" icon="pi pi-upload"
+                                                 styleClass="ui-button-raised ui-button-outlined"
+                                                 value="#{msg.exportar}" ajax="false"
+                                                 disabled="#{empty supervisaoMonitorProjecaoAtendimento.listItens}"
+                                                 immediate="true"
+                                                 rendered="#{sessionScope['usuario'].permissaoExportar}">
+
+                                    <p:dataExporter target="tableProducao" type="xls" fileName="projecao"
+                                                    exportHeader="true"/>
+
+                                </p:commandButton>
+
+                            </div>
+
+                        </div>
+
+                        <h:panelGroup layout="block" styleClass="field col-12 md:col-2"
+                                      rendered="#{sessionScope['usuario'].permissaoExportar}">
+
+                        </h:panelGroup>
+
+
+                    </div>
+
+                </div>
+
+            </div>
+
+            <div class="mt-3">
+
+                <div class="card">
+
+
+                    <p:dataTable id="tableProducao" var="producao" rows="20" paginator="true" paginatorPosition="bottom"
+                                 value="#{supervisaoMonitorProjecaoAtendimento.listItens}"
+                                 emptyMessage="#{msg.emptyMessage}"
+                                 currentPageReportTemplate="[#{msg.totalDeRegistros}: {totalRecords}]" reflow="true"
+                                 paginatorTemplate="{CurrentPageReport}  {FirstPageLink} {PreviousPageLink} {PageLinks} {NextPageLink} {LastPageLink} {Exporters}">
+
+                        <p:ajax event="sort" global="false"/>
+
+                        <p:column headerText="Nome" sortBy="#{producao[0]}">
+                            <f:facet name="header">
+                                <h:outputText value="Nome"/>
+                            </f:facet>
+
+                            <h:outputText value="#{producao[0]}"/>
+
+                            <f:facet name="footer">
+
+                                <h:outputLabel value="Total"/>
+                            </f:facet>
+
+                        </p:column>
+
+                        <p:column headerText="Agendamento" sortBy="#{producao[1]}">
+
+                            <f:facet name="header">
+                                <h:outputText value="Agendamento"/>
+                            </f:facet>
+
+                            <h:outputText value="#{producao[1]}"/>
+
+                            <f:facet name="footer">
+
+                                <h:outputLabel value="#{supervisaoMonitorProjecaoAtendimento.getTotalFooter(1)}">
+
+                                </h:outputLabel>
+
+                            </f:facet>
+
+                        </p:column>
+
+                        <p:column headerText="Fim de Fila" sortBy="#{producao[2]}">
+
+                            <f:facet name="header">
+                                <h:outputText value="Fim de Fila"/>
+                            </f:facet>
+
+                            <h:outputText value="#{producao[2]}"/>
+
+                            <f:facet name="footer">
+
+                                <h:outputLabel value="#{supervisaoMonitorProjecaoAtendimento.getTotalFooter(2)}">
+
+                                </h:outputLabel>
+
+                            </f:facet>
+
+                        </p:column>
+
+                        <p:column headerText="Propostas Efetivadas" sortBy="#{producao[3]}">
+
+                            <f:facet name="header">
+                                <h:outputText value="Propostas Efetivadas"/>
+                            </f:facet>
+
+                            <h:outputText value="#{producao[3]}"/>
+
+                            <f:facet name="footer">
+
+                                <h:outputLabel value="#{supervisaoMonitorProjecaoAtendimento.getTotalFooter(3)}">
+
+                                </h:outputLabel>
+
+                            </f:facet>
+
+                        </p:column>
+
+                        <p:column headerText="Outros" sortBy="#{producao[4]}">
+                            
+                            <f:facet name="header">
+                                <h:outputText value="Outros"/>
+                            </f:facet>
+
+                            <h:outputText value="#{producao[4]}"/>
+
+
+                            <f:facet name="footer">
+
+                                <h:outputLabel value="#{supervisaoMonitorProjecaoAtendimento.getTotalFooter(4)}"/>
+                            </f:facet>
+                        </p:column>
+
+                        <p:column headerText="Total Atendimentos" sortBy="#{producao[5]}">
+                            <f:facet name="header">
+                                <h:outputText value="Total Atendimentos"/>
+                            </f:facet>
+                            <h:outputText value="#{producao[5]}"/>
+
+
+                            <f:facet name="footer">
+
+                                <h:outputLabel value="#{supervisaoMonitorProjecaoAtendimento.getTotalFooter(5)}"/>
+                            </f:facet>
+                        </p:column>
+
+                        <!-- 	<p:column headerText="Projeção" sortBy="#{producao[6]}">
+
+                                <h:outputText value="#{producao[6]}" />
+
+                            </p:column> -->
+
+                        <p:column headerText="Média Atendimento" sortBy="#{producao[7]}">
+                            <f:facet name="header">
+                                <h:outputText value="Média Atendimento"/>
+                            </f:facet>
+
+                            <h:outputText value="#{producao[7]}"/>
+
+                        </p:column>
+
+                    </p:dataTable>
+
+
+                </div>
+            </div>
+
+        </h:form>
+    </ui:define>
+
+</ui:composition>

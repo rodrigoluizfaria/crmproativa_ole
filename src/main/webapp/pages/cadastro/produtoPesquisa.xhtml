@@ -1,0 +1,136 @@
+<ui:fragment xmlns="http://www.w3.org/1999/xhtml"
+             xmlns:h="http://java.sun.com/jsf/html"
+             xmlns:f="http://java.sun.com/jsf/core"
+             xmlns:ui="http://java.sun.com/jsf/facelets"
+             xmlns:p="http://primefaces.org/ui" template="/WEB-INF/template.xhtml">
+
+
+    <p:growl id="grl" widgetVar="grl" globalOnly="true" escape="false" showSummary="false" life="8000" showDetail="true"
+             sticky="false">
+
+        <p:autoUpdate/>
+
+    </p:growl>
+
+
+    <h:form id="pesqProduto" prependId="false">
+
+        <div class="card">
+
+            <div class="ui-fluid formgrid grid">
+
+                <div class="field col-12 md:col-3">
+
+                    <p:outputLabel for="inputPesqProduto" value="Descrição"/>
+
+                    <p:inputText id="inputPesqProduto" value="#{produtoBean.produto.descricao}"/>
+
+                </div>
+
+                <div class="field col-12 md:col-3">
+
+                    <p:outputLabel for="selectOneTipo" value="Tipo Produto:"/>
+
+                    <p:selectOneMenu id="selectOneTipo" value="#{produtoBean.produto.tipoProduto}">
+
+                        <f:selectItem itemLabel="Selecione" noSelectionOption="true"/>
+
+                        <f:selectItems value="#{produtoBean.tipoProduto}" var="tipo" itemLabel="#{tipo.constante}"
+                                       itemValue="#{tipo.name()}"/>
+
+                    </p:selectOneMenu>
+
+                </div>
+
+                <div class="field col-12 md:col-3">
+
+                    <p:outputLabel for="selectOneAtivo" value="Acesso:"/>
+
+                    <p:selectOneMenu id="selectOneAtivo" value="#{produtoBean.produto.ativo}">
+
+                        <f:selectItem itemLabel="Selecione" noSelectionOption="true"/>
+
+                        <f:selectItems value="#{produtoBean.tipoAcessoEnum}" var="acesso"
+                                       itemLabel="#{acesso.constante}" itemValue="#{acesso}"/>
+
+                    </p:selectOneMenu>
+
+                </div>
+
+            </div>
+
+            <div class="mt-5">
+
+                    <p:commandButton value="Pesquisar" styleClass="mr-3 ui-button-raised" id="btnPesquisar"
+                                     action="#{produtoBean.pesquisar()}" update="@form" icon="pi pi-search"/>
+
+                    <p:commandButton id="btnExportar" icon="pi pi-file-excel" value="#{msg.exportar}" ajax="false"
+                                     rendered="#{sessionScope['usuario'].permissaoExportar}"
+                                     disabled="#{empty produtoBean.listProduto}" immediate="true"
+                                     styleClass="mr-3 ui-button-outlined ui-button-raised">
+
+                        <p:dataExporter target="tableProduto" type="xls" fileName="produto"/>
+
+                    </p:commandButton>
+
+                    <p:commandButton value="Novo" id="btnNovo" actionListener="#{produtoBean.novo()}" ajax="false"
+                                     icon="pi pi-plus-circle" styleClass="ui-button-outlined ui-button-raised"/>
+
+                </div>
+
+
+
+
+        </div>
+
+
+        <div class="mt-4">
+
+            <div class="card p-5 ">
+
+                <p:dataTable id="tableProduto" value="#{produtoBean.listProduto}" var="produto" paginator="true"
+                             rows="10" paginatorPosition="bottom" emptyMessage="#{msg.emptyMessage}"
+                             paginatorTemplate="{CurrentPageReport}  {FirstPageLink} {PreviousPageLink} {PageLinks} {NextPageLink} {LastPageLink}"
+                             currentPageReportTemplate="[#{msg.totalDeRegistros}: {totalRecords}]"
+                             styleClass="ui-datatable-striped ui-datatable-gridlines">
+
+                    <p:column headerText="Descrição">
+
+                        <h:outputText value="#{produto.descricao}"/>
+
+                    </p:column>
+
+                    <p:column headerText="Tipo Produto">
+
+                        <h:outputText value="#{produto.tipoProduto.constante}"/>
+
+                    </p:column>
+
+                    <p:column headerText="Acesso">
+
+                        <h:outputText value="#{produto.ativo.constante}"/>
+
+                    </p:column>
+
+                    <p:column headerText="Ação" style="text-align:center;width:50px" exportable="false">
+
+
+                        <p:commandButton icon="fa fw fa-edit" styleClass="ui-button-flat ui-button-icon-only rounded-button"
+                                         action="#{produtoBean.editar(produto)}" ajax="false">
+
+                            <f:setPropertyActionListener value="#{produto}" target="#{produtoBean.produto}"/>
+
+                        </p:commandButton>
+
+                    </p:column>
+
+                </p:dataTable>
+
+            </div>
+        </div>
+
+
+    </h:form>
+
+
+</ui:fragment>

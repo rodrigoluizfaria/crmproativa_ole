@@ -1,0 +1,155 @@
+<ui:fragment xmlns="http://www.w3.org/1999/xhtml"
+	xmlns:h="http://java.sun.com/jsf/html"
+	xmlns:f="http://java.sun.com/jsf/core"
+	xmlns:o="http://omnifaces.org/ui"
+		xmlns:matriz="http://java.sun.com/jsf/composite/componentes"
+	xmlns:ui="http://java.sun.com/jsf/facelets"
+	xmlns:p="http://primefaces.org/ui">
+
+	<!-- DLG MODAL -->
+
+		<h:form id="formMeusAgendamentos" prependId="false" >
+
+		<h:panelGroup styleClass="p-grid col-12tab-padding p-mt-3"  layout="block">
+
+			<matriz:selectEmpresa id="selectEmpresaMeusAgendamento" managedBean="#{acompanhamentoConsistencias}" value="#{acompanhamentoConsistencias.empresa}" ajax="true" update="@form" filter="true" exibirSelecione="true" selecioneItemLabel="Selecione" required="true" />
+
+
+			<div class="field col-12p-md-12 p-lg-2">
+
+				<p:outputLabel value="Status" />
+
+				<p:selectOneMenu id="selectStatusMeusAgendamento" value="#{acompanhamentoConsistencias.statusAtendimentoAgendamento}" filter="true" filterMatchMode="contains">
+
+					<f:selectItem itemLabel="Selecione" itemValue="" />
+
+					<f:selectItems value="#{acompanhamentoConsistencias.listStatusAtendimentoAgendados}" var="status" itemLabel="#{status.descricao}" itemValue="#{status.id}" />
+
+				</p:selectOneMenu>
+
+			</div>
+
+			<div class="p-field col-12p-md-12 p-lg-2">
+
+				<p:outputLabel value="Cpf" />
+
+				<p:inputText id="txtCpfMeusAgendamento"	value="#{acompanhamentoConsistencias.cpf}" />
+
+			</div>
+
+
+			<div class="p-field col-12p-md-12 p-lg-2">
+
+				<p:outputLabel value="Período Inicio Agendamento" />
+
+				<p:datePicker  value="#{acompanhamentoConsistencias.dataInicioAgendamento}" showButtonBar="true" showIcon="true" readonlyInput="true" pattern="dd/MM/yyyy" locale="pt_BR"/>
+
+			</div>
+
+			<div class="p-field col-12p-md-12 p-lg-2">
+
+				<p:outputLabel value="Período Fim Agendamento" />
+
+				<p:datePicker  value="#{acompanhamentoConsistencias.dataFimAgendamento}" showButtonBar="true" showIcon="true" readonlyInput="true" pattern="dd/MM/yyyy" locale="pt_BR" />
+
+			</div>
+
+			<div class="p-field col-12p-md-12 p-lg-12">
+
+				<p:outputLabel value="&#160;&#160;"  />
+
+				<div>
+
+					<p:commandButton value="Pesquisar" icon="pi pi-search"	styleClass="raised-button p-mr-3" actionListener="#{acompanhamentoConsistencias.pesquisarMeusAgendamentos()}" update="@form" />
+
+					<p:commandButton id="btnExportarMeusAgendamento" icon="pi pi-upload" styleClass="outlined-button p-mr-3" value="#{msg.exportar}" ajax="false" disabled="#{empty acompanhamentoConsistencias.listHistoricosMeusAgendamentos}" immediate="true" rendered="#{sessionScope['usuario'].permissaoExportar}">
+
+						<p:dataExporter target="tableMeusAgendamentos" type="xls" fileName="agendamentos" />
+
+					</p:commandButton>
+
+
+				</div>
+
+			</div>
+
+		</h:panelGroup>
+
+				<h:panelGroup styleClass="p-col-12 "  layout="block">
+
+					<div class="ui-g ui-fluid ">
+
+				<p:dataTable id="tableMeusAgendamentos" var="atendimento" rows="5"	paginator="true" paginatorPosition="bottom"	value="#{acompanhamentoConsistencias.listHistoricosMeusAgendamentos}"
+							emptyMessage="#{acompanhamentoConsistencias.listHistoricosMeusAgendamentos eq null? '' : msg.emptyMessage}"	currentPageReportTemplate="[#{msg.totalDeRegistros}: {totalRecords}]"
+							paginatorTemplate="{CurrentPageReport}  {FirstPageLink} {PreviousPageLink} {PageLinks} {NextPageLink} {LastPageLink} {Exporters}" styleClass="ui-datatable-striped">
+
+									<p:ajax event="page"  />
+
+									<p:ajax event="sort" global="false" />
+
+									<p:column headerText="Data" sortBy="#{atendimento[2]}" width="10%">
+
+										<h:outputLabel value="#{atendimento[2]}">
+
+											<f:convertDateTime pattern="dd/MM/yyyy HH:mm:ss" />
+
+										</h:outputLabel>
+
+									</p:column>
+
+									<p:column headerText="Cliente" sortBy="#{atendimento[3]}" width="30%">
+
+										<h:outputLabel value="#{atendimento[3]}">
+
+
+										</h:outputLabel>
+
+									</p:column>
+
+									<p:column headerText="CPF" sortBy="#{atendimento[6]}" width="10%">
+
+											<h:outputLabel value="#{atendimento[6]}">
+
+
+										</h:outputLabel>
+
+									</p:column>
+
+
+									<p:column headerText="Status" sortBy="#{atendimento[4]}" width="15%">
+
+											<h:outputLabel value="#{atendimento[4]}">
+
+										</h:outputLabel>
+
+									</p:column>
+
+
+									<p:column headerText="Usuário" sortBy="#{atendimento[5]}" width="20%">
+
+										<h:outputLabel value="#{atendimento[5]}">
+
+										</h:outputLabel>
+
+									</p:column>
+
+									<p:column headerText="Ação" width="5%">
+
+										<p:commandButton icon="pi pi-chevron-circle-right"	styleClass="rounded-button text-button"	oncomplete="PF('dlgConfirmarAntecipacaoNaoTrabalhado').show();"		 global="false" id="btnAdiantarMeusAtn" title="Antecipar Atendimento">
+
+														<f:setPropertyActionListener value="#{atendimento[1]}"	target="#{acompanhamentoConsistencias.idAtendimento}" />
+
+										</p:commandButton>
+									</p:column>
+
+							</p:dataTable>
+
+
+					 </div>
+
+				 </h:panelGroup>
+
+		</h:form>
+
+
+</ui:fragment>

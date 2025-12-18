@@ -1,0 +1,91 @@
+<ui:fragment xmlns="http://www.w3.org/1999/xhtml"
+	xmlns:h="http://java.sun.com/jsf/html"
+	xmlns:f="http://java.sun.com/jsf/core"
+	xmlns:ui="http://java.sun.com/jsf/facelets"
+	xmlns:p="http://primefaces.org/ui" template="/WEB-INF/template.xhtml"
+	xmlns:c="http://java.sun.com/jsp/jstl/core">
+
+	<p:growl id="grl" widgetVar="grl" globalOnly="true" escape="false"	showSummary="false" life="8000" showDetail="true" sticky="false">
+
+		<p:autoUpdate />
+
+	</p:growl>
+
+
+		<h:form id="formCadastro" prependId="false">
+
+			<div class="card">
+
+				<div class="ui-fluid formgrid grid">
+
+					<div class="field col-12 md:col-3">
+
+						<p:outputLabel for="inputCadastStatusCamDesc" value="Descrição:" />
+
+						<p:inputText id="inputCadastStatusCamDesc"
+							value="#{statusCampanhaBean.statusCampanha.descricao}"
+							required="true" requiredMessage="Requerido" />
+
+						<p:message for="inputCadastStatusCamDesc" />
+
+					</div>
+
+					<div class="field col-12 md:col-3">
+
+						<p:outputLabel for="selectCadastOneAcao" value="Ação" />
+						
+						<h:panelGroup styleClass="md-inputfield">
+
+							<p:selectOneMenu id="selectCadastOneAcao"
+								value="#{statusCampanhaBean.statusCampanha.acao}"
+								required="true" requiredMessage="Requerido">
+
+								<f:selectItem itemLabel="Selecione" noSelectionOption="true" />
+
+								<f:selectItems value="#{statusCampanhaBean.acaoCamapanha}"
+									var="acao" itemLabel="#{acao}" itemValue="#{acao.name()}" />
+
+							</p:selectOneMenu>
+							<p:message for="selectCadastOneAcao" />
+						</h:panelGroup>
+					</div>
+
+					<div class="field col-12 md:col-3">
+
+						<p:outputLabel for="selectCadastOneAtivo" value="Acesso:" />
+
+						<p:selectOneMenu id="selectCadastOneAtivo"
+							value="#{statusCampanhaBean.statusCampanha.acesso}">
+
+							<f:selectItem itemLabel="ATIVO" itemValue="ATIVO" />
+							<f:selectItem itemLabel="INATIVO" itemValue="INATIVO" />
+
+						</p:selectOneMenu>
+
+					</div>
+
+				</div>
+				<div class="field col-12 mt-3 text-center" >
+
+						<p:commandButton id="btnSalvar" value="Salvar" styleClass="mr-3 ui-button-raised"
+							action="#{statusCampanhaBean.salvar()}" update="@form grl"
+							icon="pi pi-save" />
+
+
+
+						<p:commandButton id="btnVoltar" value="Voltar" styleClass="ui-button-outlined ui-button-raised"
+							actionListener="#{statusCampanhaBean.voltar()}" immediate="true"
+							ajax="false" icon="pi pi-arrow-circle-left" />
+
+					</div>
+
+
+			</div>
+		</h:form>
+
+
+
+
+
+
+</ui:fragment>

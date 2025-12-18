@@ -1,0 +1,124 @@
+<ui:fragment xmlns="http://www.w3.org/1999/xhtml"
+             xmlns:ui="http://java.sun.com/jsf/facelets"
+             xmlns:h="http://java.sun.com/jsf/html"
+             xmlns:f="http://java.sun.com/jsf/core"
+             xmlns:p="http://primefaces.org/ui">
+
+
+    <p:dialog id="dlgAtnCalculadora" widgetVar="dlgAtnCalculadora" modal="true"
+              draggable="false" resizable="false"
+              header="CLIENTE: #{fichaAtendimentoBean.atendimento.nome}" closable="false" width="60%"
+              appendTo="@(body)">
+
+        <style>
+
+            .alert-danger {
+                color: #721c24;
+                background-color: #f8d7da;
+                border-color: #f5c6cb;
+            }
+
+            .alert {
+                position: relative;
+                padding: 0.75rem 1.25rem;
+                margin-bottom: 1rem;
+                border: 1px solid transparent;
+                border-radius: 0.25rem;
+            }
+
+            .alert-success {
+                color: #155724;
+                background-color: #d4edda;
+                border-color: #c3e6cb;
+            }
+        </style>
+
+        <div class="col-12">
+
+            <div class="ui-fluid formgrid grid" style="text-align: center;">
+
+                <h:panelGroup styleClass="flex col-12  p-5" rendered="#{not empty fichaAtendimentoBean.calculadoraConsignadoResponse.mensagem}">
+
+
+                    <span class="text-xl"> <b>  #{fichaAtendimentoBean.calculadoraConsignadoResponse.mensagem}</b></span>
+
+                </h:panelGroup>
+
+                <h:panelGroup styleClass=" col-12 "
+                              rendered="#{not empty fichaAtendimentoBean.calculadoraConsignadoResponse.resultados}">
+
+
+                    <p:dataTable rows="5" paginator="true"
+                                 value="#{fichaAtendimentoBean.calculadoraConsignadoResponse.resultados}"
+                                 paginatorPosition="bottom"
+                                 emptyMessage="#{msg.emptyMessage}"
+                                 currentPageReportTemplate="[ #{msg.totalDeRegistros}: {totalRecords} ]"
+                                 paginatorTemplate="{CurrentPageReport}  {FirstPageLink} {PreviousPageLink} {PageLinks} {NextPageLink} {LastPageLink}"
+                                 var="c" id="tableCalculadora"
+                                 styleClass="ui-datatable-striped ui-datatable-sm "
+                                 style="zoom: 90%;">
+
+                        <f:facet name="header">
+                         CPF:   #{fichaAtendimentoBean.atendimento.cpf}
+                        </f:facet>
+
+
+                        <p:column headerText="beneficio" style="text-align:center">
+
+                            <span>#{c.beneficio}</span>
+
+                        </p:column>
+
+                        <p:column headerText="Bloqueio associação" style="text-align:center">
+
+                            <span>#{c.bloqueioAssociacao ? 'SIM' : 'NÃO'}</span>
+
+                        </p:column>
+
+                        <p:column headerText="possui sindicato" style="text-align:center">
+
+                            <span>#{c.possuiSindicato ? 'SIM' : 'NÃO'}</span>
+
+                        </p:column>
+
+                        <p:column headerText="cod especie" style="text-align:center">
+
+                            <span>#{c.especieCodigo}</span>
+
+                        </p:column>
+
+                        <p:column headerText="especie descrição" style="text-align:center">
+
+                            <span>#{c.especieDescricao}</span>
+
+                        </p:column>
+
+
+                        <p:column headerText="status" style="text-align:center">
+
+                            <span>#{c.status}</span>
+
+                        </p:column>
+
+                    </p:dataTable>
+
+                </h:panelGroup>
+
+            </div>
+
+        </div>
+
+        <div class="col-12 mt-3 text-center">
+
+            <div class="p-grid p-justify-center">
+
+                <p:commandButton type="button" icon="pi pi-times" styleClass="ui-button-raised"
+                                 onclick="PF('dlgAtnCalculadora').hide();" value="Fechar"/>
+
+            </div>
+
+        </div>
+
+    </p:dialog>
+
+</ui:fragment>

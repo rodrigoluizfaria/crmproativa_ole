@@ -1,0 +1,87 @@
+<ui:fragment xmlns="http://www.w3.org/1999/xhtml"
+             xmlns:h="http://java.sun.com/jsf/html"
+             xmlns:f="http://java.sun.com/jsf/core"
+             xmlns:ui="http://java.sun.com/jsf/facelets"
+             xmlns:p="http://primefaces.org/ui" template="/WEB-INF/template.xhtml">
+
+    <p:growl id="grl" widgetVar="grl" globalOnly="true" escape="false"
+             showSummary="false" life="8000" showDetail="true" sticky="false">
+
+        <p:autoUpdate/>
+
+    </p:growl>
+
+
+    <h:form id="formPesquisa">
+
+        <div class="card">
+
+            <div class="ui-fluid formgrid grid">
+
+                <div class="field col-12 md:col-3">
+
+                    <p:outputLabel for="inputCadastDesc" value="#{msg.descricao}"/>
+
+                    <p:inputText id="inputCadastDesc" value="#{formaPagamentoBean.formaPagamento.descricao}"
+                                 required="true" requiredMessage="Requerido"/>
+
+                    <p:message for="inputCadastDesc"/>
+
+                </div>
+
+                <div class="field col-12 md:col-3">
+
+                    <p:outputLabel for="selectOneCadastParam" value="Parametro:"/>
+
+
+                    <p:selectOneMenu id="selectOneCadastParam"
+                                     value="#{formaPagamentoBean.formaPagamento.parametro}"
+                                     required="true" requiredMessage="Requerido">
+
+                        <f:selectItem itemLabel="Selecione" noSelectionOption="true"/>
+
+                        <f:selectItems value="#{formaPagamentoBean.enumFormaPagamento}"
+                                       var="forma" itemLabel="#{forma.constante}" itemValue="#{forma}"/>
+
+                    </p:selectOneMenu>
+
+                    <p:message for="selectOneCadastParam"/>
+
+                </div>
+
+                <div class="field col-12 md:col-3">
+
+                    <p:outputLabel for="selectOneCadastAtivo" value="Acesso:"/>
+
+                    <p:selectOneMenu id="selectOneCadastAtivo" value="#{formaPagamentoBean.formaPagamento.ativo}"
+                                     required="true" requiredMessage="#{msg.requerido}">
+                        <f:selectItem itemLabel="Selecione" noSelectionOption="true"/>
+
+                        <f:selectItems value="#{formaPagamentoBean.tipoAcessoEnum}" var="acesso"
+                                       itemLabel="#{acesso.constante}" itemValue="#{acesso}"/>
+
+                    </p:selectOneMenu>
+
+                    <p:message for="selectOneCadastAtivo"/>
+
+                </div>
+
+            </div>
+
+            <div class="mt-5 ">
+
+                <p:commandButton value="Salvar" styleClass="mr-3 ui-button-raised" id="btnPesquisar" update="@form grl"
+                                 icon="pi pi-save" action="#{formaPagamentoBean.salvar()}" validateClient="true"/>
+
+                <p:commandButton value="Voltar" id="btnNovo" icon="pi pi-arrow-circle-left" styleClass="ui-button-raised ui-button-outlined"
+                                 action="#{formaPagamentoBean.voltar()}" immediate="true" ajax="false"/>
+
+            </div>
+
+
+        </div>
+
+    </h:form>
+
+
+</ui:fragment>

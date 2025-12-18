@@ -1,0 +1,152 @@
+<ui:fragment xmlns="http://www.w3.org/1999/xhtml"
+             xmlns:h="http://java.sun.com/jsf/html"
+             xmlns:f="http://java.sun.com/jsf/core"
+             xmlns:ui="http://java.sun.com/jsf/facelets"
+             xmlns:p="http://primefaces.org/ui" template="/WEB-INF/template.xhtml">
+
+    <p:growl id="grl" widgetVar="grl" globalOnly="true" escape="false" showSummary="false" life="8000" showDetail="true"
+             sticky="false">
+
+        <p:autoUpdate/>
+
+    </p:growl>
+
+
+    <h:form id="formPesquisa" prependId="false">
+
+
+        <div class="card">
+
+            <div class="ui-fluid formgrid grid">
+
+                <div class="field col-12 md:col-3">
+
+                    <p:outputLabel for="inputPesqStatusDesc" value="Descrição:"/>
+
+                    <p:inputText id="inputPesqStatusDesc" value="#{statusTelefoneBean.statusTelefone.descricao}"/>
+
+                </div>
+
+                <div class="field col-12 md:col-3">
+
+                    <p:outputLabel for="selectOneParam" value="Parametro:"/>
+
+                    <p:selectOneMenu id="selectOneParam" value="#{statusTelefoneBean.statusTelefone.parametro}">
+
+                        <f:selectItem itemLabel="Selecione" noSelectionOption="true"/>
+
+                        <f:selectItems value="#{statusTelefoneBean.parametro}" var="p" itemLabel="#{p.constante}"
+                                       itemValue="#{p}"/>
+
+                    </p:selectOneMenu>
+
+                </div>
+
+                <div class="field col-12 md:col-3">
+
+                    <p:outputLabel for="inputPesqCodInterno" value="Código Interno"/>
+
+                    <p:inputText id="inputPesqCodInterno" value="#{statusTelefoneBean.statusTelefone.codigoInterno}"/>
+
+                </div>
+
+                <div class="field col-12 md:col-3">
+
+                    <p:outputLabel for="selectOneAtivo" value="Acesso:"/>
+
+                    <p:selectOneMenu id="selectOneAtivo" value="#{statusTelefoneBean.statusTelefone.ativo}">
+
+                        <f:selectItems value="#{statusTelefoneBean.tipoAcessoEnum}" var="a" itemLabel="#{a.constante}"
+                                       itemValue="#{a}"/>
+
+                    </p:selectOneMenu>
+
+                </div>
+
+
+                <!-- UI-G PESQUISA-->
+
+            </div>
+
+            <div class="mt-5">
+
+                <p:commandButton id="btnPesquisa" value="#{msg.pesquisar}" styleClass="mr-3 ui-button-raised"
+                                 update="tableStatus grl" action="#{statusTelefoneBean.pesquisar()}"
+                                 icon="pi pi-search"/>
+
+                <p:commandButton id="btnExportar" icon="pi pi-file-excel" value="#{msg.exportar}" ajax="false"
+                                 rendered="#{sessionScope['usuario'].permissaoExportar}"
+                                 disabled="#{empty statusTelefoneBean.listStatusTelefone}" immediate="true"
+                                 styleClass="mr-3 ui-button-raised ui-button-outlined">
+
+                    <p:dataExporter target="tableStatus" type="xls" fileName="status_telefone"/>
+
+                </p:commandButton>
+
+                <p:commandButton id="btnNovo" value="#{msg.novo}" ajax="false"
+                                 styleClass="ui-button-raised ui-button-outlined" action="#{statusTelefoneBean.novo()}"
+                                 icon="pi pi-plus-circle"/>
+
+            </div>
+
+
+        </div>
+
+
+		<div class=" mt-4">
+
+            <div class="card">
+
+                <p:dataTable value="#{statusTelefoneBean.listStatusTelefone}"
+                             rows="15" paginator="true" paginatorPosition="bottom"
+                             styleClass="ui-datatable-striped ui-datatable-gridlines ui-datatable-sm"
+                             emptyMessage="#{msg.emptyMessage}"
+                             currentPageReportTemplate="[#{msg.totalDeRegistros}: {totalRecords})]"
+                             paginatorTemplate="{CurrentPageReport}  {FirstPageLink} {PreviousPageLink} {PageLinks} {NextPageLink} {LastPageLink}"
+                             var="status" id="tableStatus">
+
+                    <p:column headerText="Descricao" sortBy="#{status.descricao}">
+
+                        <h:outputText value="#{status.descricao}"/>
+
+                    </p:column>
+
+                    <p:column headerText="Ação" sortBy="#{status.parametro.constante}">
+
+                        <h:outputText value="#{status.parametro.constante}"/>
+
+                    </p:column>
+
+
+                    <p:column headerText="Acesso" sortBy="#{status.ativo.constante}">
+
+                        <h:outputText value="#{status.ativo.constante}"/>
+
+                    </p:column>
+
+                    <p:column headerText="Código Interno" width="7%" sortBy="#{status.codigoInterno}">
+
+                        <h:outputText value="#{status.codigoInterno}"/>
+
+                    </p:column>
+
+                    <p:column style="text-align:center;width:50px" exportable="false">
+
+                        <p:commandButton styleClass="ui-button-flat" icon="fa fw fa-edit" ajax="false"
+                                         action="#{statusTelefoneBean.editar(status)}">
+
+                        </p:commandButton>
+
+                    </p:column>
+
+                </p:dataTable>
+
+            </div>
+
+        </div>
+
+
+    </h:form>
+
+
+</ui:fragment>

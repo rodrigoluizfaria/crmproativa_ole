@@ -1,0 +1,154 @@
+<ui:fragment xmlns="http://www.w3.org/1999/xhtml"
+             xmlns:h="http://java.sun.com/jsf/html"
+             xmlns:f="http://java.sun.com/jsf/core"
+             xmlns:ui="http://java.sun.com/jsf/facelets"
+             xmlns:comboempresa="http://java.sun.com/jsf/composite/componentes"
+             xmlns:p="http://primefaces.org/ui" template="/WEB-INF/template.xhtml">
+
+    <p:growl id="grl" widgetVar="grl" globalOnly="true" escape="false"
+             showSummary="false" life="8000" showDetail="true" sticky="false">
+
+        <p:autoUpdate/>
+    </p:growl>
+
+
+    <h:form id="formCadastro">
+
+        <div class="card">
+
+            <div class="ui-fluid formgrid grid">
+
+                <comboempresa:selectEmpresa id="cmdEmpresa" managedBean="#{pabxIpBean}"
+                                            value="#{pabxIpBean.pabx.empresa}" update="@form" filter="true"
+                                            exibirSelecione="true"
+                                            selecioneItemLabel="Selecione" style="col-12 md:col-3"/>
+
+
+                <div class="field col-12 md:col-3">
+
+                    <p:outputLabel for="inputPabxDesc" value="#{msg.descricao}"/>
+
+                    <p:inputText id="inputPabxDesc"
+                                 value="#{pabxIpBean.pabx.descricao}" maxlength="50"
+                                 required="true" requiredMessage="#{msg.requerido}"/>
+
+                    <p:message for="inputPabxDesc"/>
+
+                </div>
+
+                <div class="field col-12 md:col-2">
+
+                    <p:outputLabel for="selectOneTipo" value="Tipo:"/>
+
+
+                    <p:selectOneMenu id="selectOneTipo"
+                                     value="#{pabxIpBean.pabx.tipo}" required="true"
+                                     requiredMessage="Requerido">
+
+                        <f:selectItem itemLabel="Selecione" noSelectionOption="true"/>
+                        <f:selectItems value="#{pabxIpBean.tipoPabx}" var="tipo"
+                                       itemLabel="#{tipo.constante}" itemValue="#{tipo}"/>
+
+                        <p:ajax process="@this" update="pnpToken"/>
+
+                    </p:selectOneMenu>
+
+                    <p:message for="selectOneTipo"/>
+
+                </div>
+
+
+                <div class="field col-12 md:col-2">
+
+                    <p:outputLabel for="selectOneAtivo" value="Acesso:"/>
+
+
+                    <p:selectOneMenu id="selectOneAtivo"
+                                     value="#{pabxIpBean.pabx.ativo}" required="true"
+                                     requiredMessage="Requerido">
+
+                        <f:selectItem itemLabel="Selecione" noSelectionOption="true"/>
+                        <f:selectItems value="#{pabxIpBean.tipoAcessoEnum}" var="acesso"
+                                       itemLabel="#{acesso.constante}" itemValue="#{acesso}"/>
+
+                    </p:selectOneMenu>
+
+                    <p:message for="selectOneAtivo"/>
+
+                </div>
+
+            </div>
+
+            <div class="ui-fluid formgrid grid">
+
+                <div class="field col-12 md:col-3">
+
+                    <p:outputLabel for="inputPabxUrl" value="Url:"/>
+
+                    <p:inputText id="inputPabxUrl" value="#{pabxIpBean.pabx.url}"
+                                 required="true" requiredMessage="Requerido" maxlength="100"/>
+
+                    <p:message for="inputPabxUrl"/>
+
+                </div>
+
+                <div class="field col-12 md:col-2">
+
+                    <p:outputLabel for="inputPabxUsuario" value="Usuario:"/>
+
+                    <p:inputText id="inputPabxUsuario"
+                                 value="#{pabxIpBean.pabx.usuario}" required="true"
+                                 requiredMessage="Requerido"/>
+
+                    <p:message for="inputPabxUsuario"/>
+
+                </div>
+
+                <div class="field col-12 md:col-2">
+
+
+                    <p:outputLabel for="inputPabxSenha" value="Senha:"/>
+
+                    <p:password id="inputPabxSenha" value="#{pabxIpBean.pabx.senha}"
+                                required="true" requiredMessage="Requerido"/>
+
+                    <p:message for="inputPabxSenha"/>
+
+                </div>
+
+                <h:panelGroup id="pnpToken" styleClass="field col-12 md:col-4" >
+
+                    <h:panelGroup styleClass="field col-12 md:col-8" rendered="#{pabxIpBean.pabx.tipo.token}">
+
+                        <p:outputLabel for="txtToken" value="Token Gestor:"/>
+
+                        <p:inputText id="txtToken" value="#{pabxIpBean.pabx.apiToken}" required="true"  requiredMessage="Requerido"/>
+
+                        <p:message for="txtToken"/>
+
+                    </h:panelGroup>
+
+                </h:panelGroup>
+
+            </div>
+
+
+            <div class="mt-5">
+
+                <p:commandButton value="Salvar"
+                                 styleClass="mr-3 ui-button-raised" id="btnSalvar"
+                                 action="#{pabxIpBean.salvar()}" update="@form grl"
+                                 icon="pi pi-save"/>
+
+                <p:commandButton value="Voltar" id="btnVoltar" styleClass="ui-button-raised ui-button-outlined"
+                                 ajax="false" action="#{pabxIpBean.voltar()}" immediate="true"
+                                 icon="pi pi-arrow-circle-left"/>
+
+            </div>
+
+        </div>
+
+    </h:form>
+
+
+</ui:fragment>

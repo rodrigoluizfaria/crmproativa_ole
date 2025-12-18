@@ -1,0 +1,182 @@
+<ui:fragment xmlns="http://www.w3.org/1999/xhtml"
+             xmlns:h="http://java.sun.com/jsf/html"
+             xmlns:f="http://java.sun.com/jsf/core"
+             xmlns:o="http://omnifaces.org/ui"
+             xmlns:ui="http://java.sun.com/jsf/facelets"
+             xmlns:p="http://primefaces.org/ui">
+
+    <p:dialog id="dlgCampanhaRetrabalhar"
+              widgetVar="dlgCampanhaRetrabalhar" modal="true" draggable="false"
+              resizable="false" closable="true" visible="false" width="900px"
+              header="Retrabalhar Campanha" appendTo="@(body)">
+
+        <h:form id="formCampanhaRetrabalhar" prependId="false">
+
+            <div class=" ui-fluid formgrid grid p-4 ">
+
+                <div class="field col-12 md:col-7">
+
+                    <p:outputLabel value="Campanha:" id="lblCampanhaRetrabalhar" for="txtCampanhaRetrabalhar"/>
+
+                    <p:inputText id="txtCampanhaRetrabalhar" required="true" disabled="true"
+                                 value="#{campanhaBean.campanhaRetrabalhar.descricao}"/>
+
+                </div>
+
+                <div class="field col-12 md:col-5">
+
+                    <p:outputLabel for="importacaoCheck" value="Importação:"/>
+
+                    <p:selectCheckboxMenu id="importacaoCheck" value="#{campanhaBean.listImportacao}"
+                                          converter="omnifaces.SelectItemsConverter" multiple="true" filter="true"
+                                          filterMatchMode="startsWith" panelStyle="width: 30rem" scrollHeight="250"
+                                          style="min-width: 15rem">
+
+                        <f:selectItems value="#{campanhaBean.campanhaRetrabalhar.listImportacao}" var="importacao"
+                                       itemLabel="#{importacao.nomeArquivo}" itemValue="#{importacao.id}"/>
+
+                    </p:selectCheckboxMenu>
+                </div>
+
+
+                <div class="field col-12 md:col-6 mt-2 mb-5">
+
+
+                    <p:selectBooleanCheckbox id="booleanCheck" style="width:100%"
+                                             value="#{campanhaBean.retrabalharFimFila}"
+                                             itemLabel="Retrabalhar todos fim de fila.">
+
+                        <p:ajax update="pckListStatusAtendimento" process="@this" global="false"/>
+
+                    </p:selectBooleanCheckbox>
+
+                </div>
+
+
+                <h:panelGroup layout="block" id="pngFila" styleClass="field col-12 md:col-5 mp-2 justify-content-end"
+                              rendered="#{campanhaBean.campanhaRetrabalhar.fila ne null}" style="margin-left: 25px;">
+
+                    <i class="pi pi-exclamation-circle" title="Esta ação pode pode ocorrer demora"
+                       style="margin-right: 2px"/>
+
+                    <p:outputLabel value="Remover todos contatos da fila:  " id="lblRemoverFila" for="bntRemover"
+                                   style="font-weight: normal;"/><strong> #{campanhaBean.campanhaRetrabalhar.fila.nome}</strong>
+
+                    <p:outputLabel
+                            value="Total de contatos no discador: #{campanhaBean.campanhaRetrabalhar.fila.quantidadeContatos}"
+                            styleClass="mr-4"
+                            rendered="#{campanhaBean.campanhaRetrabalhar.fila.quantidadeContatos ne null}"/>
+
+                    <div>
+
+                        <p:commandButton value="Limpar" update="grl" action="#{campanhaBean.limparContatosDiscador()}"
+                                         styleClass="ui-button-raised ui-button-secondary mr-2 " icon="fa fa-eraser"
+                                         id="bntRemover">
+                            <p:confirm header="Confirmar"
+                                       message="Este ação irá remover todos contatos da fila : #{campanhaBean.campanhaRetrabalhar.fila.nome}. Confirma ?"
+                                       icon="pi pi-exclamation-triangle"/>
+                        </p:commandButton>
+
+                        <p:commandButton value="Consultar quantidade contatos"
+                                         actionListener="#{campanhaBean.consultarContatosDiscador()}"
+                                         title="Retorna a quantidade de contatos da fila #{campanhaBean.campanhaRetrabalhar.fila.nome} no discador"
+                                         process="@this" update="pngFila"
+                                         styleClass="secondary-button raised-button p-mr-3 outlined-button"
+                                         icon="pi pi-ellipsis-h" id="bntConsultar"/>
+
+                    </div>
+
+                    <small style="margin-top: 3px">Esta ação irá remover todos os contatos da fila.</small>
+
+                </h:panelGroup>
+
+
+          <!--      CAMPANHA 3C-->
+                <h:panelGroup layout="block" id="pngFila3c" styleClass="field col-12 md:col-5 mp-2 justify-content-end"
+                              rendered="#{campanhaBean.campanhaRetrabalhar.tipoCampanha.name() eq 'PREDITIVA_3C'}" style="margin-left: 25px;">
+
+                    <i class="pi pi-exclamation-circle" title="Esta ação pode pode ocorrer demora"
+                       style="margin-right: 2px"/>
+
+                    <p:outputLabel value="Remover todos contatos da fila:  " id="lblLimpar" for="bntRemover"
+                                   style="font-weight: normal;"/><strong> #{campanhaBean.campanhaRetrabalhar.campanhaData3c.name}</strong>
+
+                    <p:outputLabel
+                            value="#{campanhaBean.campanhaRetrabalhar.totalDiscado}"
+                            styleClass="mr-4"
+                            rendered="#{campanhaBean.campanhaRetrabalhar.totalDiscado ne null}"/>
+
+                    <div>
+
+                        <p:commandButton value="Limpar" update="grl" action="#{campanhaBean.limparContatosDiscador()}"
+                                         styleClass="ui-button-raised ui-button-secondary mr-2 " icon="fa fa-eraser"
+                                         id="bntRemover3c">
+                            <p:confirm header="Confirmar"
+                                       message="Este ação irá remover todos contatos da fila : #{campanhaBean.campanhaRetrabalhar.campanhaData3c.name}. Confirma ?"
+                                       icon="pi pi-exclamation-triangle"/>
+                        </p:commandButton>
+
+                        <p:commandButton value="Consultar quantidade contatos"
+                                         actionListener="#{campanhaBean.consultarContatosDiscador()}"
+                                         title="Retorna a quantidade de contatos da fila #{campanhaBean.campanhaRetrabalhar.campanhaData3c.name} no discador"
+                                         process="@this" update="pngFila3c"
+                                         styleClass="secondary-button raised-button p-mr-3 outlined-button"
+                                         icon="pi pi-ellipsis-h" id="bntConsultar3c"/>
+
+                    </div>
+
+                    <small style="margin-top: 3px">Esta ação irá remover todos os contatos da fila.</small>
+
+                </h:panelGroup>
+
+
+               <!-- FIM CAMPANHA 3c-->
+
+                <div class="field col-12 mt-2">
+
+                    <p:pickList id="pckListStatusAtendimento"
+                                value="#{campanhaBean.dualListStatusAtendimento}" var="status"
+                                itemLabel="#{status.descricao} - (#{status.acao.constante})"
+                                disabled="#{campanhaBean.retrabalharFimFila}"
+                                itemValue="#{status}" responsive="true" showSourceFilter="true"
+                                showTargetFilter="true"
+                                rendered="#{campanhaBean.dualListStatusAtendimento ne null}">
+
+                        <f:facet name="sourceCaption">Trabalhados</f:facet>
+                        <f:facet name="targetCaption">Voltar a Trabalhar</f:facet>
+
+                        <o:converter converterId="omnifaces.ListConverter"
+                                     list="#{campanhaBean.listStatusAtendimentos}"/>
+
+                    </p:pickList>
+
+                </div>
+
+            </div>
+
+            <h:panelGroup styleClass="col-12 text-center" layout="block">
+
+
+                <p:commandButton value="Retrabalhar" actionListener="#{campanhaBean.retrabalharCampanha}" update="@form"
+                                 icon="pi pi-cog" styleClass="ui-button-raised  mr-2 "
+                                 oncomplete="PF('dlgCampanhaRetrabalhar').hide();"/>
+
+                <p:commandButton value="fechar" onclick="PF('dlgCampanhaRetrabalhar').hide();" style="margin-top:10px"
+                                 global="false" styleClass="ui-button-secondary ui-button-raised mr-2 "
+                                 icon="pi pi-times"/>
+
+
+            </h:panelGroup>
+
+            <p:confirmDialog global="true">
+
+                <p:commandButton value="Sim" type="button" styleClass="ui-confirmdialog-yes" icon="pi pi-check"/>
+                <p:commandButton value="Não" type="button" styleClass="ui-confirmdialog-no" icon="pi pi-times"/>
+
+            </p:confirmDialog>
+
+        </h:form>
+
+    </p:dialog>
+
+</ui:fragment>

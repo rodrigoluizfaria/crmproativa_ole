@@ -1,0 +1,164 @@
+<ui:fragment xmlns="http://www.w3.org/1999/xhtml"
+             xmlns:h="http://java.sun.com/jsf/html"
+             xmlns:f="http://java.sun.com/jsf/core"
+             xmlns:ui="http://java.sun.com/jsf/facelets"
+             xmlns:matriz="http://java.sun.com/jsf/composite/componentes"
+             xmlns:p="http://primefaces.org/ui" template="/WEB-INF/template.xhtml">
+
+    <p:growl id="grl" widgetVar="grl" globalOnly="true" escape="false"
+             showSummary="false" life="8000" showDetail="true" sticky="false">
+
+        <p:autoUpdate/>
+
+    </p:growl>
+
+
+    <h:form id="pesqConciliar" prependId="false">
+
+        <div class="card">
+
+            <div class="ui-fluid formgrid grid">
+
+                <matriz:selectEmpresa id="cmbEmpresa" managedBean="#{cadastroConciliarAudioBean}"
+                                      value="#{cadastroConciliarAudioBean.conciliar.empresa}" filter="true"
+                                      ajax="true" exibirSelecione="true" update="selectOneSftp selectLoja"/>
+
+
+                <div class="field col-12 md:col-3">
+
+                    <p:outputLabel for="inputConciliarDesc" value="#{msg.descricao}"/>
+
+                    <p:inputText id="inputConciliarDesc" value="#{cadastroConciliarAudioBean.conciliar.descricao}"/>
+
+                    <p:message for="inputConciliarDesc"/>
+
+                </div>
+
+                <div class="field col-12 md:col-3">
+
+                    <p:outputLabel for="selectLoja" value="Loja"/>
+
+                    <p:selectOneMenu id="selectLoja" value="#{cadastroConciliarAudioBean.idLoja}">
+
+                        <f:selectItem itemLabel="Selecione" noSelectionOption="true"/>
+
+                        <f:selectItems value="#{cadastroConciliarAudioBean.listLojas}" var="loja"
+                                       itemLabel="#{loja.codigoLoja}" itemValue="#{loja.id}"/>
+
+                    </p:selectOneMenu>
+
+                </div>
+
+                <div class="field col-12 md:col-3">
+
+                    <p:outputLabel for="selectOneSftp" value="Servidor SFTP"/>
+
+                    <p:selectOneMenu id="selectOneSftp" value="#{cadastroConciliarAudioBean.idSftp}">
+
+                        <f:selectItem itemLabel="Selecione" noSelectionOption="true"/>
+                        <f:selectItems value="#{cadastroConciliarAudioBean.listSftps}" var="sftp"
+                                       itemLabel="#{sftp.descricao}" itemValue="#{sftp.id}"/>
+
+                    </p:selectOneMenu>
+
+                </div>
+
+            </div>
+
+            <div class="mt-3">
+
+                <p:commandButton value="Pesquisar" styleClass="mr-3 ui-button-raised" id="btnPesquisar"
+                                 actionListener="#{cadastroConciliarAudioBean.pesquisar()}"
+                                 update="pesqConciliar" icon="pi pi-search"/>
+
+                <p:commandButton id="btnExportar" icon="pi pi-file-excel" value="#{msg.exportar}" ajax="false"
+                                 disabled="#{empty cadastroConciliarAudioBean.listConciliarAudio}"
+                                 immediate="true" styleClass="mr-3 ui-button-outlined ui-button-raised"
+                                 rendered="#{sessionScope['usuario'].permissaoExportar}">
+
+                    <p:dataExporter target="tableConciliar" type="xls" fileName="conciliar"/>
+
+                </p:commandButton>
+
+                <p:commandButton value="Novo" id="btnNovo" actionListener="#{cadastroConciliarAudioBean.novo()}"
+                                 ajax="false" immediate="true" icon="pi pi-plus-circle"
+                                 styleClass="ui-button-outlined ui-button-raised"/>
+
+            </div>
+
+
+        </div>
+
+
+        <div class="mt-3">
+
+            <div class="card">
+
+                <p:dataTable id="tableConciliar" value="#{cadastroConciliarAudioBean.listConciliarAudio}"
+                             var="conciliar" rows="15" paginator="true" paginatorPosition="bottom"
+                             emptyMessage="#{msg.emptyMessage}" styleClass="ui-datatable-striped ui-datatable-gridlines"
+                             currentPageReportTemplate="[#{msg.totalDeRegistros}: {totalRecords}]"
+                             paginatorTemplate="{CurrentPageReport}  {FirstPageLink} {PreviousPageLink} {PageLinks} {NextPageLink} {LastPageLink} {Exporters}">
+
+
+                    <p:column headerText="Empresa" sortBy="#{conciliar.empresa.nome}">
+
+                        <h:outputText value="#{conciliar.empresa.nome}"/>
+
+                    </p:column>
+                    <p:column headerText="#{msg.descricao}" sortBy="#{conciliar.descricao}">
+
+                        <h:outputText value="#{conciliar.descricao}"/>
+
+                    </p:column>
+
+                    <p:column headerText="Prefixo" sortBy="#{conciliar.prefixoArquivoCompactado}">
+
+                        <h:outputText value="#{conciliar.prefixoArquivoCompactado}"/>
+
+                    </p:column>
+                    <p:column headerText="Loja" sortBy="#{conciliar.loja}">
+
+                        <h:outputText value="#{conciliar.loja.codigoLoja}"/>
+
+                    </p:column>
+
+                    <p:column headerText="Servidor" sortBy="#{conciliar.sftp.descricao}">
+
+                        <h:outputText value="#{conciliar.sftp.descricao}"/>
+
+                    </p:column>
+
+                    <p:column headerText="Período" sortBy="#{conciliar.intervalo.constante}">
+
+                        <h:outputText value="#{conciliar.intervalo.constante}"/>
+
+                    </p:column>
+
+                    <p:column headerText="Acesso" sortBy="#{conciliar.ativo.constante}">
+
+                        <h:outputText value="#{conciliar.ativo.constante}"/>
+
+                    </p:column>
+
+                    <p:column headerText="#{msg.acao}" style="text-align:center;width:50px" exportable="false">
+
+                        <p:commandButton icon="fa fa fa-edit" styleClass="rounded-button ui-button-flat"
+                                         action="#{cadastroConciliarAudioBean.editar(conciliar)}" ajax="false"
+                                         process="@this" immediate="true">
+
+
+                        </p:commandButton>
+
+                    </p:column>
+
+                </p:dataTable>
+
+            </div>
+
+        </div>
+
+    </h:form>
+
+
+</ui:fragment>

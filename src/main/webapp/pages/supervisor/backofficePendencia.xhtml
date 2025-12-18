@@ -1,0 +1,102 @@
+<ui:fragment xmlns="http://www.w3.org/1999/xhtml"
+	xmlns:h="http://java.sun.com/jsf/html"
+	xmlns:f="http://java.sun.com/jsf/core"
+	xmlns:o="http://omnifaces.org/ui"
+	xmlns:pe="http://primefaces.org/ui/extensions"
+	xmlns:ui="http://java.sun.com/jsf/facelets"
+	xmlns:matriz="http://java.sun.com/jsf/composite/componentes"
+	xmlns:p="http://primefaces.org/ui">
+
+	<h:form id="formBackofficePendencia" prependId="false">
+
+		<div class="grid col-12 tab-padding">
+
+			<div class="col-12">
+
+				<p:spacer height="20" />
+
+			</div>
+
+			<matriz:selectEmpresa id="selectEmpresaPendencia" style="col-12 md:col-3"	managedBean="#{supervisorBackofficeBean}" value="#{supervisorBackofficeBean.empresa}" ajax="true" update="@form" filter="true" exibirSelecione="true"
+								  required="true" />
+
+			<div class="field col-12 md:col-3">
+
+				<p:outputLabel value="Equipe" />
+
+				<p:selectOneMenu id="selectEquipePendencia"	value="#{supervisorBackofficeBean.equipePendencia}" filter="true" 	filterMatchMode="contains">
+
+					<f:selectItem itemLabel="Selecione" itemValue="" />
+
+					<f:selectItems value="#{supervisorBackofficeBean.listEquipes}"	var="equipe" itemLabel="#{equipe.nome}" itemValue="#{equipe.id}" />
+					
+					<p:ajax listener="#{supervisorBackofficeBean.trocarEquipe(supervisorBackofficeBean.equipePendencia)}" global="false" update="selectOperadorPendencia"/>
+
+				</p:selectOneMenu>
+
+			</div>
+			
+			<div class="field col-12 md:col-3">
+
+				<p:outputLabel value="Operador" />
+
+				<p:selectOneMenu id="selectOperadorPendencia"	value="#{supervisorBackofficeBean.operadorPendencia}" filter="true" filterMatchMode="contains">
+
+					<f:selectItem itemLabel="Selecione" itemValue="" />
+
+					<f:selectItems	value="#{supervisorBackofficeBean.listOperador}" var="operador" itemLabel="#{operador.nome}"	itemValue="#{operador.id}" />
+					
+				</p:selectOneMenu>
+
+			</div>
+			
+			
+			<div class="field col-12 ">
+
+				<p:outputLabel value="&#160;&#160;" id="txtPesquisaEspacoPendencia" />
+
+				<div>
+				
+					<p:commandButton value="Pesquisar" id="btnPesquisarPendencia" icon="pi pi-search" styleClass="ui-button-raised mr-3" actionListener="#{supervisorBackofficeBean.pesquisarPendencias()}" update="@form" />
+					<p:commandButton value="Reativar Pendência" styleClass="ui-button-raised  ui-button-outlined" actionListener="#{supervisorBackofficeBean.reativarPendencia()}" update="tableBkoPendencia" id="btnRativarPendencia" icon="pi pi-check"/>
+					
+				</div>
+
+			</div>
+		
+		
+		<div class="col-6 mt-3">
+
+				<p:dataTable id="tableBkoPendencia" var="pendencia" rows="15"	paginator="true" paginatorPosition="bottom"	value="#{supervisorBackofficeBean.listPendencias}"
+					emptyMessage="#{supervisorBackofficeBean.listPendencias eq null? '' : msg.emptyMessage}"	currentPageReportTemplate="[#{msg.totalDeRegistros}: {totalRecords}]"
+					paginatorTemplate="{CurrentPageReport}  {FirstPageLink} {PreviousPageLink} {PageLinks} {NextPageLink} {LastPageLink} {Exporters}" rowKey="#{pendencia[0]}" selection="#{supervisorBackofficeBean.listPendenciasSelecionadas}">
+
+					<p:ajax event="page" global="false" />
+
+					<p:ajax event="sort" global="false" />
+					
+					<p:column selectionMode="multiple" style="width:3%;text-align:center"/>
+
+					<p:column headerText="Operador" sortBy="#{pendencia[0]}" width="30%">
+
+						<h:outputLabel value="#{pendencia[1]}" />
+
+					</p:column>
+
+					<p:column headerText="Qtdade Pendencias" sortBy="#{pendencia[2]}"	width="20%">
+
+						<h:outputLabel value="#{pendencia[2]}" />
+
+					</p:column>
+
+										
+
+				</p:dataTable>
+
+			</div>
+		
+</div>
+
+	</h:form>
+
+</ui:fragment>

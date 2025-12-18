@@ -1,0 +1,797 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+        "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+<html xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:h="http://java.sun.com/jsf/html"
+      xmlns:f="http://java.sun.com/jsf/core"
+	  xmlns:p="http://primefaces.org/ui"
+      xmlns:c="http://java.sun.com/jsp/jstl/core"
+      xmlns:composite="http://java.sun.com/jsf/composite">
+
+<composite:interface>
+
+    <composite:attribute name="id"/>
+
+    <composite:attribute name="managedBean" type="com.proativaservicos.bean.GenericBean"/>
+
+    <composite:attribute name="atendimento" type="com.proativaservicos.model.GenericAtendimento"/>
+
+    <composite:attribute name="viewAtendimento" type="java.lang.Boolean" default="true"/>
+
+    <composite:attribute name="ver" type="java.lang.Boolean" default="false"/>
+
+    <composite:attribute name="required" type="boolean" default="true"/>
+
+
+</composite:interface>
+
+<composite:implementation>
+
+    <h:panelGroup id="groupInformacoesAtendimento" layout="block" styleClass="ui-fluid formgrid grid">
+
+        <div class="col-12 md:col-6">
+
+            <!-- 	<p:fieldset legend="Refinanciamento"> -->
+
+            <p:fieldset id="basic" legend="Formas de Envio" style="padding: 0px 20px;height: 100%;" styleClass="fild-set-default-sem-borda">
+
+                <div class="col-12 p-3">
+
+                    <div class="ui-fluid formgrid grid">
+
+                        <!-- 		<div class="p-field p-col-12 p-md-2">
+
+                                    <p:outputLabel value="Val. Total" for="txtValorTotal" />
+
+                                    <c:if test="#{cc.attrs.ver eq false}">
+
+                                        <p:inputNumber id="txtValorTotal" value="#{cc.attrs.atendimento.valorTotal}" decimalSeparator=","	thousandSeparator="." decimalPlaces="2" maxValue="999999" />
+
+                                    </c:if>
+
+                                    <c:if test="#{cc.attrs.ver eq true}">
+
+                                        <div>
+
+                                            <h:outputLabel value="#{cc.attrs.atendimento.valorTotal}" id="txtValorTotal">
+
+                                                <f:convertNumber type="currency" locale="pt-br"	currencySymbol="R$" />
+
+                                            </h:outputLabel>
+
+                                        </div>
+
+                                    </c:if>
+
+
+                                </div> -->
+
+                        <!-- 		<div class="p-field p-col-12 p-md-2">
+
+                                    <p:outputLabel value="Saldo Devedor" for="txtSaldoDevedor" />
+
+                                    <c:if test="#{cc.attrs.ver eq false}">
+
+                                        <p:inputNumber id="txtSaldoDevedor"	value="#{cc.attrs.atendimento.saldoDevedor}" decimalSeparator="," thousandSeparator="." decimalPlaces="2" maxValue="999999" />
+
+                                    </c:if>
+
+
+                                    <c:if test="#{cc.attrs.ver eq true}">
+
+                                        <div>
+
+                                            <h:outputLabel value="#{cc.attrs.atendimento.saldoDevedor}"	id="txtSaldoDevedor">
+
+                                                <f:convertNumber type="currency" locale="pt-br"	currencySymbol="R$" />
+
+                                            </h:outputLabel>
+
+                                        </div>
+
+                                    </c:if>
+
+                                </div>
+         -->
+                        <div class="col-12 md:col-6">
+
+                            <p:outputLabel value="Forma de Pagamento" id="lblFormaPagamento"/>
+
+
+                            <c:if test="#{cc.attrs.ver eq true}">
+
+                                <div>
+                                    <p:outputLabel value="#{cc.attrs.atendimento.formaPagamento.descricao}"/>
+                                </div>
+
+                            </c:if>
+
+
+                            <c:if test="#{cc.attrs.ver eq false}">
+
+                                <p:selectOneMenu id="selectOneFormaPagamento"
+                                                 value="#{cc.attrs.atendimento.formaPagamento}"
+                                                 requiredMessage="Requerido" filter="true"
+                                                 filterMatchMode="contains"
+                                                 converter="omnifaces.SelectItemsConverter" autoWidth="false">
+
+                                    <f:selectItem itemLabel="Selecione" noSelectionOption="true"/>
+
+                                    <f:selectItems value="#{cc.attrs.managedBean.listFormaPagamento}" var="forma"
+                                                   itemLabel="#{forma.descricao}" itemValue="#{forma}"/>
+
+                                </p:selectOneMenu>
+
+                            </c:if>
+
+                        </div>
+
+                        <div class="col-12 md:col-6">
+
+                            <p:outputLabel value="Produto" id="lblProduto"/>
+
+                            <c:if test="#{cc.attrs.ver eq true}">
+
+                                <div>
+                                    <p:outputLabel value="#{cc.attrs.atendimento.produto.descricao}"/>
+                                </div>
+
+                            </c:if>
+
+
+                            <c:if test="#{cc.attrs.ver eq false}">
+
+                                <p:selectOneMenu id="selectOneProduto" value="#{cc.attrs.atendimento.produto}"
+                                                 requiredMessage="Requerido" filter="true" filterMatchMode="contains"
+                                                 converter="omnifaces.SelectItemsConverter" autoWidth="false">
+
+                                    <f:selectItem itemLabel="Selecione" noSelectionOption="true"/>
+
+                                    <f:selectItems value="#{cc.attrs.managedBean.listProdutos}" var="produto"
+                                                   itemLabel="#{produto.descricao}" itemValue="#{produto}"/>
+
+                                    <f:param name="OBRIGATORIO_VALIDATOR" value="true" />
+
+                                    <p:ajax update="#{cc.attrs.viewAtendimento eq true ? ':groupLojas :groupBtn :panelAtendimentos :groupBtnLeft' : '' }"
+                                            event="change" global="false" process="@this selectOneProduto"/>
+
+                                </p:selectOneMenu>
+
+                            </c:if>
+
+                        </div>
+
+                    </div>
+
+                </div>
+
+                <!-- </p:fieldset> -->
+
+            </p:fieldset>
+        </div>
+
+        <h:panelGroup layout="block" styleClass="col-12 md:col-6"
+                      rendered="#{cc.attrs.managedBean.historicoAtendimento.statusAtendimento.acao eq 'PROPOSTA_EFETIVADA'}">
+
+            <!-- <p:fieldset legend="Informações Principais"	id="fieldPropostaEfetivada"> -->
+
+            <p:fieldset id="basic2" legend="Dados de Contrato" style="height: 100%;padding: 0px 20px" styleClass="fild-set-default-sem-borda">
+
+                <div class="col-12">
+
+                    <div class="ui-fluid formgrid grid">
+
+                        <div class="field col-12 md:col-3">
+
+                            <p:outputLabel value="Adesão"/>
+
+                            <c:if test="#{cc.attrs.ver eq false}">
+
+                                <p:inputText value="#{cc.attrs.atendimento.adesao}" maxlength="14"
+                                             required="#{cc.attrs.atendimento.campanha.instituicaoFinanceira ne 'BANCO_MASTER'}"
+                                             onkeypress="return somenteNumeros(event)" id="txtAdesao"
+                                             requiredMessage="#{msg.requerido}"/>
+
+                                <p:message for="txtAdesao"/>
+
+                            </c:if>
+
+                            <c:if test="#{cc.attrs.ver eq true}">
+
+                                <div>
+                                    <p:outputLabel value="#{cc.attrs.atendimento.adesao}"/>
+                                </div>
+
+                            </c:if>
+
+                        </div>
+
+                        <div class="field col-12 md:col-3">
+
+                            <p:outputLabel value="Val. Liberado" for="txtValorLiberado"/>
+
+                            <c:if test="#{cc.attrs.ver eq false}">
+
+                                <p:inputNumber id="txtValorLiberado"
+                                               value="#{cc.attrs.atendimento.valorLiberado}"
+                                               decimalSeparator="," thousandSeparator="." decimalPlaces="2"
+                                               maxValue="999999" requiredMessage="#{msg.requerido}" required="true"/>
+
+                                <p:message for="txtValorLiberado"/>
+
+                            </c:if>
+
+                            <c:if test="#{cc.attrs.ver eq true}">
+
+                                <div>
+                                    <h:outputLabel value="#{cc.attrs.atendimento.valorLiberado}" id="txtValorLiberado">
+                                        <f:convertNumber type="currency" locale="pt-br"
+                                                         currencySymbol="R$"/>
+                                    </h:outputLabel>
+                                </div>
+
+                            </c:if>
+
+                        </div>
+
+
+                        <div class="field col-12 md:col-3">
+
+                            <p:outputLabel value="Qtd. Parcelas"/>
+
+                            <c:if test="#{cc.attrs.ver eq false}">
+
+                                <p:inputText value="#{cc.attrs.atendimento.quantidadeParcela}" id="txtValorParcelas"
+                                             onkeypress="return somenteNumeros(event)"/>
+                            </c:if>
+
+
+                            <c:if test="#{cc.attrs.ver eq true}">
+                                <div>
+                                    <p:outputLabel id="txtValorParcela"
+                                                   value="#{cc.attrs.atendimento.quantidadeParcela}"/>
+                                </div>
+
+                            </c:if>
+
+                        </div>
+
+                        <div class="field col-12 md:col-3">
+
+                            <p:outputLabel value="Val. Parcela" for="txtValorParcela"/>
+
+                            <c:if test="#{cc.attrs.ver eq false}">
+
+                                <p:inputNumber id="txtValorParcela"
+                                               value="#{cc.attrs.atendimento.valorParcela}"
+                                               decimalSeparator="," thousandSeparator="." decimalPlaces="2"
+                                               maxValue="999999"/>
+                            </c:if>
+
+                            <c:if test="#{cc.attrs.ver eq true}">
+
+                                <div>
+                                    <h:outputLabel value="#{cc.attrs.atendimento.valorParcela}">
+
+                                        <f:convertNumber type="currency" locale="pt-br" currencySymbol="R$"/>
+
+                                    </h:outputLabel>
+
+                                </div>
+
+                            </c:if>
+
+
+                        </div>
+
+
+                        <div class="field col-12 md:col-3">
+
+                            <p:outputLabel value="Val. Seg lib." for="txtValoSegLib"/>
+
+                            <c:if test="#{cc.attrs.ver eq false}">
+
+                                <p:inputNumber id="txtValoSegLib" value="#{cc.attrs.atendimento.valorSeguroLiberado}"
+                                               decimalSeparator="," thousandSeparator="." decimalPlaces="2"
+                                               maxValue="999999"/>
+                            </c:if>
+
+                            <c:if test="#{cc.attrs.ver eq true}">
+
+                                <div>
+                                    <h:outputLabel value="#{cc.attrs.atendimento.valorSeguroLiberado}"
+                                                   id="txtValoSegLib">
+
+                                        <f:convertNumber type="currency" locale="pt-br" currencySymbol="R$"/>
+
+                                    </h:outputLabel>
+
+                                </div>
+
+                            </c:if>
+
+
+                        </div>
+
+                    </div>
+
+                </div>
+
+                <!-- </p:fieldset> -->
+            </p:fieldset>
+
+        </h:panelGroup>
+
+        <div class="col-12 md:col-6 ">
+
+            <p:fieldset id="basic3" legend="Dados de  Averbação" styleClass="fild-set-default-sem-borda" style="padding: 0px 20px;height: 100%" >
+
+                <div class="col-12 ">
+
+                    <div class="ui-fluid formgrid grid">
+
+                        <div class="field col-12 md:col-3">
+
+                            <p:outputLabel value="Entidade Principal"/>
+
+                            <c:if test="#{cc.attrs.ver eq false}">
+
+                                <p:inputText value="#{cc.attrs.atendimento.entidadePrincipal}"
+                                             id="txtEntidadePrincipal">
+
+                                    <p:ajax event="blur" process="@this" global="false"/>
+                                </p:inputText>
+
+                            </c:if>
+
+                            <c:if test="#{cc.attrs.ver eq true}">
+                                <div>
+                                    <h:outputLabel
+                                            value="#{cc.attrs.atendimento.entidadePrincipal}"/>
+
+
+                                </div>
+
+                            </c:if>
+
+                        </div>
+
+                        <div class="field col-12 md:col-3">
+
+                            <p:outputLabel value="Orgão Principal" id="lblOrgaoPrincipal"/>
+
+                            <c:if test="#{cc.attrs.ver eq false}">
+                                <p:inputText value="#{cc.attrs.atendimento.orgaoPrincipal}"
+                                             id="txtOrgaoPrincipal">
+                                    <p:ajax event="blur" process="@this" global="false"/>
+                                </p:inputText>
+                            </c:if>
+
+                            <c:if test="#{cc.attrs.ver eq true}">
+                                <div>
+                                    <h:outputLabel value="#{cc.attrs.atendimento.orgaoPrincipal}"/>
+
+
+                                </div>
+
+                            </c:if>
+
+                        </div>
+
+                        <div class="field col-12 md:col-3">
+
+                            <p:outputLabel value="Benefício Principal"/>
+
+                            <c:if test="#{cc.attrs.ver eq false}">
+                                <p:inputText value="#{cc.attrs.atendimento.beneficioPrincipal}">
+                                    <p:ajax event="blur" process="@this" global="false"/>
+                                </p:inputText>
+                            </c:if>
+
+                            <c:if test="#{cc.attrs.ver eq true}">
+                                <div>
+                                    <h:outputLabel
+                                            value="#{cc.attrs.atendimento.beneficioPrincipal}"/>
+
+
+                                </div>
+
+                            </c:if>
+
+                        </div>
+
+
+                        <div class="field col-12 md:col-3">
+
+                            <p:outputLabel value="Desc. Compulsório"
+                                           for="txtDescontoCompul"/>
+
+                            <c:if test="#{cc.attrs.ver eq false}">
+
+                                <p:inputNumber id="txtDescontoCompul"
+                                               value="#{cc.attrs.atendimento.descontoCompulsorio}"
+                                               decimalSeparator="," thousandSeparator="." decimalPlaces="2"
+                                               maxValue="999999" minValue="0"/>
+                            </c:if>
+
+
+                            <c:if test="#{cc.attrs.ver eq true}">
+                                <div>
+                                    <h:outputLabel
+                                            value="#{cc.attrs.atendimento.descontoCompulsorio}"
+                                            id="txtDescontoCompul">
+                                        <f:convertNumber type="currency" locale="pt-br"
+                                                         currencySymbol="R$"/>
+                                    </h:outputLabel>
+                                </div>
+
+                            </c:if>
+
+                        </div>
+
+                        <div class="field col-12 md:col-3">
+
+                            <p:outputLabel value="Entidade Secundaria"/>
+                            <c:if test="#{cc.attrs.ver eq false}">
+                                <p:inputText value="#{cc.attrs.atendimento.entidadeSecundaria}">
+                                    <p:ajax event="blur" process="@this" global="false"/>
+                                </p:inputText>
+                            </c:if>
+
+                            <c:if test="#{cc.attrs.ver eq true}">
+                                <div>
+                                    <h:outputLabel
+                                            value="#{cc.attrs.atendimento.entidadeSecundaria}"/>
+
+
+                                </div>
+
+                            </c:if>
+
+
+                        </div>
+
+                        <div class="field col-12 md:col-3">
+
+                            <p:outputLabel value="Orgão Secundaria"/>
+                            <c:if test="#{cc.attrs.ver eq false}">
+                                <p:inputText value="#{cc.attrs.atendimento.orgaoSecundario}">
+                                    <p:ajax event="blur" process="@this" global="false"/>
+                                </p:inputText>
+                            </c:if>
+
+                            <c:if test="#{cc.attrs.ver eq true}">
+                                <div>
+                                    <h:outputLabel value="#{cc.attrs.atendimento.orgaoSecundario}"/>
+
+
+                                </div>
+
+                            </c:if>
+
+                        </div>
+
+                        <div class="field col-12 md:col-3">
+
+                            <p:outputLabel value="Benefício Secundario"/>
+                            <c:if test="#{cc.attrs.ver eq false}">
+                                <p:inputText value="#{cc.attrs.atendimento.beneficioSecundario}"/>
+                            </c:if>
+
+                            <c:if test="#{cc.attrs.ver eq true}">
+
+                                <div>
+                                    <h:outputLabel
+                                            value="#{cc.attrs.atendimento.beneficioSecundario}"/>
+
+
+                                </div>
+
+                            </c:if>
+
+
+                        </div>
+
+                        <div class="field col-12 md:col-3">
+
+                            <p:outputLabel value="Desc. Facultativo"
+                                           for="txtDescontoFacul"/>
+
+                            <c:if test="#{cc.attrs.ver eq false}">
+
+                                <p:inputNumber id="txtDescontoFacul"
+                                               value="#{cc.attrs.atendimento.descontoFacultativo}"
+                                               decimalSeparator="," thousandSeparator="." decimalPlaces="2"
+                                               maxValue="999999" minValue="0"/>
+
+                            </c:if>
+
+
+                            <c:if test="#{cc.attrs.ver eq true}">
+                                <div>
+                                    <h:outputLabel
+                                            value="#{cc.attrs.atendimento.descontoFacultativo}"
+                                            id="txtDescontoFacul">
+                                        <f:convertNumber type="currency" locale="pt-br"
+                                                         currencySymbol="R$"/>
+                                    </h:outputLabel>
+                                </div>
+
+                            </c:if>
+
+                        </div>
+
+                        <div class="field col-12 md:col-3">
+
+                            <p:outputLabel value="Margem" for="txtMargem"/>
+
+                            <c:if test="#{cc.attrs.ver eq false}">
+
+                                <p:inputNumber id="txtMargem" value="#{cc.attrs.atendimento.margem}"
+                                               decimalSeparator="," thousandSeparator="." decimalPlaces="2"
+                                               maxValue="999999" minValue="0"/>
+
+                            </c:if>
+
+
+                            <c:if test="#{cc.attrs.ver eq true}">
+                                <div>
+                                    <h:outputLabel value="#{cc.attrs.atendimento.margem}" id="txtMargem">
+
+                                    </h:outputLabel>
+                                </div>
+
+                            </c:if>
+
+                        </div>
+
+
+                    </div>
+                </div>
+
+                <!-- 	</p:fieldset> -->
+            </p:fieldset>
+
+        </div>
+
+
+        <div class="col-12 md:col-6 mt-3">
+
+            <!-- <p:fieldset legend="Informações Complementares"> -->
+
+            <p:fieldset id="basic4" legend="Informações Complementares" styleClass="fild-set-default-sem-borda" style="padding: 0px 20px; height: 100%;">
+
+                <div class="col-12">
+
+                    <div class="ui-fluid formgrid grid">
+
+                        <div class="field col-12 md:col-3">
+
+                            <p:outputLabel value="Salário" for="txtSalario"/>
+
+                            <c:if test="#{cc.attrs.ver eq false}">
+                                <p:inputNumber id="txtSalario"
+                                               value="#{cc.attrs.atendimento.salarioCliente}"
+                                               decimalSeparator="," thousandSeparator="." decimalPlaces="2"
+                                               maxValue="999999" minValue="0"/>
+
+                            </c:if>
+
+                            <c:if test="#{cc.attrs.ver eq true}">
+
+                                <div>
+                                    <h:outputLabel value="#{cc.attrs.atendimento.salarioCliente}"
+                                                   id="txtSalario">
+                                        <f:convertNumber type="currency" locale="pt-br"
+                                                         currencySymbol="R$"/>
+                                    </h:outputLabel>
+                                </div>
+
+                            </c:if>
+
+                        </div>
+
+                        <div class="field col-12 md:col-3">
+
+                            <p:outputLabel value="Val Bruto Contratado"/>
+                            <c:if test="#{cc.attrs.ver eq false}">
+                                <p:inputNumber id="txtValorContrato"
+                                               value="#{cc.attrs.atendimento.valorContrato}"
+                                               decimalSeparator="," thousandSeparator="." decimalPlaces="2"
+                                               maxValue="999999" minValue="0" emptyValue="zero">
+                                    <f:convertNumber locale="pt_BR" />
+                                </p:inputNumber>
+
+                            </c:if>
+
+
+                            <c:if test="#{cc.attrs.ver eq true}">
+                                <div>
+                                    <h:outputLabel value="#{cc.attrs.atendimento.valorContrato}"
+                                                   id="txtValorContrato">
+                                        <f:convertNumber type="currency" locale="pt-br"
+                                                         currencySymbol="R$"  />
+                                    </h:outputLabel>
+                                </div>
+
+                            </c:if>
+
+
+                        </div>
+
+                        <div class="field col-12 md:col-3">
+
+                            <p:outputLabel value="Val. Emprestimo" id="lblValorContrato"/>
+
+                            <c:if test="#{cc.attrs.ver eq false}">
+
+                                <p:inputNumber id="txtValorEmprestimo"
+                                               value="#{cc.attrs.atendimento.valorLiberadoEmprestimo}"
+                                               decimalSeparator="," thousandSeparator="." decimalPlaces="2"
+                                               maxValue="999999" minValue="0" emptyValue="zero" />
+
+                            </c:if>
+
+                            <c:if test="#{cc.attrs.ver eq true}">
+                                <div>
+                                    <h:outputLabel
+                                            value="#{cc.attrs.atendimento.valorLiberadoEmprestimo}"
+                                            id="txtValorEmprestimo">
+                                        <f:convertNumber type="currency" locale="pt-br"
+                                                         currencySymbol="R$"/>
+                                    </h:outputLabel>
+                                </div>
+
+                            </c:if>
+
+                        </div>
+
+                        <div class="field col-12 md:col-3">
+
+                            <p:outputLabel value="Val. Seguro"/>
+
+                            <c:if test="#{cc.attrs.ver eq false}">
+
+                                <p:inputNumber id="txtValorSeguro"
+                                               value="#{cc.attrs.atendimento.seguro}" decimalSeparator=","
+                                               thousandSeparator="." decimalPlaces="2" maxValue="999999" minValue="0" emptyValue="zero" />
+                            </c:if>
+
+                            <c:if test="#{cc.attrs.ver eq true}">
+                                <div>
+                                    <h:outputLabel value="#{cc.attrs.atendimento.seguro}">
+                                        <f:convertNumber type="currency" locale="pt-br"
+                                                         currencySymbol="R$"/>
+                                    </h:outputLabel>
+                                </div>
+
+                            </c:if>
+
+
+                        </div>
+
+                        <div class="field col-12 md:col-3">
+
+                            <p:outputLabel value="Val. Máximo"/>
+                            <c:if test="#{cc.attrs.ver eq false}">
+                                <p:inputNumber id="txtValorMaximo"
+                                               value="#{cc.attrs.atendimento.valorMaxOperacao}"
+                                               decimalSeparator="," thousandSeparator="." decimalPlaces="2"
+                                               maxValue="999999" minValue="0" emptyValue="zero" />
+                            </c:if>
+
+                            <c:if test="#{cc.attrs.ver eq true}">
+                                <div>
+                                    <h:outputLabel value="#{cc.attrs.atendimento.valorMaxOperacao}"
+                                                   id="txtValorMaximo">
+                                        <f:convertNumber type="currency" locale="pt-br"
+                                                         currencySymbol="R$"/>
+                                    </h:outputLabel>
+                                </div>
+
+                            </c:if>
+
+
+                        </div>
+
+                        <div class="field col-12 md:col-3">
+
+                            <p:outputLabel value="Taxa"/>
+
+                            <c:if test="#{cc.attrs.ver eq false}">
+
+                                <p:inputNumber id="Input8" value="#{cc.attrs.atendimento.taxa}" decimalSeparator=","
+                                               thousandSeparator="." decimalPlaces="2" maxValue="999999" minValue="0" emptyValue="zero" />
+
+                            </c:if>
+
+                            <c:if test="#{cc.attrs.ver eq true}">
+
+                                <div>
+
+                                    <h:outputLabel value="#{cc.attrs.atendimento.taxa}">
+
+
+                                    </h:outputLabel>
+
+                                </div>
+
+                            </c:if>
+
+                        </div>
+
+                        <div class="field col-12 md:col-3">
+
+                            <p:outputLabel value="Limite" for="txtLimite"/>
+
+                            <div>
+                                <h:outputLabel
+                                        value="#{cc.attrs.atendimento.limite != null? cc.attrs.atendimento.limite: '0'}"
+                                        id="txtLimite">
+                                    <f:convertNumber type="currency" locale="pt-br" currencySymbol="R$"/>
+                                </h:outputLabel>
+                            </div>
+
+
+                        </div>
+
+                        <!-- 	<div class="p-field p-col-12 p-md-2">
+
+                                <p:outputLabel value="Risco" />
+                                <div>
+
+                                    <h:outputLabel
+                                        value="#{cc.attrs.atendimento.risco !=null ? cc.attrs.atendimento.risco : '0'}">
+                                        <f:convertNumber type="currency" locale="pt-br"
+                                            currencySymbol="R$" />
+                                    </h:outputLabel>
+                                </div>
+
+                            </div> -->
+
+                        <!-- 	<div class="p-field p-col-12 p-md-2">
+
+                                    <p:outputLabel value="Qtd. de Contratos" />
+
+                                    <div>
+
+                                        <h:outputLabel
+                                            value="#{cc.attrs.atendimento.quantidadeContratos !=null ? cc.attrs.atendimento.quantidadeContratos : '0'}">
+
+                                        </h:outputLabel>
+                                    </div>
+
+                                </div> -->
+
+                        <div class="field col-12 md:col-2">
+
+                            <p:outputLabel value="Val. Refin" for="txtRefin"/>
+
+                            <div>
+
+                                <h:outputLabel id="txtRefin"
+                                               value="#{cc.attrs.atendimento.valorLiberadoRefinanciamento != null ? cc.attrs.atendimento.valorLiberadoRefinanciamento : '0'}">
+
+                                    <f:convertNumber type="currency" locale="pt-br" currencySymbol="R$"/>
+
+                                </h:outputLabel>
+
+                            </div>
+
+                        </div>
+
+
+                    </div>
+
+                </div>
+
+                <!-- 	</p:fieldset> -->
+            </p:fieldset>
+
+        </div>
+
+    </h:panelGroup>
+
+</composite:implementation>
+
+</html>

@@ -1,0 +1,77 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<facelet-taglib xmlns="http://java.sun.com/xml/ns/javaee"
+				xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+				xsi:schemaLocation="http://java.sun.com/xml/ns/javaee http://java.sun.com/xml/ns/javaee/web-facelettaglibrary_2_0.xsd"
+				version="2.0">
+
+	<description>Proativa components.</description>
+	<namespace>http://proativaservicos.com/functions</namespace>
+	<short-name>pro</short-name>
+
+
+	<function>
+		<description>
+			<![CDATA[
+					Retorna String do Enum Tipo Campanha
+			]]>
+		</description>
+
+		<function-name>retornarStringTipoCampanha</function-name>
+		<function-class>com.proativaservicos.util.TagLibs</function-class>
+		<function-signature>java.lang.String retornarStringTipoCampanha(java.lang.String)</function-signature>
+
+	</function>
+	
+	
+		<function>
+		<description>
+			<![CDATA[
+					Retorna String Porcentagem
+			]]>
+		</description>
+
+		<function-name>retornarStringPorcentagem</function-name>
+		<function-class>com.proativaservicos.util.TagLibs</function-class>
+		<function-signature>java.lang.String
+			retornarStringPorcentagem(java.lang.Integer,java.lang.Integer)</function-signature>
+
+	</function>
+	
+		<function>
+		<description>
+			<![CDATA[
+					Retorna Left Pad 5
+			]]>
+		</description>
+
+		<function-name>retornarStringPorcentagem</function-name>
+		<function-class>com.proativaservicos.util.TagLibs</function-class>
+		<function-signature>java.lang.String
+			retornarLeftPadZero(java.lang.String,java.lang.Integer)</function-signature>
+
+	</function>
+	
+	
+			<function>
+		<description>
+			<![CDATA[
+					Retorna Integer Porcentagem
+			]]>
+		</description>
+
+		<function-name>retornarStringPorcentagem</function-name>
+		<function-class>com.proativaservicos.util.TagLibs</function-class>
+		<function-signature>java.lang.Integer retornarIntegerPorcentagem(java.lang.Integer,java.lang.Integer)</function-signature>
+
+	</function>
+	
+	
+	
+	
+	
+	
+	
+	
+	
+
+</facelet-taglib>

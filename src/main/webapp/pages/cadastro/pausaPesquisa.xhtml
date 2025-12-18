@@ -1,0 +1,169 @@
+<ui:fragment xmlns="http://www.w3.org/1999/xhtml"
+             xmlns:h="http://java.sun.com/jsf/html"
+             xmlns:f="http://java.sun.com/jsf/core"
+             xmlns:ui="http://java.sun.com/jsf/facelets"
+             xmlns:p="http://primefaces.org/ui" template="/WEB-INF/template.xhtml">
+
+    <p:growl id="grl" widgetVar="grl" globalOnly="true" escape="false"
+             showSummary="false" life="8000" showDetail="true" sticky="false">
+
+        <p:autoUpdate/>
+
+    </p:growl>
+
+
+    <h:form id="pesqPausa" prependId="false">
+
+        <div class="card">
+
+            <div class="ui-fluid formgrid grid">
+
+                <div class="field col-12 md:col-3">
+
+                    <p:outputLabel for="inputDescricao" id="lbDescricao" value="#{msg.descricao}"/>
+
+                    <p:inputText id="inputDescricao" value="#{pausaBean.pausa.descricao}"/>
+
+                </div>
+
+                <div class="field col-12 md:col-2">
+
+                    <p:outputLabel for="inputTempo" id="lbTempo" value="#{msg.tempo}"/>
+
+                    <p:inputText id="inputTempo" value="#{pausaBean.pausa.tempo}"/>
+
+                </div>
+
+                <div class="field col-12 md:col-2">
+
+                    <p:outputLabel for="inputMaximoTempo" id="lbMaximoTempo"
+                                   value="#{msg.tempoMaximo}"/>
+
+                    <p:inputText id="inputMaximoTempo"
+                                 value="#{pausaBean.pausa.maximoPausa}"/>
+
+                </div>
+
+                <div class="field col-12 md:col-2">
+
+                    <p:outputLabel for="inputCodInterno" id="lbCodInterno"
+                                   value="#{msg.codInterno}"/>
+
+                    <p:inputText id="inputCodInterno"
+                                 value="#{pausaBean.pausa.codigoInterno}"/>
+
+                </div>
+
+
+                <div class="field col-12 md:col-2">
+
+                    <p:outputLabel for="selectOneAtivo" value="Acesso:"/>
+
+                    <p:selectOneMenu id="selectOneAtivo"
+                                     value="#{pausaBean.pausa.ativo}">
+
+                        <f:selectItem itemLabel="Selecione" noSelectionOption="true"/>
+
+                        <f:selectItems value="#{pausaBean.tipoAcessoEnum}" var="acesso"
+                                       itemLabel="#{acesso.constante}" itemValue="#{acesso}"/>
+
+                    </p:selectOneMenu>
+
+                </div>
+
+            </div>
+
+            <div class="mt-5">
+
+                <p:commandButton value="Pesquisar" styleClass="mr-3 ui-button-raised"
+                                 id="btnPesquisar" action="#{pausaBean.pesquisar()}"
+                                 update="@form" icon="pi pi-search"/>
+
+                <p:commandButton id="btnExportar" styleClass="mr-3 ui-button-raised ui-button-outlined"
+                                 icon="pi pi-file-excel" value="#{msg.exportar}" ajax="false"
+                                 onclick="disableModalLoading()"
+                                 rendered="#{sessionScope['usuario'].permissaoExportar}"
+                                 disabled="#{empty pausaBean.listPausa}">
+
+                    <p:dataExporter target="tablePausa" type="xls" fileName="pausa"/>
+
+                </p:commandButton>
+
+
+                <p:commandButton value="Novo" id="btnNovo"
+                                 actionListener="#{pausaBean.novo()}" ajax="false"
+                                 icon="pi pi-plus-circle" styleClass="ui-button-raised ui-button-outlined"/>
+            </div>
+
+
+        </div>
+
+        <div class=" mt-4">
+
+            <div class="card">
+
+                <p:dataTable id="tablePausa" value="#{pausaBean.listPausa}"
+                             var="pausa" paginator="true" rows="10" paginatorPosition="bottom"
+                             emptyMessage="#{msg.emptyMessage}"
+                             styleClass="ui-datatable-striped ui-datatable-gridlines ui-datatable-sm"
+                             paginatorTemplate="{CurrentPageReport}  {FirstPageLink} {PreviousPageLink} {PageLinks} {NextPageLink} {LastPageLink}"
+                             currentPageReportTemplate="[#{msg.totalDeRegistros}: {totalRecords}]">
+
+                    <p:ajax event="page" global="false"/>
+                    <p:ajax event="sort" global="false"/>
+
+                    <p:column headerText="#{msg.descricao}">
+
+                        <h:outputText value="#{pausa.descricao}"/>
+
+                    </p:column>
+
+                    <p:column headerText="#{msg.tempo}">
+
+                        <h:outputText value="#{pausa.tempo}"/>
+
+
+                    </p:column>
+
+                    <p:column headerText="#{msg.tempoMaximo}">
+
+                        <h:outputText value="#{pausa.maximoPausa}"/>
+
+                    </p:column>
+
+                    <p:column headerText="#{msg.codInterno}">
+
+                        <h:outputText value="#{pausa.codigoInterno}"/>
+
+                    </p:column>
+
+                    <p:column headerText="#{msg.acesso}">
+
+                        <h:outputText value="#{pausa.ativo.constante}"/>
+
+                    </p:column>
+
+                    <p:column style="text-align:center;width:50px" exportable="false">
+
+                        <p:commandButton icon="fa fw fa-edit"
+                                         styleClass="rounded-button ui-button-flat"
+                                         action="#{pausaBean.editar(pausa)}" ajax="false">
+
+                            <f:setPropertyActionListener value="#{pausa}"
+                                                         target="#{pausaBean.pausa}"/>
+
+                        </p:commandButton>
+
+                    </p:column>
+
+                </p:dataTable>
+
+            </div>
+
+        </div>
+
+
+    </h:form>
+
+
+</ui:fragment>

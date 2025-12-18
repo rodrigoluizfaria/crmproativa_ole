@@ -1,0 +1,48 @@
+<ui:fragment xmlns="http://www.w3.org/1999/xhtml"
+	xmlns:h="http://java.sun.com/jsf/html"
+	xmlns:f="http://java.sun.com/jsf/core"
+	xmlns:o="http://omnifaces.org/ui"
+	xmlns:ui="http://java.sun.com/jsf/facelets"
+	xmlns:p="http://primefaces.org/ui">
+
+	<!-- DLG MODAL -->
+	<p:dialog id="statusDialogBack" widgetVar="statusDialogBack" modal="true"	draggable="false" resizable="false" closable="false" visible="false" width="35%" responsive="true" appendTo="@(body)">
+
+		
+		<h:form id="formProgresso" prependId="false" >
+		
+			<div class="card mb-3">
+
+				<div class="field col-12  mb-3 " style="padding-bottom: 0;text-align: center;" >
+
+					<p:outputLabel value="Gerando relatório, aguarde o término... " />
+
+				</div>
+
+				<div class="field col-12  mb-5">
+
+
+					<p:progressBar widgetVar="progressAjax" id="progressAjax"	ajax="true" value="#{supervisorBackofficeBean.progress}"  labelTemplate="{value}%"  styleClass="mt-1" global="false"
+									interval="500" >
+
+						<p:ajax event="complete" update="grl" oncomplete="PF('statusDialogBack').hide();" />
+
+					</p:progressBar>
+
+				</div>
+
+	     	<div style="text-align: center;" >
+	
+				<p:commandButton value="Cancelar" id="btnCancelarRelatorio" styleClass="ui-button-raised ui-button-danger" icon="pi pi-times" update="grl"  actionListener="#{supervisorBackofficeBean.cancelarRelatorio()}" onclick="PF('progressAjax').cancel();PF('statusDialogBack').hide();" />
+
+			</div>
+
+		</div>
+
+		</h:form>
+
+	</p:dialog>
+
+</ui:fragment>
+
+				

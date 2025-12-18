@@ -1,0 +1,99 @@
+<ui:composition xmlns="http://www.w3.org/1999/xhtml"
+                xmlns:h="http://java.sun.com/jsf/html"
+                xmlns:f="http://java.sun.com/jsf/core"
+                xmlns:ui="http://java.sun.com/jsf/facelets"
+                xmlns:matriz="http://java.sun.com/jsf/composite/componentes"
+                xmlns:p="http://primefaces.org/ui" template="/WEB-INF/template.xhtml">
+
+
+    <ui:define name="viewname">
+
+        <div class="bcca-breadcrumb">
+            <div class="bcca-breadcrumb-item bg-primary-500 hover:bg-primary-700 ">
+                <p:link outcome="/pages/supervisor/monitorAgendamentos" styleClass="uppercase"
+                        style="text-decoration: none">MONITOR AGENDAMENTOS </p:link>
+            </div>
+            <div class="bcca-breadcrumb-item uppercase">SUPERVISOR</div>
+        </div>
+
+    </ui:define>
+
+    <ui:define name="content">
+
+        <p:growl id="grl" widgetVar="grl" globalOnly="true" escape="false" showSummary="false" life="8000"
+                 showDetail="true" sticky="false">
+
+            <p:autoUpdate/>
+
+        </p:growl>
+
+
+        <h:form id="formMonitorAgendamentos" prependId="false">
+
+
+            <div class="card">
+
+                <div class="ui-fluid formgrid grid">
+
+                    <div class="col-12">
+
+                        <matriz:selectEmpresa id="cmpEmpresa" managedBean="#{supervisorMonitorAgendamentoBean}"
+                                              value="#{supervisorMonitorAgendamentoBean.empresa}" ajax="true"
+                                              update="tableQtdadeAgendamento grl" filter="true" exibirSelecione="false"
+                                              selecioneItemLabel="Selecione" required="true" style="col-12 md:col-3"/>
+                    </div>
+
+                    <div class="md:col-6">
+
+                        <p:dataTable id="tableQtdadeAgendamento" var="qtAgendamento" rows="30" paginator="true"
+                                     paginatorPosition="bottom"
+                                     value="#{supervisorMonitorAgendamentoBean.listAgendamentos}"
+                                     emptyMessage="#{supervisorMonitorAgendamentoBean.listAgendamentos eq null ? '' : msg.emptyMessage}"
+                                     currentPageReportTemplate="[#{msg.totalDeRegistros}: {totalRecords}]"
+                                     paginatorTemplate="{CurrentPageReport}  {FirstPageLink} {PreviousPageLink} {PageLinks} {NextPageLink} {LastPageLink} {Exporters}"
+                                     styleClass="ui-datatable-striped ui-datatable-sm">
+
+                            <p:ajax event="page" global="false"/>
+                            <p:ajax event="sort" global="false"/>
+
+                            <f:facet name="header">
+                                Total Agendamentos Diarios por Campanha
+                            </f:facet>
+
+
+                            <p:column headerText="Campanha" width="70%" sortBy="#{qtAgendamento[0]}"
+                                      style="text-align:center">
+
+                                <h:outputLabel value="#{qtAgendamento[0]}"/>
+
+                            </p:column>
+
+                            <p:column headerText="Quantidade" width="30%" sortBy="#{qtAgendamento[1]}"
+                                      style="text-align:center">
+
+                                <h:outputLabel value="#{qtAgendamento[1]}"/>
+
+                                <f:facet name="footer">
+
+                                    <h:outputLabel value="#{supervisorMonitorAgendamentoBean.valorTotal}"
+                                                   rendered="#{supervisorMonitorAgendamentoBean.valorTotal > 0}">
+
+                                    </h:outputLabel>
+
+                                </f:facet>
+
+                            </p:column>
+
+                        </p:dataTable>
+
+                    </div>
+
+                </div>
+            </div>
+
+        </h:form>
+
+
+    </ui:define>
+
+</ui:composition>

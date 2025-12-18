@@ -1,0 +1,239 @@
+<ui:composition xmlns="http://www.w3.org/1999/xhtml"
+                xmlns:h="http://java.sun.com/jsf/html"
+                xmlns:f="http://java.sun.com/jsf/core"
+                xmlns:ui="http://java.sun.com/jsf/facelets"
+                xmlns:pro="http://proativaservicos.com/functions"
+                xmlns:matriz="http://java.sun.com/jsf/composite/componentes"
+                xmlns:p="http://primefaces.org/ui" template="/WEB-INF/template.xhtml">
+
+
+    <ui:define name="viewname">
+        <div class="bcca-breadcrumb">
+            <div class="bcca-breadcrumb-item bg-primary-500 hover:bg-primary-700">
+                <p:link outcome="/pages/coordenador/registroEventoUsuario"
+                        style="text-decoration: none">REGISTRO EVENTO USUÁRIO</p:link>
+            </div>
+            <div class="bcca-breadcrumb-item ">COORDENADOR</div>
+        </div>
+
+    </ui:define>
+
+
+    <ui:define name="content">
+
+        <p:growl id="grl" widgetVar="grl" globalOnly="true" escape="false"
+                 showSummary="false" life="8000" showDetail="true" sticky="false">
+
+            <p:autoUpdate/>
+
+        </p:growl>
+
+        <div class="p-grid p-justify-center ">
+
+            <h:form id="formRegistro" prependId="false">
+
+                <div class="card">
+
+                    <div class="ui-fluid formgrid grid">
+
+                        <matriz:selectEmpresa id="cmpEmpresa" style="col-12 md:col-2"
+                                              managedBean="#{coordenacaoRegistroAcaoUsuarioBean}"
+                                              value="#{coordenacaoRegistroAcaoUsuarioBean.empresa}"
+                                              ajax="true" update=":formRegistro:selectOneMenuUsuario"
+                                              filter="true"/>
+
+
+                        <div class="field col-12 md:col-2">
+
+                            <p:outputLabel value="Usuario"/>
+
+                            <p:selectOneMenu id="selectOneMenuUsuario"
+                                             value="#{coordenacaoRegistroAcaoUsuarioBean.idUsuario}"
+                                             filter="true" multiple="true" label="#{msg.selecione}"
+                                             converter="omnifaces.SelectItemsConverter" autoWidth="false">
+
+                                <f:selectItems
+                                        value="#{coordenacaoRegistroAcaoUsuarioBean.listUsuarios}"
+                                        var="usuario" itemLabel="#{usuario.nome}"
+                                        itemValue="#{usuario.id}"/>
+
+                            </p:selectOneMenu>
+
+                        </div>
+
+
+                        <div class="field col-12 md:col-2">
+
+                            <p:outputLabel value="Data Inicio"/>
+
+                            <p:datePicker id="calendarData"
+                                          value="#{coordenacaoRegistroAcaoUsuarioBean.dataInicial}"
+                                          showButtonBar="true" showIcon="true" readonlyInput="true"
+                                          pattern="dd/MM/yyyy" locale="pt_BR" required="true"
+                                          requiredMessage="#{msg.requerido}"/>
+
+                            <p:message for="calendarData"/>
+
+                        </div>
+
+                        <div class="field col-12 md:col-2">
+
+                            <p:outputLabel value="Data Fim"/>
+
+                            <p:datePicker id="calendarDataFim"
+                                          value="#{coordenacaoRegistroAcaoUsuarioBean.dataFinal}"
+                                          showButtonBar="true" showIcon="true" readonlyInput="true"
+                                          pattern="dd/MM/yyyy" locale="pt_BR" required="true"
+                                          requiredMessage="#{msg.requerido}"/>
+
+                            <p:message for="calendarData"/>
+
+                        </div>
+
+                        <div class="field col-12 md:col-2">
+
+                            <p:outputLabel value="Evento Inicial"/>
+
+                            <p:selectOneMenu id="selectOneEventoInicial"
+                                             value="#{coordenacaoRegistroAcaoUsuarioBean.eventoInicio}"
+                                             filter="true" filterMatchMode="contains" autoWidth="false">
+
+                                <f:selectItem itemLabel="#{msg.selecione}" itemValue=""/>
+                                <f:selectItems
+                                        value="#{coordenacaoRegistroAcaoUsuarioBean.tipoEventos}"
+                                        var="evento" itemLabel="#{evento.constante}"
+                                        itemValue="#{evento.name()}"/>
+
+                            </p:selectOneMenu>
+
+
+                        </div>
+
+                        <div class="field col-12 md:col-2">
+
+                            <p:outputLabel value="Evento Final"/>
+
+                            <p:selectOneMenu id="selectOneEventoFim"
+                                             value="#{coordenacaoRegistroAcaoUsuarioBean.eventoFinal}"
+                                             filter="true" filterMatchMode="contains" autoWidth="false">
+
+                                <f:selectItem itemLabel="#{msg.selecione}" itemValue=""/>
+                                <f:selectItems
+                                        value="#{coordenacaoRegistroAcaoUsuarioBean.tipoEventos}"
+                                        var="evento" itemLabel="#{evento.constante}"
+                                        itemValue="#{evento.name()}"/>
+
+                            </p:selectOneMenu>
+
+
+                        </div>
+
+
+                        <div class="field col-12 md:col-3">
+
+                            <p:outputLabel value="&#160;&#160;" id="txtPesquisaEspaco"/>
+
+                            <div>
+
+                                <p:commandButton value="Pesquisar" id="btnPesquisar"
+                                                 action="#{coordenacaoRegistroAcaoUsuarioBean.pesquisar()}"
+                                                 update="@form" icon="pi pi-search" styleClass="ui-button-raised"/>
+
+                                <p:spacer width="10"/>
+
+                                <p:commandButton id="btnExportarPesquisa" icon="pi pi-upload"
+                                                 styleClass="ui-button-outlined ui-button-raised" value="#{msg.exportar}"
+                                                 ajax="false"
+                                                 disabled="#{empty coordenacaoRegistroAcaoUsuarioBean.listResultados}"
+                                                 immediate="true"
+                                                 rendered="#{sessionScope['usuario'].permissaoExportar}">
+
+                                    <p:dataExporter target="tableResultados" type="xls"
+                                                    fileName="registrosEventos"/>
+
+                                </p:commandButton>
+
+                            </div>
+
+                        </div>
+
+                    </div>
+
+                </div>
+
+
+                <div >
+
+                    <div class="card">
+
+
+                        <p:dataTable id="tableResultados" var="resultados" rows="15"
+                                     paginator="true" paginatorPosition="bottom"
+                                     styleClass="ui-datatable-striped ui-datatable-gridlines"
+                                     value="#{coordenacaoRegistroAcaoUsuarioBean.listResultados}"
+                                     emptyMessage="#{coordenadorRegistroAtividadeBean.listResultados eq null? '' : msg.emptyMessage}"
+                                     currentPageReportTemplate="[#{msg.totalDeRegistros}: {totalRecords}]"
+                                     paginatorTemplate="{CurrentPageReport}  {FirstPageLink} {PreviousPageLink} {PageLinks} {NextPageLink} {LastPageLink} ">
+
+                            <p:ajax event="page" global="false"/>
+                            <p:ajax event="sort" global="false"/>
+
+                            <p:column headerText="Usuario" sortBy="#{resultados[0]}"
+                                      width="20%">
+                                <h:outputText value="#{resultados[0]}"/>
+                            </p:column>
+
+
+                            <p:column headerText="Evento Inicial" sortBy="#{resultados[1]}"
+                                      width="25%">
+
+                                <h:outputText value="#{resultados[1]}"/>
+
+                            </p:column>
+
+
+                            <p:column headerText="Evento Final" sortBy="#{resultados[2]}"
+                                      width="25%">
+
+                                <h:outputText value="#{resultados[2]}"/>
+
+                            </p:column>
+
+                            <p:column headerText="Data" sortBy="#{resultados[3]}" width="10%">
+
+                                <h:outputText value="#{resultados[3]}"/>
+
+
+                            </p:column>
+
+                            <p:column headerText="Data Final" sortBy="#{resultados[4]}"
+                                      width="10%">
+
+                                <h:outputText value="#{resultados[4]}"/>
+
+
+                            </p:column>
+
+                            <p:column headerText="Internalo" sortBy="#{resultados[5]}"
+                                      width="10%">
+
+                                <h:outputText value="#{resultados[5]}"/>
+
+
+                            </p:column>
+
+                        </p:dataTable>
+
+                    </div>
+
+                </div>
+
+
+            </h:form>
+
+        </div>
+
+    </ui:define>
+
+
+</ui:composition>

@@ -1,0 +1,61 @@
+<ui:fragment xmlns="http://www.w3.org/1999/xhtml"
+	xmlns:h="http://java.sun.com/jsf/html"
+	xmlns:f="http://java.sun.com/jsf/core"
+	xmlns:o="http://omnifaces.org/ui"
+	xmlns:pe="http://primefaces.org/ui/extensions"
+	xmlns:ui="http://java.sun.com/jsf/facelets"
+	xmlns:p="http://primefaces.org/ui">
+
+	<h:form id="formAgenda" prependId="false">
+
+		<div class="grid mt-4">
+
+
+			<div class="col-12 md:col-8">
+
+				<p:schedule id="scheduleAgenda" widgetVar="scheduleAgenda"
+					locale="pt_BR" timeZone="GMT-3"
+					initialDate="#{meusAtendimentosBean.dataEvento}" allDaySlot="false"
+					value="#{meusAtendimentosBean.eventModel}" view="agendaDay"
+					scrollTime="08:00" rightHeaderTemplate="month, agendaDay ,listYear"
+					minTime="07:00" clientTimeZone="america/sao_paulo">
+
+					<p:ajax event="dateSelect" oncomplete="PF('dlgAganda').show();"
+						listener="#{meusAtendimentosBean.onDateSelect}" update="dlgAganda"
+						global="false" />
+
+					<p:ajax event="eventSelect" oncomplete="PF('dlgAganda').show();"
+						listener="#{meusAtendimentosBean.onEventSelect}"
+						update="dlgAganda" global="false" />
+
+					<p:ajax event="eventMove" update="dlgAganda scheduleAgenda"
+						listener="#{meusAtendimentosBean.onEventMove}" global="false" />
+
+					<p:ajax event="eventResize" update=":dlgAganda scheduleAgenda"
+						listener="#{meusAtendimentosBean.onEventResized}" global="false" />
+
+				</p:schedule>
+
+			</div>
+
+			<div class="col-12 md:col-4">
+
+				<i class="pi pi-info-circle"
+					title="Selecione a data de exibição da agenda."
+					style="font-size: 2rem; margin-bottom: 2px" />
+
+				<p:datePicker id="inline" locale="pt_BR" inline="true"
+					value="#{meusAtendimentosBean.dataEvento}" pattern="dd/MM/yyyy"
+					showButtonBar="true">
+
+					<p:ajax event="dateSelect" update="scheduleAgenda" />
+
+				</p:datePicker>
+
+			</div>
+
+		</div>
+
+	</h:form>
+
+</ui:fragment>

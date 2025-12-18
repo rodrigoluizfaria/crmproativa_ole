@@ -1,0 +1,149 @@
+<ui:fragment xmlns="http://www.w3.org/1999/xhtml"
+	xmlns:h="http://java.sun.com/jsf/html"
+	xmlns:f="http://java.sun.com/jsf/core"
+	xmlns:o="http://omnifaces.org/ui"
+	xmlns:pe="http://primefaces.org/ui/extensions"
+	xmlns:ui="http://java.sun.com/jsf/facelets"
+	xmlns:matriz="http://java.sun.com/jsf/composite/componentes"
+	xmlns:p="http://primefaces.org/ui">
+
+	<h:form id="formBackofficeCampanha" prependId="false">
+
+		<div class="grid col-12 tab-padding">
+
+			<div class="col-12">
+
+				<p:spacer height="20" />
+
+			</div>
+
+			<matriz:selectEmpresa id="selectEmpresaCampanha" style="col-12 md:col-3"	managedBean="#{supervisorBackofficeBean}" value="#{supervisorBackofficeBean.empresa}" ajax="true" update="@form" filter="true" exibirSelecione="true"
+								  required="true" />
+
+			<div class="field col-12 md:col-3">
+
+				<p:outputLabel value="Status Campanha" />
+
+				<p:selectOneMenu id="selectStatusCampanha"	value="#{supervisorBackofficeBean.statusCampanha}" 	filter="true" filterMatchMode="contains" autoWidth="false">
+
+					<f:selectItem itemLabel="Selecione" itemValue="" />
+
+					<f:selectItems value="#{supervisorBackofficeBean.listStatusCampanha}"	var="status" itemLabel="#{status.descricao}"	itemValue="#{status.id}" />
+					<p:ajax partialSubmit="true" update="selectCampanha"  global="false" listener="#{supervisorBackofficeBean.updateSelectCampanha()}" process="@this"/>
+
+				</p:selectOneMenu>
+
+			</div>
+
+			<div class="field col-12 md:col-3">
+
+				<p:outputLabel value="Campanha" />
+
+				<p:selectOneMenu id="selectCampanha"	value="#{supervisorBackofficeBean.campanha}" filter="true" filterMatchMode="contains" autoWidth="false">
+
+					<f:selectItem itemLabel="Selecione" itemValue="" />
+
+					<f:selectItems	value="#{supervisorBackofficeBean.listCampanha}"	var="campanha" itemLabel="#{campanha.descricao}"	itemValue="#{campanha.id}" />
+					<p:ajax partialSubmit="true" update="selectEquipeCampanha"  global="false" listener="#{supervisorBackofficeBean.updateSelectEquipeUsuarioCampanha()}"/>
+
+				</p:selectOneMenu>
+
+			</div>
+						
+						
+			<div class="field col-12 md:col-2">
+
+				<p:outputLabel value="Equipe" />
+
+				<p:selectOneMenu id="selectEquipeCampanha"	value="#{supervisorBackofficeBean.equipeCampanha}" filter="true" 	filterMatchMode="contains" autoWidth="false">
+
+					<f:selectItem itemLabel="Selecione" itemValue="" />
+
+					<f:selectItems value="#{supervisorBackofficeBean.listEquipes}"	var="equipe" itemLabel="#{equipe.nome}" itemValue="#{equipe.id}" />
+
+				</p:selectOneMenu>
+
+			</div>
+			
+			<div class="field col-12 md:col-3">
+
+				<p:outputLabel value="Tipo Campanha" />
+
+				<p:selectOneMenu id="selectTipoCampanha"	value="#{supervisorBackofficeBean.tipoCampanha}" filter="true" filterMatchMode="contains" converter="omnifaces.SelectItemsConverter" autoWidth="false">
+
+					<f:selectItem itemLabel="Selecione" itemValue="" noSelectionOption="true" />
+
+					<f:selectItems	value="#{supervisorBackofficeBean.tipoCampanhas}"	var="tipo" itemLabel="#{tipo.constante}"	itemValue="#{tipo}" />
+				
+					<p:ajax partialSubmit="true" update="selectCampanha"  global="false" listener="#{supervisorBackofficeBean.updateSelectCampanha()}" process="@this"/>
+
+				</p:selectOneMenu>
+
+			</div>
+			
+			
+			
+			<div class="field col-12 md:col-12">
+
+				<p:outputLabel value="&#160;&#160;" id="txtPesquisaEspacoCampanha" />
+
+
+				<div>
+					<p:commandButton value="Pesquisar" id="btnPesquisarCampanha" icon="pi pi-search" styleClass="ui-button-raised mr-3" actionListener="#{supervisorBackofficeBean.pesquisarCampanhasEquipe()}" update="@form" />
+			
+					<p:commandButton id="btnExportarCampanha" icon="pi pi-upload" styleClass="ui-button-raised ui-button-outlined" value="#{msg.exportar}" ajax="false" disabled="#{empty supervisorBackofficeBean.listCampanhaEquipes}"	immediate="true" rendered="#{sessionScope['usuario'].permissaoExportar}">
+
+						<p:dataExporter target="tableBkoCampanha" type="xls" fileName="campanha" />
+
+					</p:commandButton>
+				</div>
+
+			</div>
+
+
+		
+		
+		<div class="col-12 mt-3">
+
+				<p:dataTable id="tableBkoCampanha" var="campanha" rows="15"	paginator="true" paginatorPosition="bottom"	value="#{supervisorBackofficeBean.listCampanhaEquipes}"
+					emptyMessage="#{supervisorBackofficeBean.listCampanhaEquipes eq null? '' : msg.emptyMessage}"	currentPageReportTemplate="[#{msg.totalDeRegistros}: {totalRecords}]"
+					paginatorTemplate="{CurrentPageReport}  {FirstPageLink} {PreviousPageLink} {PageLinks} {NextPageLink} {LastPageLink} {Exporters}" styleClass="ui-datatable-sm ui-datatable-striped ui-datatable-gridlines">
+
+					<p:ajax event="page" global="false" />
+
+					<p:ajax event="sort" global="false" />
+
+					<p:column headerText="Campanha" sortBy="#{campanha[0]}" width="30%">
+
+						<h:outputLabel value="#{campanha[0]}" />
+
+					</p:column>
+
+					<p:column headerText="Tipo Campanha" sortBy="#{campanha[1]}"	width="20%">
+
+						<h:outputLabel value="#{campanha[1]}" />
+
+					</p:column>
+
+					<p:column headerText="Status Campanha" sortBy="#{campanha[2]}" width="25%">
+
+						<h:outputLabel value="#{campanha[2]}" />
+
+					</p:column>
+
+					<p:column headerText="Equipe" sortBy="#{campanha[3]}" width="25%">
+
+						<h:outputLabel value="#{campanha[3]}" />
+
+					</p:column>
+					
+
+				</p:dataTable>
+
+			</div>
+		
+
+</div>
+	</h:form>
+
+</ui:fragment>

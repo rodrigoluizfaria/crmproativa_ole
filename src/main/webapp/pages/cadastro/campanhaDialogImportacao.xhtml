@@ -1,0 +1,36 @@
+<ui:fragment xmlns="http://www.w3.org/1999/xhtml"
+			 xmlns:ui="http://java.sun.com/jsf/facelets"
+			 xmlns:f="http://java.sun.com/jsf/core"
+			 xmlns:h="http://java.sun.com/jsf/html"
+			 xmlns:p="http://primefaces.org/ui">
+
+	<h:form id="formTable" >
+
+		<p:dialog id="dlg" widgetVar="dlgLayout" modal="true" width="1200px" draggable="false" styleClass="dialog-formulario" header="Dados Importação" positionType="fixed" appendTo="@(body)" resizable="false">
+
+			<h:inputHidden id="scriptIndice" value="#{campanhaBean.indice}" />
+
+			<h:inputHidden id="tipoImportacaoEnvio" value="#{campanhaBean.dadosDabseImportacao}" />
+
+			<p:remoteCommand name="atualizarComboRemoto" actionListener="#{campanhaBean.atualizarComboImportacaoPersonalizada}" process="@this formTable grl" immediate="true" global="false" />
+
+			<div class="col-12" style="padding-left: 0">
+
+				<p:dataTable binding="#{campanhaBean.dataTablePersonalizada}" id="tableImportacao" value="#{campanhaBean.dataModel}" scrollWidth="1150px" scrollable="true" reflow="true" />
+
+			</div>
+
+			<div style="text-align: center;margin-top:5px">
+
+				<p:commandButton value="Salvar"  id="btnImporta" styleClass="mr-3 ui-button-raised" update="@form :form" icon="pi pi-save" action="#{campanhaBean.salvar}" immediate="true" oncomplete="PF('dlgLayout').hide();" />
+
+				<p:commandButton value="Sair"  id="btnSair" styleClass="ui-button-raised" icon="pi pi-times" onclick="PF('dlgLayout').hide();" />
+
+			</div>
+
+		</p:dialog>
+
+	</h:form>
+
+
+</ui:fragment>

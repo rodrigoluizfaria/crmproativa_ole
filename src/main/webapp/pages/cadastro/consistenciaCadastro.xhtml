@@ -1,0 +1,130 @@
+<ui:fragment xmlns="http://www.w3.org/1999/xhtml"
+             xmlns:h="http://java.sun.com/jsf/html"
+             xmlns:f="http://java.sun.com/jsf/core"
+             xmlns:ui="http://java.sun.com/jsf/facelets"
+             xmlns:matriz="http://java.sun.com/jsf/composite/componentes"
+             xmlns:p="http://primefaces.org/ui" template="/WEB-INF/template.xhtml">
+
+
+    <p:growl id="grl" widgetVar="grl" globalOnly="true" escape="false" showSummary="false" life="8000" showDetail="true"
+             sticky="false">
+
+        <p:autoUpdate/>
+
+    </p:growl>
+
+
+    <h:form id="formCadastro" prependId="false">
+
+        <div class="card" style="padding: 15px">
+
+            <div class="ui-fluid formgrid grid">
+
+
+                <div class="field col-12 md:col-1">
+
+                    <p:outputLabel for="inputCod" value="Consistência:"/>
+
+                    <p:inputText id="inputCod" value="#{consistenciaBean.consistencia.codigoConcistencia}"
+                                 maxlength="10" required="true" requiredMessage="#{msg.requerido}"
+                                 onkeypress="return somenteNumeros(event)"/>
+
+                    <p:message for="inputCod"/>
+
+                </div>
+
+                <div class="field col-12 md:col-3">
+
+                    <p:outputLabel for="txtDescr" value="Descrição:"/>
+
+                    <p:inputText id="txtDescr" value="#{consistenciaBean.consistencia.descricao}" required="true"
+                                 requiredMessage="Requerido" maxlength="200"/>
+
+                    <p:message for="txtDescr"/>
+
+                </div>
+
+                <div class="field col-12 md:col-3">
+
+                    <p:outputLabel for="comboInstituicao" value="Instituição financeira"/>
+
+                    <p:selectOneMenu value="#{consistenciaBean.consistencia.instituicaoFinanceira}" filter="true"
+                                     filterMatchMode="contains" autoWidth="false" required="true"
+                                     requiredMessage="Obrigatório" id="comboInstituicao">
+                        <f:selectItem itemLabel="Selecione" noSelectionOption="true"/>
+                        <f:selectItems value="#{consistenciaBean.instituicoesFinanceiras}" var="instituicao"
+                                       itemLabel="#{instituicao.numeroBanco} #{instituicao.constante}"
+                                       itemValue="#{instituicao}"/>
+                    </p:selectOneMenu>
+
+                    <p:message for="comboInstituicao"/>
+
+                </div>
+
+                <div class="field col-12 md:col-4">
+
+                    <p:outputLabel for="txtSig" value="Significado:"/>
+
+                    <p:inputText id="txtSig" value="#{consistenciaBean.consistencia.significado}"/>
+
+
+                </div>
+
+                <div class="field col-12 md:col-4">
+
+                    <p:outputLabel for="txtAcao" value="Ação:"/>
+
+                    <p:inputText id="txtAcao" value="#{consistenciaBean.consistencia.acao}"/>
+
+
+                </div>
+
+                <div class="field col-12 md:col-3">
+
+                    <p:outputLabel for="txtConv" value="Convênio:"/>
+
+                    <p:inputText id="txtConv" value="#{consistenciaBean.consistencia.convenio}"/>
+
+
+                </div>
+
+                <div class="field col-12 md:col-2">
+
+                    <p:outputLabel for="txtResp" value="Resp.:"/>
+
+                    <p:inputText id="txtResp" value="#{consistenciaBean.consistencia.responsabilidade}"
+                                 maxlength="200"/>
+
+
+                </div>
+
+                <div class="field col-12 md:col-2">
+
+                    <p:outputLabel for="txtPraz" value="Prazo:"/>
+
+                    <p:inputText id="txtPraz" value="#{consistenciaBean.consistencia.prazo}"/>
+
+
+                </div>
+
+
+
+            </div>
+
+            <div class="field col-12 md:col-3 mt-3">
+
+                <p:commandButton value="Salvar" styleClass="mr-3 ui-button-raised" id="btnSalvar"
+                                 action="#{consistenciaBean.salvar()}" update="@form grl" icon="pi pi-save"/>
+
+                <p:commandButton value="Voltar"  id="btnVoltar" ajax="false" styleClass="ui-button-raised ui-button-outlined ui-button-secondary"
+                                 action="#{consistenciaBean.voltar()}" immediate="true"
+                                 icon="pi pi-arrow-circle-left"/>
+
+            </div>
+
+        </div>
+
+    </h:form>
+
+
+</ui:fragment>

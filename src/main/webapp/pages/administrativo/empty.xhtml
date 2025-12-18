@@ -1,0 +1,123 @@
+<ui:composition xmlns="http://www.w3.org/1999/xhtml"
+	xmlns:h="http://java.sun.com/jsf/html"
+	xmlns:f="http://java.sun.com/jsf/core"
+	xmlns:ui="http://java.sun.com/jsf/facelets"
+	xmlns:p="http://primefaces.org/ui" template="/WEB-INF/template.xhtml">
+
+	
+	
+	<ui:param name="viewname" value="RESULTS MANUAL" />
+
+	<ui:define name="content">
+
+
+		<div class="p-grid">
+
+			<div class="p-col-12 ">
+			<div class="card ">
+			
+			<div class="ui-fluid p-formgrid p-grid">
+
+					<div class="p-col-12 p-formgrid p-grid">
+
+				<div class=" p-col-5 p-mt-6">
+												
+												
+				
+				<p:fieldset>
+
+						<f:facet name="legend">
+
+							<span style="margin-right: 10px">ROTINAS DE TESTE.... </span>
+
+							<p:commandButton type="button" value="RESULTS VONIX"
+								styleClass="secondary-button p-mr-1" id="btn"
+								onclick="selecionarTabs('#Home',this);" />
+
+							<p:commandButton type="button" value="2" id="btn2"
+								onclick="selecionarTabs('#News',this);" />
+
+						</f:facet>
+
+
+						<div id="Home" class="tabcontent">
+
+							<div class="ui-fluid p-formgrid p-grid" style="padding: 10px">
+							
+								<div class="p-col-12 p-mr-5">
+								<p>TOTAL ARQUIVOS XML: #{misterBean.quantidadeArquivos}</p>
+								</div>
+								
+
+							<p:commandButton  value="Iniciar busca impotação por arquivo"
+								styleClass="secondary-button p-mr-1" id="btnVonix"
+								actionListener="#{misterBean.iniciarResultsVonix()}" />
+							</div>
+							
+						</div>
+
+						<div id="News" class="tabcontent">
+
+							<div class="ui-fluid p-formgrid p-grid">
+							
+								<div class="p-col-12  p-mr-5">
+								<p>SFILD 2</p>
+								</div>
+
+							</div>
+							
+						</div>
+
+					</p:fieldset> 
+
+				</div>
+				</div>
+				<div class=" p-col-5 p-mt-4">
+				
+				
+				
+	
+				</div>
+				
+				</div>
+				</div>
+
+			</div>
+			
+		</div>
+
+
+		<script>
+		
+			function remove() {
+
+				alert('ok');
+
+				$('#btn').removeClass("secondary-button");
+				$('#btn2').addClass("secondary-button");
+
+			}
+
+			function selecionarTabs(pageName, elmnt) {
+
+				var i, tabcontent, tablinks;
+
+				$(".tabcontent").hide();
+
+				$(".tablinks").css("backgroundColor", "");
+
+				$('#btn').removeClass("secondary-button");
+				$('#btn2').removeClass("secondary-button");
+
+				$(pageName).show();
+
+				$(elmnt).addClass("secondary-button");
+
+			}
+
+			selecionarTabs('#Home', '#btn');
+		</script>
+
+	</ui:define>
+
+</ui:composition>

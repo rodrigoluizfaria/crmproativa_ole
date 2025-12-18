@@ -1,0 +1,152 @@
+<ui:fragment xmlns="http://www.w3.org/1999/xhtml"
+	xmlns:h="http://java.sun.com/jsf/html"
+	xmlns:f="http://java.sun.com/jsf/core"
+	xmlns:o="http://omnifaces.org/ui"
+	xmlns:pe="http://primefaces.org/ui/extensions"
+	xmlns:ui="http://java.sun.com/jsf/facelets"
+	xmlns:matriz="http://java.sun.com/jsf/composite/componentes"
+	xmlns:p="http://primefaces.org/ui">
+
+	<h:form id="formBackofficePendencia" prependId="false">
+
+		<div class="grid col-12 tab-padding mt-3">
+
+
+
+			<matriz:selectEmpresa id="selectEmpresaPendencia"	managedBean="#{acompanhamentoConsistencias}" value="#{acompanhamentoConsistencias.empresa}" ajax="true" update="@form" filter="true" exibirSelecione="true"
+								  required="true" style="col-12 md:col-3" />
+
+			<div class="field col-12 md:col-3">
+
+				<p:outputLabel value="Equipe" />
+
+				<p:selectOneMenu id="selectEquipePendencia"	value="#{acompanhamentoConsistencias.equipePendencia}" filter="true" 	filterMatchMode="contains">
+
+					<f:selectItem itemLabel="Selecione" itemValue="" />
+
+					<f:selectItems value="#{acompanhamentoConsistencias.listEquipes}"	var="equipe" itemLabel="#{equipe.nome}" itemValue="#{equipe.id}" />
+					
+					<p:ajax listener="#{acompanhamentoConsistencias.trocarEquipe(acompanhamentoConsistencias.equipePendencia)}" global="false" update="selectOperadorPendencia"/>
+
+				</p:selectOneMenu>
+
+			</div>
+
+			<div class="field col-12 md:col-3">
+
+				<p:outputLabel value="Operador" />
+
+				<p:selectOneMenu id="selectOperadorPendencia"	value="#{acompanhamentoConsistencias.operadorPendencia}" filter="true" filterMatchMode="contains">
+
+					<f:selectItem itemLabel="Selecione" itemValue="" />
+
+					<f:selectItems	value="#{acompanhamentoConsistencias.listOperador}" var="operador" itemLabel="#{operador.nome}"	itemValue="#{operador.id}" />
+					
+				</p:selectOneMenu>
+
+			</div>
+
+			<div class="field col-12 md:col-3">
+
+				<p:outputLabel value="CPF" />
+
+				<p:inputText  value="#{acompanhamentoConsistencias.cpfPendente}" />
+
+			</div>
+
+			<div class="field col-12 md:col-3">
+
+				<p:outputLabel value="Nome" />
+
+				<p:inputText 	value="#{acompanhamentoConsistencias.nomePendente}" />
+
+			</div>
+
+			<div class="field col-12 md:col-3">
+
+				<p:outputLabel value="Adesão" />
+
+				<p:inputText  value="#{acompanhamentoConsistencias.adesaoPendente}" />
+
+			</div>
+
+
+			<div class="mt-3">
+
+				<p:outputLabel value="&#160;&#160;" id="txtPesquisaEspacoPendencia" />
+
+				<div>
+				
+					<p:commandButton value="Pesquisar" id="btnPesquisarPendencia" icon="pi pi-search" styleClass="ui-button-raised mr-3" actionListener="#{acompanhamentoConsistencias.pesquisarPendencias()}" update="@form" />
+					
+				</div>
+
+			</div>
+		
+		
+		<div class="mt-4">
+
+				<p:dataTable id="tableBkoPendencia"  var="pendencia" rows="15"	paginator="true" paginatorPosition="bottom"	value="#{acompanhamentoConsistencias.listPendencias}"
+					emptyMessage="#{acompanhamentoConsistencias.listPendencias eq null? '' : msg.emptyMessage}"	currentPageReportTemplate="[#{msg.totalDeRegistros}: {totalRecords}]"
+					paginatorTemplate="{CurrentPageReport}  {FirstPageLink} {PreviousPageLink} {PageLinks} {NextPageLink} {LastPageLink} {Exporters}" rowStyleClass="table-#{pendencia[6].toLowerCase()}" >
+
+					<p:ajax event="page" global="false" />
+
+					<p:ajax event="sort" global="false" />
+
+					<p:column headerText="Cliente" sortBy="#{pendencia[1]}" width="30%">
+
+						<h:outputLabel value="#{pendencia[1]}" />
+
+					</p:column>
+
+					<p:column headerText="CPF" sortBy="#{pendencia[2]}"	width="20%">
+
+						<h:outputLabel value="#{pendencia[2]}" />
+
+					</p:column>
+					
+					<p:column headerText="Adesão" sortBy="#{pendencia[7]}"	width="20%">
+
+						<h:outputLabel value="#{pendencia[7]}" />
+
+					</p:column>
+					
+					
+					<p:column headerText="Usuário" sortBy="#{pendencia[3]}"	width="20%">
+
+						<h:outputLabel value="#{pendencia[3]}" />
+
+					</p:column>
+					
+					<p:column headerText="Status" sortBy="#{pendencia[4]}"	width="20%">
+
+						<h:outputLabel value="#{pendencia[4]}" />
+
+					</p:column>
+					
+						<p:column headerText="Status Extrator" sortBy="#{pendencia[6]}"	width="20%">
+
+						<h:outputLabel value="#{pendencia[6]}" />
+
+					</p:column>
+
+					 <p:column headerText="Ação" width="5%">
+									
+						<p:commandButton icon="pi pi-chevron-circle-right"	styleClass="rounded-button ui-button-flat"	oncomplete="PF('dlgConfirmarAntecipacaoNaoTrabalhado').show();"	 global="false" id="btnAdiantarAtn" title="Antecipar Atendimento">
+
+								<f:setPropertyActionListener value="#{pendencia[0]}"	target="#{acompanhamentoConsistencias.idAtendimento}" />
+
+						</p:commandButton>
+						
+					</p:column>									
+
+				</p:dataTable>
+
+			</div>
+		
+		</div>
+
+	</h:form>
+
+</ui:fragment>

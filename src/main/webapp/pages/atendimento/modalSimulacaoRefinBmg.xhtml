@@ -1,0 +1,191 @@
+<ui:fragment xmlns="http://www.w3.org/1999/xhtml"
+	xmlns:h="http://java.sun.com/jsf/html"
+	xmlns:f="http://java.sun.com/jsf/core"
+	xmlns:o="http://omnifaces.org/ui"
+	xmlns:of="http://omnifaces.org/functions"
+	xmlns:pe="http://primefaces.org/ui/extensions"
+	xmlns:ui="http://java.sun.com/jsf/facelets"
+	xmlns:p="http://primefaces.org/ui"
+	xmlns:c="http://java.sun.com/jsp/jstl/core">
+
+<h:panelGroup id="panelSimulacaoRefin">
+
+
+	<p:dialog widgetVar="dlgSimulacaoRefin" id="dlgSimulacaoRefin" width="50%"	header="Simulação Refin BMG" modal="true" height="600" resizable="false" draggable="false" appendTo="@(body)"  rendered="#{fichaAtendimentoBean.atendimento ne null}">
+		
+		<h:form id="formSimulacaoRefin" prependId="false"	rendered="#{fichaAtendimentoBean.atendimento ne null}">
+			
+			<p:panel header="Cabecalho" styleClass="p-mb-3">
+			
+				  <div class=" ui-fluid">
+                  
+	                  <div class="p-field p-grid">
+	                    
+	                    <div class="p-col-12 p-mb-3 p-md-3 p-mb-md-0 div-vertical p-p-5" >
+	                    
+	                        <p:outputLabel  value="Produtos Refin"   />
+	                        
+	                    </div>
+	                    
+	                        <div class="p-col-12 p-md-6 p-p-5">
+	                        
+			                     <p:selectOneMenu id="selectProdutosRefin" value="#{fichaAtendimentoBean.produtoRefin}" required="true" requiredMessage="Obrigatório"	converter="omnifaces.SelectItemsConverter" 	filter="true" filterMatchMode="contains" autoWidth="false">
+		
+									<f:selectItem itemLabel="Selecione" itemValue="" />
+		
+									<f:selectItems	value="#{fichaAtendimentoBean.listProdutosRefin}" var="refinProdutos" itemLabel="#{refinProdutos.descricao}" itemValue="#{refinProdutos}" />
+									
+									<p:ajax  listener="#{fichaAtendimentoBean.onFiltrarFormaEnvioRefin()}" update="selectFormaEnvioRefin @form" />
+									
+																	
+										
+								</p:selectOneMenu> 
+			                            
+	                        </div>
+	                        
+	                    </div>
+	                    
+	                   <div class="p-field p-grid">
+	                    
+	                     <div class="p-col-12 p-mb-3 p-md-3 p-mb-md-0 div-vertical p-p-5" >
+	                     
+	                        <p:outputLabel   value="Forma Envio BMG" />
+	                        
+	                       </div>
+	                       
+	                        <div class="p-col-12 p-md-4 p-p-5">
+	                        
+	                               <p:selectOneMenu id="selectFormaEnvioRefin" value="#{fichaAtendimentoBean.formaEnvio}" required="true" requiredMessage="Obrigatório"	converter="omnifaces.SelectItemsConverter" 	filter="true" filterMatchMode="contains" autoWidth="false">
+		
+									<f:selectItem itemLabel="Selecione" itemValue="" />
+		
+									<f:selectItems	value="#{fichaAtendimentoBean.listFormasEnvioBmg}" var="formaEnvio" itemLabel="#{formaEnvio.descricao}" itemValue="#{formaEnvio}" />
+									
+										<p:ajax  listener="#{fichaAtendimentoBean.onFazerSimulacaoRefin()}" update="tableRefinBmg panelGprRefin panelRefin" global="false" onstart="PF('blockUIWidgetRefin').block()" oncomplete="PF('blockUIWidgetRefin').unblock()" />
+								
+								</p:selectOneMenu> 
+			                            
+	                              
+	                        </div>
+	                        
+	                    </div>
+                    
+                </div>
+			
+			</p:panel>
+			
+			<h:panelGroup layout="block" id="panelGprRefin">
+			
+			 <p:panel header="Simulação Refin" styleClass="p-mb-3" rendered="#{not empty fichaAtendimentoBean.listSimulacaoRetornoRefin}" id="panelRefin">
+			
+				<p:fieldset legend="Selecione a simulação" styleClass="fild-set-default">
+				
+					   <p:dataTable id="tableRefinBmg" value="#{fichaAtendimentoBean.listSimulacaoRetornoRefin}" var="simulacao" styleClass="ui-datatable-striped ui-datatable-sm"
+										emptyMessage="#{msg.emptyMessage}"   selection="#{fichaAtendimentoBean.simulacaoRetorno}" rowKey="#{simulacao.parcelas}"  rowSelectMode="checkbox" nativeElements="true">
+										
+							<p:ajax event="rowToggle" global="false" />
+							
+							
+							<p:column selectionMode="single" style="width: 5%" />
+
+
+								<p:column style="width:5%">
+									<p:rowToggler />
+								</p:column>
+
+
+								<p:column headerText="Parcelas" width="20%">
+
+									<p:outputLabel value="#{simulacao.parcelas} x #{of:formatCurrency(simulacao.valorParcela, 'R$')}" />
+
+							</p:column> 
+							
+							<p:column headerText="Valor liberado" width="15%">
+
+								<p:outputLabel value="#{of:formatCurrency(simulacao.valorLiberado, 'R$')}" />
+
+							</p:column>
+							
+							<p:column headerText="Valor Financiado" width="10%" >
+
+										<p:outputLabel value="#{of:formatCurrency(fichaAtendimentoBean.converterStringDouble(simulacao.valorFinanciado), 'R$')}" />
+
+							</p:column>
+									
+							<p:column headerText="Data do Primeiro vencimento" width="20%" >
+
+									<p:outputLabel value="#{simulacao.dataPrimeiroVencimento}" />
+
+							</p:column>
+							
+							<p:rowExpansion>
+							
+					            <p:panelGrid  columns="2" columnClasses="label,value" style="width:300px">
+					            
+					                <f:facet name="header">
+					                    Taxas
+					                </f:facet>
+					 
+					                <h:outputText value="Taxa" />
+					                <h:outputText value="#{simulacao.taxa}" />
+					 
+					 
+					               <h:outputText value="Taxa Cauculada" />
+					                <h:outputText value="#{simulacao.taxaCalculada}" />
+					                
+					                <h:outputText value="Taxa Anual" />
+					                <h:outputText value="#{simulacao.taxaAnual}" />
+					   				
+					   				<h:outputText value="Taxa Cauculada Anual" />
+					                <h:outputText value="#{simulacao.taxaCalculadaAnual}" />
+					                
+					   				<h:outputText value="Taxa Forma Credito" />
+					                <h:outputText value="#{simulacao.taxaFormaCredito}" />
+					                
+					            </p:panelGrid>
+					            
+					        </p:rowExpansion>
+									
+									
+						</p:dataTable>
+				
+				
+				</p:fieldset>
+			
+			</p:panel>
+			
+ </h:panelGroup>
+ 
+				<h:panelGroup	styleClass="p-col-12 ui-toolbar ui-widget ui-widget-header ui-corner-all"	style="display: inline-block; align-items: center; flex-wrap: wrap"		layout="block">
+
+					<div class=" ui-toolbar-group-right">
+
+						<p:commandButton value="Selecionar simulacao"	actionListener="#{fichaAtendimentoBean.selecionarSimulacaoRefinBmg()}"		process="@form" update="@form" icon="pi pi-check"		styleClass="raised-button  p-mr-2" />
+
+						<p:commandButton value="fechar"	onclick="PF('dlgSimulacaoRefin').hide();" style="margin-top:10px"	global="false"	styleClass="secondary-button raised-button p-mr-2 "		icon="pi pi-times" />
+
+					</div>
+
+				</h:panelGroup>
+
+			</h:form>
+
+			<pe:blockUI target="dlgSimulacaoRefin" content="blockUIContent"		widgetVar="blockUIWidgetRefin" />
+
+			<h:panelGrid id="blockUIContent" columns="2" style="display:none;table-layout:auto;background-color:#fff">
+				
+				<i class="pi pi-spin pi-spinner" style="font-size: 3rem"></i>
+			
+				<h:outputText value="Aguarde, buscando simulação..." style="white-space: nowrap;" />
+
+			</h:panelGrid>
+
+
+		</p:dialog>
+			
+		
+	</h:panelGroup>
+
+
+
+</ui:fragment>

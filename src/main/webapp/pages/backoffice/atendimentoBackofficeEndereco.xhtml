@@ -1,0 +1,111 @@
+<ui:fragment xmlns="http://www.w3.org/1999/xhtml"
+	xmlns:h="http://java.sun.com/jsf/html"
+	xmlns:f="http://java.sun.com/jsf/core"
+	xmlns:ui="http://java.sun.com/jsf/facelets"
+	xmlns:p="http://primefaces.org/ui">
+
+	<!--  -->
+	<p:dialog id="dlgEndereco" widgetVar="dlgEndereco" modal="true"	draggable="false" resizable="false" closable="true" visible="false"	width="700px" header="Cadastro Endereço">
+
+		<h:form id="formEndereco" prependId="false"	rendered="#{fichaAtendimentoBackofficeBean.atendimentoBackoffice ne null and fichaAtendimentoBackofficeBean.endereco ne null}">
+
+
+			
+					<div>
+							<div class="ui-fluid formgrid grid p-3">
+
+								<div class="col-12 mb-5" style="margin-left: -3px;" >
+
+									<div class="field col-12 md:col-6" >
+
+												<p:outputLabel value="Cep:" />
+						
+												<p:inputText id="txtCep" value="#{fichaAtendimentoBackofficeBean.endereco.cep}" maxlength="8" onkeypress="return somenteNumeros(event)">
+						
+													<p:ajax event="blur" disabled="#{fichaAtendimentoBackofficeBean.acao eq 'U'}"	process="@this txtCep" partialSubmit="true" update="@form" global="false"	listener="#{fichaAtendimentoBackofficeBean.atualizarCepPorEndereco()}" />
+						
+												</p:inputText>
+
+									</div>
+
+								</div>
+
+
+								<div class="field col-12 md:col-6">
+				
+										<p:outputLabel value="Logradouro:" />
+				
+										<p:inputText id="txtLogradouro"	value="#{fichaAtendimentoBackofficeBean.endereco.logradouro}"	maxlength="100" />
+				
+				
+									</div>
+
+								<div class="field col-12 md:col-6">
+				
+										<p:outputLabel value="Numero:" />
+				
+										<p:inputText id="txtNumeroEndereco"	value="#{fichaAtendimentoBackofficeBean.endereco.numero}" maxlength="15" onkeypress="return somenteNumeros(event)" />
+				
+				
+									</div>
+
+								<div class="field col-12 md:col-6">
+					
+										<p:outputLabel value="Bairro:" />
+					
+										<p:inputText id="txtBairro"	value="#{fichaAtendimentoBackofficeBean.endereco.bairro}" maxlength="100" />
+					
+									</div>
+
+								<div class="field col-12 md:col-6">
+					
+										<p:outputLabel value="Cidade:" />
+					
+										<p:inputText id="txtCidade"	value="#{fichaAtendimentoBackofficeBean.endereco.cidade}" maxlength="100" />
+					
+									</div>
+
+								<div class="field col-12 md:col-6">
+					
+										<p:outputLabel value="UF:" />
+					
+										<p:inputText id="txtEstado"	value="#{fichaAtendimentoBackofficeBean.endereco.uf}" maxlength="2" onkeypress="return somenteLetras(event);" onblur="value=value.toUpperCase()"/>
+					
+									</div>
+
+								<div class="field col-12 md:col-6">
+					
+										<p:outputLabel value="Complemento:" />
+					
+										<p:inputText id="txtComplemento" value="#{fichaAtendimentoBackofficeBean.endereco.complemento}" maxlength="50" />
+					
+									</div>
+				
+								</div>
+								
+						</div>
+						
+						<h:panelGroup 	styleClass="col-12 text-center mt-3" layout="block">
+		
+
+				
+										<p:commandButton value="Salvar" icon="pi pi-save" id="btnSalvarEndereco" styleClass="ui-button-raised mr-2"	actionListener="#{fichaAtendimentoBackofficeBean.salvarEntidade('ENDERECO')}"	rendered="#{fichaAtendimentoBackofficeBean.acao eq 'S'}"
+											update=":tabAtendimento:tableEndereco  @form " oncomplete="PF('dlgEndereco').hide();" />
+				
+										<p:commandButton value="Alterar" icon="pi pi-save" id="btnAlterarEndereco" styleClass="ui-button-raised  mr-2" rendered="#{fichaAtendimentoBackofficeBean.acao eq 'U'}" actionListener="#{fichaAtendimentoBackofficeBean.updadeEntidade('ENDERECO')}"
+											update=":tabAtendimento:tableEndereco   @form" oncomplete="PF('dlgEndereco').hide();" />
+				
+										<p:commandButton value="Sair" icon="pi pi-times " id="btnSairEndereco" onclick="PF('dlgEndereco').hide();"	style="margin-right: 10px;" global="false" immediate="true"	process="@this" styleClass="ui-button-raised" />
+				
+
+		
+						</h:panelGroup>
+			
+
+
+
+		</h:form>
+
+	</p:dialog>
+
+</ui:fragment>

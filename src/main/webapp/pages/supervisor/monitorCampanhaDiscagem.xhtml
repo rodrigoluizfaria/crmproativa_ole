@@ -1,0 +1,612 @@
+<ui:composition xmlns="http://www.w3.org/1999/xhtml"
+                xmlns:h="http://java.sun.com/jsf/html"
+                xmlns:f="http://java.sun.com/jsf/core"
+                xmlns:ui="http://java.sun.com/jsf/facelets"
+                xmlns:o="http://omnifaces.org/ui"
+                xmlns:of="http://omnifaces.org/functions"
+                xmlns:pe="http://primefaces.org/ui/extensions"
+                xmlns:matriz="http://java.sun.com/jsf/composite/componentes"
+                xmlns:p="http://primefaces.org/ui" template="/WEB-INF/template.xhtml">
+
+
+    <ui:define name="viewname">
+
+        <div class="bcca-breadcrumb">
+            <div class="bcca-breadcrumb-item bg-primary-500 hover:bg-primary-700 ">
+                <p:link outcome="/pages/supervisor/monitorCampanhaDiscagem" styleClass="uppercase"
+                        style="text-decoration: none">MONITOR CAMPANHA DISCAGEM</p:link>
+            </div>
+            <div class="bcca-breadcrumb-item uppercase">SUPERVISOR</div>
+        </div>
+
+    </ui:define>
+
+
+    <ui:define name="content">
+
+        <p:growl id="grl" widgetVar="grl" globalOnly="true" escape="false" showSummary="false" life="8000"
+                 showDetail="true" sticky="false">
+
+            <p:autoUpdate/>
+
+        </p:growl>
+
+        <style>
+            .ui-toolbar .field {
+                margin-bottom: 0;
+            }
+        </style>
+
+        <p:growl id="grlNo" widgetVar="grl" escape="false" showSummary="false" life="8000" showDetail="true"
+                 sticky="false"/>
+
+        <h:form id="formPrincipal" prependId="false">
+
+            <!-- <p:poll listener="#{supervisorMonitorCampanhaBean.pesquisar()}" update="@form" interval="30"  /> -->
+
+            <div class=" card ">
+                <div class="ui-fluid formgrid grid">
+                    <matriz:selectEmpresa id="cmpEmpresa" style="md:col-3" managedBean="#{monitorCampanhaDiscador}"
+                                          value="#{monitorCampanhaDiscador.empresa}" required="true" ajax="true"
+                                          update="@form" filter="true" exibirSelecione="false"/>
+
+                    <div class="field col-12 md:col-3">
+
+                        <p:outputLabel value="Status Campanha"/>
+
+                        <p:selectOneMenu id="selectEquipe" value="#{monitorCampanhaDiscador.idStatusCampanha}"
+                                         filter="true"
+                                         filterMatchMode="contains">
+
+                            <f:selectItem itemLabel="Selecione" itemValue=""/>
+
+                            <f:selectItems value="#{monitorCampanhaDiscador.listStatusCampanha}" var="status"
+                                           itemLabel="#{status.descricao}" itemValue="#{status.id}"/>
+
+                            <p:ajax listener="#{monitorCampanhaDiscador.onChangeStatusCampanha()}" process="@this"
+                                    partialSubmit="true" update="@form" global="false"/>
+
+                        </p:selectOneMenu>
+
+                    </div>
+
+                    <div class="field col-12 md:col-3">
+
+                        <p:outputLabel value="Campanha" for="selectCampanha"/>
+
+                        <p:selectOneMenu id="selectCampanha" value="#{monitorCampanhaDiscador.campanha}" filter="true"
+                                         filterMatchMode="contains" required="true" requiredMessage="#{msg.requerido}"
+                                         autoWidth="false">
+
+                            <f:selectItem itemLabel="Selecione" itemValue=""/>
+
+                            <f:selectItems value="#{monitorCampanhaDiscador.listCampanhas}" var="campanha"
+                                           itemLabel="#{campanha.descricao}" itemValue="#{campanha.id}"/>
+
+                        </p:selectOneMenu>
+
+                        <p:message for="selectCampanha" id="msgCampanha"/>
+
+                    </div>
+
+                    <!-- 			<div class="field col-12 md:col-3">
+
+                            <p:outputLabel value="Data Inicio" />
+
+                            <p:datePicker value="#{monitorCampanhaDiscador.dataInicio}" showButtonBar="true" showIcon="true" pattern="dd/MM/yyyy" />
+
+                        </div>
+
+                        <div class="field col-12 md:col-3">
+
+                            <p:outputLabel value="Data Fim" />
+
+                            <p:datePicker value="#{monitorCampanhaDiscador.dataFim}" showButtonBar="true" showIcon="true" pattern="dd/MM/yyyy" />
+
+                        </div> -->
+
+                    <div class="field col-12 md:col-3 " style="padding-top: 24px;">
+
+                        <p:commandButton value="Pesquisar" icon="pi pi-search"
+                                         action="#{monitorCampanhaDiscador.pesquisar()}" update="@form"
+                                         styleClass="ui-button-raised" global="true"/>
+
+                        <!-- 	<p:commandButton value="Exportar" icon="pi pi-upload"	rendered="#{sessionScope['usuario'].permissaoExportar}"
+                                action="#{supervisorMonitorCampanhaBean.pesquisar()}" ajax="false" update="@form" styleClass="raised-button"
+                                disabled="#{empty supervisorMonitorCampanhaBean.listQuantidades or empty supervisorMonitorCampanhaBean.listQuantidadeStatus}">
+
+                                <pe:exporter target="tableQtidadeAtendimento,tableFinalizados,tableQtidadeStatus" datasetPadding="1" type="xlsx" fileName="monitor_Campanha" />
+
+                            </p:commandButton> -->
+
+                    </div>
+
+                </div>
+            </div>
+
+            <h:panelGroup id="pnpRelatorio" rendered="#{monitorCampanhaDiscador.campanha != null}">
+
+                <div class="ui-fluid formgrid grid">
+
+                    <h:panelGroup styleClass="field col-12 md:col-3" layout="block">
+
+                        <div class="stat-card">
+
+                            <div class="stat-card__content">
+
+                                <p class="text-uppercase mb-1 text-muted">Valor Total Produzido</p>
+
+                                <h2>
+                                    <h:outputLabel value="#{monitorCampanhaDiscador.valorTotalAdesao}"
+                                                   style="font-size: 2rem;font-weight: 600;">
+                                        <f:convertNumber currencySymbol="R$" type="currency"/>
+                                    </h:outputLabel>
+                                </h2>
+
+                                <div>
+                                    <span class="text-success font-weight-bold mr-1">#{monitorCampanhaDiscador.quantidadeAdesao} </span>
+                                    <h:panelGroup styleClass="text-muted"
+                                                  rendered="#{not empty monitorCampanhaDiscador.quantidadeAdesao}">#{monitorCampanhaDiscador.quantidadeAdesao > 0 ? ' propostas' :    ' proposta'} </h:panelGroup>
+                                </div>
+                            </div>
+
+                            <div class="stat-card__icon stat-card__icon--success">
+
+                                <div class="stat-card__icon-circle">
+                                    <i class="fa fa-usd"></i>
+                                </div>
+
+                            </div>
+
+                        </div>
+
+
+                    </h:panelGroup>
+
+
+                    <h:panelGroup styleClass="field col-12 md:col-3" layout="block">
+
+                        <div class="stat-card">
+
+                            <div class="stat-card__content ">
+
+                                <p class="text-uppercase mb-1 text-muted">Ticket Médio produzido</p>
+
+                                <h2>
+
+                                    <h:outputLabel value="#{monitorCampanhaDiscador.ticketMedioProduzido}"
+                                                   style="font-size: 2rem;font-weight: 600;">
+                                        <f:convertNumber currencySymbol="R$" type="currency"/>
+                                    </h:outputLabel>
+
+                                </h2>
+
+                                <div>
+                                    <span class="text-success font-weight-bold mr-1"> </span>
+                                    <span class="text-muted"> </span>
+                                </div>
+                            </div>
+
+                            <div class="stat-card__icon stat-card__icon--success">
+                                <div class="stat-card__icon-circle">
+                                    <i class="fa fa-ticket"/>
+                                </div>
+                            </div>
+                        </div>
+
+                    </h:panelGroup>
+
+                    <h:panelGroup styleClass="field col-12 md:col-3" layout="block">
+
+                        <div class="stat-card">
+
+                            <div class="stat-card__content">
+
+                                <p class="text-uppercase mb-1 text-muted">Total de
+                                    Atendimentos</p>
+
+                                <h2>#{monitorCampanhaDiscador.totalAtendimentos}</h2>
+
+                                <div>
+									<span class="text-success font-weight-bold mr-2"> <i
+                                            class="fa fa-phone mr-2" aria-hidden="true"/>
+                                        #{monitorCampanhaDiscador.qtidadeTotalTelefones}
+									</span> <span class="text-muted "> telefone(s)</span>
+
+
+                                </div>
+                            </div>
+
+                            <div class="stat-card__icon stat-card__icon--success">
+                                <div class="stat-card__icon-circle">
+                                    <i class="fa fa-user-o"/>
+                                </div>
+                            </div>
+                        </div>
+
+
+                    </h:panelGroup>
+
+                    <h:panelGroup styleClass="field col-12 md:col-3" layout="block">
+
+                        <div class="stat-card">
+
+                            <div class="stat-card__content">
+
+                                <p class="text-uppercase mb-1 text-muted">Spin</p>
+                                <h2>#{monitorCampanhaDiscador.spin}</h2>
+
+                                <div>
+									<span class="text-success font-weight-bold mr-1"> <i
+                                            class="fa fa-circle-o-notch" aria-hidden="true"/>
+									</span> <span class="text-muted"/>
+
+
+                                </div>
+
+                            </div>
+                            <div class="stat-card__content">
+
+                                <p class="text-uppercase mb-1 text-muted">CPC</p>
+                                <h2>#{monitorCampanhaDiscador.valorCpc}</h2>
+
+                                <div>
+									<span class="text-success font-weight-bold mr-1"> <i
+                                            class="fa fa-handshake-o" aria-hidden="true"></i>
+									</span> <span class="text-muted"></span>
+
+                                </div>
+
+                            </div>
+
+                            <div class="stat-card__icon stat-card__icon--success">
+                                <div class="stat-card__icon-circle">
+                                    <i class="fa fa-circle-o-notch"></i>
+                                </div>
+                            </div>
+                        </div>
+
+                    </h:panelGroup>
+
+                </div>
+
+                <div class="ui-fluid formgrid grid">
+
+                    <h:panelGroup styleClass="field col-12 md:col-3 " layout="block"
+                                  onclick="PF('dlgStatus').show();" style="height: 100%;">
+
+                        <div class="stat-card widget-tasks" style="display: block;height: 100%;">
+                            <h4>Percentual atendimentos.</h4>
+
+                            <div>
+                                <div class="task task-1">
+                                    <div class="task-name">
+                                        <span>#{monitorCampanhaDiscador.totalAtendidos} </span>
+                                        atendimentos trabalhados.<span
+                                            style="float: right;">#{of:formatPercent(monitorCampanhaDiscador.percentualAtendidos)}</span>
+                                    </div>
+                                    <div class="task-progress">
+                                        <div
+                                                style="width:#{of:formatPercent(monitorCampanhaDiscador.percentualAtendidos)} "></div>
+                                    </div>
+                                </div>
+                                <div class="task task-2">
+                                    <div class="task-name">
+                                        <span>#{monitorCampanhaDiscador.totalFinalizados} </span>
+                                        atendimentos finalizados. <span
+                                            style="float: right;">#{of:formatNumber(monitorCampanhaDiscador.percentualFinalizados,
+                                            '#0%')}</span>
+                                    </div>
+                                    <div class="task-progress">
+                                        <div
+                                                style="width:#{of:formatNumber(monitorCampanhaDiscador.percentualFinalizados, '#0,00%')}  "></div>
+                                    </div>
+                                </div>
+                                <div class="task task-3">
+                                    <div class="task-name">
+                                        <span>#{monitorCampanhaDiscador.totalRestantes}</span>
+                                        atendimentos para finalizar <span
+                                            style="float: right;">#{monitorCampanhaDiscador.percentualFinalizar}%</span>
+                                    </div>
+                                    <div class="task-progress">
+                                        <div
+                                                style="width: #{monitorCampanhaDiscador.percentualFinalizar}% "></div>
+                                    </div>
+                                </div>
+                                <!--   <div class="task task-4">
+                                    <div class="task-name"><span>6 Questions</span> to respond</div>
+                                    <div class="task-progress">
+                                        <div></div>
+                                    </div>
+                                </div>
+                                <div class="task task-5">
+                                    <div class="task-name"><span>2 Chargebacks</span> to review</div>
+                                    <div class="task-progress">
+                                        <div></div>
+                                    </div>
+                                </div> -->
+                            </div>
+                        </div>
+                    </h:panelGroup>
+
+                    <h:panelGroup styleClass="field col-12 md:col-3" layout="block" onclick="PF('dlgChamadas').show();"
+                                  style="height: 100%;">
+
+                        <div class="stat-card widget-tasks" style="display: block;">
+
+                            <h4>Discagem</h4>
+
+                            <ul class="widget-image-list">
+
+                                <li><span> <span>CPC</span>
+								</span> <span class="listitem-value">#{monitorCampanhaDiscador.valorCpc}</span>
+                                </li>
+                                <li><span> <span>TMA</span>
+								</span> <span class="listitem-value">#{monitorCampanhaDiscador.valorTma}</span>
+                                </li>
+                                <li><span> <span>Completadas</span>
+								</span> <span class="listitem-value">#{monitorCampanhaDiscador.completadas}</span>
+                                </li>
+                                <li><span> <span>Descartadas/Não atendidas</span>
+								</span> <span class="listitem-value">#{monitorCampanhaDiscador.descartadas}</span>
+                                </li>
+                                <li><span> <span>Total discagem</span>
+								</span> <span
+                                        class="listitem-value">#{monitorCampanhaDiscador.descartadas+monitorCampanhaDiscador.descartadas}</span>
+                                </li>
+                                <li style="border-top: none"></li>
+                                <li style="border-top: none"></li>
+                                <li style="border-top: none"></li>
+
+                            </ul>
+
+                        </div>
+
+                    </h:panelGroup>
+
+                    <div class="field col-12 md:col-3" style="height: 100%;">
+
+                        <div class="card widget-tasks">
+
+                            <h4>Valor Operação.</h4>
+
+                            <ul class="widget-image-list">
+
+                                <li><span> Descrição </span> <span class="listitem-value">Valor</span>
+
+                                </li>
+
+                                <li><span> <span>Valor Minimo operação </span>
+								</span> <span
+                                        class="listitem-value">#{monitorCampanhaDiscador.analiseCampamha[1]}</span>
+
+                                </li>
+                                <li><span> <span>Valor maximo operação</span>
+								</span>
+                                    <div class="listitem-value">#{monitorCampanhaDiscador.analiseCampamha[2]}</div>
+
+                                </li>
+                                <li><span> <span>Valor total operação </span>
+								</span> <span
+                                        class="listitem-value">#{monitorCampanhaDiscador.analiseCampamha[3]}</span>
+
+                                </li>
+                                <li><span> <span>Ticket médio operação</span>
+								</span> <span
+                                        class="listitem-value">#{monitorCampanhaDiscador.analiseCampamha[4]}</span>
+
+                                </li>
+                                <li style="border-top: none"></li>
+                                <li style="border-top: none"></li>
+                                <li style="border-top: none"></li>
+                                <li style="border-top: none"></li>
+
+                            </ul>
+
+                        </div>
+
+
+                    </div>
+
+                    <div class="field col-12 md:col-3" style="height: 100%;">
+
+                        <div class="card widget-tasks">
+
+                            <h4>Resumo.</h4>
+
+                            <ul class="widget-image-list">
+
+                                <li><span> Descrição </span> <span class="listitem-value">Qtdade
+								</span> <span class="listitem-value">Perc. </span></li>
+
+                                <li><span> <span>Conversão
+											&#160;&#160;&#160;&#160;&#160; </span>
+								</span> <span
+                                        class="listitem-value">#{monitorCampanhaDiscador.analiseCampamha[8]}</span>
+                                    <span class="listitem-value">#{of:formatNumber(monitorCampanhaDiscador.analiseCampamha[5],
+                                            '#0,00%')}</span></li>
+                                <li><span> <span>Agendamentos</span>
+								</span>
+                                    <div class="listitem-value">#{monitorCampanhaDiscador.analiseCampamha[9]}</div>
+                                    <span class="listitem-value">#{of:formatNumber(monitorCampanhaDiscador.analiseCampamha[15],
+                                            '#0,00%')} </span></li>
+                                <li><span> <span>Sem interesse &#160;</span>
+								</span> <span
+                                        class="listitem-value">#{monitorCampanhaDiscador.analiseCampamha[14]}</span>
+                                    <span class="listitem-value">#{of:formatNumber(monitorCampanhaDiscador.analiseCampamha[16],
+                                            '#0,00%')} </span></li>
+                                <li><span> <span>Fim de Fila
+											&#160;&#160;&#160;&#160;&#160;</span>
+								</span> <span
+                                        class="listitem-value">#{monitorCampanhaDiscador.analiseCampamha[10]}</span>
+                                    <span class="listitem-value">#{of:formatNumber(monitorCampanhaDiscador.analiseCampamha[17],
+                                            '#0,00%')} </span></li>
+                                <li><span> <span>Efetivo
+											&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;</span>
+								</span> <span
+                                        class="listitem-value">#{monitorCampanhaDiscador.analiseCampamha[11]}</span>
+                                    <span class="listitem-value">#{of:formatNumber(monitorCampanhaDiscador.analiseCampamha[18],
+                                            '#0,00%')} </span></li>
+                                <li><span> <span>Target
+											&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;</span>
+								</span> <span
+                                        class="listitem-value">#{monitorCampanhaDiscador.analiseCampamha[12]}</span>
+                                    <span class="listitem-value">#{of:formatNumber(monitorCampanhaDiscador.analiseCampamha[19],
+                                            '#0,00%')} </span></li>
+                            </ul>
+                        </div>
+
+
+                    </div>
+
+
+                </div>
+
+
+                <div class="flex justify-content-center flex-wrap">
+
+                    <h:panelGroup styleClass="col-12 lg:col-3 card mr-3  " layout="block"
+                                  rendered="#{not empty monitorCampanhaDiscador.pieModelDiscagem}">
+
+
+
+                            <p:pieChart model="#{monitorCampanhaDiscador.pieModelDiscagem}"
+                            />
+
+
+
+                    </h:panelGroup>
+
+                    <h:panelGroup styleClass="field col-12 md:col-6 card " layout="block"
+                                  rendered="#{not empty monitorCampanhaDiscador.cartesianLinerHours}">
+
+
+
+                            <p:lineChart model="#{monitorCampanhaDiscador.cartesianLinerHours}"
+                                         style="width: 100%; height: 500px;"/>
+
+
+
+                    </h:panelGroup>
+
+
+                </div>
+
+            </h:panelGroup>
+
+            <p:dialog id="dlgChamadas" widgetVar="dlgChamadas" visible="false" width="50%" header="Detalhes chamadas">
+
+                <p:dataTable id="tabAtendimentoPabx2" var="qtidade" rows="10"
+                             paginator="true" paginatorPosition="bottom"
+                             value="#{monitorCampanhaDiscador.listQuantidadesStatusTelDiscador}"
+                             emptyMessage="" styleClass="ui-datatable-sm ui-datatable-striped"
+                             currentPageReportTemplate="[#{msg.totalDeRegistros}: {totalRecords}]"
+                             paginatorTemplate="{CurrentPageReport}  {FirstPageLink} {PreviousPageLink} {PageLinks} {NextPageLink} {LastPageLink} {Exporters}">
+
+                    <p:ajax event="sort" global="false"/>
+
+                    <f:facet name="header">
+                        Status telefone PABX
+                    </f:facet>
+
+                    <p:column headerText="Status" sortBy="#{qtidade[1]}">
+
+                        <h:outputText value="#{qtidade[1]}"/>
+
+                    </p:column>
+
+                    <p:column headerText="Quantidade discado" sortBy="#{qtidade[0]}">
+
+                        <h:outputText value="#{qtidade[0]}"/>
+
+                    </p:column>
+
+                </p:dataTable>
+
+            </p:dialog>
+
+            <p:dialog id="dlgStatus" widgetVar="dlgStatus" visible="false" width="50%"
+                      header="Detalhes status atendimento">
+
+                <p:dataTable id="tableQtidadeStatus" var="qtidadeStatus" rows="10"
+                             paginator="true" paginatorPosition="bottom"
+                             value="#{monitorCampanhaDiscador.listQuantidadeStatus}"
+                             emptyMessage="#{monitorCampanhaDiscador.listQuantidadeStatus eq null? '' : msg.emptyMessage}"
+                             currentPageReportTemplate="[#{msg.totalDeRegistros}: {totalRecords}]"
+                             paginatorTemplate="{CurrentPageReport}  {FirstPageLink} {PreviousPageLink} {PageLinks} {NextPageLink} {LastPageLink} {Exporters}">
+
+                    <p:ajax event="page" global="false"/>
+                    <p:ajax event="sort" global="false"/>
+
+                    <p:column sortBy="#{qtidadeStatus[0]}" width="50%">
+
+                        <f:facet name="header">
+
+                            <h:outputText value="Status do Atendimento"/>
+
+                        </f:facet>
+
+
+                        <h:outputText value="#{qtidadeStatus[0]}"/>
+
+                        <f:facet name="footer">
+
+                            <h:outputText value="Total" style="text-aling:lefth"/>
+
+                        </f:facet>
+
+                    </p:column>
+
+                    <p:column sortBy="#{qtidadeStatus[1]}" width="25%">
+
+                        <f:facet name="header">
+
+                            <h:outputText value="Quantidade"/>
+
+                        </f:facet>
+
+                        <h:outputText value="#{qtidadeStatus[1]}"/>
+
+                        <f:facet name="footer">
+
+                            <h:outputText value="#{supervisorMonitorCampanhaBean.qtidadeTotalAtendimentos}"/>
+
+                        </f:facet>
+
+                    </p:column>
+
+                    <p:column sortBy="#{qtidadeStatus[2]}" width="30%">
+
+                        <f:facet name="header">
+
+                            <h:outputText value="Perc Atendimentos Realizados"/>
+
+                        </f:facet>
+
+                        <h:outputText value="#{qtidadeStatus[2]}">
+
+                            <f:convertNumber pattern="#0.00 %"/>
+
+                        </h:outputText>
+
+                        <f:facet name="footer">
+
+                            <h:outputText value="#{supervisorMonitorCampanhaBean.qtdPorcetagemAtendimentosStatus}">
+
+                                <f:convertNumber pattern="#0.00 %"/>
+
+                            </h:outputText>
+
+                        </f:facet>
+
+                    </p:column>
+
+                </p:dataTable>
+
+            </p:dialog>
+
+        </h:form>
+
+    </ui:define>
+
+</ui:composition>

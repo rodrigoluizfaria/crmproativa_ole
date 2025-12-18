@@ -1,0 +1,140 @@
+<ui:composition xmlns="http://www.w3.org/1999/xhtml"
+	xmlns:h="http://java.sun.com/jsf/html"
+	xmlns:f="http://java.sun.com/jsf/core"
+	xmlns:ui="http://java.sun.com/jsf/facelets"
+	xmlns:fn="http://java.sun.com/jsp/jstl/functions"
+	xmlns:matriz="http://java.sun.com/jsf/composite/componentes"
+	xmlns:p="http://primefaces.org/ui" template="/WEB-INF/template.xhtml">
+
+	
+
+
+	<ui:define name="viewname">
+
+		<div class="bcca-breadcrumb">
+			<div class="bcca-breadcrumb-item bg-primary-500 hover:bg-primary-700 ">
+				<p:link outcome="/pages/supervisor/monitorUsuariosLogados" styleClass="uppercase"
+						style="text-decoration: none">MONITOR USUÁRIOS LOGADOS</p:link>
+			</div>
+			<div class="bcca-breadcrumb-item uppercase">SUPERVISOR</div>
+		</div>
+
+	</ui:define>
+
+	<ui:define name="content">
+
+		<p:growl id="grl" widgetVar="grl" globalOnly="true" escape="false"
+			showSummary="false" life="8000" showDetail="true" sticky="false">
+
+			<p:autoUpdate />
+
+		</p:growl>
+
+		<p:growl id="grlNo" widgetVar="grl" escape="false" showSummary="false"	life="8000" showDetail="true" sticky="false" />
+
+	<h:form id="formMonitorUsuariosLogados" prependId="false">
+	
+	<p:poll listener="#{supervisorMonitorUsuariosLogados.pesquisar()}" update="tableUsuariosLogados" interval="300" global="false"/>
+	
+		
+
+		<div class="card">
+
+			<div class="ui-fluid formgrid grid">
+
+				<matriz:selectEmpresa id="cmpEmpresa" style="col-12 md:col-3"	managedBean="#{supervisorMonitorUsuariosLogados}" value="#{supervisorMonitorUsuariosLogados.empresa}" ajax="true"  update="tableUsuariosLogados" filter="true" exibirSelecione="false"
+					 required="true" listener="#{supervisorMonitorUsuariosLogados.pesquisar()}"  />
+
+
+
+		<div class="col-12">
+	
+	<p:dataTable id="tableUsuariosLogados" widgetVar="tableUsuariosLogados" var="usuario" rows="15"  globalFilterFunction="#{supervisorMonitorUsuariosLogados.globalFilterFunction}"  paginator="true" paginatorPosition="bottom"	value="#{supervisorMonitorUsuariosLogados.listUsuariosLogados}"
+					emptyMessage="#{supervisorMonitorUsuariosLogados.listUsuariosLogados eq null? '' : msg.emptyMessage}"	styleClass="ui-datatable-striped ui-datatable-sm"
+					paginatorTemplate="{CurrentPageReport}  {FirstPageLink} {PreviousPageLink} {PageLinks} {NextPageLink} {LastPageLink} {Exporters}"  filteredValue="#{supervisorMonitorUsuariosLogados.listUsuariosLogadosFilter}">
+
+					<p:ajax event="page" global="false" />
+
+					<p:ajax event="sort" global="false" />
+					
+					<p:ajax event="filter" global="false" />
+
+							<f:facet name="header">
+								
+								<div style="justify-content: flex-end; display: flex !important;">
+									
+									<span class="ui-input-icon-left ui-input-icon-right"> 
+										<i	class="pi pi-user" /> <p:inputText id="globalFilter"
+											onkeyup="PF('tableUsuariosLogados').filter();"
+											style="width:20rem" placeholder="Pesquisa. nome ou login" /> <i
+										class="pi pi-search" />
+									</span>
+
+								</div>
+								
+							</f:facet>
+
+
+				<p:column headerText="Nome" sortBy="#{usuario[0]}" width="30%" >
+
+						<h:outputLabel value="#{usuario[0]}"/>
+
+					</p:column>
+
+					<p:column headerText="Login" sortBy="#{usuario[1]}"	width="20%">
+
+						<h:outputLabel value="#{usuario[1]}" />
+
+					</p:column>
+
+					<p:column headerText="Ramal" sortBy="#{usuario[2]}" width="10%">
+
+						<h:outputLabel value="#{usuario[2]}" />
+
+					</p:column>
+
+					<p:column headerText="Equipe" sortBy="#{usuario[3]}" width="25%">
+
+						<h:outputLabel value="#{usuario[3]}" />
+
+					</p:column>
+
+					<p:column headerText="Tempo Logado" sortBy="#{usuario[4]}" width="15%" filterable="false">
+
+						<h:outputLabel value="#{usuario[4]}" />
+
+					</p:column>
+
+					
+					<p:column width="10%" exportable="false" filterable="false">
+						
+						 <p:commandButton styleClass="rounded-button ui-button-danger ui-button-flat" icon="fa fa-circle-xmark" update="tableUsuariosLogados"  actionListener="#{supervisorMonitorUsuariosLogados.invalidSession(usuario[1])}" title="Encerrar sessão usuário."/>
+						
+				</p:column>
+				
+				<f:facet name="footer">
+				
+				
+         				   <h:panelGroup styleClass="p-text-bold" rendered="#{empty supervisorMonitorUsuariosLogados.listUsuariosLogados}"> Nenhum usuario logado  </h:panelGroup>
+         				   <h:panelGroup styleClass="p-text-bold" rendered="#{not empty supervisorMonitorUsuariosLogados.listUsuariosLogados}"> Total de #{fn:length(supervisorMonitorUsuariosLogados.listUsuariosLogados)} usuario(s) logados.  </h:panelGroup>
+         				   
+       			 </f:facet>
+
+
+				</p:dataTable>
+	
+	
+	</div>
+
+
+
+			</div>
+
+		</div>
+
+</h:form>
+
+
+	</ui:define>
+
+</ui:composition>

@@ -1,0 +1,190 @@
+<ui:fragment xmlns="http://www.w3.org/1999/xhtml"
+             xmlns:h="http://java.sun.com/jsf/html"
+             xmlns:f="http://java.sun.com/jsf/core"
+             xmlns:ui="http://java.sun.com/jsf/facelets"
+             xmlns:p="http://primefaces.org/ui">
+
+    <h:form id="formCalculadora" prependId="false">
+
+        <div class="grid col-12 tab-padding">
+
+            <div class="col-12">
+
+                <p:spacer height="20"/>
+
+            </div>
+
+            <div class="col-12">
+
+                <div class="field col-12 md:col-3 mb-2" style=" padding-left: 0px;">
+
+                    <p:outputLabel value="Tipo da Consulta"/>
+
+                    <p:selectOneMenu value="#{supervisorBackofficeBean.tipoConsultaIntegracaoEnum}" autoWidth="false">
+
+                        <f:selectItems value="#{supervisorBackofficeBean.listTipoIntegracaoConsulta}" var="c" itemValue="#{c}" itemLabel="#{c.constante}"/>
+                        <p:ajax process="@this" update="@form" listener="#{supervisorBackofficeBean.onTrocarIntegracao()}"/>
+
+                    </p:selectOneMenu>
+
+                </div>
+
+            </div>
+
+            <h:panelGroup styleClass="grid col-12 tab-padding  mt-6 " id="pnpCalculadora" layout="block" >
+
+                <div class="field col-12 md:col-3">
+
+                    <p:outputLabel value="Entrada" for="txtEntradaConsignado"/>
+
+                    <p:inputText value="#{supervisorBackofficeBean.entradaCalculadora}" id="txtEntradaConsignado" required="true" requiredMessage="Requerido"/>
+
+                    <p:message for="txtEntradaConsignado"/>
+
+                </div>
+
+                <h:panelGroup  class="field col-12 md:col-3" rendered="#{supervisorBackofficeBean.tipoConsultaIntegracaoEnum eq 'AMBEC'}">
+
+                    <p:outputLabel value="Tipo da Consulta"/>
+
+                    <p:selectOneMenu value="#{supervisorBackofficeBean.tipoConsulta}" autoWidth="false">
+
+                        <f:selectItems value="#{supervisorBackofficeBean.tiposConsulta}" var="c" itemValue="#{c}" itemLabel="#{c.constante}"/>
+
+                    </p:selectOneMenu>
+
+                </h:panelGroup >
+
+                <div class="field col-12 md:col-12">
+
+                    <div>
+
+                        <p:commandButton value="Pesquisar" id="btnCalculadora" icon="pi pi-search"
+                                         styleClass="ui-button-raised mr-3"
+                                         actionListener="#{supervisorBackofficeBean.onConsultarApis()}"
+                                         update="@form"/>
+
+                    </div>
+
+                </div>
+
+                <h:panelGroup styleClass="col-10 mt-3" layout="block" rendered="#{supervisorBackofficeBean.tipoConsultaIntegracaoEnum eq 'AMBEC'}">
+
+                    <p:dataTable rows="5" paginator="true"
+                                 value="#{supervisorBackofficeBean.calculadoraConsignadoResponse.resultados}" rendered="#{not empty supervisorBackofficeBean.calculadoraConsignadoResponse.resultados}"
+                                 paginatorPosition="bottom"
+                                 emptyMessage="#{msg.emptyMessage}"
+                                 currentPageReportTemplate="[ #{msg.totalDeRegistros}: {totalRecords} ]"
+                                 paginatorTemplate="{CurrentPageReport}  {FirstPageLink} {PreviousPageLink} {PageLinks} {NextPageLink} {LastPageLink}"
+                                 var="c" id="tableCalculadora"
+                                 styleClass="ui-datatable-striped ui-datatable-sm "
+                                 style="zoom: 90%;">
+
+                        <p:ajax event="page" global="false"/>
+
+                        <p:ajax event="sort" global="false"/>
+                        <p:column headerText="beneficio" style="text-align:center">
+
+                            <span>#{c.beneficio}</span>
+
+                        </p:column>
+
+                        <p:column headerText="Bloqueio associação" style="text-align:center">
+
+                            <span>#{c.bloqueioAssociacao ? 'SIM' : 'NÃO'}</span>
+
+                        </p:column>
+
+                        <p:column headerText="possui sindicato" style="text-align:center">
+
+                            <span>#{c.possuiSindicato ? 'SIM' : 'NÃO'}</span>
+
+                        </p:column>
+
+                        <p:column headerText="cod especie" style="text-align:center">
+
+                            <span>#{c.especieCodigo}</span>
+
+                        </p:column>
+
+                        <p:column headerText="especie descrição" style="text-align:center">
+
+                            <span>#{c.especieDescricao}</span>
+
+                        </p:column>
+
+                        <p:column headerText="status" style="text-align:center">
+
+                            <span>#{c.status}</span>
+
+                        </p:column>
+
+                    </p:dataTable>
+
+                </h:panelGroup>
+
+                <h:panelGroup styleClass="col-10 mt-3 " layout="block" rendered="#{supervisorBackofficeBean.tipoConsultaIntegracaoEnum eq 'API_BANCO_MASTER'}">
+
+                    <h:panelGroup styleClass="card mt-5  border-left" layout="block" rendered="#{not empty supervisorBackofficeBean.cartaoMasterResponse.codigo}">Retorno da API:  <span class="text-red font-semibold"> #{supervisorBackofficeBean.cartaoMasterResponse.descricao} </span></h:panelGroup>
+
+                    <p:dataTable rows="5" paginator="true" rendered="#{not empty supervisorBackofficeBean.cartaoMasterResponse.listaConsultaLimite}"
+                                 value="#{supervisorBackofficeBean.cartaoMasterResponse.listaConsultaLimite}"
+                                 paginatorPosition="bottom"
+                                 emptyMessage="#{msg.emptyMessage}"
+                                 currentPageReportTemplate="[ #{msg.totalDeRegistros}: {totalRecords} ]"
+                                 paginatorTemplate="{CurrentPageReport}  {FirstPageLink} {PreviousPageLink} {PageLinks} {NextPageLink} {LastPageLink}"
+                                 var="master" id="tableBancoMaster"
+                                 styleClass="ui-datatable-striped ui-datatable-sm "
+                                 style="zoom: 90%;">
+
+                        <p:ajax event="page" global="false"/>
+
+                        <p:ajax event="sort" global="false"/>
+
+                        <p:column headerText="CPF" style="text-align:center">
+
+                            <span>#{master.cpf}</span>
+
+                        </p:column>
+
+                        <p:column headerText="Produto" style="text-align:center">
+
+                            <span>#{master.produto }</span>
+
+                        </p:column>
+
+                        <p:column headerText="últimos 4 dígitos" style="text-align:center">
+
+                            <span>#{master.ultimos4Digitos}</span>
+
+                        </p:column>
+
+                        <p:column headerText="Status do cartão" style="text-align:center">
+
+                            <span>#{master.statusCartao}</span>
+
+                        </p:column>
+
+                        <p:column headerText="Limite do cartão" style="text-align:center">
+
+                            <span>#{master.limiteDisponivelFormatado}</span>
+
+                        </p:column>
+
+                        <p:column headerText="Limite disponível" style="text-align:center">
+
+                            <span>#{master.limitePercentualDisponivelFormatado}</span>
+
+                        </p:column>
+
+                    </p:dataTable>
+
+                </h:panelGroup>
+
+            </h:panelGroup>
+
+        </div>
+
+    </h:form>
+
+</ui:fragment>

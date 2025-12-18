@@ -1,0 +1,86 @@
+<ui:fragment xmlns="http://www.w3.org/1999/xhtml"
+             xmlns:h="http://java.sun.com/jsf/html"
+             xmlns:f="http://java.sun.com/jsf/core"
+             xmlns:o="http://omnifaces.org/ui"
+             xmlns:ui="http://java.sun.com/jsf/facelets"
+             xmlns:p="http://primefaces.org/ui">
+
+    <!-- DLG MODAL -->
+    <p:dialog id="dlgSistemaPausa" widgetVar="dlgSistemaPausa" modal="true" draggable="false" resizable="false"
+              closable="true" visible="false" width="300px" header="Entre com o motivo Pausa" appendTo="@(body)">
+
+        <h:form id="formPausaSistema" prependId="false">
+
+            <div class="ui-fluid formgrid grid">
+
+                <div class="field col-12 ">
+
+                    <p:outputLabel value="Motivo" for="selectPausaSistema"/>
+
+                    <p:selectOneMenu id="selectPausaSistema" value="#{sistemaBean.pausa}" required="true"
+                                     requiredMessage="#{msg.requerido}" filter="true"
+                                     converter="omnifaces.SelectItemsConverter">
+
+                        <f:selectItem itemLabel="Selecione" itemValue=""/>
+
+                        <f:selectItems value="#{sistemaBean.listPausa}" var="pausa" itemLabel="#{pausa.descricao}"
+                                       itemValue="#{pausa}"/>
+
+                    </p:selectOneMenu>
+
+                </div>
+
+                <h:panelGroup styleClass="field col-12 mt-3" rendered="#{not empty sistemaBean.intervaloList}">
+
+                    <p:outputLabel value="Intevalo Discador 3C" for="selectPausa3c"/>
+
+                    <p:selectOneMenu id="selectPausa3c" value="#{sistemaBean.intervalo3c}" required="true" requiredMessage="#{msg.requerido}" filter="true" converter="omnifaces.SelectItemsConverter">
+
+                        <f:selectItem itemLabel="Selecione" itemValue=""/>
+
+                        <f:selectItems value="#{sistemaBean.intervaloList}" var="intervalo" itemLabel="#{intervalo.name}" itemValue="#{intervalo.id}"/>
+
+                    </p:selectOneMenu>
+
+                </h:panelGroup>
+
+
+                <h:panelGroup styleClass="field col-12 mt-3" rendered="#{not empty sistemaBean.intervaloListArgus}">
+
+                    <p:outputLabel value="Intevalo Discador Argus" for="selectPausaArgus"/>
+
+                    <p:selectOneMenu id="selectPausaArgus" value="#{sistemaBean.intervaloArgus}" required="true" requiredMessage="#{msg.requerido}" filter="true" converter="omnifaces.SelectItemsConverter">
+
+                        <f:selectItem itemLabel="Selecione" itemValue=""/>
+
+                        <f:selectItems value="#{sistemaBean.intervaloListArgus}" var="pausaItem" itemLabel="#{pausaItem.pausaDesc}" itemValue="#{pausaItem.idPausa}"/>
+
+                    </p:selectOneMenu>
+
+                </h:panelGroup>
+
+                <div class="field col-12 mt-5">
+
+                    <div class="div_btn_rigth">
+
+                        <p:commandButton value="Ok" icon="pi pi-check" id="btnOkPausaSistema"
+                                         styleClass="ui-button-raised mr-3" update="@form :formPausaSistema"
+                                         partialSubmit="true" process="@this selectPausaSistema selectPausa3c selectPausaArgus"
+                                         actionListener="#{sistemaBean.iniciarPausa()}"/>
+
+                        <p:commandButton value="Cancelar" icon="pi pi-times" id="btnCancelPausaSistema"
+                                         styleClass="ui-button-raised" onclick="PF('dlgSistemaPausa').hide();"
+                                         global="false" process="@this"/>
+
+                    </div>
+
+                </div>
+
+            </div>
+
+
+        </h:form>
+
+    </p:dialog>
+
+</ui:fragment>

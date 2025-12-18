@@ -1,0 +1,431 @@
+<ui:composition xmlns="http://www.w3.org/1999/xhtml"
+                xmlns:h="http://java.sun.com/jsf/html"
+                xmlns:f="http://java.sun.com/jsf/core"
+                xmlns:ui="http://java.sun.com/jsf/facelets"
+                xmlns:matriz="http://java.sun.com/jsf/composite/componentes"
+                xmlns:p="http://primefaces.org/ui" template="/WEB-INF/template.xhtml">
+
+
+    <ui:define name="viewname">
+
+        <div class="bcca-breadcrumb">
+            <div class="bcca-breadcrumb-item bg-primary-500 hover:bg-primary-700 ">
+                <p:link outcome="/pages/supervisor/produtividadeAtendimento" styleClass="uppercase"
+                        style="text-decoration: none">PRODUTIVIDADE ATENDIMENTO</p:link>
+            </div>
+            <div class="bcca-breadcrumb-item uppercase">SUPERVISOR</div>
+        </div>
+
+    </ui:define>
+
+    <ui:define name="content">
+
+        <p:growl id="grl" widgetVar="grl" globalOnly="true" escape="false" showSummary="false" life="8000"
+                 showDetail="true" sticky="false">
+
+            <p:autoUpdate/>
+
+        </p:growl>
+
+        <p:growl id="grlNo" widgetVar="grl" escape="false" showSummary="false" life="8000" showDetail="true"
+                 sticky="false"/>
+
+
+
+            <h:form prependId="false" id="principal">
+
+                <div class="card">
+
+                    <div class="ui-fluid formgrid grid">
+
+                        <matriz:selectEmpresa id="selectEmpresaCampanha" style="col-12 md:col-3"
+                                              managedBean="#{supervisorProdutividadeAtendimentoBean}"
+                                              value="#{supervisorProdutividadeAtendimentoBean.empresa}" ajax="true"
+                                              update="@form" filter="true" exibirSelecione="true"
+                                              required="true"/>
+
+                        <div class="field col-12 md:col-2">
+
+                            <p:outputLabel value="Status Campanha" id="lblStatusCampanha"/>
+
+                            <p:selectOneMenu id="selectStatusCampanha"
+                                             value="#{supervisorProdutividadeAtendimentoBean.statusCampanhaLong}"
+                                             filter="true" filterMatchMode="contains">
+
+                                <f:selectItem itemLabel="Selecione" itemValue=""/>
+
+                                <f:selectItems value="#{supervisorProdutividadeAtendimentoBean.listStatusCampanhas}"
+                                               var="statusCampanha" itemLabel="#{statusCampanha.descricao}"
+                                               itemValue="#{statusCampanha.id}"/>
+
+                                <p:ajax process="@this" partialSubmit="true" update="selectCampanha"
+                                        listener="#{supervisorProdutividadeAtendimentoBean.changeSelectOneMenuCampanha()}"/>
+
+                            </p:selectOneMenu>
+
+                        </div>
+
+                        <div class="field col-12 md:col-2">
+
+                            <p:outputLabel value="Tipo Campanha" id="lblTipoCampanha"/>
+
+                            <p:selectOneMenu id="selectTipoCampanha"
+                                             value="#{supervisorProdutividadeAtendimentoBean.tipoCampanha}"
+                                             filter="true" filterMatchMode="contains">
+
+                                <f:selectItem itemLabel="Selecione" itemValue=""/>
+
+                                <f:selectItems value="#{supervisorProdutividadeAtendimentoBean.listTiposCampanhas}"
+                                               var="tipoCampanha" itemLabel="#{tipoCampanha.constante}"
+                                               itemValue="#{tipoCampanha}"/>
+
+                                <p:ajax process="@this" partialSubmit="true" update="selectCampanha"
+                                        listener="#{supervisorProdutividadeAtendimentoBean.changeSelectOneMenuCampanha()}"/>
+
+                            </p:selectOneMenu>
+
+                        </div>
+
+                        <div class="field col-12 md:col-2">
+
+                            <p:outputLabel value="Campanha" id="lblCampanha"/>
+
+                            <p:selectCheckboxMenu id="selectCampanha" label="Selecione" multiple="true"
+                                                  onShow="teste('selectCampanha');"
+                                                  value="#{supervisorProdutividadeAtendimentoBean.listCampanhasSelecionadas}"
+                                                  filter="true" filterMatchMode="contains">
+
+                                <f:selectItems value="#{supervisorProdutividadeAtendimentoBean.listCampanhas}"
+                                               var="campanha" itemLabel="#{campanha.descricao}"
+                                               itemValue="#{campanha.id}"/>
+
+                                <p:ajax event="toggleSelect"
+                                        listener="#{supervisorProdutividadeAtendimentoBean.changeCampanha(true)}"
+                                        global="false" process="@this" update="selectUsuario selectEquipe"/>
+
+                                <p:ajax event="change"
+                                        listener="#{supervisorProdutividadeAtendimentoBean.changeCampanha(false)}"
+                                        global="false" process="@this" update="selectUsuario selectEquipe"/>
+
+
+                            </p:selectCheckboxMenu>
+
+                        </div>
+
+                        <div class="field col-12 md:col-2">
+
+                            <p:outputLabel value="Equipe" id="lblEquipe"/>
+
+                            <p:selectCheckboxMenu id="selectEquipe" label="Selecione" multiple="true"
+                                                  value="#{supervisorProdutividadeAtendimentoBean.listEquipesSelecionadas}"
+                                                  filter="true" filterMatchMode="contains">
+
+                                <f:selectItems value="#{supervisorProdutividadeAtendimentoBean.listEquipes}"
+                                               var="equipe" itemLabel="#{equipe.nome}" itemValue="#{equipe.id}"/>
+
+                                <p:ajax event="toggleSelect"
+                                        listener="#{supervisorProdutividadeAtendimentoBean.changeEquipe()}"
+                                        global="false" process="@this" update="selectUsuario"/>
+
+                                <p:ajax event="change"
+                                        listener="#{supervisorProdutividadeAtendimentoBean.changeEquipe()}"
+                                        global="false" process="@this" update="selectUsuario"/>
+
+
+                            </p:selectCheckboxMenu>
+
+                        </div>
+
+                        <div class="field col-12 md:col-2">
+
+                            <p:outputLabel value="Usuário" id="lblUsuario"/>
+
+                            <p:selectCheckboxMenu id="selectUsuario" label="Selecione" multiple="true"
+                                                  value="#{supervisorProdutividadeAtendimentoBean.listUsuariosSelecionadas}"
+                                                  filter="true" filterMatchMode="contains">
+
+                                <f:selectItems value="#{supervisorProdutividadeAtendimentoBean.listUsuarios}"
+                                               var="usuario" itemLabel="#{usuario.nome}" itemValue="#{usuario.id}"/>
+
+
+                            </p:selectCheckboxMenu>
+
+                        </div>
+
+
+                        <div class="field col-12 md:col-2">
+
+                            <p:outputLabel value="Produto" id="lblProduto"/>
+
+                            <p:selectOneMenu id="selectProduto"
+                                             value="#{supervisorProdutividadeAtendimentoBean.produtoLong}" filter="true"
+                                             filterMatchMode="contains">
+
+                                <f:selectItem itemLabel="Selecione" itemValue="#{null}" noSelectionOption="true"/>
+
+                                <f:selectItems value="#{supervisorProdutividadeAtendimentoBean.listProdutos}"
+                                               var="produto" itemLabel="#{produto.descricao}"
+                                               itemValue="#{produto.id}"/>
+
+
+                            </p:selectOneMenu>
+
+                        </div>
+
+                        <div class="field col-12 md:col-2">
+
+                            <p:outputLabel value="Filtro Visualização" id="lblVisualizacao"
+                                           for="selectTipoVisualizacao"/>
+
+                            <p:selectOneMenu id="selectTipoVisualizacao"
+                                             value="#{supervisorProdutividadeAtendimentoBean.tipoVisualizacao}"
+                                             filter="true" filterMatchMode="contains" required="true"
+                                             requiredMessage="Requerido">
+
+                                <f:selectItem itemLabel="Selecione" itemValue=""/>
+
+                                <f:selectItems value="#{supervisorProdutividadeAtendimentoBean.tipoVisualizacoes}"
+                                               var="tipoVisualizacao" itemLabel="#{tipoVisualizacao.constante}"
+                                               itemValue="#{tipoVisualizacao}"/>
+
+                            </p:selectOneMenu>
+
+                            <p:message for="selectTipoVisualizacao"/>
+
+                        </div>
+
+
+                        <div class="field col-12 md:col-2">
+
+                            <p:outputLabel value="Data Inicio" for="calendarDataInicio"/>
+
+                            <p:datePicker id="calendarDataInicio"
+                                          value="#{supervisorProdutividadeAtendimentoBean.dataInicio}"
+                                          showButtonBar="true" showIcon="true"
+                                          pattern="dd/MM/yyyy" required="true" monthNavigator="true"
+                                          yearNavigator="true" requiredMessage="#{msg.requerido}"/>
+
+                            <p:message for="calendarDataInicio"/>
+
+
+                        </div>
+
+                        <div class="field col-12 md:col-2">
+
+                            <p:outputLabel value="Data Fim" for="calendarDataFim"/>
+
+                            <p:datePicker id="calendarDataFim"
+                                          value="#{supervisorProdutividadeAtendimentoBean.dataFim}"
+                                          showButtonBar="true" showIcon="true"
+                                          pattern="dd/MM/yyyy" required="true" monthNavigator="true"
+                                          yearNavigator="true" requiredMessage="#{msg.requerido}"/>
+
+                            <p:message for="calendarDataFim"/>
+
+
+                        </div>
+
+                        <div class="field col-12 md:col-4">
+
+                            <p:outputLabel value="&#160;&#160;" id="txtPesquisaEspaco"/>
+
+                            <div>
+
+                                <p:commandButton value="Pesquisar" icon="pi pi-search" styleClass="ui-button-raised mr-3"
+                                                 actionListener="#{supervisorProdutividadeAtendimentoBean.pesquisar()}"
+                                                 update="@form"/>
+
+                                <p:commandButton id="btnExportar" styleClass="mr-3 ui-button-raised ui-button-outlined"
+                                                 icon="pi pi-file-excel" value="#{msg.exportar}" ajax="false"
+                                                 rendered="#{sessionScope['usuario'].permissaoExportar}"
+                                                 disabled="#{empty supervisorProdutividadeAtendimentoBean.listAtendimentoProdutividade}">
+
+                                    <p:dataExporter target="tableAtendimentos" type="xls"
+                                                    fileName="proadutividadeAtendimento"/>
+
+                                </p:commandButton>
+
+                            </div>
+
+                        </div>
+
+                    </div>
+
+                </div>
+
+
+                <div class="mt-4">
+
+                    <div class="card">
+
+                        <p:dataTable id="tableAtendimentos" var="iten" rows="15"
+                                     styleClass="ui-table-header-align-left ui-datatable-striped ui-datatable-sm ui-datatable-gridlines centeralizarColum"
+                                     paginator="true" paginatorPosition="bottom"
+                                     value="#{supervisorProdutividadeAtendimentoBean.listAtendimentoProdutividade}"
+                                     emptyMessage="#{supervisorProdutividadeAtendimentoBean.listAtendimentoProdutividade eq null? '' : msg.emptyMessage}"
+                                     currentPageReportTemplate="[#{msg.totalDeRegistros}: {totalRecords}]"
+                                     paginatorTemplate="{CurrentPageReport}  {FirstPageLink} {PreviousPageLink} {PageLinks} {NextPageLink} {LastPageLink} {Exporters}"
+                                     reflow="true">
+
+
+                            <p:ajax event="sort" global="false"/>
+                            <p:ajax event="page" global="false"/>
+
+                            <p:column width="25%" styleClass="centeralizarColum"
+                                      headerText="#{supervisorProdutividadeAtendimentoBean.tipoVisualizacao.constante}">
+
+                                <h:outputText value="#{iten[0]}" style="text-align: left"
+                                              sortBy="#{iten[0]}"/>
+
+                                <f:facet name="footer">
+
+                                    <div align="center">
+
+                                        <span style="text-align: center">Total</span>
+
+                                    </div>
+
+                                </f:facet>
+
+                            </p:column>
+
+                            <p:column width="10%" headerText="Qtde. Atendimentos"
+                                      sortBy="#{iten[2]}" styleClass="centeralizarColum">
+
+                                <h:outputText value="#{iten[2]}"/>
+
+                                <f:facet name="footer">
+
+                                    <h:outputText
+                                            value="#{supervisorProdutividadeAtendimentoBean.totalAtendimento}"
+                                            style="text-align: left">
+
+                                        <f:convertNumber type="number"/>
+
+                                    </h:outputText>
+
+                                </f:facet>
+
+                            </p:column>
+
+                            <p:column width="10%" headerText="Qtde. Propostas"
+                                      sortBy="#{iten[3]}" styleClass="centeralizarColum">
+
+                                <h:outputText value="#{iten[3]}"/>
+
+                                <f:facet name="footer">
+
+                                    <h:outputText
+                                            value="#{supervisorProdutividadeAtendimentoBean.totalPropostas}"
+                                            style="text-align: left">
+
+                                        <f:convertNumber type="number"/>
+
+                                    </h:outputText>
+
+                                </f:facet>
+
+                            </p:column>
+
+                            <p:column width="10%" headerText="Qtde. Contratos"
+                                      sortBy="#{iten[4]}" styleClass="centeralizarColum">
+
+                                <h:outputText value="#{iten[4]}"/>
+
+                                <f:facet name="footer">
+
+                                    <h:outputText
+                                            value="#{supervisorProdutividadeAtendimentoBean.totalContratos}"
+                                            style="text-align: left">
+
+                                        <f:convertNumber type="number"/>
+
+                                    </h:outputText>
+
+                                </f:facet>
+
+                            </p:column>
+
+                            <p:column width="10%" headerText="Propostas" sortBy="#{iten[7]}"
+                                      styleClass="centeralizarColum">
+
+                                <h:outputText value="#{iten[7]}">
+
+                                    <f:convertNumber pattern="##0.00 %"/>
+
+                                </h:outputText>
+
+
+                            </p:column>
+
+                            <p:column width="10%" headerText="Contratos" sortBy="#{iten[8]}"
+                                      styleClass="centeralizarColum">
+
+                                <h:outputText value="#{iten[8]}">
+
+                                    <f:convertNumber pattern="##0.00 %"/>
+
+                                </h:outputText>
+
+                            </p:column>
+
+                            <p:column width="10%" headerText="Vlr. Realizado"
+                                      sortBy="#{iten[5]}" styleClass="centeralizarColum">
+
+                                <h:outputText value="#{iten[5]}">
+
+                                    <f:convertNumber type="currency" locale="pt-br"
+                                                     currencySymbol="R$"/>
+
+                                </h:outputText>
+
+                                <f:facet name="footer">
+
+                                    <h:outputText
+                                            value="#{supervisorProdutividadeAtendimentoBean.totalVendido}"
+                                            style="text-align: left">
+
+                                        <f:convertNumber type="currency" locale="pt-br"/>
+
+                                    </h:outputText>
+
+                                </f:facet>
+
+                            </p:column>
+
+                            <p:column headerText="Vlr Concluído" width="13%"
+                                      sortBy="#{iten[6]}" styleClass="centeralizarColum">
+
+                                <h:outputText value="#{iten[6]}">
+
+                                    <f:convertNumber type="currency" locale="pt-br"
+                                                     currencySymbol="R$"/>
+
+                                </h:outputText>
+
+                                <f:facet name="footer">
+
+                                    <h:outputText
+                                            value="#{supervisorProdutividadeAtendimentoBean.totalPago}"
+                                            style="text-align: left">
+
+                                        <f:convertNumber type="currency" locale="pt-br"/>
+
+                                    </h:outputText>
+
+                                </f:facet>
+
+                            </p:column>
+
+                        </p:dataTable>
+
+                    </div>
+                </div>
+
+
+            </h:form>
+
+
+    </ui:define>
+
+</ui:composition>

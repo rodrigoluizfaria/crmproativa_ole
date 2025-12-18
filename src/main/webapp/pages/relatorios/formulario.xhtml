@@ -1,0 +1,292 @@
+<ui:composition xmlns="http://www.w3.org/1999/xhtml"
+                xmlns:h="http://java.sun.com/jsf/html"
+                xmlns:f="http://java.sun.com/jsf/core"
+                xmlns:ui="http://java.sun.com/jsf/facelets"
+                xmlns:comboempresa="http://java.sun.com/jsf/composite/componentes"
+                xmlns:p="http://primefaces.org/ui" template="/WEB-INF/template.xhtml">
+
+
+
+    <ui:define name="viewname">
+
+        <div class="bcca-breadcrumb">
+
+            <div class="bcca-breadcrumb-item bg-primary-500 hover:bg-primary-700">
+                <p:link outcome="/pages/relatorios/formulario" styleClass="uppercase" style="text-decoration: none">FORMUlÁRIO</p:link>
+            </div>
+
+            <div class="bcca-breadcrumb-item uppercase">RELATÓRIOS</div>
+
+        </div>
+
+    </ui:define>
+
+    <ui:define name="content">
+
+        <div class="p-grid justify-center ">
+
+            <p:growl id="grl" widgetVar="grl" globalOnly="true" escape="false" showSummary="false" life="8000"
+                     showDetail="true" sticky="false">
+
+                <p:autoUpdate/>
+
+            </p:growl>
+
+            <h:form prependId="false" id="formConteudo">
+
+
+                <div class="card">
+
+                    <h:panelGroup id="panelFiltroPrincipal" layout="block" styleClass="ui-fluid formgrid grid"
+                                  style="padding: 10px;">
+
+                        <h:panelGroup id="panelFiltro" styleClass="col-12 ui-fluid formgrid grid" layout="block">
+
+                            <comboempresa:selectEmpresa id="cmpEmpresa" managedBean="#{relatorioFormulario}"
+                                                        listener="#{relatorioFormulario.onChangeEmpresa()}"
+                                                        style="md:col-3"
+                                                        value="#{relatorioFormulario.empresa}" ajax="true"
+                                                        update="@form" filter="true" exibirSelecione="true"
+                                                        selecioneItemLabel="Selecione"/>
+
+
+                            <div class="field col-12 md:col-3">
+
+                                <p:outputLabel value="Status Campanha:"/>
+
+                                <p:selectOneMenu id="selectStatusCampanha"
+                                                 value="#{relatorioFormulario.idStatusCampanha}" filter="true"
+                                                 filterMatchMode="contains" autoWidth="false">
+
+                                    <f:selectItem itemLabel="Selecione" itemValue=""/>
+
+                                    <f:selectItems
+                                            value="#{relatorioFormulario.listStatusCampanha}" var="status"
+                                            itemLabel="#{status.descricao}" itemValue="#{status.id}"/>
+
+                                    <p:ajax global="false" update="selectCampanhaPesquisa"
+                                            listener="#{relatorioFormulario.onChangeStatusCampanha()}"/>
+
+                                </p:selectOneMenu>
+
+                            </div>
+
+                            <div class="field col-12 md:col-3">
+
+                                <p:outputLabel value="Campanha:"/>
+
+                                <p:selectOneMenu id="selectCampanhaPesquisa"
+                                                 value="#{relatorioFormulario.idCampanha}" filter="true"
+                                                 filterMatchMode="contains" autoWidth="false"
+                                                 title="#{relatorioFormulario.listCampanhas eq null ? 'Selecione o status da campanha' : ''}"
+                                                 disabled="#{empty relatorioFormulario.listCampanhas}">
+
+                                    <f:selectItem itemLabel="Selecione" noSelectionOption="true"/>
+
+                                    <f:selectItems value="#{relatorioFormulario.listCampanhas}"
+                                                   var="campanha" itemLabel="#{campanha.descricao}"
+                                                   itemValue="#{campanha.id}"/>
+
+                                </p:selectOneMenu>
+
+                            </div>
+
+                        </h:panelGroup>
+
+
+                        <h:panelGroup id="panelFiltroFormmulario" layout="block"
+                                      styleClass=" col-12 ui-fluid formgrid grid">
+
+                            <div class="field col-12 md:col-3">
+
+                                <p:outputLabel value="Formulário:"/>
+
+                                <p:selectOneMenu id="selectFormulario" value="#{relatorioFormulario.idQuestionario}"
+                                                 filter="true" filterMatchMode="contains" autoWidth="false">
+
+                                    <f:selectItem itemLabel="Selecione" noSelectionOption="true"/>
+
+                                    <f:selectItems value="#{relatorioFormulario.listQuestionarios}" var="questionario"
+                                                   itemLabel="#{questionario.descricao}"
+                                                   itemValue="#{questionario.id}"/>
+
+                                    <p:ajax global="false" update="selectPergunta selectOpcao"
+                                            listener="#{relatorioFormulario.onChangeQuestionario()}"/>
+
+                                </p:selectOneMenu>
+
+                            </div>
+
+                            <div class="field col-12 md:col-3">
+
+                                <p:outputLabel value="Pergunta"/>
+
+                                <p:selectOneMenu id="selectPergunta"
+                                                 value="#{relatorioFormulario.idPergunta}" filter="true"
+                                                 filterMatchMode="contains" autoWidth="false"
+                                                 disabled="#{relatorioFormulario.questionario eq null}"
+                                                 title="#{relatorioFormulario.questionario eq null ? 'Selecione o Formulário' : ''}">
+
+                                    <f:selectItem itemLabel="Selecione" noSelectionOption="true"/>
+
+                                    <f:selectItems
+                                            value="#{relatorioFormulario.questionario.listPerguntas}"
+                                            var="pergunta" itemLabel="#{pergunta.descricao}"
+                                            itemValue="#{pergunta.id}"/>
+
+                                    <p:ajax global="false" update="selectOpcao  "
+                                            listener="#{relatorioFormulario.onChangePergunta()}"/>
+
+                                </p:selectOneMenu>
+
+                            </div>
+
+                            <div class="field col-12 md:col-2">
+
+                                <p:outputLabel value="Opções de Respostas"/>
+
+                                <p:selectOneMenu id="selectOpcao"
+                                                 value="#{relatorioFormulario.idOpcao}" filter="true"
+                                                 filterMatchMode="contains" autoWidth="false"
+                                                 disabled="#{relatorioFormulario.idPergunta eq null}"
+                                                 title="#{relatorioFormulario.idPergunta eq null ? 'Selecione a Pergunta' : ''}">
+
+                                    <f:selectItem itemLabel="Selecione" noSelectionOption="true"/>
+
+                                    <f:selectItems
+                                            value="#{relatorioFormulario.pergunta.listOpcoes}"
+                                            var="resposta" itemLabel="#{resposta.descricao}"
+                                            itemValue="#{resposta.id}"/>
+
+
+                                </p:selectOneMenu>
+
+                            </div>
+
+                            <div class="field col-12 md:col-2">
+
+                                <p:outputLabel value="Data inicio:"/>
+
+                                <p:datePicker id="calendarDataInicioPesquisa"
+                                              value="#{relatorioFormulario.dataInicio}" showButtonBar="true"
+                                              showIcon="true" monthNavigator="true" yearNavigator="true"
+                                              showWeek="true" pattern="dd/MM/yyyy"/>
+
+                            </div>
+
+                            <div class="field col-12 md:col-2">
+
+                                <p:outputLabel value="Data fim:"/>
+
+                                <p:datePicker id="calendarDataFimPesquisa"
+                                              value="#{relatorioFormulario.dataFim}" showButtonBar="true"
+                                              monthNavigator="true" yearNavigator="true" showWeek="true"
+                                              showIcon="true" pattern="dd/MM/yyyy"/>
+
+                            </div>
+                        </h:panelGroup>
+
+
+                    </h:panelGroup>
+
+                    <div class="field col-12 text-center">
+
+                        <p:commandButton value="Pesquisar"
+                                         styleClass="mr-3 ui-button-raised" id="btnSalvar"
+                                         icon="pi pi-search" actionListener="#{relatorioFormulario.pesquisar()}"
+                                         update="@form"/>
+
+                        <p:commandButton value="Exportar" id="btnVoltar"
+                                         disabled="#{relatorioFormulario.listModel.rowCount eq 0}"
+                                         styleClass="ui-button-raised ui-button-secondary"
+                                         icon="fa fw fa-download"
+                                         ajax="false">
+                            <p:dataExporter target="dataTableFormulario" type="xls" fileName="relatorio_formulario"/>
+
+                        </p:commandButton>
+
+                    </div>
+
+                    <div class="col-12 mt-6 ">
+
+                        <p:dataTable value="#{relatorioFormulario.listModel}" lazy="true"
+                                     widgetVar="dataTableFormulario" var="obj"
+                                     id="dataTableFormulario" paginator="true" rowIndexVar="indice"
+                                     paginatorPosition="bottom"
+                                     styleClass="ui-datatable-striped ui-datatable-gridlines"
+                                     emptyMessage="Nenhum registro encontrado" rows="10"
+                                     currentPageReportTemplate="[#{msg.totalDeRegistros}: {totalRecords}]"
+                                     paginatorTemplate="{CurrentPageReport}  {FirstPageLink} {PreviousPageLink} {PageLinks} {NextPageLink} {LastPageLink}">
+
+
+                            <p:column headerText="Data" sortBy="#{obj[4]}">
+
+                                <h:outputText value="#{obj[4]}"/>
+
+                            </p:column>
+
+                            <p:column headerText="Campanha" sortBy="#{obj[1]}">
+
+                                <h:outputText value="#{obj[1]}"/>
+
+                            </p:column>
+
+                            <p:column headerText="CPF" width="10%" sortBy="#{obj[2]}">
+
+                                <h:outputText value="#{obj[2]}"/>
+
+                            </p:column>
+
+                            <p:column headerText="Cliente" sortBy="#{obj[3]}">
+
+                                <h:outputText value="#{obj[3]}"/>
+
+                            </p:column>
+
+                            <p:column headerText="Formulário" sortBy="#{obj[0]}">
+
+                                <h:outputText value="#{obj[0]}"/>
+
+                            </p:column>
+
+                            <p:column headerText="Pergunta" sortBy="#{obj[5]}">
+
+                                <h:outputText value="#{obj[5]}"/>
+
+                            </p:column>
+                            <p:column headerText="Resposta" sortBy="#{obj[6]}">
+
+                                <h:outputText value="#{obj[6]}"/>
+
+                            </p:column>
+                            <p:column headerText="Agente" sortBy="#{obj[7]}">
+
+                                <h:outputText value="#{obj[7]}"/>
+
+                            </p:column>
+                            <p:column headerText="Status" width="10%" sortBy="#{obj[8]}">
+
+                                <h:outputText value="#{obj[8]}"/>
+
+                            </p:column>
+
+                            <p:column headerText="Vlr. liberado" width="6%" sortBy="#{obj[9]}">
+
+                                <h:outputText value="#{obj[9]}"/>
+
+                            </p:column>
+
+                        </p:dataTable>
+
+                    </div>
+
+                </div>
+
+            </h:form>
+
+        </div>
+
+    </ui:define>
+
+
+</ui:composition>

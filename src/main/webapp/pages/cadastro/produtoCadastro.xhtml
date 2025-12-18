@@ -1,0 +1,141 @@
+<ui:fragment xmlns="http://www.w3.org/1999/xhtml"
+             xmlns:h="http://java.sun.com/jsf/html"
+             xmlns:f="http://java.sun.com/jsf/core"
+             xmlns:ui="http://java.sun.com/jsf/facelets"
+             xmlns:o="http://omnifaces.org/ui"
+             xmlns:p="http://primefaces.org/ui" template="/WEB-INF/template.xhtml">
+
+
+    <p:growl id="grl" widgetVar="grl" globalOnly="true" escape="false"
+             showSummary="false" life="8000" showDetail="true" sticky="false">
+
+        <p:autoUpdate/>
+
+    </p:growl>
+
+
+    <h:form id="formCadastro" prependId="false">
+
+        <div class="card">
+
+            <div class="ui-fluid formgrid grid">
+
+                <div class="field col-12 md:col-3">
+
+                    <p:outputLabel for="inputCadastProdutoDesc" value="Descrição"/>
+
+                    <p:inputText id="inputCadastProdutoDesc" value="#{produtoBean.produto.descricao}" required="true"
+                                 requiredMessage="Requerido"/>
+
+                    <p:message for="inputCadastProdutoDesc"/>
+
+                </div>
+
+                <div class="field col-12 md:col-3">
+
+                    <p:outputLabel for="selectOneCastTipo" value="Tipo Produto:"/>
+
+                    <p:selectOneMenu id="selectOneCastTipo" value="#{produtoBean.produto.tipoProduto}" required="true"
+                                     requiredMessage="Requerido">
+
+                        <f:selectItem itemLabel="Selecione" noSelectionOption="true"/>
+
+                        <f:selectItems value="#{produtoBean.tipoProduto}" var="tipo" itemLabel="#{tipo.constante}"
+                                       itemValue="#{tipo.name()}"/>
+
+                    </p:selectOneMenu>
+
+                    <p:message for="selectOneCastTipo"/>
+
+                </div>
+
+                <div class="field col-12 md:col-2">
+
+                    <p:outputLabel for="selectOneAtivo" value="Acesso:"/>
+
+
+                    <p:selectOneMenu id="selectOneAtivo" value="#{produtoBean.produto.ativo}" required="true"
+                                     requiredMessage="#{msg.requerido}">
+
+                        <f:selectItem itemLabel="Selecione" noSelectionOption="true"/>
+
+                        <f:selectItems value="#{produtoBean.tipoAcessoEnum}" var="acesso"
+                                       itemLabel="#{acesso.constante}" itemValue="#{acesso}"/>
+
+                    </p:selectOneMenu>
+
+                    <p:message for="selectOneAtivo"/>
+
+                </div>
+
+            </div>
+
+            <p:fieldset styleClass="col-12 md:col-3 fild-set-default-sem-borda" legend="Parâmetros">
+
+                <h:panelGroup id="pngParam" styleClass="col-12 ui-fluid" layout="block">
+
+                    <div class="field grid ml-2">
+
+                        <p:outputLabel for="ckbEnviaGravao" value="Envia Gravação"
+                                       styleClass="col-12 mb:col-2 md:col-6 mb-md-0"/>
+
+                        <div class="col-12 md:col-4">
+
+                            <p:inputSwitch value="#{produtoBean.produto.enviaGravacao}" id="ckbEnviaGravao"
+                                           onLabel="SIM" offLabel="NÃO" syleClass="col-12 "/>
+
+                        </div>
+
+                    </div>
+
+                </h:panelGroup>
+
+                <h:panelGroup id="pngParamAnexo" styleClass="col-12  ui-fluid" layout="block">
+
+                    <div class="field grid ml-2">
+
+                        <p:outputLabel for="ckbAnexarGravacao" value="Permite Anexar Gravação" styleClass="col-12 mb-2 md:col-6 mb-md-0"/>
+
+                        <div class="col-12 md:col-6">
+
+                            <p:inputSwitch value="#{produtoBean.produto.anexaGravacao}" id="ckbAnexarGravacao" onLabel="SIM" offLabel="NÃO" syleClass="col-12"/>
+
+                        </div>
+
+                    </div>
+
+                </h:panelGroup>
+                <h:panelGroup id="pnpInserirdados" styleClass="col-12  ui-fluid" layout="block">
+                <div class="field grid ml-2">
+
+                    <p:outputLabel for="ckbDadosBancarios" value="Não validar dados bancários." styleClass="col-12 mb-2 md:col-6 mb-md-0"/>
+
+                    <div class="col-12 md:col-6">
+
+                        <p:inputSwitch value="#{produtoBean.produto.inserirDadosBancarios}" id="ckbDadosBancarios" onLabel="SIM" offLabel="NÃO" syleClass="col-12"/>
+
+                    </div>
+
+                </div>
+                </h:panelGroup>
+
+
+            </p:fieldset>
+
+
+            <div class="field col-12 md:col-3 mt-5">
+
+                <p:commandButton value="Salvar" styleClass="mr-3 ui-button-raised" id="btnSalvar" action="#{produtoBean.salvar()}"
+                                 update="@form grl" icon="pi pi-save"/>
+
+                <p:commandButton value="Voltar" id="btnVoltar" styleClass="ui-button-raised ui-button-outlined" ajax="false" action="#{produtoBean.voltar()}"
+                                 icon="pi pi-arrow-circle-left" immediate="true"/>
+
+            </div>
+
+        </div>
+
+    </h:form>
+
+
+</ui:fragment>

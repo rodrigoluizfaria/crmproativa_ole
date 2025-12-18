@@ -1,0 +1,166 @@
+<ui:fragment xmlns="http://www.w3.org/1999/xhtml"
+             xmlns:h="http://java.sun.com/jsf/html"
+             xmlns:f="http://java.sun.com/jsf/core"
+             xmlns:ui="http://java.sun.com/jsf/facelets"
+             xmlns:of="http://omnifaces.org/functions"
+             xmlns:matriz="http://java.sun.com/jsf/composite/componentes"
+             xmlns:p="http://primefaces.org/ui" template="/WEB-INF/template.xhtml">
+
+    <p:growl id="grl" widgetVar="grl" globalOnly="true" escape="false" showSummary="false" life="8000" showDetail="true"
+             sticky="false">
+
+        <p:autoUpdate/>
+
+    </p:growl>
+
+    <h:form id="pesqIntegracao" prependId="false">
+
+
+        <div class="card">
+
+            <div class="ui-fluid formgrid grid">
+
+
+                <div class="field col-12 md:col-2">
+
+                    <p:outputLabel for="inputCodConsistencia" value="Consistência"/>
+
+                    <p:inputText id="inputCodConsistencia" value="#{consistenciaBean.consistencia.codigoConcistencia}"
+                                 onkeypress="return somenteNumeros(event)"/>
+
+                </div>
+
+                <div class="field col-12 md:col-3">
+
+                    <p:outputLabel for="txtDescricao" value="Descrição"/>
+
+                    <p:inputText id="txtDescricao" value="#{consistenciaBean.consistencia.descricao}"/>
+
+                </div>
+
+                <div class="field col-12 md:col-3">
+
+                    <p:outputLabel for="txtConve" value="Convênio"/>
+
+                    <p:inputText id="txtConve" value="#{consistenciaBean.consistencia.convenio}"/>
+
+                </div>
+
+                <div class="field col-12 md:col-3">
+
+                    <p:outputLabel for="comboInstituicao" value="Instituição financeira"/>
+
+                    <p:selectOneMenu value="#{consistenciaBean.consistencia.instituicaoFinanceira}" autoWidth="false"
+                                     id="comboInstituicao" filter="true" filterMatchMode="contains">
+                        <f:selectItem itemLabel="Selecione" noSelectionOption="true"></f:selectItem>
+                        <f:selectItems value="#{consistenciaBean.instituicoesFinanceiras}" var="instituicao"
+                                       itemLabel="#{instituicao.numeroBanco} #{instituicao.constante}"
+                                       itemValue="#{instituicao}"/>
+                    </p:selectOneMenu>
+
+
+                </div>
+
+
+            </div>
+
+            <div class="mt-5">
+
+                <p:commandButton value="Pesquisar" styleClass="mr-3 ui-button-raised" id="btnPesquisar"
+                                 action="#{consistenciaBean.pesquisar()}" update="@form" icon="pi pi-search"/>
+
+                <p:commandButton id="btnExportar" icon="pi pi-file-excel" value="#{msg.exportar}" ajax="false"
+                                 styleClass="mr-3 ui-button-raised ui-button-outlined"
+                                 rendered="#{sessionScope['usuario'].permissaoExportar}"
+                                 disabled="#{empty consistenciaBean.listaConsistencia}"
+                                 immediate="true">
+
+                    <p:dataExporter target="tableConsistencia" type="xls" fileName="lista_consistencia"/>
+
+                </p:commandButton>
+
+                <p:commandButton value="Novo" id="btnNovo" styleClass="ui-button-raised ui-button-outlined"
+                                 actionListener="#{consistenciaBean.novo()}" ajax="false" icon="pi pi-plus-circle"
+                                 immediate="true"/>
+
+            </div>
+
+        </div>
+
+        <div class=" mt-4">
+
+            <div class="card p-5 ">
+
+                <p:dataTable id="tableConsistencia"
+                             value="#{consistenciaBean.listaConsistencia}" var="consistencia"
+                             rows="15" paginator="true" paginatorPosition="bottom"
+                             emptyMessage="#{msg.emptyMessage}"
+                             styleClass="ui-datatable-striped ui-datatable-gridlines ui-datatable-sm "
+                             currentPageReportTemplate="[#{msg.totalDeRegistros}: {totalRecords}]"
+                             paginatorTemplate="{CurrentPageReport}  {FirstPageLink} {PreviousPageLink} {PageLinks} {NextPageLink} {LastPageLink}">
+
+                    <p:column headerText="Consistência" sortBy="#{consistencia.codigoConcistencia}" width="15%">
+
+                        <h:outputText value="#{consistencia.codigoConcistencia}"/>
+
+                    </p:column>
+
+                    <p:column headerText="Descrição" width="40%" sortBy="#{consistencia.descricao}">
+
+                        <h:outputText value="#{of:abbreviate(consistencia.descricao,30)}"
+                                      title="#{consistencia.descricao}"/>
+
+                    </p:column>
+
+                    <p:column headerText="O Que Siginifica?" width="20%" sortBy="#{consistencia.significado}">
+
+                        <h:outputText value="#{of:abbreviate(consistencia.significado,30)}"
+                                      title="#{consistencia.significado}"/>
+
+                    </p:column>
+
+
+                    <p:column headerText="Ação do Corban/Franqueado" width="20%" sortBy="#{consistencia.acao}">
+
+                        <h:outputText value="#{of:abbreviate(consistencia.acao,30)}" title="#{consistencia.acao}"/>
+
+                    </p:column>
+
+                    <p:column headerText="Convênio" width="20%" sortBy="#{consistencia.convenio}">
+
+                        <h:outputText value="#{consistencia.convenio}"/>
+
+                    </p:column>
+
+                    <p:column headerText="Resp" width="20%" sortBy="#{consistencia.responsabilidade}">
+
+                        <h:outputText value="#{consistencia.responsabilidade}"/>
+
+                    </p:column>
+
+                    <p:column headerText="Prazo" width="20%" sortBy="#{consistencia.prazo}">
+
+                        <h:outputText value="#{consistencia.prazo}"/>
+
+                    </p:column>
+
+                    <p:column headerText="Ação" width="5%" exportable="false" styleClass="text-center">
+
+                        <p:commandButton icon="fa fw fa-edit"
+                                         styleClass="ui-button-flat ui-button-icon-only rounded-button"
+                                         action="#{consistenciaBean.editar(consistencia)}" ajax="false">
+
+                        </p:commandButton>
+
+                    </p:column>
+
+                </p:dataTable>
+
+            </div>
+
+        </div>
+
+    </h:form>
+
+
+</ui:fragment>

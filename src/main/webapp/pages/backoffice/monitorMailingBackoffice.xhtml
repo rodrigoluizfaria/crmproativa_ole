@@ -1,0 +1,312 @@
+<ui:composition xmlns="http://www.w3.org/1999/xhtml"
+	xmlns:h="http://java.sun.com/jsf/html"
+	xmlns:f="http://java.sun.com/jsf/core"
+	xmlns:ui="http://java.sun.com/jsf/facelets"
+	xmlns:p="http://primefaces.org/ui" template="/WEB-INF/template.xhtml">
+
+
+	<ui:define name="viewname">
+		<div class="bcca-breadcrumb">
+			<div class="bcca-breadcrumb-item bg-primary-500 hover:bg-primary-700">
+				<p:link outcome="/pages/atendimento/associarPontoAtendimento" style="text-decoration: none">MONITOR MAILING BACKOFFICE</p:link>
+
+			</div>
+			<div class="bcca-breadcrumb-item ">BACKOFFICE</div>
+		</div>
+	</ui:define>
+	<ui:param name="viewname" value="MONITOR MAILING BACKOFFICE" />
+
+	<ui:define name="content">
+
+		<style>
+/*    .table-integrado {
+		        background-color: #d9edf7 !important;
+		        background-image: none !important;
+		        color: #31708f !important;
+		        border-color: #bce8f1;
+		    }
+		     .table-integrada {
+		        background-color: #d9edf7 !important;
+		        background-image: none !important;
+		        color: #31708f !important;
+		        border-color: #bce8f1;
+		    } */
+.table-cancelada {
+	color: #dc3545 !important;
+	background-color: #fcf8e3 !important;
+	border-color: #faebcc !important;
+}
+</style>
+
+		<p:growl id="grl" widgetVar="grl" globalOnly="true" escape="false"	showSummary="false" life="8000" showDetail="true" sticky="false">
+
+			<p:autoUpdate />
+
+		</p:growl>
+
+		<p:growl id="grlNo" widgetVar="grl" escape="false" showSummary="false"	life="8000" showDetail="true" sticky="false" />
+
+	<h:form id="formPrincipal" prependId="false">
+		<div class="card">
+		
+			<div class="ui-fluid formgrid grid">
+				<div class="field col-12 md:col-3">
+
+					<p:outputLabel value="Mailing" />
+
+					<p:selectCheckboxMenu id="selectMailing"	value="#{consistenciaMonitorMailing.listIdsImportacao}"	filter="true" label="Mailing" filterMatchMode="startsWith">
+			
+						<f:selectItems	value="#{consistenciaMonitorMailing.listImportacao}" var="importacao" itemLabel="#{importacao.descricao}"	itemValue="#{importacao.id}" />
+
+					</p:selectCheckboxMenu>
+
+				</div>
+
+				<div class="field col-12 md:col-3">
+
+					<p:outputLabel value="Lojas" />
+ 
+					<p:selectCheckboxMenu id="selectLoja" value="#{consistenciaMonitorMailing.listIdsLojas}" filter="true" label="Loja" filterMatchMode="startsWith" >
+						
+						<f:selectItems value="#{consistenciaMonitorMailing.listLojas}" var="loja" itemLabel="#{loja.codigoLoja}" itemValue="#{loja.id}" />
+
+					</p:selectCheckboxMenu> 
+
+				</div>
+
+				<div class="field col-12 md:col-6 ">
+
+					<p:outputLabel value="" />
+					<div class="mt-2">
+					<p:commandButton value="Pesquisar" icon="pi pi-search"	action="#{consistenciaMonitorMailing.pesquisar()}"	update="@form" styleClass="ui-button-raised mr-3" global="true" />
+
+					<p:commandButton value="Exportar" icon="pi pi-upload"
+						rendered="#{sessionScope['usuario'].permissaoExportar}"
+						 ajax="false"
+						update="@form" styleClass="ui-button-raised"
+						disabled="#{empty consistenciaMonitorMailing.listRelatorioAtendimentos and empty consistenciaMonitorMailing.listRelatorioStatusExtrator}">
+
+						<p:dataExporter target="tableQtidadeAtendimento,tableQtidadeStatus" datasetPadding="3" type="xlsx" fileName="monitor_mailing" />
+
+					</p:commandButton>
+</div>
+				</div>
+
+			</div>
+			
+		</div>
+		
+		
+		<div class="card">
+		
+			<div class="ui-fluid formgrid grid">
+			
+			
+							<div class="field col-12 md-12 ">
+
+								<p:dataTable id="tableQtidadeAtendimento" widgetVar="tableQtidadeAtendimento" var="qtidade"	rows="15" paginator="true" paginatorPosition="bottom"
+									value="#{consistenciaMonitorMailing.listRelatorioAtendimentos}" emptyMessage="#{consistenciaMonitorMailing.listRelatorioAtendimentos eq null? '' : msg.emptyMessage}"
+									currentPageReportTemplate="[#{msg.totalDeRegistros}: {totalRecords}]" paginatorTemplate="{CurrentPageReport}  {FirstPageLink} {PreviousPageLink} {PageLinks} {NextPageLink} {LastPageLink} {Exporters}">
+
+									<p:ajax event="sort" global="false" />
+
+									<p:column  >
+
+										<f:facet name="header">
+											<h:outputText value="Total de Atendimentos" />
+										</f:facet>
+
+										<h:outputText value="#{qtidade[0]}" />
+
+									</p:column>
+
+									<p:column >
+
+										<f:facet name="header">
+										
+											<h:outputText value="Total de Telefones" />
+										</f:facet>
+
+										<h:outputText value="#{consistenciaMonitorMailing.quantidadeTelefones}" />
+
+									</p:column>
+
+									<p:column  >
+									
+										<f:facet name="header">
+											<h:outputText value="Atendidos" />
+										</f:facet>
+
+										<h:outputText value="#{qtidade[1]}" id="total" />
+
+						
+									</p:column>
+																											
+									<p:column  >
+									
+										<f:facet name="header">
+											<h:outputText value="Integrados" />
+										</f:facet>
+									
+										<h:outputText value="#{qtidade[4]}"  />
+									
+									</p:column>
+									
+									<p:column  >
+									
+										<f:facet name="header">
+											<h:outputText value="Fim de Fila" />
+										</f:facet>
+										
+										<h:outputText value="#{qtidade[5]}"  />
+									
+									</p:column>
+									
+									<p:column  >
+									
+										<f:facet name="header">
+											<h:outputText value="Finalizados" />
+										</f:facet>
+								
+										<h:outputText value="#{qtidade[3]}" id="finalizados" rendered="#{not empty qtidade[3] and not empty qtidade[0] }" />
+
+									
+
+									</p:column>
+
+									<p:column  >
+									
+									<f:facet name="header">
+											<h:outputText value="Perc. Atendidos" />
+										</f:facet>
+										
+										<h:outputText value="#{qtidade[7]}">
+											<f:convertNumber pattern="#0.00 %" />
+										</h:outputText>
+
+									</p:column>
+
+									<p:column  >
+									
+										<f:facet name="header">
+											<h:outputText value="Perc. Finalizados" />
+										</f:facet>
+									
+										<h:outputText value="#{qtidade[8]}" id="perc">
+											<f:convertNumber pattern="#0.00 %" />
+										</h:outputText>
+
+									</p:column>
+
+									<p:column  >
+									
+										<f:facet name="header">
+											<h:outputText value="Quantidade Restante" />
+										</f:facet>
+									
+										<h:outputText value="#{qtidade[6]}" id="realizar">
+
+										</h:outputText>
+
+									</p:column>
+
+								</p:dataTable>
+
+							</div>
+							
+							
+							<div class="col-7 mt-4">
+
+										<p:dataTable id="tableQtidadeStatus" widgetVar="tableQtidadeStatus" var="qtidadeStatus" rows="15" paginator="true" paginatorPosition="bottom" styleClass="ui-table-header-align-left ui-datatable-striped ui-datatable-sm ui-datatable-gridlines centeralizarColum"
+											value="#{consistenciaMonitorMailing.listRelatorioStatusExtrator}" emptyMessage="#{consistenciaMonitorMailing.listRelatorioStatusExtrator eq null? '' : msg.emptyMessage}"
+											currentPageReportTemplate="[#{msg.totalDeRegistros}: {totalRecords}]"	paginatorTemplate="{CurrentPageReport}  {FirstPageLink} {PreviousPageLink} {PageLinks} {NextPageLink} {LastPageLink} {Exporters}">
+
+											<p:ajax event="page" global="false" />
+											<p:ajax event="sort" global="false" />
+
+										<f:facet name="header">
+										        Status Extrator
+										    </f:facet>
+											<p:column sortBy="#{qtidadeStatus[0]}" width="70%" styleClass="centeralizarColum">
+
+												<f:facet name="header">
+												
+													<h:outputText value="Tabulação (Status,Motivo,Submotivo)" />
+													
+												</f:facet>
+
+
+												<h:outputText value="#{qtidadeStatus[1]}" />
+
+												<f:facet name="footer">
+												
+													<h:outputText value="Total" style="text-aling:lefth" />
+													
+												</f:facet>
+
+											</p:column>
+
+											<p:column sortBy="#{qtidadeStatus[0]}" width="15%" styleClass="centeralizarColum">
+
+												<f:facet name="header">
+												
+													<h:outputText value="Quantidade" />
+													
+												</f:facet>
+
+												<h:outputText value="#{qtidadeStatus[0]}" />
+												
+												<f:facet name="footer">
+
+													<h:outputText	value="#{consistenciaMonitorMailing.totalStatusExtrator}" />
+
+												</f:facet>
+											
+											</p:column>
+
+											<p:column sortBy="#{qtidadeStatus[2]}" width="15%" styleClass="centeralizarColum">
+
+												<f:facet name="header">
+												
+													<h:outputText value="Perc." />
+													
+												</f:facet>
+
+												<h:outputText value="#{qtidadeStatus[2]}">
+
+													<f:convertNumber pattern="#0.00 %" />
+
+												</h:outputText>
+												
+													<f:facet name="footer">
+
+													<h:outputText value="#{consistenciaMonitorMailing.percentExtrator}">
+
+														<f:convertNumber pattern="#0.00 %" />
+
+													</h:outputText>
+
+												</f:facet>
+												
+
+											</p:column>
+
+										</p:dataTable>
+
+
+									</div>
+							
+						
+			</div>
+			
+			</div>
+		</h:form>
+
+	</ui:define>
+
+	<ui:define name="modal">
+
+
+	</ui:define>
+
+</ui:composition>

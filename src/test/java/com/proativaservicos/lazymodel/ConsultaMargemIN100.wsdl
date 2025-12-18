@@ -1,0 +1,443 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<wsdl:definitions targetNamespace="http://localhost:8080/webservices/ConsultaMargemIN100" xmlns:apachesoap="http://xml.apache.org/xml-soap" xmlns:impl="http://localhost:8080/webservices/ConsultaMargemIN100" xmlns:intf="http://localhost:8080/webservices/ConsultaMargemIN100" xmlns:tns1="http://webservice.econsig.bmg.com" xmlns:tns2="http://parameter.common.econsig.bmg.com" xmlns:tns3="http://exception.common.consig.bmg.com" xmlns:wsdl="http://schemas.xmlsoap.org/wsdl/" xmlns:wsdlsoap="http://schemas.xmlsoap.org/wsdl/soap/" xmlns:xsd="http://www.w3.org/2001/XMLSchema">
+<!--WSDL created by Apache Axis version: 1.3
+Built on Oct 05, 2005 (05:23:37 EDT)-->
+ <wsdl:types>
+  <schema targetNamespace="http://parameter.common.econsig.bmg.com" xmlns="http://www.w3.org/2001/XMLSchema">
+   <import namespace="http://exception.common.consig.bmg.com"/>
+   <import namespace="http://webservice.econsig.bmg.com"/>
+   <import namespace="http://localhost:8080/webservices/ConsultaMargemIN100"/>
+   <import namespace="http://schemas.xmlsoap.org/soap/encoding/"/>
+   <complexType abstract="true" name="AbstractWebServicesParameter">
+    <sequence/>
+   </complexType>
+   <complexType name="WebServiceParameter">
+    <complexContent>
+     <extension base="tns2:AbstractWebServicesParameter">
+      <sequence>
+       <element name="login" nillable="true" type="xsd:string"/>
+       <element name="senha" nillable="true" type="xsd:string"/>
+      </sequence>
+     </extension>
+    </complexContent>
+   </complexType>
+  </schema>
+  <schema targetNamespace="http://webservice.econsig.bmg.com" xmlns="http://www.w3.org/2001/XMLSchema">
+   <import namespace="http://exception.common.consig.bmg.com"/>
+   <import namespace="http://localhost:8080/webservices/ConsultaMargemIN100"/>
+   <import namespace="http://parameter.common.econsig.bmg.com"/>
+   <import namespace="http://schemas.xmlsoap.org/soap/encoding/"/>
+   <complexType name="SolicitacaoIN100Parameter">
+    <complexContent>
+     <extension base="tns2:WebServiceParameter">
+      <sequence>
+       <element name="cidade" nillable="true" type="xsd:string"/>
+       <element name="cpf" nillable="true" type="xsd:string"/>
+       <element name="dataNascimento" nillable="true" type="xsd:dateTime"/>
+       <element name="ddd" nillable="true" type="xsd:string"/>
+       <element name="estado" nillable="true" type="xsd:string"/>
+       <element name="matricula" nillable="true" type="xsd:string"/>
+       <element name="nome" nillable="true" type="xsd:string"/>
+       <element name="telefone" nillable="true" type="xsd:string"/>
+      </sequence>
+     </extension>
+    </complexContent>
+   </complexType>
+   <complexType name="ServiceException">
+    <sequence/>
+   </complexType>
+   <complexType name="ConsultaIn100Exception">
+    <complexContent>
+     <extension base="tns3:ConsigBusinessException">
+      <sequence/>
+     </extension>
+    </complexContent>
+   </complexType>
+   <complexType name="FiltroConsultaIN100">
+    <complexContent>
+     <extension base="tns2:WebServiceParameter">
+      <sequence>
+       <element name="cpf" nillable="true" type="xsd:string"/>
+       <element name="numeroSolicitacao" nillable="true" type="xsd:long"/>
+       <element name="periodoFinal" nillable="true" type="xsd:dateTime"/>
+       <element name="periodoInicial" nillable="true" type="xsd:dateTime"/>
+      </sequence>
+     </extension>
+    </complexContent>
+   </complexType>
+   <complexType name="DetalheDadosConsultaIN100">
+    <sequence>
+     <element name="agenciaPagadora" nillable="true" type="xsd:int"/>
+     <element name="bloqueadoEmprestimo" nillable="true" type="xsd:boolean"/>
+     <element name="cbcIfPagadora" nillable="true" type="xsd:int"/>
+     <element name="celular" nillable="true" type="xsd:string"/>
+     <element name="concessaoJudicial" nillable="true" type="xsd:boolean"/>
+     <element name="contaCorrente" nillable="true" type="xsd:string"/>
+     <element name="cpf" nillable="true" type="xsd:string"/>
+     <element name="dataConsulta" nillable="true" type="xsd:string"/>
+     <element name="dataDespachoBeneficio" nillable="true" type="xsd:dateTime"/>
+     <element name="dataNascimento" nillable="true" type="xsd:dateTime"/>
+     <element name="dataUltimaPericia" nillable="true" type="xsd:dateTime"/>
+     <element name="elegivelEmprestimo" nillable="true" type="xsd:boolean"/>
+     <element name="especie" nillable="true" type="xsd:int"/>
+     <element name="identificador" nillable="true" type="xsd:string"/>
+     <element name="identificadorExterno" nillable="true" type="xsd:string"/>
+     <element name="identificadorSolicitacaoAvulsa" nillable="true" type="xsd:string"/>
+     <element name="margemDisponivel" nillable="true" type="xsd:double"/>
+     <element name="margemDisponivelCartao" nillable="true" type="xsd:double"/>
+     <element name="nomeBeneficiario" nillable="true" type="xsd:string"/>
+     <element name="numeroBeneficio" nillable="true" type="xsd:long"/>
+     <element name="pensaoAlimenticia" nillable="true" type="xsd:string"/>
+     <element name="possuiEntidadeRepresentacao" nillable="true" type="xsd:boolean"/>
+     <element name="possuiProcurador" nillable="true" type="xsd:boolean"/>
+     <element name="possuiRepresentanteLegal" nillable="true" type="xsd:boolean"/>
+     <element name="qtdEmprestimosAtivosSuspesnsos" nillable="true" type="xsd:int"/>
+     <element name="statusDescricao" nillable="true" type="xsd:string"/>
+     <element name="statusSMS" nillable="true" type="xsd:string"/>
+     <element name="tipoCredito" nillable="true" type="xsd:int"/>
+     <element name="tipoIdentificadorExterno" nillable="true" type="xsd:string"/>
+     <element name="ufPagamento" nillable="true" type="xsd:string"/>
+     <element name="valorLimiteCartao" nillable="true" type="xsd:double"/>
+    </sequence>
+   </complexType>
+   <complexType name="DetalheConsultaIN100">
+    <complexContent>
+     <extension base="tns2:WebServiceParameter">
+      <sequence>
+       <element name="cidade" nillable="true" type="xsd:string"/>
+       <element name="consulta" nillable="true" type="tns1:DetalheDadosConsultaIN100"/>
+       <element name="cpf" nillable="true" type="xsd:string"/>
+       <element name="dataCadastroConsulta" nillable="true" type="xsd:dateTime"/>
+       <element name="dataNascimento" nillable="true" type="xsd:dateTime"/>
+       <element name="detalhe" nillable="true" type="xsd:string"/>
+       <element name="matricula" nillable="true" type="xsd:string"/>
+       <element name="nome" nillable="true" type="xsd:string"/>
+       <element name="numeroSolicitacao" nillable="true" type="xsd:long"/>
+       <element name="sms" nillable="true" type="xsd:string"/>
+       <element name="telefone" nillable="true" type="xsd:string"/>
+       <element name="token" nillable="true" type="xsd:string"/>
+      </sequence>
+     </extension>
+    </complexContent>
+   </complexType>
+   <complexType name="RegistroNaoEncontradoException">
+    <complexContent>
+     <extension base="tns3:ConsigBusinessException">
+      <sequence/>
+     </extension>
+    </complexContent>
+   </complexType>
+   <complexType name="DadosConsultaIN100">
+    <complexContent>
+     <extension base="tns2:WebServiceParameter">
+      <sequence>
+       <element name="numeroSolicitacao" nillable="true" type="xsd:long"/>
+       <element name="token" nillable="true" type="xsd:string"/>
+      </sequence>
+     </extension>
+    </complexContent>
+   </complexType>
+   <complexType name="DadosReenviarSmsIN100">
+    <complexContent>
+     <extension base="tns2:WebServiceParameter">
+      <sequence>
+       <element name="numeroSolicitacao" nillable="true" type="xsd:long"/>
+      </sequence>
+     </extension>
+    </complexContent>
+   </complexType>
+  </schema>
+  <schema targetNamespace="http://localhost:8080/webservices/ConsultaMargemIN100" xmlns="http://www.w3.org/2001/XMLSchema">
+   <import namespace="http://exception.common.consig.bmg.com"/>
+   <import namespace="http://webservice.econsig.bmg.com"/>
+   <import namespace="http://parameter.common.econsig.bmg.com"/>
+   <import namespace="http://schemas.xmlsoap.org/soap/encoding/"/>
+   <complexType name="ArrayOf_xsd_anyType">
+    <sequence>
+     <element maxOccurs="unbounded" minOccurs="0" name="item" type="xsd:anyType"/>
+    </sequence>
+   </complexType>
+   <complexType name="ArrayOf_tns1_DetalheConsultaIN100">
+    <sequence>
+     <element maxOccurs="unbounded" minOccurs="0" name="item" type="tns1:DetalheConsultaIN100"/>
+    </sequence>
+   </complexType>
+  </schema>
+  <schema targetNamespace="http://exception.common.consig.bmg.com" xmlns="http://www.w3.org/2001/XMLSchema">
+   <import namespace="http://webservice.econsig.bmg.com"/>
+   <import namespace="http://localhost:8080/webservices/ConsultaMargemIN100"/>
+   <import namespace="http://parameter.common.econsig.bmg.com"/>
+   <import namespace="http://schemas.xmlsoap.org/soap/encoding/"/>
+   <complexType abstract="true" name="ConsigBusinessException">
+    <sequence>
+     <element name="bypassable" type="xsd:boolean"/>
+     <element name="key" nillable="true" type="xsd:string"/>
+     <element name="values" nillable="true" type="impl:ArrayOf_xsd_anyType"/>
+    </sequence>
+   </complexType>
+  </schema>
+ </wsdl:types>
+
+   <wsdl:message name="pesquisarRequest">
+
+      <wsdl:part name="FiltroConsultaIN100" type="tns1:FiltroConsultaIN100"/>
+
+   </wsdl:message>
+
+   <wsdl:message name="validarTokenResponse">
+
+      <wsdl:part name="validarTokenReturn" type="xsd:string"/>
+
+   </wsdl:message>
+
+   <wsdl:message name="pesquisarResponse">
+
+      <wsdl:part name="pesquisarReturn" type="impl:ArrayOf_tns1_DetalheConsultaIN100"/>
+
+   </wsdl:message>
+
+   <wsdl:message name="validarTokenRequest">
+
+      <wsdl:part name="DadosConsultaIN100" type="tns1:DadosConsultaIN100"/>
+
+   </wsdl:message>
+
+   <wsdl:message name="inserirSolicitacaoResponse">
+
+      <wsdl:part name="inserirSolicitacaoReturn" type="xsd:string"/>
+
+   </wsdl:message>
+
+   <wsdl:message name="reenviarSmsRequest">
+
+      <wsdl:part name="DadosReenviarSmsIN100" type="tns1:DadosReenviarSmsIN100"/>
+
+   </wsdl:message>
+
+   <wsdl:message name="ServiceException">
+
+      <wsdl:part name="ServiceException" type="tns1:ServiceException"/>
+
+   </wsdl:message>
+
+   <wsdl:message name="ConsultaIn100Exception">
+
+      <wsdl:part name="ConsultaIn100Exception" type="tns1:ConsultaIn100Exception"/>
+
+   </wsdl:message>
+
+   <wsdl:message name="inserirSolicitacaoRequest">
+
+      <wsdl:part name="solicitacaoIN100" type="tns1:SolicitacaoIN100Parameter"/>
+
+   </wsdl:message>
+
+   <wsdl:message name="RegistroNaoEncontradoException">
+
+      <wsdl:part name="RegistroNaoEncontradoException" type="tns1:RegistroNaoEncontradoException"/>
+
+   </wsdl:message>
+
+   <wsdl:message name="reenviarSmsResponse">
+
+      <wsdl:part name="reenviarSmsReturn" type="xsd:string"/>
+
+   </wsdl:message>
+
+   <wsdl:portType name="ConsultaMargemIN100WebService">
+
+      <wsdl:operation name="inserirSolicitacao" parameterOrder="solicitacaoIN100">
+
+         <wsdl:input message="impl:inserirSolicitacaoRequest" name="inserirSolicitacaoRequest"/>
+
+         <wsdl:output message="impl:inserirSolicitacaoResponse" name="inserirSolicitacaoResponse"/>
+
+         <wsdl:fault message="impl:ServiceException" name="ServiceException"/>
+
+         <wsdl:fault message="impl:ConsultaIn100Exception" name="ConsultaIn100Exception"/>
+
+      </wsdl:operation>
+
+      <wsdl:operation name="pesquisar" parameterOrder="FiltroConsultaIN100">
+
+         <wsdl:input message="impl:pesquisarRequest" name="pesquisarRequest"/>
+
+         <wsdl:output message="impl:pesquisarResponse" name="pesquisarResponse"/>
+
+         <wsdl:fault message="impl:ConsultaIn100Exception" name="ConsultaIn100Exception"/>
+
+         <wsdl:fault message="impl:ServiceException" name="ServiceException"/>
+
+         <wsdl:fault message="impl:RegistroNaoEncontradoException" name="RegistroNaoEncontradoException"/>
+
+      </wsdl:operation>
+
+      <wsdl:operation name="validarToken" parameterOrder="DadosConsultaIN100">
+
+         <wsdl:input message="impl:validarTokenRequest" name="validarTokenRequest"/>
+
+         <wsdl:output message="impl:validarTokenResponse" name="validarTokenResponse"/>
+
+         <wsdl:fault message="impl:ServiceException" name="ServiceException"/>
+
+         <wsdl:fault message="impl:ConsultaIn100Exception" name="ConsultaIn100Exception"/>
+
+      </wsdl:operation>
+
+      <wsdl:operation name="reenviarSms" parameterOrder="DadosReenviarSmsIN100">
+
+         <wsdl:input message="impl:reenviarSmsRequest" name="reenviarSmsRequest"/>
+
+         <wsdl:output message="impl:reenviarSmsResponse" name="reenviarSmsResponse"/>
+
+         <wsdl:fault message="impl:ServiceException" name="ServiceException"/>
+
+         <wsdl:fault message="impl:ConsultaIn100Exception" name="ConsultaIn100Exception"/>
+
+      </wsdl:operation>
+
+   </wsdl:portType>
+
+   <wsdl:binding name="ConsultaMargemIN100SoapBinding" type="impl:ConsultaMargemIN100WebService">
+
+      <wsdlsoap:binding style="rpc" transport="http://schemas.xmlsoap.org/soap/http"/>
+
+      <wsdl:operation name="inserirSolicitacao">
+
+         <wsdlsoap:operation soapAction=""/>
+
+         <wsdl:input name="inserirSolicitacaoRequest">
+
+            <wsdlsoap:body namespace="http://webservice.econsig.bmg.com" use="literal"/>
+
+         </wsdl:input>
+
+         <wsdl:output name="inserirSolicitacaoResponse">
+
+            <wsdlsoap:body namespace="http://localhost:8080/webservices/ConsultaMargemIN100" use="literal"/>
+
+         </wsdl:output>
+
+         <wsdl:fault name="ServiceException">
+
+            <wsdlsoap:fault name="ServiceException" use="literal"/>
+
+         </wsdl:fault>
+
+         <wsdl:fault name="ConsultaIn100Exception">
+
+            <wsdlsoap:fault name="ConsultaIn100Exception" use="literal"/>
+
+         </wsdl:fault>
+
+      </wsdl:operation>
+
+      <wsdl:operation name="pesquisar">
+
+         <wsdlsoap:operation soapAction=""/>
+
+         <wsdl:input name="pesquisarRequest">
+
+            <wsdlsoap:body namespace="http://webservice.econsig.bmg.com" use="literal"/>
+
+         </wsdl:input>
+
+         <wsdl:output name="pesquisarResponse">
+
+            <wsdlsoap:body namespace="http://localhost:8080/webservices/ConsultaMargemIN100" use="literal"/>
+
+         </wsdl:output>
+
+         <wsdl:fault name="ConsultaIn100Exception">
+
+            <wsdlsoap:fault name="ConsultaIn100Exception" use="literal"/>
+
+         </wsdl:fault>
+
+         <wsdl:fault name="ServiceException">
+
+            <wsdlsoap:fault name="ServiceException" use="literal"/>
+
+         </wsdl:fault>
+
+         <wsdl:fault name="RegistroNaoEncontradoException">
+
+            <wsdlsoap:fault name="RegistroNaoEncontradoException" use="literal"/>
+
+         </wsdl:fault>
+
+      </wsdl:operation>
+
+      <wsdl:operation name="validarToken">
+
+         <wsdlsoap:operation soapAction=""/>
+
+         <wsdl:input name="validarTokenRequest">
+
+            <wsdlsoap:body namespace="http://webservice.econsig.bmg.com" use="literal"/>
+
+         </wsdl:input>
+
+         <wsdl:output name="validarTokenResponse">
+
+            <wsdlsoap:body namespace="http://localhost:8080/webservices/ConsultaMargemIN100" use="literal"/>
+
+         </wsdl:output>
+
+         <wsdl:fault name="ServiceException">
+
+            <wsdlsoap:fault name="ServiceException" use="literal"/>
+
+         </wsdl:fault>
+
+         <wsdl:fault name="ConsultaIn100Exception">
+
+            <wsdlsoap:fault name="ConsultaIn100Exception" use="literal"/>
+
+         </wsdl:fault>
+
+      </wsdl:operation>
+
+      <wsdl:operation name="reenviarSms">
+
+         <wsdlsoap:operation soapAction=""/>
+
+         <wsdl:input name="reenviarSmsRequest">
+
+            <wsdlsoap:body namespace="http://webservice.econsig.bmg.com" use="literal"/>
+
+         </wsdl:input>
+
+         <wsdl:output name="reenviarSmsResponse">
+
+            <wsdlsoap:body namespace="http://localhost:8080/webservices/ConsultaMargemIN100" use="literal"/>
+
+         </wsdl:output>
+
+         <wsdl:fault name="ServiceException">
+
+            <wsdlsoap:fault name="ServiceException" use="literal"/>
+
+         </wsdl:fault>
+
+         <wsdl:fault name="ConsultaIn100Exception">
+
+            <wsdlsoap:fault name="ConsultaIn100Exception" use="literal"/>
+
+         </wsdl:fault>
+
+      </wsdl:operation>
+
+   </wsdl:binding>
+
+   <wsdl:service name="ConsultaMargemIN100WebServiceService">
+
+      <wsdl:port binding="impl:ConsultaMargemIN100SoapBinding" name="ConsultaMargemIN100">
+
+         <wsdlsoap:address location="http://ws1.bmgconsig.com.br/webservices/ConsultaMargemIN100"/>
+
+      </wsdl:port>
+
+   </wsdl:service>
+
+</wsdl:definitions>

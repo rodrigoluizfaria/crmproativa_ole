@@ -1,0 +1,269 @@
+<ui:fragment xmlns="http://www.w3.org/1999/xhtml"
+	xmlns:h="http://java.sun.com/jsf/html"
+	xmlns:f="http://java.sun.com/jsf/core"
+	xmlns:o="http://omnifaces.org/ui"
+	xmlns:pe="http://primefaces.org/ui/extensions"
+	xmlns:ui="http://java.sun.com/jsf/facelets"
+	xmlns:matriz="http://java.sun.com/jsf/composite/componentes"
+	xmlns:p="http://primefaces.org/ui">
+
+	<h:form id="formBackofficePesquisa" prependId="false">
+
+		<div class="grid col-12 tab-padding">
+
+
+			<matriz:selectEmpresa id="cmpEmpresa" managedBean="#{acompanhamentoPropostasBean}"	value="#{acompanhamentoPropostasBean.empresa}" ajax="true" update="@form"	filter="true" exibirSelecione="true"
+							selecioneItemLabel="Selecione" required="true"  />
+
+			<div class="p-field p-col-12 p-md-12 p-lg-3">
+
+				<p:outputLabel value="Campanha" />
+
+				<p:selectOneMenu id="selectCampanhaPesquisa"	value="#{acompanhamentoPropostasBean.campanhaPesquisa}"  filter="true" filterMatchMode="contains" autoWidth="false">
+
+					<f:selectItem itemLabel="Selecione" itemValue="" />
+
+					<f:selectItems value="#{acompanhamentoPropostasBean.listCampanha}"	var="campanha" itemLabel="#{campanha.descricao}" itemValue="#{campanha.id}" />
+
+				</p:selectOneMenu>
+
+			</div>
+			
+			
+			<div class="p-field p-col-12 p-md-12 p-lg-2">
+
+				<p:outputLabel value="Produto" />
+
+				<p:selectOneMenu id="selectProduto"	value="#{acompanhamentoPropostasBean.produto}"  filter="true" filterMatchMode="contains" autoWidth="false">
+
+					<f:selectItem itemLabel="Selecione" itemValue="" />
+
+					<f:selectItems value="#{acompanhamentoPropostasBean.listProdutos}"	var="produto" itemLabel="#{produto.descricao}" itemValue="#{produto.id}" />
+
+				</p:selectOneMenu>
+
+			</div>
+			
+			<div class="p-field p-col-12 p-md-12 p-lg-2">
+
+				<p:outputLabel value="Equipe" />
+
+				<p:selectOneMenu id="selectEquipe"	value="#{acompanhamentoPropostasBean.equipe}"  filter="true" filterMatchMode="contains" autoWidth="false">
+
+					<f:selectItem itemLabel="Selecione" itemValue="" />
+
+					<f:selectItems value="#{acompanhamentoPropostasBean.listEquipes}"	var="equipe" itemLabel="#{equipe.nome}" itemValue="#{equipe.id}" />
+					<p:ajax listener="#{acompanhamentoPropostasBean.onChangeEquipe(acompanhamentoPropostasBean.equipe)}" update="selectOperador" global="false"/>
+
+				</p:selectOneMenu>
+
+			</div>
+			
+			<div class="p-field p-col-12 p-md-12 p-lg-3">
+
+				<p:outputLabel value="Operador" />
+
+				<p:selectOneMenu id="selectOperador"	value="#{acompanhamentoPropostasBean.operador}" filter="true" filterMatchMode="contains" autoWidth="false" >
+
+					<f:selectItem itemLabel="Selecione" itemValue="" />
+
+					<f:selectItems value="#{acompanhamentoPropostasBean.listOperador}"	var="operador" itemLabel="#{operador.nome}" itemValue="#{operador.id}"  />
+
+				</p:selectOneMenu>
+
+			</div>
+			
+			<div class="p-field p-col-12 p-md-12 p-lg-2">
+
+				<p:outputLabel value="Status" />
+
+				<p:selectOneMenu id="selectStatus"	value="#{acompanhamentoPropostasBean.statusAtendimento}"  filter="true" filterMatchMode="contains" autoWidth="false">
+
+					<f:selectItem itemLabel="Selecione" itemValue="" />
+
+					<f:selectItems value="#{acompanhamentoPropostasBean.listStatusAtendimento}" var="status" itemLabel="#{status.descricao}" itemValue="#{status.id}" />
+
+				</p:selectOneMenu>
+
+			</div>
+
+			<div class="p-field p-col-12 p-md-12 p-lg-2">
+
+				<p:outputLabel value="CPF" />
+
+				<p:inputText id="txtCpfPesquisa" value="#{acompanhamentoPropostasBean.cpf}" />
+
+			</div>
+
+			<div class="p-field p-col-12 p-md-12 p-lg-2">
+
+				<p:outputLabel value="Nome" />
+
+				<p:inputText id="txtNomePesquisa"	value="#{acompanhamentoPropostasBean.nome}" />
+
+			</div>
+
+			<div class="p-field p-col-12 p-md-12 p-lg-2">
+
+				<p:outputLabel value="Adesão" />
+
+				<p:inputText id="txtAdesaoPesquisa" value="#{acompanhamentoPropostasBean.adesao}" />
+
+			</div>
+			
+			<div class="p-field p-col-12 p-md-12 p-lg-2">
+
+				<p:outputLabel value="Protocolo" />
+
+				<p:inputText id="txtProtocoloPesquisa" value="#{acompanhamentoPropostasBean.protocolo}" />
+
+			</div>
+
+			<div class="p-field p-col-12 p-md-12 p-lg-2">
+
+				<p:outputLabel value="Data inicio" />
+
+				<p:datePicker id="calendarDataInicioPesquisa" value="#{acompanhamentoPropostasBean.dataInicio}" showButtonBar="true" showIcon="true" readonlyInput="true" pattern="dd/MM/yyyy" />
+
+
+			</div>
+
+			<div class="p-field p-col-12 p-md-12 p-lg-2">
+
+				<p:outputLabel value="Data fim" />
+
+				<p:datePicker id="calendarDataFimPesquisa"	value="#{acompanhamentoPropostasBean.dataFim}" showButtonBar="true" showIcon="true" readonlyInput="true" pattern="dd/MM/yyyy" />
+
+
+			</div>
+
+			<div class="p-field p-col-12 p-md-3 p-lg-3">
+
+				<p:outputLabel value="&#160;&#160;" id="txtPesquisaEspaco" />
+
+
+				<div>
+				
+					<p:commandButton value="Pesquisar" icon="pi pi-search" styleClass="raised-button p-mr-3" actionListener="#{acompanhamentoPropostasBean.pesquisarAtendimentos()}" update="@form" />
+				
+					<p:splitButton  icon="pi pi-download" style="width:auto" id="btnExportarPesquisa"  value="#{msg.exportar}" styleClass="secondary-button raised-button" ajax="false" disabled="#{empty acompanhamentoPropostasBean.listAtendimentos}"	immediate="true" rendered="#{sessionScope['usuario'].permissaoExportar}">
+
+					 	<p:dataExporter target="tableAtendimentos" type="xls" fileName="atendimentos"  />
+							
+							<p:menuitem value="Exportar Completo" actionListener="#{acompanhamentoPropostasBean.onExportarCsv()}" ajax="false" icon="pi pi-download"/>
+
+					</p:splitButton >
+					
+				</div>
+
+			</div>
+			
+					
+
+			<div class="p-col-12 p-mt-3">
+
+				<p:dataTable id="tableAtendimentos" var="atendimento" rows="15"	paginator="true" paginatorPosition="bottom"	value="#{acompanhamentoPropostasBean.listAtendimentos}"
+					emptyMessage="#{acompanhamentoPropostasBean.listAtendimentos eq null? '' : msg.emptyMessage}"	currentPageReportTemplate="[#{msg.totalDeRegistros}: {totalRecords}]"
+					paginatorTemplate="{CurrentPageReport}  {FirstPageLink} {PreviousPageLink} {PageLinks} {NextPageLink} {LastPageLink} {Exporters}" styleClass="ui-datatable-sm ui-datatable-striped ui-datatable-gridlines">
+
+					<p:ajax event="page"  />
+
+					<p:ajax event="sort" global="false" />
+
+					<p:column headerText="Data" sortBy="#{atendimento[5]}" width="10%">
+
+						<h:outputLabel value="#{atendimento[5]}">
+
+							<f:convertDateTime pattern="dd/MM/yyyy HH:mm:ss" />
+
+						</h:outputLabel>
+
+					</p:column>
+
+					<p:column headerText="Campanha" sortBy="#{atendimento[1]}"	width="12%">
+
+						<h:outputLabel value="#{atendimento[1]}" />
+
+					</p:column>
+
+					<p:column headerText="Nome" sortBy="#{atendimento[2]}" width="15%">
+
+						<h:outputLabel value="#{atendimento[2]}" />
+
+					</p:column>
+
+					<p:column headerText="CPF" sortBy="#{atendimento[3]}" width="9%">
+
+						<h:outputLabel value="#{atendimento[3]}" />
+
+					</p:column>
+					
+					
+							<p:column headerText="Operador" sortBy="#{atendimento[3]}" width="10%">
+
+						<h:outputLabel value="#{atendimento[6]}" />
+
+					</p:column>
+
+					<p:column headerText="Adesão" sortBy="#{atendimento[7]}" width="5%">
+
+						<h:outputLabel value="#{atendimento[7]}" />
+
+					</p:column>
+
+				<p:column headerText="Produto" sortBy="#{atendimento[19]}" width="10%">
+
+						<h:outputLabel value="#{atendimento[19]}" />
+
+					</p:column> 
+
+					<p:column headerText="Status" sortBy="#{atendimento[4]}" width="10%">
+
+						<h:outputLabel value="#{atendimento[4]}" />
+
+					</p:column>
+
+
+					<p:column headerText="Qtdade Parcelas" sortBy="#{atendimento[8]}" width="5%">
+
+						<h:outputLabel value="#{atendimento[8]}" />
+
+					</p:column>
+
+					<p:column headerText="Valor Parcelas" sortBy="#{atendimento[9]}" width="5%">
+
+						<h:outputLabel value="#{atendimento[9]}" >
+							<f:convertNumber type="currency" locale="pt-br" currencySymbol="R$"/>
+						</h:outputLabel>
+
+					</p:column>
+
+					<p:column headerText="Valor Liberado" sortBy="#{atendimento[10]}"	width="5%">
+
+						<h:outputLabel value="#{atendimento[10]}" >
+							<f:convertNumber type="currency" locale="pt-br" currencySymbol="R$"/>
+						</h:outputLabel>
+
+					</p:column>
+
+					<p:column width="5%" exportable="false">
+					
+						
+						 <p:commandButton styleClass="rounded-button text-button" icon="fa fa-volume-up"  update="dlgAudio" title="Visualizar" immediate="true" action="#{acompanhamentoPropostasBean.onConciliar(atendimento[0])}"/>
+					
+<!-- 						<p:commandButton styleClass="rounded-button text-button" icon="fa fw fa-edit" onclick="PF('dlgVisualizarEditar').show();" update="editarAtendimento:formEditarAtendimentor" title="Editar" immediate="true"  action="#{acompanhamentoPropostasBean.visualizarAtendimento(atendimento[0])}"/>
+ -->						 
+				</p:column>
+
+
+				</p:dataTable>
+			
+
+			</div>
+
+		</div>
+	
+
+	</h:form>
+
+</ui:fragment>

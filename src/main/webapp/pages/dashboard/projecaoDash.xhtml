@@ -1,0 +1,40 @@
+<ui:composition xmlns="http://www.w3.org/1999/xhtml"
+                xmlns:h="http://java.sun.com/jsf/html"
+                xmlns:ui="http://java.sun.com/jsf/facelets"
+                xmlns:p="http://primefaces.org/ui" template="/WEB-INF/template.xhtml">
+
+
+    <ui:define name="viewname">
+
+        <div class="bcca-breadcrumb">
+            <div class="bcca-breadcrumb-item bg-primary-500 hover:bg-primary-700">
+                <p:link outcome="/pages/dashboard/projecaoDash" styleClass="uppercase"
+                        style="text-decoration: none">PROJEÇÃO</p:link>
+            </div>
+            <div class="bcca-breadcrumb-item uppercase">DASHBOARD</div>
+        </div>
+
+    </ui:define>
+
+    <ui:define name="content">
+
+        <div class="p-grid justify-center ">
+
+            <p:growl id="grl" widgetVar="grl" globalOnly="true" escape="false" showSummary="false" life="8000"
+                     showDetail="true" sticky="false">
+
+                <p:autoUpdate/>
+
+            </p:growl>
+
+            <h:form id="formConteudo" prependId="false">
+
+                <ui:include src="/pages/dashboard/dashProjecaoFragmento.xhtml"/>
+
+            </h:form>
+
+        </div>
+
+    </ui:define>
+
+</ui:composition>

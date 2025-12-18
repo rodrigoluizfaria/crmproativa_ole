@@ -1,0 +1,536 @@
+<ui:fragment xmlns="http://www.w3.org/1999/xhtml"
+	xmlns:h="http://java.sun.com/jsf/html"
+	xmlns:f="http://java.sun.com/jsf/core"
+	xmlns:o="http://omnifaces.org/ui"
+	xmlns:p="http://primefaces.org/ui"
+	xmlns:c="http://java.sun.com/jsp/jstl/core"
+	xmlns:of="http://omnifaces.org/functions"
+	xmlns:ui="http://java.sun.com/jsf/facelets"
+	xmlns:cc="http://java.sun.com/jsf/composite/componentes"
+	>
+
+	<!-- DLG MODAL -->
+	<p:dialog id="dlgVisualizarAtendimento"	widgetVar="dlgVisualizarAtendimento" modal="true" draggable="false"	resizable="false" closable="false"  width="95%"	styleClass="modalAtendimento" responsive="true" header="Informações do Atendimento" appendTo="@(body)"	style="background-color: #F2F8FA;" height="600">
+
+		<h:form id="formVisualizar" prependId="false">
+
+		<h:panelGroup styleClass="col-12 ui-toolbar ui-widget ui-widget-header ui-corner-all"  style="display: inline-block; align-items: center; flex-wrap: wrap"  layout="block">
+					
+					
+					<div class=" ui-toolbar-group-right">
+					
+						<p:commandButton value="Iniciar Atendimento" icon="pi pi-plus-circle"	styleClass="ui-button-raised mr-3" oncomplete="PF('dlgConfirmarAntecipacaoNaoTrabalhado').show();" >
+
+							<f:setPropertyActionListener value="#{acompanhamentoMinhasConsistencias.atendimentoVisualizar.id}"	target="#{acompanhamentoMinhasConsistencias.idAtendimento}" />
+
+						</p:commandButton>
+
+						<p:commandButton value="Fechar" icon="pi pi-times" onclick="PF('dlgVisualizarAtendimento').hide();" process="@this" styleClass="ui-button-raised ui-button-secondary" global="false" />
+				
+					</div>
+
+		</h:panelGroup>
+
+			<div class="p-grid">
+
+				<div class="col-12 ">
+
+					<div class="card " style="box-shadow: 0 3px 5px -1px rgb(0 0 0 / 20%), 0 5px 8px 0 rgb(0 0 0 / 14%), 0 1px 14px 0 rgb(0 0 0 / 12%);" >
+
+						<div class="ui-fluid formgrid grid">
+
+							<div class="col-12 ">
+
+								<div class="col-12 " style="padding: 10px">
+
+									<div class="ui-fluid formgrid grid">
+
+										<div class="field col-12 md:col-3 ">
+
+											<p:outputLabel value="Cliente" styleClass="lbl-bold" />
+
+											<div>
+
+												<h:outputText value="#{acompanhamentoMinhasConsistencias.atendimentoVisualizar.nome}" style="resize: none;" />
+
+											</div>
+
+										</div>
+
+										<div class="p-field col-12 md:col-2">
+
+											<p:outputLabel value="Consistencias" styleClass="lbl-bold" />
+											<div>
+												<h:outputText value="#{acompanhamentoMinhasConsistencias.atendimentoVisualizar.consistenciaCoban}" />
+											</div>
+										
+										</div>
+
+										<div class="p-field col-12 md:col-2">
+
+											<p:outputLabel value="CPF" styleClass="lbl-bold" />
+
+											<div>
+												<h:outputText value="#{acompanhamentoMinhasConsistencias.atendimentoVisualizar.cpf}" />
+											</div>
+
+										</div>
+										
+											<div class="p-field col-12 md:col-2">
+
+											<p:outputLabel value="Adesão" styleClass="lbl-bold" />
+
+											<div>
+												<h:outputText value="#{acompanhamentoMinhasConsistencias.atendimentoVisualizar.adesao}" />
+											</div>
+
+										</div>
+
+										<div class="p-field col-12 md:col-2">
+
+											<p:outputLabel value="Status Extrator" styleClass="lbl-bold" />
+
+											<div>
+												<h:outputText value="#{acompanhamentoMinhasConsistencias.atendimentoVisualizar.statusExtrator}" />
+											</div>
+
+										</div>
+										
+										<div class="p-field col-12 md:col-1">
+
+											<p:outputLabel value="Loja" styleClass="lbl-bold" />
+
+											<div>
+												<h:outputText value="#{acompanhamentoMinhasConsistencias.atendimentoVisualizar.codLoja}" />
+											</div>
+
+										</div>
+
+									</div>
+
+								</div>
+
+							</div>
+
+							<div></div>
+
+							<div class="col-12 md:col-9">
+
+								<p:dataTable id="tableHistorico"
+									value="#{acompanhamentoMinhasConsistencias.atendimentoVisualizar.listHistoricos}"
+									var="historico" rows="3" paginator="true" reflow="true"
+									paginatorPosition="bottom" rowIndexVar="index" lazy="true"
+									styleClass="ui-datatable-sm ui-datatable-striped ui-datatable-gridlines"
+									emptyMessage="#{acompanhamentoMinhasConsistencias.atendimentoVisualizar.listHistoricos eq null ? '' :  msg.emptyMessage}"
+									currentPageReportTemplate="[#{msg.totalDeRegistros}: {totalRecords}]"
+									paginatorTemplate="{CurrentPageReport}  {FirstPageLink} {PreviousPageLink} {PageLinks} {NextPageLink} {LastPageLink} {Exporters}">
+
+									<f:facet name="header">
+										<p:outputLabel value="Histórico" />
+									</f:facet>
+
+									<p:ajax event="page" global="false" />
+
+									<p:column headerText="Status" width="20%">
+									
+										<h:outputLabel value="#{historico.status.descricao}" />
+										
+									</p:column>
+									
+									<p:column headerText="Motivo" width="20%">
+									
+										<h:outputLabel value="#{historico.motivo.descricao}" />
+										
+									</p:column>
+									
+									<p:column headerText="Submotivo" width="20%">
+									
+										<h:outputLabel value="#{historico.submotivo.descricao}" />
+										
+									</p:column>
+
+									<p:column headerText="Operador" width="20%">
+
+										<h:outputLabel value="#{historico.usuario.nome}" />
+
+									</p:column>
+
+									<p:column headerText="Data" width="20%">
+
+										<h:outputLabel value="#{historico.dataCadastro}">
+										
+											<f:convertDateTime pattern="dd/MM/yyyy HH:mm:ss" />
+											
+										</h:outputLabel>
+
+									</p:column>
+
+									<p:column headerText="Manifesto" width="40%">
+
+										<h:outputLabel	value="#{of:abbreviate(historico.observacao,100)}" />
+
+									</p:column>
+
+								</p:dataTable>
+
+							</div>
+
+							<div class="col-12 md:col-3 ">
+
+								<p:dataTable rows="3" paginator="true"
+									value="#{acompanhamentoMinhasConsistencias.atendimentoVisualizar.atendimento.listaTelefonesOrdenada}"
+									paginatorPosition="bottom" emptyMessage="#{msg.emptyMessage}"
+									currentPageReportTemplate="[ #{msg.totalDeRegistros}: {totalRecords} ]"
+									paginatorTemplate="{CurrentPageReport}  {FirstPageLink} {PreviousPageLink} {PageLinks} {NextPageLink} {LastPageLink}"
+									var="tel" id="tableTel" lazy="true"
+									styleClass="ui-datatable-sm ui-datatable-striped ui-datatable-gridlines"
+									reflow="true">
+
+									<f:facet name="header">
+									
+										<p:outputLabel value="Telefones" />
+										
+									</f:facet>
+
+									<p:ajax event="page" global="false" />
+
+									<p:column headerText="#{msg.ddd}" style="text-align:center"	width="20%">
+
+										<p:outputLabel value="#{tel.ddd}" />
+
+									</p:column>
+
+									<p:column headerText="Número" style="text-align:center"	width="30%">
+
+										<p:outputLabel value="#{tel.numero}" />
+
+									</p:column>
+
+									<p:column headerText="Status" width="50%" style="text-align:center">
+
+										<p:outputLabel value="#{tel.statusTelefone.descricao}" />
+
+									</p:column>
+
+								</p:dataTable>
+
+							</div>
+
+						</div>
+
+						<!-- PANEL -->
+
+					</div>
+
+				</div>
+
+
+				<div class="col-12 ">
+
+					<div class="box shadow-4 surface-card">
+
+						<p:tabView id="tabviewVisualizarAtn" style="width:100%"	widgetVar="tabviewVisualizarAtn">
+						
+							<p:tab title="Consistencias">
+							
+									<p:dataTable var="concistencia" value="#{acompanhamentoMinhasConsistencias.atendimentoVisualizar.listConsistencias}" lazy="true"	styleClass="ui-datatable-sm ui-datatable-striped ui-datatable-gridlines">
+
+							<p:column headerText="Codigo" 	width="5%">
+								<h:outputText value="#{concistencia.codigoConcistencia}" />
+							</p:column>
+							
+							<p:column headerText="Descrição" 	width="30%">
+								<h:outputText value="#{concistencia.descricao}" />
+							</p:column>
+							
+							<p:column headerText="Instituição"  width="5%">
+								<h:outputText value="#{concistencia.instituicaoFinanceira.constante}" />
+							</p:column>
+							
+							<p:column headerText="Convênio"  width="5%">
+								<h:outputText value="#{concistencia.convenio}" />
+							</p:column>
+							<p:column headerText="Prazo"  width="5%">
+								<h:outputText value="#{concistencia.prazo}" />
+							</p:column>
+							
+							<p:column headerText="Resp"  width="5%">
+								<h:outputText value="#{concistencia.responsabilidade}" />
+							</p:column>
+							
+							<p:column headerText="Significado"  width="25%">
+								<h:outputText value="#{concistencia.significado}" />
+							</p:column>
+							
+							<p:column headerText="Ação"  width="25%">
+								<h:outputText value="#{concistencia.acao}" />
+							</p:column>
+							
+							
+							<p:column headerText="Tratada"  width="5%">
+								<h:outputText value="#{concistencia.tratada eq false or empty concistencia.tratada ? 'Não' : 'Sim'}"  styleClass="product-badge status-#{concistencia.tratada eq false or empty concistencia.tratada ? 'outofstock' : 'instock' }"/>
+							</p:column>
+							
+							
+							
+
+						</p:dataTable>
+							
+							</p:tab>
+
+							<p:tab title="Informações atendimento">
+															
+
+								<cc:emprestimo id="seqAtn"	atendimento="#{acompanhamentoMinhasConsistencias.atendimentoVisualizar.atendimento}"	managedBean="#{acompanhamentoMinhasConsistencias}" ver="true" viewAtendimento="false" />
+															
+								
+							</p:tab>
+
+							<p:tab title="Informações Complementares" rendered="#{not empty acompanhamentoMinhasConsistencias.atendimentoVisualizar.atendimento.listInformacoesComplementares}"	id="tabInformacoes">
+
+								<div class="col-12 ">
+
+									<div class="ui-fluid formgrid grid">
+
+										<ui:repeat var="înformacoes" value="#{acompanhamentoMinhasConsistencias.atendimentoVisualizar.atendimento.listInformacoesComplementaresChaves}">
+
+											<div class="p-field col-12 md:col-2 ">
+											
+												<div class="border-reapet border-left col-12 " style="padding: 5px 10px">
+
+													<p:outputLabel value="#{înformacoes}" styleClass="lbl-bold" />
+
+													<div style="margin-top: 5px">
+													
+														<h:outputText value="#{acompanhamentoMinhasConsistencias.atendimentoVisualizar.atendimento.listInformacoesComplementares[înformacoes]}" />
+														
+													</div>
+													
+												</div>
+												
+											</div>
+
+										</ui:repeat>
+
+									</div>
+
+								</div>
+
+							</p:tab>
+
+							<p:tab title="Endereços">
+
+								<div class="col-12">
+
+									<p:dataTable id="tableEndereco" lazy="true"
+										value="#{acompanhamentoMinhasConsistencias.atendimentoVisualizar.atendimento.listaEnderecos}"
+										var="endereco" rows="5" paginator="true"
+										paginatorPosition="bottom" emptyMessage="#{msg.emptyMessage}"
+										styleClass="ui-datatable-sm ui-datatable-striped ui-datatable-gridlines"
+										reflow="true"
+										currentPageReportTemplate="[#{msg.totalDeRegistros}: {totalRecords}]"
+										paginatorTemplate="{CurrentPageReport}  {FirstPageLink} {PreviousPageLink} {PageLinks} {NextPageLink} {LastPageLink} {Exporters}">
+
+										<p:ajax event="page" global="false" />
+
+										<p:column headerText="Logradouro" width="30%">
+
+											<p:outputLabel value="#{endereco.logradouro}" />
+
+										</p:column>
+
+										<p:column headerText="Numero" width="5%">
+
+											<p:outputLabel value="#{endereco.numero}" />
+
+										</p:column>
+
+										<p:column headerText="Bairro" width="20%">
+
+											<p:outputLabel value="#{endereco.bairro}" />
+
+										</p:column>
+
+										<p:column headerText="Cidade" width="20%">
+
+											<p:outputLabel value="#{endereco.cidade}" />
+
+										</p:column>
+
+										<p:column headerText="UF" width="10%">
+
+											<p:outputLabel value="#{endereco.uf}" />
+
+										</p:column>
+
+										<p:column headerText="Cep" width="10%">
+
+											<p:outputLabel value="#{endereco.cep}" />
+
+										</p:column>
+
+									</p:dataTable>
+
+								</div>
+
+							</p:tab>
+
+							<p:tab title="Dados Bancarios">
+
+								<div class="col-12">
+
+									<p:dataTable id="tableDadosBancarios" lazy="true"
+										value="#{acompanhamentoMinhasConsistencias.atendimentoVisualizar.atendimento.listaDadosBancarios}"
+										var="banco" rows="5" paginator="true"
+										paginatorPosition="bottom" emptyMessage="#{msg.emptyMessage}"
+										currentPageReportTemplate="[#{msg.totalDeRegistros}: {totalRecords}]"
+										paginatorTemplate="{CurrentPageReport}  {FirstPageLink} {PreviousPageLink} {PageLinks} {NextPageLink} {LastPageLink} {Exporters}"
+										styleClass="ui-datatable-sm ui-datatable-striped ui-datatable-gridlines"
+										reflow="true">
+
+										<p:column headerText="Banco" width="20%">
+
+											<p:outputLabel value="#{banco.banco.constante}" />
+
+										</p:column>
+
+										<p:column headerText="Tipo Conta" width="20%">
+
+											<p:outputLabel value="#{banco.tipoConta.descricao}" />
+
+										</p:column>
+
+										<p:column headerText="Agencia" width="10%">
+
+											<p:outputLabel value="#{banco.agencia}" />
+
+										</p:column>
+
+										<p:column headerText="Digito Agência" width="10%">
+
+											<p:outputLabel value="#{banco.digitoAgencia}" />
+
+										</p:column>
+
+										<p:column headerText="Conta" width="10%">
+
+											<p:outputLabel value="#{banco.conta}" />
+
+										</p:column>
+
+										<p:column headerText="Digito Conta" width="10%">
+
+											<p:outputLabel value="#{banco.digitoConta}" />
+
+										</p:column>
+
+									</p:dataTable>
+
+								</div>
+
+							</p:tab>
+						
+
+							<p:tab id="tabHistorico" title="Histórico de Atendimento">
+
+								<div class="ui-fluid formgrid grid col-12  ">
+
+									<div class="col-12 md:col-2">
+
+										<div class="ui-fluid formgrid grid">
+
+											<div class="p-field col-12   ">
+
+												<p:outputLabel value="Consultar Historico" />
+
+												<div>
+
+													<p:commandButton value="consultar" icon="pi pi-search"
+														styleClass="raised-button"
+														actionListener="#{acompanhamentoMinhasConsistencias.buscarHistoricosAtendimentos()}"
+														update="tableHistoricoAtendimento" process="@this"
+														partialSubmit="true" />
+												</div>
+
+											</div>
+
+										</div>
+
+
+									</div>
+
+									<div class="col-12 md:col-10">
+
+										<p:dataTable id="tableHistoricoAtendimento"
+											value="#{acompanhamentoMinhasConsistencias.listHistoricosAtendimentos}"
+											styleClass="ui-datatable-sm ui-datatable-striped ui-datatable-gridlines"
+											var="historico" rows="8" paginator="true" lazy="true"
+											paginatorPosition="bottom"
+											emptyMessage="#{acompanhamentoMinhasConsistencias.listHistoricosAtendimentos eq null ? '' :  msg.emptyMessage}"
+											currentPageReportTemplate="[#{msg.totalDeRegistros}: {totalRecords}]"
+											paginatorTemplate="{CurrentPageReport}  {FirstPageLink} {PreviousPageLink} {PageLinks} {NextPageLink} {LastPageLink} {Exporters}">
+											<p:ajax event="page" global="false" />
+
+											<p:column headerText="Campanha">
+												<h:outputLabel value="#{historico[0]}" />
+											</p:column>
+
+											<p:column headerText="ID do Atendimento">
+												<h:outputLabel value="#{historico[1]}" />
+											</p:column>
+
+											<p:column headerText="Operador">
+												<h:outputLabel value="#{historico[2]}" />
+											</p:column>
+
+											<p:column headerText="Status do Atendimento">
+												<h:outputLabel value="#{historico[3]}" />
+											</p:column>
+
+											<p:column headerText="Data do Cadastro">
+											
+												<h:outputLabel value="#{historico[4]}">
+													<f:convertDateTime pattern="dd/MM/yyyy HH:mm:ss" />
+												</h:outputLabel>
+												
+											</p:column>
+
+											<p:column headerText="Data do Agendamento">
+
+												<h:outputLabel value="#{historico[5]}">
+													<f:convertDateTime pattern="dd/MM/yyyy HH:mm:ss" />
+												</h:outputLabel>
+
+											</p:column>
+
+											<p:column headerText="Manifesto">
+
+												<h:outputLabel value="#{historico[6]}" />
+
+											</p:column>
+
+										</p:dataTable>
+
+									</div>
+
+								</div>
+								
+
+							</p:tab>
+
+
+						</p:tabView>
+
+					</div>
+
+				</div>
+
+			</div>
+
+		</h:form>
+		
+			<!-- <ui:include	src="/pages/supervisor/modalAnexarGravacaoSupervisor.xhtml" /> -->
+		
+	</p:dialog>
+
+</ui:fragment>

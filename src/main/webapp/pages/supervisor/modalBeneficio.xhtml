@@ -1,0 +1,49 @@
+<ui:fragment xmlns="http://www.w3.org/1999/xhtml"
+             xmlns:h="http://java.sun.com/jsf/html"
+             xmlns:ui="http://java.sun.com/jsf/facelets"
+             xmlns:p="http://primefaces.org/ui">
+
+
+    <p:dialog id="dlgSupBeneficio" widgetVar="dlgSupBeneficio" modal="true"
+              draggable="false" resizable="false"
+              header="Informe o número do benefício" closable="false"
+              width="20%"
+              appendTo="@(body)">
+
+        <h:form id="formBeneficio" prependId="false">
+
+            <div class="col-12">
+
+                <div class="ui-fluid formgrid grid">
+
+                    <div class="field col-10 ">
+
+                        <p:outputLabel value="Benéficio" for="txtBeneficioPrincipal"/>
+
+                        <p:inputText value="#{supervisorBackofficeBean.atendimentoVisualizar.beneficioPrincipal}"
+                                     id="txtBeneficioPrincipal" required="true" requiredMessage="Requerido"/>
+
+                        <p:message for="txtBeneficioPrincipal"/>
+
+                    </div>
+
+                </div>
+
+            </div>
+
+            <div class="col-12 grid justify-center mt-3">
+
+                <p:commandButton icon="pi pi-save" styleClass="ui-button-raised mr-3" global="true"
+                                 value="Salvar" process="@this txtBeneficioPrincipal" update="@form dlgSupAmbec" partialSubmit="true"
+                                 action="#{supervisorBackofficeBean.consultarBeneficioAmbecSemNumero()}"/>
+
+                <p:commandButton type="button" icon="pi pi-times" styleClass="ui-button-raised"
+                                 onclick="PF('dlgSupBeneficio').hide();" value="Fechar"/>
+
+            </div>
+
+        </h:form>
+
+    </p:dialog>
+
+</ui:fragment>

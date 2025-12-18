@@ -1,0 +1,225 @@
+<ui:fragment xmlns="http://www.w3.org/1999/xhtml"
+             xmlns:h="http://java.sun.com/jsf/html"
+             xmlns:f="http://java.sun.com/jsf/core"
+             xmlns:ui="http://java.sun.com/jsf/facelets"
+             xmlns:p="http://primefaces.org/ui"
+             xmlns:comboempresa="http://java.sun.com/jsf/composite/componentes"
+             template="/WEB-INF/template.xhtml">
+
+    <p:growl id="grl" widgetVar="grl" globalOnly="true" escape="false" showSummary="false" life="8000" showDetail="true"
+             sticky="false">
+
+        <p:autoUpdate/>
+
+    </p:growl>
+
+
+    <h:form id="formCadastro" prependId="false">
+
+        <div class="grid justify-content-center">
+
+            <div class="col-9">
+
+                <div class="card ">
+
+                    <div class="ui-fluid formgrid grid">
+
+                        <div class="field col-12 md:col-4">
+
+                            <p:outputLabel for="inputDesc" value="Nome do formulário:"/>
+
+                            <p:inputText id="inputDesc" value="#{pesquisaSatisfacaoBean.questionario.descricao}"
+                                         required="true" requiredMessage="Requerido"/>
+
+                            <p:message for="inputDesc"/>
+
+                        </div>
+
+                        <div class="field col-12 md:col-4">
+
+                            <p:outputLabel for="selectOneAtivo" value="Acesso:"/>
+
+                            <p:selectOneMenu id="selectOneAtivo"
+                                             value="#{pesquisaSatisfacaoBean.questionario.acesso}">
+
+                                <f:selectItems value="#{pesquisaSatisfacaoBean.tipoAcessoEnum}" var="acesso"
+                                               itemLabel="#{acesso.constante}" itemValue="#{acesso}"/>
+
+                            </p:selectOneMenu>
+
+                        </div>
+
+                    </div>
+
+
+                    <p:messages id="msgCadastro" closable="true"
+                                forIgnores="inputDesc txtPergunta txtOpcao btnSalvarDialog">
+
+                    </p:messages>
+
+                    <div class="col-12 mt-3">
+
+                        <p:dataTable id="tablePergunta" value="#{pesquisaSatisfacaoBean.questionario.listPerguntas}"
+                                     styleClass="default" var="pergunta" emptyMessage="Nenhuma perqunta cadastrada">
+
+                            <f:facet name="header">
+                                <!-- secondary-button text-button -->
+                                <div style="text-align: end">
+
+                                    <p:commandButton styleClass="ui-button-raised ui-button-outlined ui-button-secondary ml-3"
+                                                     value="Adcionar Pergunta" id="btnPergunta"
+                                                     process="@this inputDesc" update="@form dlgPesquisa"
+                                                     actionListener="#{pesquisaSatisfacaoBean.adcionarPerguntas()}"
+                                                     title="Adicionar uma nova pergunta" icon="pi pi-plus-circle">
+
+                                    </p:commandButton>
+
+                                </div>
+
+                            </f:facet>
+
+                            <p:column headerText="Pergunta">
+
+                                <h:outputText value="#{pergunta.descricao}"/>
+
+                            </p:column>
+
+                            <p:column headerText="Tipo da resposta">
+
+                                <h:outputText value="#{pergunta.tipoResposta.constante}"/>
+
+                            </p:column>
+
+                            <p:column headerText="Quantidade de respostas">
+
+
+                                <h:outputText value="#{pergunta.listOpcoes.size()}"
+                                              rendered="#{not empty pergunta.listOpcoes}"/>
+
+                            </p:column>
+
+                            <p:column width="10%" style="text-align:end">
+
+                                <p:commandButton
+                                        styleClass="ui-button-secondary ui-button-flat rounded-button mr-3"
+                                        icon="fa fw fa-edit" update="tablePergunta dlgPesquisa"
+                                        actionListener="#{pesquisaSatisfacaoBean.editar(pergunta)}"
+                                        immediate="true" oncomplete="PF('dlgPesquisa').show();">
+
+                                </p:commandButton>
+
+                                <p:commandButton
+                                        styleClass="ui-button-secondary ui-button-flat rounded-button"
+                                        icon="pi pi-trash" update="tablePergunta pngInfo msgCadastro"
+                                        actionListener="#{pesquisaSatisfacaoBean.removerPergunta(pergunta)}"
+                                        immediate="true">
+
+                                    <p:confirm header="Confirmar" message="Deseja remover a pergunta?"
+                                               icon="pi pi-exclamation-triangle"/>
+
+                                </p:commandButton>
+
+                            </p:column>
+
+                            <!--  <f:facet name="footer">
+                                #{pesquisaSatisfacaoBean.retornarTotalPerguntas()}
+                             </f:facet> -->
+
+                        </p:dataTable>
+
+                    </div>
+
+                    <div class=" col-12 mt-4"
+                         style="display: flex;">
+
+                        <p:commandButton styleClass="ui-button-raised mr-3" value="Salvar" icon="pi pi-save"
+                                         process="@form" ajax="false"
+                                         actionListener="#{pesquisaSatisfacaoBean.salvar()}">
+
+                        </p:commandButton>
+
+                        <p:commandButton styleClass="ui-button-outlined ui-button-outlined ui-button-raised" value="Voltar" icon="pi pi-chevron-circle-left"
+                                         update="@form formDialogPesquisa" immediate="true"
+                                         actionListener="#{pesquisaSatisfacaoBean.voltar()}" ajax="false">
+
+                        </p:commandButton>
+
+                    </div>
+
+                </div>
+
+            </div>
+
+            <div class="col-3">
+
+                <h:panelGroup styleClass="card" layout="block" id="pngInfo"
+                              rendered="#{not empty pesquisaSatisfacaoBean.mapTipoResposta}">
+
+                    <ul style="margin: 0; padding: 0; list-style-type: none">
+
+                        <li style="display: flex; padding: 0.5rem 1rem; -ms-flex-align: center; align-items: center; -ms-flex-pack: justify; justify-content: space-between; border-bottom: 1px solid #dee2e6;">
+
+                            <div style="display: flex; -ms-flex-align: center; align-items: center;">
+                                Total de Perguntas:
+                            </div>
+
+                            <div class="ui-toolbar-li">
+                                #{pesquisaSatisfacaoBean.questionario.listPerguntas.size()}
+                            </div>
+
+                        </li>
+                        <li style="display: flex; padding: 0.5rem 1rem; -ms-flex-align: center; align-items: center; -ms-flex-pack: justify; justify-content: space-between; border-bottom: 1px solid #dee2e6;">
+
+                            <div style="display: flex; -ms-flex-align: center; align-items: center;">
+                                Total de Respostas:
+                            </div>
+
+                            <div class="ui-toolbar-li">
+                                #{pesquisaSatisfacaoBean.totalRespostas}
+                            </div>
+
+                        </li>
+
+                    </ul>
+
+                    <br/>
+
+                    <ul style="margin: 0; padding: 0; list-style-type: none">
+
+                        <!-- h5></h5> -->
+
+                        <ui:repeat value="#{pesquisaSatisfacaoBean.mapTipoResposta.keySet().toArray()}" var="key">
+
+                            <li style="display: flex; padding: 0.5rem 1rem; -ms-flex-align: center; align-items: center; -ms-flex-pack: justify; justify-content: space-between; border-bottom: 1px solid #dee2e6;">
+
+                                <div style="display: flex; -ms-flex-align: center; align-items: center;">
+                                    #{key} :
+                                </div>
+
+                                <div class="ui-toolbar-li">
+                                    #{pesquisaSatisfacaoBean.mapTipoResposta[key]}
+                                </div>
+
+                            </li>
+
+                        </ui:repeat>
+                    </ul>
+
+                </h:panelGroup>
+
+            </div>
+
+        </div>
+
+        <p:confirmDialog global="true">
+
+            <p:commandButton value="Sim" type="button" styleClass="ui-confirmdialog-yes" icon="pi pi-check"/>
+
+            <p:commandButton value="Não" type="button" styleClass="ui-confirmdialog-no" icon="pi pi-times"/>
+
+        </p:confirmDialog>
+
+    </h:form>
+
+
+</ui:fragment>

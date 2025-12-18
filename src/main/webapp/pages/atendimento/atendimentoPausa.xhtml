@@ -1,0 +1,69 @@
+<ui:fragment xmlns="http://www.w3.org/1999/xhtml"
+             xmlns:h="http://java.sun.com/jsf/html"
+             xmlns:f="http://java.sun.com/jsf/core"
+             xmlns:ui="http://java.sun.com/jsf/facelets"
+             xmlns:p="http://primefaces.org/ui">
+
+    <!-- DLG MODAL -->
+    <p:dialog id="dlgPausa" widgetVar="dlgPausa" modal="true" draggable="false" resizable="false" closable="true"
+              visible="false" width="300px" header="Entre com o motivo Pausa" appendTo="@(body)">
+
+        <h:form id="formPausa" prependId="false" rendered="#{fichaAtendimentoBean.atendimento ne null}">
+
+
+            <div class="ui-fluid formgrid grid">
+
+                <div class="field col-12 ">
+
+                    <p:outputLabel value="Razão" for="selectPausa"/>
+
+                    <p:selectOneMenu id="selectPausa" value="#{fichaAtendimentoBean.historicoAtendimento.pausa.id}"
+                                     required="true" requiredMessage="#{msg.requerido}" filter="true"
+                                     converter="omnifaces.SelectItemsConverter">
+
+                        <f:selectItem itemLabel="Selecione" itemValue=""/>
+
+                        <f:selectItems value="#{fichaAtendimentoBean.listPausa}" var="pausa"
+                                       itemLabel="#{pausa.descricao}" itemValue="#{pausa.id}"/>
+
+                    </p:selectOneMenu>
+
+                </div>
+
+                <h:panelGroup styleClass="field col-12 mt-3" rendered="#{not empty fichaAtendimentoBean.intervaloList}">
+
+                    <p:outputLabel value="Intevalo Discador 3C" for="selectAtendimentoPausa3c"/>
+
+                    <p:selectOneMenu id="selectAtendimentoPausa3c" value="#{fichaAtendimentoBean.intervalo3c}" required="true" requiredMessage="#{msg.requerido}" filter="true" converter="omnifaces.SelectItemsConverter">
+
+                        <f:selectItem itemLabel="Selecione" itemValue=""/>
+
+                        <f:selectItems value="#{fichaAtendimentoBean.intervaloList}" var="intervalo" itemLabel="#{intervalo.name}" itemValue="#{intervalo.id}"/>
+
+                    </p:selectOneMenu>
+
+                </h:panelGroup>
+
+                <div class="field col-12 mt-3">
+
+                    <div class="div_btn_rigth" style="margin: 5px 0px; float: right;">
+
+                        <p:commandButton value="Ok" icon="pi pi-save" id="btnOkPausa" styleClass="ui-button-raised mr-3"
+                                         update="@form" partialSubmit="true" process="@this selectPausa selectAtendimentoPausa3c"
+                                         actionListener="#{fichaAtendimentoBean.iniciarPausaAtendimento()}"/>
+
+                        <p:commandButton value="Cancelar" icon="pi pi-times" id="btnCancelPausa"
+                                         styleClass="ui-button-raised" onclick="PF('dlgPausa').hide();" global="false"
+                                         process="@this"/>
+
+                    </div>
+
+                </div>
+
+            </div>
+
+        </h:form>
+
+    </p:dialog>
+
+</ui:fragment>

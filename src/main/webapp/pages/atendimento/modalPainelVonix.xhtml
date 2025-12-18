@@ -1,0 +1,77 @@
+<ui:fragment xmlns="http://www.w3.org/1999/xhtml"
+             xmlns:h="http://java.sun.com/jsf/html"
+             xmlns:f="http://java.sun.com/jsf/core"
+             xmlns:ui="http://java.sun.com/jsf/facelets"
+             xmlns:p="http://primefaces.org/ui">
+
+    <p:dialog widgetVar="dlgVonix" id="dlgVonix" width="1000px" header="Painel Agente"
+              styleClass="dialog-top">
+
+        <h:panelGroup id="pnpVonix" layout="block" rendered="#{fichaAtendimentoPreditivoBean.pabx.tipo eq 'VONIX'}">
+
+            <p:panelGrid columns="4" layout="grid"
+                         columnClasses="ui-g-12 ui-md-6 ui-lg-1, ui-g-12 ui-md-6 ui-lg-3, ui-g-12 ui-md-6 ui-lg-1, ui-g-12 ui-md-6 ui-lg-3"
+                         styleClass=" card ui-panelgrid-blank form-group" contentStyleClass="ui-fluid"
+                        >
+
+
+                <p:outputLabel value="Servidor: "/>
+
+                <p:outputLabel value="#{fichaAtendimentoPreditivoBean.pontoAtendimento.pabx.url}"
+                               style="font-weight:normal" id="lblStatusServer"/>
+
+                <p:outputLabel value="Ramal:"/>
+
+                <p:outputLabel id="lblRamal"/>
+
+                <p:outputLabel value="Status: "/>
+
+                <p:outputLabel id="lblStatus"/>
+
+                <p:outputLabel value="Pausa:"/>
+
+                <p:selectOneMenu id="selectPausa" onchange="onChangePause(this.value);" widgetVar="selectPausa">
+
+                    <f:selectItem itemLabel="#{msg.selecione}" noSelectionOption="true"/>
+
+                    <f:selectItems value="#{fichaAtendimentoPreditivoBean.pausaVonix}" id="p-#{pausa.id}" var="pausa"
+                                   itemLabel="#{pausa.constante}" itemValue="#{pausa.id}"/>
+
+                </p:selectOneMenu>
+
+
+                <p:outputLabel value="Agente: "/>
+
+                <p:outputLabel value="#{fichaAtendimentoPreditivoBean.pontoAtendimento.ramal}"
+                               style="font-weight:normal"/>
+
+            </p:panelGrid>
+
+            <div class="card">
+
+                <div class="col-12">
+
+                    <p:inputTextarea id="areaTxt" rows="10" queryDelay="750" minQueryLength="4" readonly="true"
+                                     scrollHeight="100" style="width: 90% !important;resize: none;" autoResize="false"/>
+
+                </div>
+
+            </div>
+
+            <div class="col-12">
+
+                <div style="float: right;">
+
+                    <p:commandButton onclick="PF('dlgVonix').hide();" value="Sair" global="false"
+                                     styleClass="ui-button-raised"/>
+
+                </div>
+
+            </div>
+
+        </h:panelGroup>
+
+    </p:dialog>
+
+
+</ui:fragment>

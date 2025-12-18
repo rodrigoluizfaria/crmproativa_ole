@@ -1,0 +1,211 @@
+<ui:fragment xmlns="http://www.w3.org/1999/xhtml"
+	xmlns:h="http://java.sun.com/jsf/html"
+	xmlns:f="http://java.sun.com/jsf/core"
+	xmlns:ui="http://java.sun.com/jsf/facelets"
+    xmlns:p="http://primefaces.org/ui"
+	xmlns:comboempresa="http://java.sun.com/jsf/composite/componentes"
+	xmlns:pro="http://proativaservicos.com/functions"
+	template="/WEB-INF/template.xhtml">
+
+	<p:growl id="grl" widgetVar="grl" globalOnly="true" escape="false" showSummary="false" life="8000" showDetail="true" sticky="false">
+
+		<p:autoUpdate />
+
+	</p:growl>
+
+
+		<h:form id="formPrincipal" prependId="false">
+
+				<div class="card">
+	
+						<div class="ui-fluid formgrid grid">
+		
+							<comboempresa:selectEmpresa id="cmpEmpresa"	managedBean="#{campanhaBean}" style="md:col-4" value="#{campanhaBean.campanha.empresa}" ajax="true"	update="@form" filter="false" exibirSelecione="false" />
+		
+							<div class="field col-12 md:col-4">
+		
+								<p:outputLabel for="nomeCampanha" value="#{msg.nomeCampanha}" />
+		
+								<p:inputText id="nomeCampanha" value="#{campanhaBean.campanha.descricao}" />
+		
+		
+								<p:message for="nomeCampanha" />
+		
+							</div>
+
+							<div class="field col-12 md:col-3">
+		
+								<p:outputLabel for="statusCam" value="#{msg.statusCampanha}" />
+		
+								<p:selectOneMenu id="statusCam"	value="#{campanhaBean.campanha.status}"	converter="converterStatusCamanha">
+		
+									<f:selectItem itemLabel="#{msg.selecione}"	noSelectionOption="true" />
+		
+									<f:selectItems value="#{campanhaBean.listStatusCampanha}" var="statusCam" itemLabel="#{statusCam.descricao}" itemValue="#{statusCam}" />
+		
+								</p:selectOneMenu>
+		
+		
+							</div>
+
+							<div class="field col-12 md:col-3">
+		
+								<p:outputLabel for="tipoCam" value="#{msg.tipoCampanha}" />
+		
+								<p:selectOneMenu id="tipoCam" value="#{campanhaBean.campanha.tipoCampanha}" converter="omnifaces.SelectItemsConverter" autoWidth="false">
+		
+									<f:selectItem itemLabel="#{msg.selecione}" noSelectionOption="true" />
+		
+									<f:selectItems value="#{campanhaBean.tipoCampanha}" var="tipoCam" itemLabel="#{tipoCam.constante}" itemValue="#{tipoCam}" />
+		
+		
+								</p:selectOneMenu>
+		
+							</div>
+
+							<div class="field col-12 md:col-3">
+		
+								<p:outputLabel for="filaPesquisa" value="Fila" />
+		
+								<p:selectOneMenu id="filaPesquisa" value="#{campanhaBean.campanha.fila}" converter="omnifaces.SelectItemsConverter" autoWidth="false">
+		
+									<f:selectItem itemLabel="#{msg.selecione}" noSelectionOption="true" />
+		
+									<f:selectItems value="#{campanhaBean.listFilas}" var="fila" itemLabel="#{fila.nome}" itemValue="#{fila}" />
+		
+		
+								</p:selectOneMenu>
+		
+							</div>
+
+							<div class="field col-12 md:col-3">
+		
+								<p:outputLabel for="dataInicio" value="#{msg.dataDeInicio}" />
+		
+								<p:calendar pattern="dd/MM/yyyy" id="dataInicio" value="#{campanhaBean.dataInicio}" />
+		
+							</div>
+
+							<div class="field col-12 md:col-3">
+		
+								<p:outputLabel for="dataFim" value="#{msg.dataDeTermino}" />
+		
+								<p:calendar pattern="dd/MM/yyyy" id="dataFim" value="#{campanhaBean.dataFim}" />
+		
+							</div>
+
+						</div>
+
+							<div class=" mt-5">
+		
+								<p:commandButton value="Pesquisar" id="btnPesquisar" update="@form grl" icon="pi pi-search" styleClass="mr-3 ui-button-raised"	action="#{campanhaBean.pesquisarCampanha()}" />
+		
+								<p:commandButton id="btnExportar" icon="pi pi-file-excel" value="#{msg.exportar}" ajax="false" styleClass="mr-3 ui-button-raised ui-button-outlined" disabled="#{empty campanhaBean.listCampanha}" immediate="true">
+		
+									<p:dataExporter target="tableCam" type="xls" fileName="campanhas" />
+		
+								</p:commandButton>
+		
+								<p:commandButton value="Novo" id="btnNovo" ajax="false" styleClass="ui-button-raised ui-button-outlined" icon="pi pi-plus-circle" action="#{campanhaBean.novo()}" />
+		
+							</div>
+
+					</div>
+				
+
+
+			<div class=" mt-4">
+
+					<div class="card">
+
+						<p:dataTable value="#{campanhaBean.listCampanha}" paginator="true"
+							paginatorPosition="bottom" emptyMessage="#{msg.emptyMessage}"
+							widgetVar="tableCampanha" styleClass="ui-datatable-striped ui-datatable-sm ui-datatable-gridlines "
+							currentPageReportTemplate="[#{msg.totalDeRegistros}: {totalRecords}]"
+							paginatorTemplate="{CurrentPageReport}  {FirstPageLink} {PreviousPageLink} {PageLinks} {NextPageLink} {LastPageLink}"
+							var="campanha" id="tableCam" rows="10">
+
+							<p:ajax event="page" global="false" />
+							<p:ajax event="sort" global="false" />
+
+							<p:column headerText="#{msg.empresa}" width="18%" sortBy="#{campanha[6]}" rendered="#{sessionScope['usuario'].empresa.possuiFiliais}">
+							
+								<h:outputText value="#{campanha[6]}" />
+								
+							</p:column>
+
+
+							<p:column headerText="Descricao" width="20%" sortBy="#{campanha[1]}">
+
+								<h:outputText value="#{campanha[1]}" />
+
+							</p:column>
+
+							<p:column headerText="#{msg.tipo}" width="9%" sortBy="#{campanha[2]}">
+
+								<h:outputText value="#{pro:retornarStringTipoCampanha(campanha[2])}" />
+
+							</p:column>
+
+							<p:column headerText="Status Campanha" width="9%" sortBy="#{campanha[3]}">
+							
+								<h:outputText value="#{campanha[3]}" />
+
+							</p:column>
+
+							<p:column headerText="#{msg.usuario}" width="20%" sortBy="#{campanha[4]}">
+							
+								<h:outputText value="#{campanha[4]}" />
+								
+							</p:column>
+
+							<p:column headerText="Data alteração" width="10%" sortBy="#{campanha[5]}">
+
+								<h:outputText value="#{campanha[5]}">
+								
+									<f:convertDateTime pattern="dd/MM/yyyy HH:mm:ss" />
+									
+								</h:outputText>
+								
+							</p:column>
+
+							<p:column width="7%" headerText="Ação" style="text-align: center;"	exportable="false">
+
+								<p:commandButton id="btnCamEditar"	actionListener="#{campanhaBean.editar(campanha[0])}" title="Editar campanha" ajax="false" styleClass="rounded-button ui-button-flat " icon="fa fa-fw fa-edit" />
+
+									
+									<p:commandButton  styleClass="rounded-button ui-button-flat " title="Retrabalhar campanha" icon="fa fw fa-solid fa-reply" oncomplete="PF('dlgCampanhaRetrabalhar').show();" actionListener="#{campanhaBean.onDialogRetrabalharCampanha(campanha[0])}"  >
+										
+									
+									</p:commandButton>
+									
+									<p:commandButton  styleClass="rounded-button ui-button-flat " title="Finalizar campanha" icon="fa fw fa-regular fa-circle-xmark"  update="@form" global="false" oncomplete="PF('dlgConfirmarFimCampanha').show();"  >
+
+											<f:setPropertyActionListener value="#{campanha[0]}"	target="#{campanhaBean.idCampanhaRetrabalhar}" />
+											<f:setPropertyActionListener value="#{campanha[1]}"	target="#{campanhaBean.strNomeCampanha}" />
+
+									</p:commandButton>
+								
+									<p:confirmDialog id="dlgConfirmarFimCampanha" responsive="true" widgetVar="dlgConfirmarFimCampanha" appendTo="@(body)"	message="Finalizar a Campanha: #{campanhaBean.strNomeCampanha} ?" header="Confirmar ">
+										
+										<p:commandButton global="true" value="Não" type="button"	styleClass="ui-confirmdialog-no ui-button-flat" onclick="PF('dlgConfirmarFimCampanha').hide();" />
+										<p:commandButton value="Sim" global="false" update="@form"	styleClass="ui-confirmdialog-yes" actionListener="#{campanhaBean.onFinalizarCampanha()}" onclick="PF('dlgConfirmarFimCampanha').hide();"/>
+										
+									</p:confirmDialog>
+
+							</p:column>
+
+						</p:dataTable>
+						
+						</div>
+						
+					</div>
+
+		</h:form>
+		
+		<ui:include src="/pages/cadastro/campanhaRetrabalharDialog.xhtml" />
+
+
+
+
+</ui:fragment>

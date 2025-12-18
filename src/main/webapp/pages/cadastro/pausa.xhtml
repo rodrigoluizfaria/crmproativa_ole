@@ -1,0 +1,42 @@
+<ui:composition xmlns="http://www.w3.org/1999/xhtml"
+                xmlns:ui="http://java.sun.com/jsf/facelets"
+                xmlns:p="http://primefaces.org/ui" template="/WEB-INF/template.xhtml"
+                xmlns:c="http://java.sun.com/jsp/jstl/core">
+
+
+
+
+    <ui:define name="viewname">
+        <div class="bcca-breadcrumb">
+            <div class="bcca-breadcrumb-item bg-primary-500 hover:bg-primary-700">
+                <p:link outcome="/pages/cadastro/pausa"
+                        style="text-decoration: none">PAUSA</p:link>
+            </div>
+            <div class="bcca-breadcrumb-item ">CADASTRO</div>
+        </div>
+
+    </ui:define>
+
+
+    <ui:define name="content">
+
+        <div class="p-grid justify-center">
+
+            <c:if test="#{pausaBean.tipoPagina eq 'PESQUISA'}">
+
+                <ui:include src="/pages/cadastro/pausaPesquisa.xhtml"/>
+
+            </c:if>
+
+            <c:if test="#{pausaBean.tipoPagina eq 'CADASTRO'}">
+
+                <ui:include src="/pages/cadastro/pausaCadastro.xhtml"/>
+
+            </c:if>
+
+        </div>
+
+    </ui:define>
+
+
+</ui:composition>

@@ -1,0 +1,908 @@
+<ui:fragment xmlns="http://www.w3.org/1999/xhtml"
+             xmlns:h="http://java.sun.com/jsf/html"
+             xmlns:f="http://java.sun.com/jsf/core"
+             xmlns:ui="http://java.sun.com/jsf/facelets"
+             xmlns:p="http://primefaces.org/ui" template="/WEB-INF/template.xhtml">
+
+    <p:growl id="grl" widgetVar="grl" globalOnly="true" escape="false" showSummary="false" life="8000" showDetail="true"
+             sticky="true"   >
+
+        <p:autoUpdate/>
+
+    </p:growl>
+
+
+        <h:form id="formCadastro" prependId="false">
+
+            <div class="card">
+
+                <h:panelGroup id="pngCadastro" styleClass="form-group ui-fluid  grid" layout="block">
+
+                    <div class="field col-12 md:col-4">
+
+                        <p:outputLabel for="inputCadaEmpNome" value="#{msg.nome}"/>
+
+                        <p:inputText id="inputCadaEmpNome" value="#{empresaBean.empresa.nome}" required="true"
+                                     requiredMessage="#{msg.requerido}"
+                                     validator="#{empresaBean.validateNomeEmpresa}"
+                                     validatorMessage="#{msg.empresaJaexiste}"/>
+                        <p:message for="inputCadaEmpNome"/>
+                    </div>
+
+
+                    <div class="field col-12 md:col-4">
+
+                        <p:outputLabel for="inputCadEmpCnpj" value="#{msg.cnpj}"/>
+
+
+                        <p:inputText id="inputCadEmpCnpj" value="#{empresaBean.empresa.cnpj}" required="true"
+                                     maxlength="14" requiredMessage="#{msg.requerido}"/>
+
+                        <p:message for="inputCadEmpCnpj"/>
+
+
+                    </div>
+
+
+                    <div class="field col-12 md:col-3">
+
+                        <p:outputLabel for="selectOneAtivo" value="#{msg.acesso}"/>
+
+                        <p:selectOneMenu id="selectOneAtivo"
+                                         value="#{empresaBean.empresa.ativo}">
+
+                            <f:selectItems value="#{empresaBean.tipoAcessoEnum}"
+                                           var="acesso" itemLabel="#{acesso.constante}"
+                                           itemValue="#{acesso}"/>
+
+                        </p:selectOneMenu>
+
+                    </div>
+
+                    <div class="field col-12 md:col-1">
+
+                        <p:outputLabel for="txtLicencao" id="lblLicencao" value="#{msg.licenca}"/>
+
+                        <div>
+
+                            <p:outputLabel
+                                    value="#{empresaBean.retornarQtidadeLicenca(empresaBean.empresa.licencas)}"
+                                    id="txtLicencao"/>
+
+                        </div>
+
+
+                    </div>
+
+                    <h:panelGroup rendered="false" layout="block" styleClass="field col-12 md:col-4">
+
+                        <p:outputLabel for="selectOneLayout" value="#{msg.layout}"/>
+
+                        <p:selectOneMenu id="selectOneLayout"
+                                         value="#{empresaBean.empresa.colorSchema}">
+
+
+                            <f:selectItems value="#{empresaBean.colorSchemaEnum}" var="layout"
+                                           itemLabel="#{layout.constante}" itemValue="#{layout}"/>
+
+                        </p:selectOneMenu>
+
+                    </h:panelGroup>
+
+                    <div class="field col-12 md:col-2">
+
+                        <p:outputLabel for="selectOneMenuMode" value="Estilo Menu"/>
+
+                        <p:selectOneMenu id="selectOneMenuMode"
+                                         value="#{empresaBean.empresa.menuMode}"
+                                         converter="omnifaces.SelectItemsConverter">
+
+                            <f:selectItem itemLabel="Selecione" itemValue=""/>
+                            <f:selectItems value="#{empresaBean.menuEstiloEnum}"
+                                           var="estilo" itemLabel="#{estilo.constante}"
+                                           itemValue="#{estilo}"/>
+
+                        </p:selectOneMenu>
+
+                    </div>
+
+
+                    <div class="field col-12 md:col-2">
+
+                        <p:outputLabel for="selectOneMenuColor" value="Menu tema"/>
+
+                        <p:selectOneMenu id="selectOneMenuColor"
+                                         value="#{empresaBean.empresa.menuTheme}"
+                                         converter="omnifaces.SelectItemsConverter">
+
+                            <f:selectItem itemLabel="Selecione" itemValue=""/>
+                            <f:selectItems value="#{empresaBean.menuThemeEnum}"
+                                           var="estilo" itemLabel="#{estilo.constante}"
+                                           itemValue="#{estilo}"/>
+
+                        </p:selectOneMenu>
+
+                    </div>
+
+
+                    <div class="field col-12 md:col-2">
+
+                        <p:outputLabel for="selectOneComponetsColors"
+                                       value="Cor do Tema"/>
+
+                        <p:selectOneMenu id="selectOneComponetsColors" value="#{empresaBean.empresa.componentTheme}"
+                                         converter="omnifaces.SelectItemsConverter" var="t" >
+
+                            <f:selectItem itemLabel="Selecione" itemValue=""/>
+
+                            <f:selectItems value="#{empresaBean.componentThemeEnum}"
+                                           var="componente" itemLabel="#{componente.constante}"
+                                           itemValue="#{componente}"/>
+
+                            <p:column style="width:20%;">
+
+                                <div  style="width: 100%; height: 20px;background-color: #{t.color}">
+                                </div>
+
+                            </p:column>
+
+                            <p:column>
+                                <f:facet name="header">
+                                    <h:outputText value="Cor"/>
+                                </f:facet>
+                                <h:outputText value="#{t.constante}"/>
+                            </p:column>
+
+
+
+
+
+                        </p:selectOneMenu>
+
+                    </div>
+
+
+                    <!-- 	<div class="p-field col-12p-md-2">
+
+                            <p:outputLabel value="Menu Escuro" />
+
+                            <div>
+                                <p:toggleSwitch value="#{empresaBean.empresa.menuEscuro}" />
+                            </div>
+
+                        </div>
+            -->
+
+                </h:panelGroup>
+
+
+                <h:panelGroup id="pngConfig" styleClass="col-12 mt-5" layout="block">
+
+                    <p:tabView id="tab">
+
+                        <p:ajax event="tabChange" listener="#{empresaBean.onChangeTab}" update="pngConfig"/>
+
+                        <p:tab title="#{msg.loja}" id="tabLoja">
+
+                            <h:panelGroup id="pngLoja" styleClass="form-group ui-fluid grid mt-3">
+
+                                <div class="field col-12 md:col-2 ">
+
+                                    <p:outputLabel for="inputCadLoja" value="#{msg.codLoja}"/>
+
+                                    <p:inputText id="inputCadLoja" value="#{empresaBean.loja.codigoLoja}"
+                                                 required="true" onkeypress="return somenteNumeros(event)"
+                                                 requiredMessage="#{msg.requerido}"/>
+
+                                    <p:message for="inputCadLoja"/>
+
+                                </div>
+
+
+                                <div class="field col-12 md:col-4 ">
+
+                                    <p:outputLabel for="selectInstoja" value="#{msg.instituicao}"/>
+
+                                    <p:selectOneMenu id="selectInstoja" filter="true"
+                                                     filterMatchMode="contains"
+                                                     value="#{empresaBean.loja.instituicaoFinanceira}"
+                                                     autoWidth="false">
+
+                                        <f:selectItem itemLabel="Selecione" noSelectionOption="true"/>
+
+                                        <f:selectItems value="#{empresaBean.instituicoesFinanceiras}"
+                                                       var="inst" itemLabel="#{inst.constante}"
+                                                       itemValue="#{inst}"/>
+
+                                    </p:selectOneMenu>
+
+                                </div>
+
+
+                                <div class="field col-12 md:col-4 ">
+
+                                    <p:outputLabel for="selectOneAcessoLoja" value="#{msg.acesso}"/>
+
+                                    <p:selectOneMenu id="selectOneAcessoLoja" value="#{empresaBean.loja.ativo}">
+
+                                        <f:selectItems value="#{empresaBean.tipoAcessoEnum}"
+                                                       var="acesso" itemLabel="#{acesso.constante}"
+                                                       itemValue="#{acesso}"/>
+
+                                    </p:selectOneMenu>
+
+                                </div>
+
+                                <div class="field col-12 md:col-2 ">
+
+                                    <p:outputLabel value="&#160;&#160;"/>
+                                    <div>
+                                        <p:commandButton value="Salvar"
+                                                         icon="pi pi-save" styleClass="ui-button-raised"
+                                                         actionListener="#{empresaBean.adicionarLoja()}"
+                                                         update="@this pngLoja" process="@this pngLoja"
+                                                         partialSubmit="true" ajax="true"/>
+                                    </div>
+
+                                </div>
+
+                                <div class="col-12p-md-12">
+
+                                    <p:dataTable value="#{empresaBean.empresa.listLoja}"
+                                                 var="loja" emptyMessage="#{msg.emptyMessage}" id="tableLoja"
+                                                 rows="10" paginator="true" paginatorPosition="bottom"
+                                                 styleClass="ui-datatable-striped ui-datatable-gridlines ui-datatable-sm mt-3"
+                                                 rowIndexVar="index"
+                                                 paginatorTemplate="{CurrentPageReport}  {FirstPageLink} {PreviousPageLink} {PageLinks} {NextPageLink} {LastPageLink}"
+                                                 currentPageReportTemplate="[Total de Registros: {totalRecords}]">
+
+
+                                        <p:column headerText="#{msg.codLoja}">
+
+                                            <h:outputText value="#{loja.codigoLoja}"/>
+
+                                        </p:column>
+
+
+                                        <p:column headerText="#{msg.instituicao}">
+
+                                            <h:outputText
+                                                    value="#{loja.instituicaoFinanceira.constante}"/>
+
+                                        </p:column>
+
+                                        <p:column headerText="#{msg.acesso}">
+                                            <h:outputText value="#{loja.ativo.constante}"/>
+                                        </p:column>
+
+                                        <p:column width="5%" styleClass="text-center" exportable="false">
+
+                                            <p:commandButton id="btnAlterarLoja"
+                                                             actionListener="#{empresaBean.editarLoja(loja,index)}"
+                                                             partialSubmit="true" title="Editar"
+                                                             process="@this tab:tableLoja" update="tab:pngLoja"
+                                                             icon="fa fa-fw fa-edit"
+                                                             styleClass="rounded-button ui-button-flat  mr-1"/>
+
+
+                                        </p:column>
+
+                                    </p:dataTable>
+
+                                </div>
+
+                            </h:panelGroup>
+
+                        </p:tab>
+
+                        <p:tab title="#{msg.sftp}" id="tabSftp">
+
+                            <h:panelGroup id="pngSftp" styleClass="formgrid ui-fluid grid mt-3" layout="block">
+
+                                <div class="field col-12 ">
+
+                                        <p:commandButton value="Adicionar Servidor SFTP" actionListener="#{empresaBean.onAdiocionderSftp()}" global="false" partialSubmit="true" immediate="true" process="@this"   oncomplete="PF('dlgEmpresaSftp').show();" update="dlgEmpresaSftp" />
+                                </div>
+
+                                <div class="field col-12 md:col-12">
+
+                                    <p:dataTable value="#{empresaBean.empresa.sftps}" var="sftp" editMode="cell"
+                                                 editable="true"
+                                                 emptyMessage="#{msg.emptyMessage}" id="tableSftp" rows="10"
+                                                 paginator="true" paginatorPosition="bottom"
+                                                 styleClass="ui-datatable-striped ui-datatable-gridlines ui-datatable-sm"
+                                                 rowIndexVar="index"
+                                                 paginatorTemplate="{CurrentPageReport}  {FirstPageLink} {PreviousPageLink} {PageLinks} {NextPageLink} {LastPageLink}"
+                                                 currentPageReportTemplate="[Total de Registros: {totalRecords}]">
+
+                                        <p:column headerText="#{msg.descricao}">
+
+                                            <p:cellEditor>
+
+                                                <f:facet name="output"><h:outputText
+                                                        value="#{sftp.descricao}"/></f:facet>
+                                                <f:facet name="input"><p:inputText
+                                                        value="#{sftp.descricao}"/></f:facet>
+
+                                            </p:cellEditor>
+
+                                        </p:column>
+
+                                        <p:column headerText="#{msg.url}">
+
+                                            <p:cellEditor>
+
+                                                <f:facet name="output"><h:outputText value="#{sftp.url}"/></f:facet>
+                                                <f:facet name="input"><p:inputText value="#{sftp.url}"/></f:facet>
+
+                                            </p:cellEditor>
+
+                                        </p:column>
+
+                                        <p:column headerText="#{msg.porta}">
+                                            <p:cellEditor>
+
+                                                <f:facet name="output"><h:outputText
+                                                        value="#{sftp.porta}"/></f:facet>
+                                                <f:facet name="input"><p:inputText value="#{sftp.porta}"/></f:facet>
+
+                                            </p:cellEditor>
+                                        </p:column>
+
+                                        <p:column headerText="Usuário">
+                                            <p:cellEditor>
+
+                                                <f:facet name="output"><h:outputText
+                                                        value="#{sftp.usr}"/></f:facet>
+                                                <f:facet name="input"><p:inputText value="#{sftp.usr}"/></f:facet>
+
+                                            </p:cellEditor>
+                                        </p:column>
+
+                                        <p:column headerText="Tipo de logon">
+
+                                              <h:panelGroup layout="block" rendered="#{sftp.tipoLoginSftp eq 'NORMAL'}">
+
+                                                <h:outputText  value="#{sftp.tipoLoginSftp.descricao}"/>
+
+                                              </h:panelGroup>
+
+                                            <h:panelGroup layout="block" rendered="#{sftp.tipoLoginSftp eq 'ARQUIVO'}">
+
+
+                                                <p:commandLink id="ajax"
+                                                               value="#{sftp.tipoLoginSftp.descricao}"
+                                                               action="#{empresaBean.onDownloadArquivoChave(sftp.arquivoChave)}"
+                                                               process="@this"
+                                                               >
+
+                                                    <p:fileDownload value="#{empresaBean.file}" />
+
+                                                </p:commandLink>
+
+
+                                            </h:panelGroup>
+
+                                        </p:column>
+
+                                        <p:column headerText="Acesso">
+
+                                            <p:cellEditor>
+
+                                                <f:facet name="output"><h:outputText
+                                                        value="#{sftp.ativo.constante}"/></f:facet>
+
+                                                <f:facet name="input">
+                                                    <p:selectOneMenu value="#{empresaBean.conciliar.ativo}">
+
+                                                        <f:selectItems value="#{empresaBean.tipoAcessoEnum}"
+                                                                       var="acesso" itemLabel="#{acesso.constante}"
+                                                                       itemValue="#{acesso}"/>
+
+                                                    </p:selectOneMenu>
+                                                </f:facet>
+
+
+                                            </p:cellEditor>
+                                        </p:column>
+
+                                        <p:column width="6%" exportable="false" styleClass="text-center">
+
+                                            <p:commandButton id="btnRemoverSftp"
+                                                             action="#{empresaBean.removerFtp(index)}"
+                                                             update="tab:tableSftp tab:tableLoja grl"
+                                                             title="#{msg.remover}"
+                                                             partialSubmit="true" process="@this" icon="pi pi-times"
+                                                             styleClass="rounded-button ui-button-flat ui-button-secondary  mr-1"/>
+
+
+                                        </p:column>
+
+                                    </p:dataTable>
+
+                                </div>
+
+                            </h:panelGroup>
+
+                        </p:tab>
+
+                        <p:tab title="Bloqueio Telefone" id="tabBloqueiTelefone">
+
+                            <h:panelGroup id="pngCadastroTel" styleClass="formgrid grid ui-fluid mt-3" layout="block">
+
+                                <div class="field col-12 md:col-6">
+                                    <div class="formgrid grid ui-fluid">
+                                        <div class="field col-12 md:col-6">
+
+                                            <p:outputLabel id="lblTelfone" value="Telefone" for="txtTelefone"/>
+
+                                            <p:inputText id="txtTelefone" value="#{empresaBean.telefone}"
+                                                         required="true" maxlength="12"
+                                                         onkeypress="return somenteNumeros(event)"
+                                                         requiredMessage="#{msg.requerido}"/>
+
+                                            <p:message id="msgTel" for="txtTelefone"/>
+
+                                        </div>
+
+                                        <div class="field col-12 md:col-2">
+
+                                            <p:outputLabel value="&#160;&#160;"/>
+
+                                            <div>
+                                                <p:commandButton
+                                                        actionListener="#{empresaBean.inserirTelefoneBlackList()}"
+                                                        styleClass="ui-button-raised"
+                                                        icon="pi pi-save" disabled="#{empresaBean.empresa.id eq null}"
+                                                        partialSubmit="true" update="tableTel msgTel txtTelefone "
+                                                        process="txtTelefone  @this" value="Salvar"/>
+                                            </div>
+
+                                        </div>
+
+                                        <div class="field col-12">
+
+                                            <p:fileUpload label="Selecione um arquivo" uploadLabel="Enviar"
+                                                          styleClass="ui-button-raised ui-button-outlined"
+                                                          listener="#{empresaBean.enviarListaNegraTelefones}"
+                                                          mode="advanced" allowTypes="/(\.|\/)(CSV|csv)$/"
+                                                          invalidFileMessage="São permitidas somente CSV (csv,CSV)"
+                                                          update="@this tableTel"/>
+
+                                        </div>
+
+                                    </div>
+
+                                </div>
+
+                                <div class="field col-12 md:col-6">
+
+                                    <p:dataTable value="#{empresaBean.listBlackListTelefones}" var="tel"
+                                                 emptyMessage="#{msg.emptyMessage}" id="tableTel" rows="5"
+                                                 paginator="true" paginatorPosition="bottom"
+                                                 styleClass="ui-datatable-striped ui-datatable-gridlines ui-datatable-sm"
+                                                 rowIndexVar="index"
+                                                 paginatorTemplate="{CurrentPageReport}  {FirstPageLink} {PreviousPageLink} {PageLinks} {NextPageLink} {LastPageLink}"
+                                                 currentPageReportTemplate="[Total de Registros: {totalRecords}]">
+
+                                        <p:ajax event="page" global="false"/>
+
+                                        <p:column headerText="Telefone" filterBy="#{tel}" filterMatchMode="contains"
+                                                  filterFunction="#{empresaBean.filtrarContem}">
+
+                                            <h:outputText value="#{tel}"/>
+
+                                        </p:column>
+
+
+                                        <p:column exportable="false" width="5%"
+                                                  styleClass="justify-content-center text-center">
+
+                                            <p:commandButton id="btnRemoverTelefone"
+                                                             styleClass="ui-button-icon-only rounded-button ui-button-flat ui-button-danger "
+                                                             update="tableTel"
+                                                             action="#{empresaBean.removerTelefoneBlackList(index)}"
+                                                             icon="pi pi-times" process="@this">
+
+                                                <f:setPropertyActionListener value="#{tel}"
+                                                                             target="#{empresaBean.telefone}"/>
+
+                                            </p:commandButton>
+                                        </p:column>
+
+                                    </p:dataTable>
+
+                                    <div class="flex align-content-end justify-content-end">
+
+                                        <p:commandButton id="btnExport" value="#{msg.exportar}" ajax="false"
+                                                         immediate="true" icon="pi pi-file-excel"
+                                                         styleClass="p-mr-3 ui-button-outlined ui-button-raised ui-button-secondary"
+                                                         disabled="#{empty empresaBean.listBlackListTelefones}">
+
+                                            <p:dataExporter target="tableTel" type="csv"
+                                                            fileName="listaBlacklistTelefones"/>
+
+                                        </p:commandButton>
+                                    </div>
+                                </div>
+
+
+                            </h:panelGroup>
+
+                        </p:tab>
+
+                        <p:tab title="Bloqueio CPF" id="tabBloqueiCpf">
+
+                            <h:panelGroup id="pngCadastroCpf" styleClass="formgrid grid ui-fluid mt-3" layout="block">
+
+                                <div class="field col-12 md:col-6">
+
+                                    <div class="formgrid grid ui-fluid">
+
+                                        <div class="field col-12 md:col-6">
+
+                                            <p:outputLabel id="lblCpf" value="CPF" for="txtCpf"/>
+
+                                            <p:inputText id="txtCpf" value="#{empresaBean.cpf}" required="true"
+                                                         maxlength="11" onkeypress="return somenteNumeros(event)"
+                                                         requiredMessage="#{msg.requerido}"/>
+
+                                            <p:message id="msgCpf" for="txtCpf"/>
+
+                                        </div>
+
+                                        <div class="field col-12 md:col-2">
+
+                                            <p:outputLabel value="&#160;&#160;"/>
+
+                                            <div>
+
+                                                <p:commandButton icon="pi pi-save" styleClass="ui-button-raised"
+                                                                 actionListener="#{empresaBean.inserirCpfBlackList()}"
+                                                                 disabled="#{empresaBean.empresa.id eq null}"
+                                                                 partialSubmit="true" update="tableCpf msgCpf txtCpf "
+                                                                 process="txtCpf  @this" value="Salvar"/>
+                                            </div>
+
+                                        </div>
+
+                                        <div class="field col-12 md:col-12">
+
+                                            <p:fileUpload label="Selecione um arquivo"
+                                                          uploadLabel="Enviar"
+                                                          listener="#{empresaBean.enviarListaNegraCpf}"
+                                                          mode="advanced" allowTypes="/(\.|\/)(CSV|csv)$/"
+                                                          invalidFileMessage="São permitidas somente CSV (csv,CSV)"
+                                                          update="tableCpf @this"/>
+
+                                        </div>
+
+
+                                    </div>
+                                </div>
+
+                                <div class="field col-12 md:col-6">
+
+                                    <p:dataTable value="#{empresaBean.listBlackListCpfs}"
+                                                 var="cpf" emptyMessage="#{msg.emptyMessage}" id="tableCpf"
+                                                 rows="5" paginator="true" paginatorPosition="bottom"
+                                                 styleClass="ui-datatable-striped ui-datatable-gridlines ui-datatable-sm"
+                                                 rowIndexVar="index"
+                                                 paginatorTemplate="{CurrentPageReport}  {FirstPageLink} {PreviousPageLink} {PageLinks} {NextPageLink} {LastPageLink}"
+                                                 currentPageReportTemplate="[Total de Registros: {totalRecords}]">
+
+                                        <p:ajax event="page" global="false"/>
+
+                                        <p:column headerText="CPF" filterBy="#{cpf}"
+                                                  filterMatchMode="contains"
+                                                  filterFunction="#{empresaBean.filtrarContem}">
+
+                                            <h:outputText value="#{cpf}"/>
+
+                                        </p:column>
+
+
+                                        <p:column width="5%" exportable="false"
+                                                  styleClass="justify-content-center text-center">
+
+                                            <p:commandButton id="btnRemoverCpf"
+                                                             styleClass="ui-button-icon-only rounded-button ui-button-flat ui-button-danger "
+                                                             update="tableCpf"
+                                                             action="#{empresaBean.removerCpfBlackList(index)}"
+                                                             icon="pi pi-times" process="@this">
+
+                                                <f:setPropertyActionListener value="#{cpf}"
+                                                                             target="#{empresaBean.cpf}"/>
+
+                                            </p:commandButton>
+
+                                        </p:column>
+
+                                    </p:dataTable>
+
+                                    <div class="flex align-content-end justify-content-end">
+
+                                        <p:commandButton id="btnExportCpf" value="#{msg.exportar}"
+                                                         ajax="false" immediate="true" icon="pi pi-file-excel"
+                                                         styleClass="p-mr-3 ui-button-raised ui-button-outlined ui-button-secondary"
+                                                         disabled="#{empty empresaBean.listBlackListCpfs}">
+
+                                            <p:dataExporter target="tableCpf" type="csv"
+                                                            fileName="listaBlacklistCpf"/>
+
+                                        </p:commandButton>
+                                    </div>
+
+                                </div>
+
+                            </h:panelGroup>
+
+                        </p:tab>
+
+                        <p:tab title="#{msg.parametros}" id="tabParamentos">
+
+                            <h:panelGroup id="pngParam" styleClass="col-12 mt-3 " layout="block">
+
+                                <div class="field grid ">
+
+                                    <p:outputLabel id="lblAdesaoObrigatorio" for="selectBooleanAdesaoObrigatorio"
+                                                   class="col-12 mb-2 md:col-4 md:mb-0"
+                                                   value="Definir campo adesão como obrigatório"/>
+
+                                    <div class="col-12 md:col-6">
+
+                                        <p:selectBooleanButton onLabel="Sim" offLabel="Não"
+                                                               id="selectBooleanAdesaoObrigatorio"
+                                                               value="#{empresaBean.empresa.parametroAdesaoCampoObrigatorio}"
+                                                               onIcon="pi pi-check" offIcon="pi pi-times"/>
+
+                                    </div>
+
+                                </div>
+
+                                <div class="field grid">
+
+                                    <p:outputLabel id="lblStatusTelefone" for="selectBooleanStatusTelefone"
+                                                   class="col-12 mb-4 md:col-4 md:mb-0"
+                                                   value="#{msg.preencherStatusTelefoneVoltarAtendimento}"/>
+
+                                    <div class="col-12 md:col-6">
+
+                                        <p:selectBooleanButton onLabel="Sim" offLabel="Não"
+                                                               id="selectBooleanStatusTelefone"
+                                                               value="#{empresaBean.empresa.parametroStatusTelefone}"
+                                                               onIcon="pi pi-check" offIcon="pi pi-times"/>
+
+                                    </div>
+
+                                </div>
+
+
+                                <div class="field grid">
+
+                                    <p:outputLabel id="lblUsuarioCampanha"
+                                                   styleClass="col-12 mb-2 md:col-4 md:mb-0"
+                                                   value="#{msg.permitirEscolherCampanhaTrabalhar}"/>
+
+                                    <div class="col-12 md:col-6">
+
+                                        <p:selectBooleanButton onLabel="Sim" offLabel="Não"
+                                                               id="selectChkUsuarioCampanha"
+                                                               value="#{empresaBean.empresa.parametroUsuarioCampanha}"
+                                                               onIcon="pi pi-check" offIcon="pi pi-times"/>
+
+                                    </div>
+
+                                </div>
+
+                                <div class="field grid">
+
+                                    <p:outputLabel id="lblMostrarCampanha"
+                                                   styleClass="col-12 mb-2 md:col-4 md:mb-0"
+                                                   value="Mostrar nome da campanha"/>
+
+                                    <div class="col-12 md:col-6">
+
+                                        <p:selectBooleanButton onLabel="Sim" offLabel="Não"
+                                                               id="selectPermitirMostrarNome"
+                                                               value="#{empresaBean.empresa.exibirNomeCampanha}"
+                                                               onIcon="pi pi-check" offIcon="pi pi-times"/>
+
+                                    </div>
+
+                                </div>
+
+
+                                <div class="field grid">
+
+                                    <p:outputLabel id="lblTabulacaoTelefone"
+                                                   styleClass="col-12 mb-2 md:col-4 md:mb-0"
+                                                   value="#{msg.validarTabulacaoTelefoneOperacao}"/>
+
+                                    <div class="col-12 md:col-6">
+
+                                        <p:selectBooleanButton onLabel="Sim" offLabel="Não"
+                                                               id="chkTabulacaoTelefone"
+                                                               styleClass="p-col-12 p-mb-2 p-ml-4 p-mt-4 p-md-2 p-sm-2 p-mb-md-3"
+                                                               value="#{empresaBean.empresa.parametroTabulacaoTelefone}"
+                                                               onIcon="pi pi-check" offIcon="pi pi-times"/>
+
+                                    </div>
+
+                                </div>
+
+                                <div class="field grid">
+
+                                    <p:outputLabel id="lblHistoricoAtendimento"
+                                                   styleClass="col-12 mb-2 md:col-4 md:mb-0"
+                                                   value="#{msg.habilitarConsultaHistoricoAtendimentoOperacao}"/>
+
+                                    <div class="col-12 md:col-6">
+
+                                        <p:selectBooleanButton onLabel="Sim" offLabel="Não"
+                                                               id="chkHistoricoAtendimento"
+                                                               value="#{empresaBean.empresa.parametroHistoricoAtendimento}"
+                                                               onIcon="pi pi-check" offIcon="pi pi-times"/>
+
+
+                                    </div>
+                                </div>
+
+
+                                <div class="field grid">
+
+                                    <p:outputLabel id="lblPropostaAtendimento"
+                                                   value="Permitir consultar Propostas de Atendimento"
+                                                   styleClass="col-12 mb-2 md:col-4 md:mb-0"/>
+
+                                    <div class="col-12 md:col-6">
+
+                                        <p:selectBooleanButton onLabel="Sim" offLabel="Não"
+                                                               id="chkPropostaAtendimento"
+                                                               value="#{empresaBean.empresa.parametroPropostaAtendimento}"
+                                                               onIcon="pi pi-check" offIcon="pi pi-times"/>
+
+
+                                    </div>
+                                </div>
+
+
+                                <div class="field grid">
+
+                                    <p:outputLabel id="lblExcluirDadosBancarios"
+                                                   styleClass="col-12 mb-2 md:col-4 md:mb-0"
+                                                   value="#{msg.permitirOperadorExcluirDadosBancarios}"/>
+
+
+                                    <div class="col-12 md:col-6">
+
+                                        <p:selectBooleanButton onLabel="Sim" offLabel="Não"
+                                                               id="chkExcluirDadosBancarios"
+                                                               value="#{empresaBean.empresa.parametroPermitirExcluirDadosBancarios}"
+                                                               onIcon="pi pi-check" offIcon="pi pi-times"/>
+
+
+                                    </div>
+
+                                </div>
+
+                                <div class="field grid">
+
+                                    <p:outputLabel id="lblAnteciparAtendimento"
+                                                   styleClass="col-12 mb-2 md:col-4 md:mb-0"
+                                                   value="#{msg.permitirAnteciparAtendimento} "/>
+
+
+                                    <div class="col-12 md:col-6">
+
+                                        <p:selectBooleanButton onLabel="Sim" offLabel="Não"
+                                                               id="chkAnteciparAtendimento"
+                                                               value="#{empresaBean.empresa.parametroPermitirAntenciparAtendimento}"
+                                                               onIcon="pi pi-check" offIcon="pi pi-times"/>
+
+                                    </div>
+
+                                </div>
+
+                                <div class="field grid">
+
+                                    <p:outputLabel
+                                            styleClass="col-12 mb-2 md:col-4 md:mb-0"
+                                            value="Mostrar cronômetro  atendimento: "/>
+
+
+                                    <div class="col-12 md:col-6">
+
+                                        <p:selectBooleanButton onLabel="Sim" offLabel="Não"
+                                                               value="#{empresaBean.empresa.parametroMostrarTimeOut}"
+                                                               onIcon="pi pi-check" offIcon="pi pi-times"/>
+
+
+                                    </div>
+
+                                </div>
+
+                                <div class="field grid">
+
+                                    <p:outputLabel
+                                            styleClass="col-12 mb-2 md:col-4 md:mb-0"
+                                            value="Permitir timeout atendimento: "/>
+
+
+                                    <div class="col-12 md:col-6">
+
+                                        <p:selectBooleanButton onLabel="Sim" offLabel="Não"
+                                                               value="#{empresaBean.empresa.parametroPermitirTimeOut}"
+                                                               onIcon="pi pi-check" offIcon="pi pi-times"/>
+
+
+                                    </div>
+
+                                </div>
+
+                                <div class="field grid">
+
+                                    <p:outputLabel id="lblTimeoutAtendimentos"
+                                                   styleClass="col-12 mb-2 md:col-4 md:mb-0"
+                                                   value="#{msg.encerrarAtendimentoTempoDefinido}"/>
+
+                                    <div class="col-12 md:col-6">
+
+                                        <p:inputText id="txtTimeoutAtendimentos"
+                                                     value="#{empresaBean.empresa.parametroTimeoutAtendimento}"
+                                                     maxlength="3" onkeypress="return somenteNumeros(event)"/>
+                                    </div>
+
+                                </div>
+
+                                <div class="field grid">
+
+                                    <p:outputLabel
+                                            styleClass="col-12 mb-2 md:col-4 md:mb-0"
+                                            value="Tempo sessão(minutos) - (valor 0 significa que a sessão não vai expirar.)"/>
+
+                                    <div class="col-12 md:col-6">
+
+                                        <p:inputText value="#{empresaBean.empresa.sessionTime}" maxlength="4"
+                                                     onkeypress="return somenteNumeros(event)"/>
+                                    </div>
+
+                                </div>
+
+
+                            </h:panelGroup>
+
+                        </p:tab>
+
+                    </p:tabView>
+
+                </h:panelGroup>
+
+                <div class="col-12 ">
+
+                    <div class="div-btn text-center">
+
+                        <p:commandButton value="#{msg.salvar}" id="btnSalvar"
+                                         styleClass="mr-3 ui-button-raised" action="#{empresaBean.salvar()}"
+                                         update="@form grl tab:pngParam pngCadastro " icon="pi pi-save"
+                                         process="@this tab:pngParam pngCadastro"/>
+                        <!-- tab:pngParam pngCadastro-->
+
+                        <p:commandButton value="#{msg.voltar}" id="btnVoltar" styleClass="ui-button-raised"
+                                         ajax="false" action="#{empresaBean.voltar()}" process="@this"
+                                         icon="pi pi-arrow-circle-left" immediate="true"/>
+
+                    </div>
+
+                </div>
+
+            </div>
+
+
+        </h:form>
+
+
+
+
+</ui:fragment>
+

@@ -1,0 +1,135 @@
+<ui:fragment xmlns="http://www.w3.org/1999/xhtml"
+	xmlns:h="http://java.sun.com/jsf/html"
+	xmlns:f="http://java.sun.com/jsf/core"
+	xmlns:o="http://omnifaces.org/ui"
+	xmlns:ui="http://java.sun.com/jsf/facelets"
+	xmlns:p="http://primefaces.org/ui">
+
+	<!--  -->
+	<h:form prependId="false" id="formStatusVonix">
+
+		<p:dialog widgetVar="dlgVonix" id="dlgVonix" width="1000px"	header="Painel Agente"	rendered="#{fichaAtendimentoBean.carregarVonixJS}">
+
+			<p:panelGrid styleClass="ui-panelgrid-blank form-group" style="margin-top:20px">
+
+				<p:row>
+
+					<p:column colspan="2">
+					
+						<p:outputLabel value="Servidor: "  style=" font-weight: bold"/>
+						
+					</p:column>
+
+					<p:column colspan="3">
+					
+						<p:outputLabel value="#{fichaAtendimentoBean.pabx.url}"
+							style="font-weight:normal" id="lblStatusServer" />
+							
+					</p:column>
+
+					<p:column colspan="2">
+					
+						<p:outputLabel value="Ramal:" style=" font-weight: bold"/>
+						
+					</p:column>
+
+					<p:column colspan="2">
+					
+						<p:outputLabel id="lblRamal" />
+						
+					</p:column>
+
+				</p:row>
+
+				<p:row>
+
+					<p:column colspan="2">
+						<p:outputLabel value="Status: " style=" font-weight: bold"/>
+					</p:column>
+
+				<p:column colspan="3">
+				
+						<p:outputLabel id="lblStatus" />
+						
+					</p:column>
+
+					<p:column colspan="3">
+					
+						<p:outputLabel value="Pausa:" style=" font-weight: bold"/>
+						
+					</p:column>
+
+					<p:column colspan="2">
+
+						<p:selectOneMenu id="selectPausaVonix"
+							onchange="onChangePause(this.value);" widgetVar="selectPausaVonix" >
+
+							<f:selectItem itemLabel="#{msg.selecione}"
+								 itemValue=""  />
+
+							<f:selectItems value="#{fichaAtendimentoBean.pausaVonix}"
+								var="pausa" itemLabel="#{pausa.constante}"
+								itemValue="#{pausa.id}" />
+
+						</p:selectOneMenu>
+
+						<p:commandButton id="btnDespausar" global="false"
+							value="Despausar" onclick="handlerBtnPause();"/>
+
+					</p:column>
+
+					<p:column colspan="2">
+
+					</p:column>
+
+				</p:row>
+
+				<p:row>
+					<p:column colspan="2">
+						<p:outputLabel value="Agente: " style=" font-weight: bold"/>
+					</p:column>
+
+					<p:column colspan="2">
+
+						<p:outputLabel
+							value="#{sessionScope['usuario'].pontoAtendimento.ramal}"
+							style="font-weight:normal" id="lblUsr" />
+					</p:column>
+
+				</p:row>
+
+			</p:panelGrid>
+
+
+			<div class="ui-g">
+
+				<div class="col-12 md:col-6">
+
+					<p:inputTextarea id="areaTxt" rows="10" queryDelay="750"
+						minQueryLength="4" readonly="false" scrollHeight="100"
+						style="width: 100% !important;" autoResize="false">
+
+					</p:inputTextarea>
+
+				</div>
+
+			</div>
+
+			<f:facet name="footer">
+
+				<div class="col-12 md:col-6">
+
+					<div style="float: right;">
+
+						<p:commandButton onclick="PF('dlgVonix').hide();" value="Sair"
+							global="false" />
+					</div>
+				</div>
+
+			</f:facet>
+
+		</p:dialog>
+
+
+	</h:form>
+</ui:fragment>

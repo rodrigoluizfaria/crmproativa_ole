@@ -1,0 +1,377 @@
+<ui:composition xmlns="http://www.w3.org/1999/xhtml"
+                xmlns:h="http://java.sun.com/jsf/html"
+                xmlns:f="http://java.sun.com/jsf/core"
+                xmlns:ui="http://java.sun.com/jsf/facelets"
+                xmlns:comboempresa="http://java.sun.com/jsf/composite/componentes"
+                xmlns:p="http://primefaces.org/ui" template="/WEB-INF/template.xhtml">
+
+
+    <ui:param name="viewname" value="RELATÓRIO STATUS ATENDIMENTO X AGENTE"/>
+
+    <ui:define name="viewname">
+
+        <div class="bcca-breadcrumb">
+            <div class="bcca-breadcrumb-item bg-primary-500 hover:bg-primary-700">
+                <p:link outcome="/pages/relatorios/relatorioStatusAtendimentoOperador" styleClass="uppercase"
+                        style="text-decoration: none">STATUS ATENDIMENTO X AGENTE</p:link>
+            </div>
+            <div class="bcca-breadcrumb-item uppercase">RELATÓRIOS</div>
+        </div>
+
+    </ui:define>
+
+    <ui:define name="content">
+
+        <div class="p-grid justify-center ">
+
+
+            <h:form id="formConteudo" prependId="false">
+
+                <p:growl id="grl" widgetVar="grl" globalOnly="true" escape="false" showSummary="false" life="8000"
+                         showDetail="true" sticky="false">
+
+                    <p:autoUpdate/>
+
+                </p:growl>
+
+                    <div class="card">
+
+                        <h:panelGroup id="pamelrelatorios" layout="block" styleClass="ui-fluid formgrid grid">
+
+                            <comboempresa:selectEmpresa id="cmpEmpresa"
+                                                        managedBean="#{relatorioStatusAtendimentoOperadorBean}"
+                                                        value="#{relatorioStatusAtendimentoOperadorBean.empresa}"
+                                                        ajax="true"
+                                                        update=":formConteudo:selectOneStatusCam :formConteudo:selectOneTipoCam :formConteudo:selectOneCampanha :formConteudo:selectOneEquipe :formConteudo:selectOneUsuarios"
+                                                        filter="false"/>
+
+
+                            <div class="field col-12 md:col-3">
+
+                                <p:outputLabel value="Equipe " for="selectOneEquipe"/>
+
+                                <p:selectOneMenu id="selectOneEquipe"
+                                                 value="#{relatorioStatusAtendimentoOperadorBean.idEquipe}"
+                                                 filter="true" filterMatchMode="contains" autoWidth="false">
+
+                                    <f:selectItem itemLabel="Selecione" noSelectionOption="true" itemValue="#{null}"/>
+
+                                    <f:selectItems value="#{relatorioStatusAtendimentoOperadorBean.listEquipes}"
+                                                   var="equipe" itemLabel="#{equipe.nome}" itemValue="#{equipe.id}"/>
+
+                                    <p:ajax global="false" event="change" update="selectOneUsuarios"
+                                            listener="#{relatorioStatusAtendimentoOperadorBean.onChangeEquipe(relatorioStatusAtendimentoOperadorBean.idEquipe)}"/>
+
+                                </p:selectOneMenu>
+
+                            </div>
+
+                            <div class="field col-12 md:col-3">
+
+                                <p:outputLabel value="Usuarios " for="selectOneUsuarios"/>
+
+                                <p:selectOneMenu id="selectOneUsuarios"
+                                                 value="#{relatorioStatusAtendimentoOperadorBean.idUsuario}"
+                                                 converter="omnifaces.SelectItemsConverter" filter="true"
+                                                 filterMatchMode="contains" autoWidth="false">
+
+                                    <f:selectItem noSelectionOption="true" itemLabel="Selecione"/>
+
+                                    <f:selectItems value="#{relatorioStatusAtendimentoOperadorBean.listUsuarios}"
+                                                   var="operador" itemLabel="#{operador.nome}"
+                                                   itemValue="#{operador.id}"/>
+
+                                </p:selectOneMenu>
+
+                            </div>
+
+                            <div class="field col-12 md:col-3">
+
+                                <p:outputLabel value="Status Campanha " for="selectOneStatusCam"/>
+
+                                <p:selectOneMenu id="selectOneStatusCam"
+                                                 value="#{relatorioStatusAtendimentoOperadorBean.idStatusCampanha}"
+                                                 converter="omnifaces.SelectItemsConverter" filter="true"
+                                                 filterMatchMode="contains" autoWidth="false">
+
+                                    <f:selectItem noSelectionOption="true" itemLabel="Selecione"/>
+
+                                    <f:selectItems value="#{relatorioStatusAtendimentoOperadorBean.listStatusCampanha}"
+                                                   var="status" itemLabel="#{status.descricao}"
+                                                   itemValue="#{status.id}"/>
+
+                                    <p:ajax global="false" event="change" process="@this" partialSubmit="true"
+                                            update="selectOneCampanha"
+                                            listener="#{relatorioStatusAtendimentoOperadorBean.onUpdateSelectCampanha()}"/>
+
+                                </p:selectOneMenu>
+
+                            </div>
+
+                            <div class="field col-12 md:col-2">
+
+                                <p:outputLabel value="Tipo Campanha " for="selectOneTipoCam"/>
+
+                                <p:selectOneMenu id="selectOneTipoCam"
+                                                 value="#{relatorioStatusAtendimentoOperadorBean.tipoCampanha}"
+                                                 converter="omnifaces.SelectItemsConverter" filter="true"
+                                                 filterMatchMode="contains" autoWidth="false">
+
+                                    <f:selectItem noSelectionOption="true" itemLabel="Selecione"/>
+
+                                    <f:selectItems value="#{relatorioStatusAtendimentoOperadorBean.tipoCampanhas}"
+                                                   var="tipo" itemLabel="#{tipo.constante}" itemValue="#{tipo}"/>
+
+                                    <p:ajax global="false" event="change" process="@this" partialSubmit="true"
+                                            update="selectOneCampanha"
+                                            listener="#{relatorioStatusAtendimentoOperadorBean.onUpdateSelectCampanha()}"/>
+
+                                </p:selectOneMenu>
+
+                            </div>
+
+                            <div class="field col-12 md:col-3">
+
+                                <p:outputLabel value="Campanha " for="selectOneCampanha"/>
+
+                                <p:selectOneMenu id="selectOneCampanha"
+                                                 value="#{relatorioStatusAtendimentoOperadorBean.idCampanha}"
+                                                 converter="omnifaces.SelectItemsConverter" filter="true"
+                                                 filterMatchMode="contains" autoWidth="false">
+
+                                    <f:selectItem noSelectionOption="true" itemLabel="Selecione"/>
+
+                                    <f:selectItems value="#{relatorioStatusAtendimentoOperadorBean.listCampanhas}"
+                                                   var="campanha" itemLabel="#{campanha.descricao}"
+                                                   itemValue="#{campanha.id}"/>
+
+                                </p:selectOneMenu>
+
+                            </div>
+
+
+                            <div class="field col-12 md:col-3">
+
+                                <p:outputLabel value="Data inicio"/>
+
+                                <p:datePicker id="calendarDataInicioPesquisa" required="true"
+                                              value="#{relatorioStatusAtendimentoOperadorBean.dataInicial}"
+                                              showButtonBar="true" showIcon="true" readonlyInput="true"
+                                              pattern="dd/MM/yyyy" locale="pt_BR" requiredMessage="#{msg.requerido}"/>
+
+                                <p:message for="calendarDataInicioPesquisa"/>
+
+                            </div>
+
+                            <div class="field col-12 md:col-3">
+
+                                <p:outputLabel value="Data fim"/>
+
+                                <p:datePicker id="calendarDataFimPesquisa" required="true"
+                                              value="#{relatorioStatusAtendimentoOperadorBean.dataFinal}"
+                                              showButtonBar="true" showIcon="true" readonlyInput="true"
+                                              pattern="dd/MM/yyyy" locale="pt_BR" requiredMessage="#{msg.requerido}"/>
+                                <p:message for="calendarDataFimPesquisa"/>
+
+                            </div>
+                        </h:panelGroup>
+
+                            <div class="mt-5">
+
+                                <p:commandButton styleClass="mr-3  ui-button-raised"
+                                                 actionListener="#{relatorioStatusAtendimentoOperadorBean.pesquisar()}"
+                                                 value="Pesquisar" id="btnPesquisar" icon="pi pi-search"
+                                                 update="@form grl"/>
+
+                                <p:commandButton icon="pi pi-download"
+                                                 style="width:auto" id="btnExportarPesquisa"
+                                                 actionListener="#{relatorioStatusAtendimentoOperadorBean.onExportar()}"
+                                                 value="#{msg.exportar}"
+                                                 styleClass="ui-button-secondary ui-button-raised" ajax="false"
+                                                 disabled="#{empty relatorioStatusAtendimentoOperadorBean.listRelatorio}"
+
+                                                 rendered="#{sessionScope['usuario'].permissaoExportar}">
+
+                                </p:commandButton>
+
+
+                            </div>
+
+
+
+                    </div>
+
+
+
+                <div class="mt-4">
+
+                    <div class="card">
+
+
+
+                            <p:dataTable id="tableRelatorio" var="relatorio" rows="20"
+                                         paginator="true" paginatorPosition="bottom"
+                                         value="#{relatorioStatusAtendimentoOperadorBean.listRelatorio}"
+                                         emptyMessage="#{relatoriosrelatorio.listRelatoriosrelatorios eq null? '' : msg.emptyMessage}"
+                                         currentPageReportTemplate="[#{msg.totalDeRegistros}: {totalRecords}]"
+                                         paginatorTemplate="{CurrentPageReport}  {FirstPageLink} {PreviousPageLink} {PageLinks} {NextPageLink} {LastPageLink} {Exporters}"
+                                         styleClass="ui-datatable-striped ui-datatable-sm">
+
+                                <p:ajax event="page" global="false"/>
+
+                                <p:ajax event="sort" global="false"/>
+
+                                <p:columnGroup type="header">
+
+                                    <p:row>
+
+                                        <p:column headerText="Agente" width="10%"/>
+                                        <p:column headerText="Tipo Campanha" width="10%"/>
+                                        <p:column headerText="Total Status" width="5%"/>
+                                        <p:column headerText="Taxa Conversão" width="10%"/>
+                                        <p:column headerText="Propostas Efetivadas" width="10%"/>
+                                        <p:column headerText="Agendamentos" width="5%"/>
+                                        <p:column headerText="Alos" width="5%"/>
+                                        <p:column headerText="Cpf Trabalhado" width="10%"/>
+                                        <p:column headerText="CPC" width="10%"/>
+
+                                        <p:column headerText="Status" width="20%"/>
+                                        <p:column headerText="Quantidade" width="20%"/>
+                                        <p:column headerText="Percentual" width="20%"/>
+
+                                    </p:row>
+
+                                </p:columnGroup>
+
+                                <p:column sortBy="#{relatorio[0]}" width="10%">
+
+                                    <!-- 	<h:outputLabel value="#{relatorio[0]}" /> -->
+
+                                    <p:commandLink id="btnChartLabel" global="false" value="#{relatorio[0]}"
+                                                   actionListener="#{relatorioStatusAtendimentoOperadorBean.onActiveModal(relatorio[9],relatorio[0],relatorio[1])}"
+                                                   update="chart"/>
+
+                                    <p:overlayPanel id="panelChart" for="btnChartLabel" hideEffect="fade"
+                                                    showCloseIcon="true" >
+
+                                        <p:pieChart model="#{relatorioStatusAtendimentoOperadorBean.pieModel}"
+                                                    style="width: 100%; height: 240px;" id="chart"/>
+
+
+                                    </p:overlayPanel>
+
+                                </p:column>
+
+                                <p:column sortBy="#{relatorio[1]}" width="10%">
+
+                                    <h:outputLabel value="#{relatorio[1]}">
+
+                                        <f:convertDateTime pattern="dd/MM/yyyy" timeZone="GMT-3"/>
+
+                                    </h:outputLabel>
+
+                                </p:column>
+
+                                <p:column sortBy="#{relatorio[2]}" width="5%">
+
+                                    <h:outputLabel value="#{relatorio[2]}">
+
+                                    </h:outputLabel>
+
+                                </p:column>
+
+                                <p:column sortBy="#{relatorio[3]}" width="10%">
+
+                                    <h:outputLabel value="#{relatorio[3]} %">
+
+                                        <f:convertNumber pattern="##0.##"/>
+
+                                    </h:outputLabel>
+
+                                </p:column>
+
+                                <p:column sortBy="#{relatorio[4]}" width="10%">
+
+                                    <h:outputLabel value="#{relatorio[4]} ">
+
+                                    </h:outputLabel>
+
+                                </p:column>
+
+                                <p:column sortBy="#{relatorio[5]}" width="5%">
+
+                                    <h:outputLabel value="#{relatorio[5]} ">
+
+                                    </h:outputLabel>
+
+                                </p:column>
+
+                                <p:column sortBy="#{relatorio[5]}" width="5%">
+
+                                    <h:outputLabel value="#{relatorio[6]} "/>
+
+                                </p:column>
+
+                                <p:column sortBy="#{relatorio[7]}" width="10%">
+
+                                    <h:outputLabel value="#{relatorio[7]} ">
+
+                                    </h:outputLabel>
+
+                                </p:column>
+
+                                <p:column sortBy="#{relatorio[8]}" width="10%">
+
+                                    <h:outputLabel value="#{relatorio[8]} ">
+
+                                        <f:convertNumber maxFractionDigits="2" pattern="##0.00"/>
+
+                                    </h:outputLabel>
+
+                                </p:column>
+
+                                <p:column colspan="3" width="60%">
+
+                                    <p:dataTable var="row" value="#{relatorio[9]}"
+                                                 styleClass="ui-datatable-sm ui-datatable-gridlines ui-datatable-sm noHeader">
+
+                                        <p:column headerText="Status" width="60%">
+
+                                            <h:outputLabel value="#{row[0]} "/>
+
+                                        </p:column>
+
+                                        <p:column headerText="Quantidade" width="20%">
+
+                                            <h:outputLabel value="#{row[1]} "/>
+
+                                        </p:column>
+                                        <p:column headerText="Percentual" width="20%">
+
+                                            <h:outputLabel value="#{row[2]} "/>
+
+                                        </p:column>
+
+
+                                    </p:dataTable>
+
+
+                                </p:column>
+
+
+                            </p:dataTable>
+
+
+
+                    </div>
+
+                </div>
+
+            </h:form>
+
+        </div>
+
+
+    </ui:define>
+
+</ui:composition>

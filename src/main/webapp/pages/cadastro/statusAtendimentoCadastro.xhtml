@@ -1,0 +1,603 @@
+<ui:fragment xmlns="http://www.w3.org/1999/xhtml"
+             xmlns:h="http://java.sun.com/jsf/html"
+             xmlns:f="http://java.sun.com/jsf/core"
+             xmlns:ui="http://java.sun.com/jsf/facelets"
+             xmlns:p="http://primefaces.org/ui" template="/WEB-INF/template.xhtml"
+             xmlns:c="http://java.sun.com/jsp/jstl/core">
+
+    <p:growl id="grl" widgetVar="grl" globalOnly="true" escape="false" showSummary="false" life="8000" showDetail="true"
+             sticky="false">
+
+        <p:autoUpdate/>
+
+    </p:growl>
+
+
+    <!-- CADASTRO STATUS ATN -->
+    <h:form id="cadastroPesqAtn" prependId="false">
+
+        <h:panelGroup styleClass="card" layout="block" id="panelPrincipal">
+
+            <div class="ui-fluid formgrid grid">
+
+                <div class="field col-12 md:col-3">
+
+                    <p:outputLabel for="inputCadastStatusAtn" value="Descrição"/>
+
+                    <p:inputText id="inputCadastStatusAtn" value="#{statusAtendimentoBean.statusAtendimento.descricao}"
+                                 required="true" requiredMessage="Requerido"/>
+
+                    <p:message for="inputCadastStatusAtn"/>
+
+                </div>
+
+                <div class="field col-12 md:col-3">
+
+                    <p:outputLabel for="selectOneCadastAcao" value="Ação:"/>
+
+                    <p:selectOneMenu id="selectOneCadastAcao" value="#{statusAtendimentoBean.statusAtendimento.acao}"
+                                     required="true" requiredMessage="Requerido">
+
+                        <f:selectItem itemLabel="Selecione" noSelectionOption="true"/>
+
+                        <f:selectItems value="#{statusAtendimentoBean.acaoStatus}" var="acao"
+                                       itemLabel="#{acao.constante}" itemValue="#{acao}"/>
+
+                    </p:selectOneMenu>
+
+                    <p:message for="selectOneCadastAcao"/>
+
+                </div>
+
+                <div class="field col-12 md:col-3">
+
+                    <p:outputLabel for="selectOneAtivo" value="Acesso:"/>
+
+                    <p:selectOneMenu id="selectOneAtivo" value="#{statusAtendimentoBean.statusAtendimento.ativo}">
+
+                        <f:selectItem itemLabel="Selecione" noSelectionOption="true"/>
+
+                        <f:selectItems value="#{statusAtendimentoBean.tipoAcessoEnum}" var="acesso"
+                                       itemLabel="#{acesso.constante}" itemValue="#{acesso}"/>
+
+                    </p:selectOneMenu>
+
+                </div>
+
+            </div>
+
+            <div class="ui-fluid formgrid grid">
+
+                <div class="field col-12 md:col-4">
+
+                    <p:fieldset styleClass="col-12  fild-set-default-sem-borda" title="Parametros" style="padding: 15px 10px;" legend="Parametros">
+
+                        <h:panelGroup id="pngParam" styleClass="col-12  ui-fluid  ml-3" layout="block">
+
+                            <div class="field-checkbox ">
+
+                                <p:selectBooleanCheckbox id="ckbEnviaGravao"
+                                                         value="#{statusAtendimentoBean.statusAtendimento.enviaGravacao}"/>
+                                <p:outputLabel for="ckbEnviaGravao" value="Envia Gravação" styleClass="ml-3"/>
+
+                            </div>
+
+                            <div class="field-checkbox ">
+
+                                <p:selectBooleanCheckbox id="ckbTarget"
+                                                         value="#{statusAtendimentoBean.statusAtendimento.target}"/>
+                                <p:outputLabel for="ckbTarget" value="Target" styleClass="ml-3"/>
+
+
+                            </div>
+
+                            <div class="field-checkbox ">
+
+                                <p:selectBooleanCheckbox id="ckbEfetivo"
+                                                         value="#{statusAtendimentoBean.statusAtendimento.efetivo}"/>
+                                <p:outputLabel for="ckbEfetivo" value="Efetivo" styleClass="ml-3"
+                                />
+
+
+                            </div>
+
+                            <div class="field-checkbox ">
+
+                                <p:selectBooleanCheckbox id="ckbEAlo"
+                                                         value="#{statusAtendimentoBean.statusAtendimento.alo}"/>
+                                <p:outputLabel for="ckbEAlo" value="CPC" styleClass="ml-3"/>
+
+
+                            </div>
+
+                            <div class="field-checkbox ">
+
+                                <p:selectBooleanCheckbox id="cbkConvercao"
+                                                         value="#{statusAtendimentoBean.statusAtendimento.convercao}"/>
+                                <p:outputLabel for="cbkConvercao" value="Conversão" styleClass="ml-3"/>
+
+                            </div>
+
+                            <div class="field-checkbox ">
+
+                                <p:selectBooleanCheckbox id="cbkAgendamento"
+                                                         value="#{statusAtendimentoBean.statusAtendimento.agendamento}"/>
+                                <p:outputLabel for="cbkAgendamento" value="Agendamento "
+                                               styleClass="ml-3"/>
+
+
+                            </div>
+
+                            <div class="field-checkbox ">
+                                <p:selectBooleanCheckbox id="cbkSemInteresse"
+                                                         value="#{statusAtendimentoBean.statusAtendimento.semInteresse}"/>
+                                <p:outputLabel for="cbkSemInteresse" value="Sem interesse "
+                                               styleClass="ml-3"/>
+
+
+                            </div>
+
+                            <div class="field-checkbox ">
+
+
+                                <p:selectBooleanCheckbox id="cbkSemBackoffice"
+                                                         value="#{statusAtendimentoBean.statusAtendimento.backoffice}"/>
+                                <p:outputLabel for="cbkSemInteresse" value="Backoffice " styleClass="ml-3"/>
+
+
+                            </div>
+
+                            <div class="field-checkbox ">
+
+                                <p:selectBooleanCheckbox id="cbkMotivo" value="#{statusAtendimentoBean.motivo}">
+
+                                    <p:ajax listener="#{statusAtendimentoBean.onChangeMotivo()}" global="false"
+                                            update="pgMotivo" process="@this"/>
+
+                                </p:selectBooleanCheckbox>
+
+                                <p:outputLabel for="cbkMotivo" value="Motivo/Submotivo "
+                                               styleClass="ml-3"/>
+
+
+                            </div>
+
+                        </h:panelGroup>
+
+                    </p:fieldset>
+
+                </div>
+
+                <h:panelGroup styleClass="field col-12 md:col-4" id="pgMotivo" layout="block">
+
+                    <p:fieldset styleClass="col-12 fild-set-default-sem-borda p-4" title="Motivos" legend="Motivos"
+                                rendered="#{statusAtendimentoBean.motivo}">
+
+                        <div class="col-12">
+
+                            <div class="col-12 mb:col-3 mb-3"  style=" text-align-last: right;">
+
+                                <p:commandButton icon="pi pi-plus" id="btnMotivoAdd" process="@this" global="false"
+                                                 oncomplete="PF('panelMotivos').show('#{component.clientId}')"
+                                                 update="tableCadastroMotivo"
+                                                 actionListener="#{statusAtendimentoBean.onChangeMotivo()}"
+                                                 styleClass="secondary-button outlined-button"
+                                                 value="Adicionar motivo"/>
+
+                            </div>
+
+                            <p:dataTable paginator="true" value="#{statusAtendimentoBean.statusAtendimento.listMotivos}"
+                                         paginatorPosition="bottom" emptyMessage="#{msg.emptyMessage}"
+                                         styleClass="ui-datatable-striped ui-datatable-sm " rowKey="#{motivo.id}"
+                                         paginatorTemplate="{CurrentPageReport}  {FirstPageLink} {PreviousPageLink} {PageLinks} {NextPageLink} {LastPageLink}"
+                                         currentPageReportTemplate="[#{msg.totalDeRegistros}: {totalRecords}]"
+                                         var="motivo" id="tableMotivos" rows="5">
+
+                                <p:column style="width:16px">
+                                    <p:rowToggler/>
+                                </p:column>
+
+                                <p:column headerText="Motivo">
+                                    <p:outputLabel value="#{motivo.descricao}"/>
+                                </p:column>
+
+                                <p:column headerText="Motivo">
+                                    <p:outputLabel value="#{motivo.acesso.constante}"/>
+                                </p:column>
+
+                                <p:column headerText="Submotivos" width="5%">
+                                    <p:outputLabel
+                                            value="#{empty motivo.listSubMotivos ? '' : motivo.listSubMotivos.size()}"/>
+                                </p:column>
+
+                                <p:column width="15%" style="text-align:center">
+
+                                    <p:commandButton
+                                            icon="#{motivo.selecionado ? 'pi pi-check-circle' : 'pi pi-circle-off'} "
+                                            styleClass="rounded-button ui-button-secondary ui-button-outlined   p-mr-2 "
+                                            process="@this" update="pgMotivo pgSubMotivo" global="false"
+                                            actionListener="#{statusAtendimentoBean.selecionarSubMotivos(motivo)}">
+
+                                        <f:setPropertyActionListener value="#{motivo}"
+                                                                     target="#{statusAtendimentoBean.motivoSelecionado}"/>
+
+                                    </p:commandButton>
+
+                                </p:column>
+
+                                <p:rowExpansion>
+
+                                    <table class="ui-panelgrid ui-widget" role="grid"
+                                           style="width: 50%">
+                                        <thead class="ui-panelgrid-header">
+                                        <tr class="ui-widget-header" role="row">
+                                            <td colspan="1" role="columnheader"
+                                                class="ui-panelgrid-cell ui-widget-header">#{empty
+                                                    motivo.listSubMotivos ?'Não possui
+                                                    submotivos':'Submotivos'}</td>
+                                        </tr>
+                                        </thead>
+                                        <tbody>
+                                        <ui:repeat var="sub" value="#{motivo.listSubMotivos}">
+                                            <tr class="ui-widget-content" role="row">
+
+                                                <td role="gridcell" class="ui-panelgrid-cell">#{sub.descricao}
+                                                </td>
+                                            </tr>
+                                            <tr class="ui-widget-content" role="row">
+
+                                                <td role="gridcell" class="ui-panelgrid-cell">#{sub.acesso.constante}
+                                                </td>
+                                            </tr>
+                                        </ui:repeat>
+                                        </tbody>
+                                    </table>
+
+                                </p:rowExpansion>
+
+                            </p:dataTable>
+
+                        </div>
+
+                    </p:fieldset>
+
+                </h:panelGroup>
+
+                <h:panelGroup styleClass="field col-2 md:col-4" id="pgSubMotivo" layout="block">
+
+                    <p:fieldset styleClass="col-12 fild-set-default-sem-borda p-4" title="Submotivos" legend="Submotivos "
+                                rendered="#{not empty statusAtendimentoBean.motivoSelecionado and statusAtendimentoBean.motivoSelecionado ne null and statusAtendimentoBean.motivo}">
+
+                        <div class="col-12 mb-3 ">
+
+                            <div class="col-12 mb:col-3 text-right" style="text-align-last: right;">
+
+                                <p:commandButton icon="pi pi-plus" id="btnSubMotivoAdd" process="@this" global="false"
+                                                 oncomplete="PF('panelSubMotivos').show('#{component.clientId}')"
+                                                 update="tableSubMotivos panelSubMotivos"
+                                                 styleClass="secondary-button outlined-button"
+                                                 value="Adicionar submotivo"
+                                                 actionListener="#{statusAtendimentoBean.onChangeSubMotivo()}"/>
+
+                            </div>
+
+                            <p:dataTable paginator="true"
+                                         value="#{statusAtendimentoBean.motivoSelecionado.listSubMotivos}"
+                                         paginatorPosition="bottom" emptyMessage="#{msg.emptyMessage}"
+                                         styleClass="ui-datatable-striped ui-datatable-sm mt-3"
+                                         paginatorTemplate="{CurrentPageReport}  {FirstPageLink} {PreviousPageLink} {PageLinks} {NextPageLink} {LastPageLink}"
+                                         currentPageReportTemplate="[#{msg.totalDeRegistros}: {totalRecords}]"
+                                         var="fila" id="tableSubMotivos" rows="5">
+
+                                <f:facet name="header">
+
+                                    <div style="text-align: center;">
+                                        Motivo: #{statusAtendimentoBean.motivoSelecionado.descricao}
+                                    </div>
+
+                                </f:facet>
+
+                                <p:column headerText="Submotivo">
+                                    <p:outputLabel value="#{fila.descricao}"/>
+                                </p:column>
+
+                                <p:column headerText="Ação">
+                                    <p:outputLabel value="#{fila.acao.constante}"/>
+                                </p:column>
+
+                                <p:column headerText="Ação">
+                                    <p:outputLabel value="#{fila.acesso.constante}"/>
+                                </p:column>
+
+                                <p:column width="15%" style="text-align:center">
+
+                                    <p:commandButton icon="fa fw fa-edit"
+                                                     styleClass="ui-button-secondary rounded-button ui-button-outlined mr-2 mb-2"
+                                                     process="@this"
+                                                     oncomplete="PF('panelSubMotivos').show('#{component.clientId}')"
+                                                     update="txtDescricaoSubMotivo groupSubMotivo" title="Editar"
+                                                     global="false">
+
+                                        <f:setPropertyActionListener value="#{fila}"
+                                                                     target="#{statusAtendimentoBean.subMotivo}"/>
+
+                                    </p:commandButton>
+
+                                </p:column>
+
+
+                            </p:dataTable>
+
+                        </div>
+
+                    </p:fieldset>
+
+                </h:panelGroup>
+
+            </div>
+
+
+            <div class="field col-12 mt-3 text-center" >
+
+                <p:commandButton value="Salvar" styleClass="mr-3 ui-button-raised" id="btnSalvar" process="@this panelPrincipal"
+                                 update="@form" icon="pi pi-save" action="#{statusAtendimentoBean.salvar()}"/>
+
+                <p:commandButton value="Voltar" id="btnVoltar" icon="pi pi-arrow-circle-left" styleClass="ui-button-raised"
+                                 actionListener="#{statusAtendimentoBean.voltar()}" immediate="true" ajax="false"/>
+
+            </div>
+
+        </h:panelGroup>
+
+        <p:overlayPanel id="panelMotivos" hideEffect="fade" widgetVar="panelMotivos" styleClass="col-6"
+                        showCloseIcon="true">
+
+
+            <div class="col-12  mt-4">
+
+                <p:fieldset styleClass="fild-set-default-sem-borda" style="padding: 15px 10px;" title="Cadastrar"
+                            legend="Cadastrar novo motivo">
+
+                    <div class="ui-fluid formgrid grid">
+
+                        <div class="field col-12 md:col-4">
+
+                            <p:outputLabel value="Motivo:" id="lblIdFila" for="txtDescricaoMotivo"/>
+
+                            <p:inputText id="txtDescricaoMotivo" required="true" requiredMessage="#{msg.requirido}"
+                                         value="#{statusAtendimentoBean.motivoModel.descricao}"/>
+
+                        </div>
+
+                        <div class="field col-12 md:col-4">
+
+                            <p:outputLabel value="Ação"/>
+
+                            <p:selectOneMenu id="txtAcaoMotivo" value="#{statusAtendimentoBean.motivoModel.acao}" autoWidth="false"
+                                             required="true" requiredMessage="Requerido">
+
+                                <f:selectItem itemLabel="Selecione" noSelectionOption="true"/>
+
+                                <f:selectItems value="#{statusAtendimentoBean.acaoStatus}" var="acao"
+                                               itemLabel="#{acao.constante}" itemValue="#{acao}"/>
+
+                             </p:selectOneMenu>
+
+                        </div>
+
+                        <div class="field col-12 md:col-4">
+
+                            <p:outputLabel for="selectAcesso" value="Acesso:"/>
+
+                            <p:selectOneMenu id="selectAcessoCadMotivo"
+                                             value="#{statusAtendimentoBean.motivoModel.acesso}" required="true"
+                                             requiredMessage="Requerido">
+
+                                <f:selectItem itemLabel="Selecione" noSelectionOption="true"/>
+
+                                <f:selectItems value="#{statusAtendimentoBean.tipoAcessoEnum}" var="acesso"
+                                               itemLabel="#{acesso.constante}" itemValue="#{acesso}"/>
+
+                            </p:selectOneMenu>
+                        </div>
+
+
+                        <div class="col-12 mt-2" style="    text-align: center;">
+
+                            <p:commandButton value="Salvar"
+                                             update="tableCadastroMotivo txtDescricaoMotivo txtAcaoMotivo"
+                                             icon="pi pi-save" actionListener="#{statusAtendimentoBean.salvarMotivo()}"
+                                             process="@this txtDescricaoMotivo selectAcessoCadMotivo txtAcaoMotivo"
+                                             styleClass="ui-button-raised mr-2"/>
+
+                        </div>
+
+                    </div>
+
+                </p:fieldset>
+
+
+                <h:panelGroup styleClass="col-12 mt-4" id="panelTableMotivo">
+
+                    <p:dataTable paginator="true" value="#{statusAtendimentoBean.listMotivos}"
+                                 paginatorPosition="bottom" emptyMessage="#{msg.emptyMessage}"
+                                 styleClass="ui-datatable-striped ui-datatable-sm "
+                                 paginatorTemplate="{CurrentPageReport}  {FirstPageLink} {PreviousPageLink} {PageLinks} {NextPageLink} {LastPageLink}"
+                                 currentPageReportTemplate="[#{msg.totalDeRegistros}: {totalRecords}]"
+                                 var="fila" id="tableCadastroMotivo" rows="5"
+                                 selection="#{statusAtendimentoBean.listMotivosSelecionados}" rowKey="#{fila.id}">
+
+
+                        <f:facet name="header">
+                            Selecione os motivos
+
+                        </f:facet>
+
+                        <p:column selectionMode="multiple" style="width:16px;text-align:center"/>
+
+                        <p:column headerText="Motivo">
+                            <p:outputLabel value="#{fila.descricao}"/>
+                        </p:column>
+                        <p:column headerText="Ação">
+                            <p:outputLabel value="#{fila.acao.constante}"/>
+                        </p:column>
+
+                        <p:column headerText="Acesso">
+                            <p:outputLabel value="#{fila.acesso.constante}"/>
+                        </p:column>
+
+
+                        <p:column width="15%" style="text-align:center">
+
+                            <p:commandButton icon="fa fw fa-edit" styleClass="ui-button-secondary ui-button-flat  mr-2 mb-2"
+                                             process="@this"
+                                             update="txtDescricaoMotivo selectAcessoCadMotivo txtAcaoMotivo"
+                                             title="Editar" global="false">
+
+                                <f:setPropertyActionListener value="#{fila}"
+                                                             target="#{statusAtendimentoBean.motivoModel}"/>
+
+                            </p:commandButton>
+
+                        </p:column>
+
+                        <f:facet name="footer">
+                            <div class="col-12" style="    text-align: center;">
+                                <p:commandButton icon="pi pi-check-circle" value="Selecionar" styleClass="mr-2 mb-2"
+                                                 process="@this panelTableMotivo" update="pgMotivo pgSubMotivo"
+                                                 title="Selecionar" global="false"
+                                                 actionListener="#{statusAtendimentoBean.selecionarMotivos()}"
+                                                 oncomplete="PF('panelMotivos').hide();"/>
+                                <p:commandButton value="fechar" onclick="PF('panelMotivos').hide();" type="button"
+                                                 update="panelTableMotivo" style="margin-top:10px" global="false"
+                                                 styleClass="ui-button-secondary ui-button-outlined mr-2" icon="pi pi-times"/>
+                            </div>
+                        </f:facet>
+
+                    </p:dataTable>
+
+                </h:panelGroup>
+
+
+            </div>
+
+
+        </p:overlayPanel>
+
+        <p:overlayPanel id="panelSubMotivos" hideEffect="fade" widgetVar="panelSubMotivos" styleClass="p-col-3"
+                        showCloseIcon="true">
+
+            <h:panelGroup styleClass="ui-fluid formgrid grid" layout="block" id="groupSubMotivo">
+
+                <h:panelGroup layout="block" id="pnSub" styleClass="col-12  mt-4">
+
+                    <p:fieldset styleClass=" fild-set-default-sem-borda" style="padding: 15px 10px;" title="Cadastrar"
+                                legend="#{empty statusAtendimentoBean.subMotivo.id ? 'Cadastrar novo submotivo' : 'Atualizar submotivo'}  ">
+
+                        <div class="field col-12 ">
+
+                            <p:outputLabel value="Submotivo:" id="lblSubMotivo" for="txtDescricaoSubMotivo"/>
+
+                            <p:inputText id="txtDescricaoSubMotivo" required="true" requiredMessage="#{msg.requirido}"
+                                         value="#{statusAtendimentoBean.subMotivo.descricao}"/>
+
+                        </div>
+
+                        <div class="field col-12 ">
+
+                            <p:outputLabel for="selectOneCadastAcaoSub" value="Ação:"/>
+
+                            <p:selectOneMenu id="selectOneCadastAcaoSub" value="#{statusAtendimentoBean.subMotivo.acao}"
+                                             required="true" requiredMessage="Requerido">
+
+                                <f:selectItem itemLabel="Selecione" noSelectionOption="true"/>
+
+                                <f:selectItems value="#{statusAtendimentoBean.acaoStatus}" var="acao"
+                                               itemLabel="#{acao.constante}" itemValue="#{acao}"/>
+
+                            </p:selectOneMenu>
+                            <p:messages for="selectOneCadastAcaoSub"/>
+
+
+                        </div>
+
+                        <div class="field col-12 ">
+
+                            <p:outputLabel for="selectAcesso" value="Acesso:"/>
+
+                            <p:selectOneMenu id="selectAcesso" value="#{statusAtendimentoBean.subMotivo.acesso}"
+                                             required="true" requiredMessage="Requerido">
+
+                                <f:selectItem itemLabel="Selecione" noSelectionOption="true"/>
+
+                                <f:selectItems value="#{statusAtendimentoBean.tipoAcessoEnum}" var="acesso"
+                                               itemLabel="#{acesso.constante}" itemValue="#{acesso}"/>
+
+                            </p:selectOneMenu>
+
+                            <p:messages for="selectAcesso"/>
+
+                        </div>
+
+
+                    </p:fieldset>
+
+                </h:panelGroup>
+
+                <div class="col-12 mt-3" style="text-align: center;">
+
+                    <p:commandButton value="Salvar" update="tableSubMotivos pgSubMotivo tableMotivos pnSub"
+                                     icon="pi pi-save" actionListener="#{statusAtendimentoBean.salvarSubMotivo()}"
+                                     process="@this txtDescricaoSubMotivo selectOneCadastAcaoSub selectAcesso"
+                                     styleClass="ui-button-raised mr-2"/>
+
+
+                </div>
+
+                <h:panelGroup styleClass="col-12p-md-12 p-mt-4" id="panelSubTableMotivo">
+
+                    <!-- <p:dataTable paginator="true" value="#{statusAtendimentoBean.motivoSelecionado.listSubMotivos}"
+                        paginatorPosition="bottom" emptyMessage="#{msg.emptyMessage}" styleClass="ui-datatable-striped ui-datatable-sm "
+                        paginatorTemplate="{CurrentPageReport}  {FirstPageLink} {PreviousPageLink} {PageLinks} {NextPageLink} {LastPageLink}"
+                        currentPageReportTemplate="[#{msg.totalDeRegistros}: {totalRecords}]"
+                        var="fila" id="tableCadastroSubMotivo" rows="5" >
+
+
+                        <f:facet name="header">
+                        Submotivos
+
+                        </f:facet>
+
+                        <p:column headerText="Motivo">
+                            <p:outputLabel value="#{fila.descricao}" />
+                        </p:column>
+
+                        <p:column width="15%" style="text-align:center">
+
+                            <p:commandButton icon="fa fa-fw fa-edit" styleClass="rounded-button  p-mr-2 p-mb-2"	process="@this" update="txtDescricaoSubMotivo groupSubMotivo" title="Editar" global="false">
+
+                                <f:setPropertyActionListener value="#{fila}" target="#{statusAtendimentoBean.subMotivo}" />
+
+                            </p:commandButton>
+
+                        </p:column>
+
+                         <f:facet name="footer">
+
+                            <p:commandButton value="fechar" onclick="PF('panelSubMotivos').hide();" type="button" update="pgSubMotivo" style="margin-top:10px" global="false" styleClass="secondary-button raised-btn p-mr-2" icon="pi pi-times"/>
+
+                        </f:facet>
+
+                    </p:dataTable> -->
+
+                </h:panelGroup>
+
+            </h:panelGroup>
+
+
+        </p:overlayPanel>
+
+    </h:form>
+
+
+</ui:fragment>

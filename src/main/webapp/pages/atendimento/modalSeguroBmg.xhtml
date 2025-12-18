@@ -1,0 +1,903 @@
+<ui:fragment xmlns="http://www.w3.org/1999/xhtml"
+             xmlns:h="http://java.sun.com/jsf/html"
+             xmlns:f="http://java.sun.com/jsf/core"
+
+             xmlns:ui="http://java.sun.com/jsf/facelets"
+             xmlns:p="http://primefaces.org/ui"
+             xmlns:c="http://java.sun.com/jsp/jstl/core">
+
+    <h:panelGroup id="panelPapCard">
+
+        <p:dialog widgetVar="dlgPapCard" id="dlgPapCard" width="85%" header="Seguro Pap Card" modal="true"
+                  styleClass="dialog-formulario" rendered="#{fichaAtendimentoBean.atendimento ne null}">
+
+            <h:form id="formPapCard" prependId="false" rendered="#{fichaAtendimentoBean.atendimento ne null}">
+
+                <c:if test="#{fichaAtendimentoBean.atendimento.campanha.segmento eq 'EMPRESTIMO'}">
+
+                    <div class="col-12 card">
+
+                        <p:dataTable id="tableCartaoPapCard" lazy="false"
+                                     value="#{fichaAtendimentoBean.clienteSeguroPapCard.listaCartaoPlanos}" var="cartao"
+                                     rows="5" paginator="true" paginatorPosition="bottom"
+                                     emptyMessage="#{msg.emptyMessage}"
+                                     styleClass="ui-datatable-striped ui-datatable-sm"
+                                     disabledSelection="#{cartao.cartaoClienteAtivoVendaSeguro.motivoElegibilidade ne null}"
+                                     currentPageReportTemplate="[#{msg.totalDeRegistros}: {totalRecords}]"
+                                     paginatorTemplate="{CurrentPageReport}  {FirstPageLink} {PreviousPageLink} {PageLinks} {NextPageLink} {LastPageLink} {Exporters}">
+
+                            <f:facet name="header">
+                                Selecione o Cartão
+                            </f:facet>
+
+                            <p:column headerText="Entidade" width="5%">
+
+                                <p:outputLabel value="#{cartao.cartaoClienteAtivoVendaSeguro.codigoEntidade}"/>
+
+                            </p:column>
+
+                            <p:column headerText="Orgão" width="5%">
+
+                                <p:outputLabel value="#{cartao.cartaoClienteAtivoVendaSeguro.sequencialOrgao}"/>
+
+                            </p:column>
+
+                            <p:column headerText="CPF" width="15%">
+
+                                <p:outputLabel value="#{cartao.cartaoClienteAtivoVendaSeguro.cpf}"/>
+
+                            </p:column>
+
+                            <p:column headerText="Nome Cliente" width="25%%">
+
+                                <p:outputLabel value="#{cartao.cartaoClienteAtivoVendaSeguro.nomeCliente}"/>
+
+                            </p:column>
+
+                            <p:column headerText="Numero Cartão" width="12%">
+
+                                <p:outputLabel value="#{cartao.cartaoClienteAtivoVendaSeguro.numeroCartao}"/>
+
+                            </p:column>
+
+                            <p:column headerText="Motivo Eletividade" width="20%" style="text-align: start;">
+
+                                <p:outputLabel value="#{cartao.cartaoClienteAtivoVendaSeguro.motivoElegibilidade}"
+                                               escape="false"/>
+
+                            </p:column>
+
+                            <p:column headerText="Número Conta" width="8%">
+
+                                <p:outputLabel value="#{cartao.cartaoClienteAtivoVendaSeguro.numeroInternoConta}"/>
+
+                            </p:column>
+
+                            <p:column headerText="Selecionar" width="8%">
+
+                                <p:commandButton icon="pi pi-check" title="Selecione" update="dlgPapCardAverbar"
+                                                 disabled="#{empty cartao.listaPlanosSeguroReturn}"
+                                                 styleClass="rounded-button text-button success-button"
+                                                 oncomplete="PF('dlgPapCard').hide();PF('dlgPapCardAverbar').show();">
+
+                                    <f:setPropertyActionListener value="#{cartao}"
+                                                                 target="#{fichaAtendimentoBean.cartaoProdutoSeguroBmg}"/>
+
+                                </p:commandButton>
+
+                            </p:column>
+
+                        </p:dataTable>
+                    </div>
+
+                </c:if>
+                <div style="text-align: center;" class="col-12">
+
+                    <p:commandButton value="Fechar" type="button" id="btnSair" icon="pi pi-times"
+                                     onclick="PF('dlgPapCard').hide();" style="width: auto;"
+                                     styleClass="ui-button-raised"/>
+
+                </div>
+
+            </h:form>
+
+        </p:dialog>
+
+
+        <p:dialog widgetVar="dlgPapCardAverbar" id="dlgPapCardAverbar" width="85%" header="Proposta de Seguro"
+                  modal="true" height="600" maximizable="true">
+
+            <h:form id="formPapCardAverbar" prependId="false" rendered="#{fichaAtendimentoBean.atendimento ne null}">
+
+
+                <p:panel header="Cabeçalho" styleClass="p-mb-3">
+
+                    <div class=" ui-fluid">
+
+                        <div class="field grid">
+
+                            <p:outputLabel value="Produto Seguro" styleClass="col-12 mb-2 md:col-2 md:mb-0"/>
+
+                            <div class="col-12 md:col-10">
+
+                                <p:outputLabel value="#{fichaAtendimentoBean.tipoConsulta.constante}"/>
+
+                            </div>
+
+                        </div>
+
+
+                        <div class="field grid">
+
+
+                            <p:outputLabel value="Loja" styleClass="col-12 mb-2 md:col-2 md:mb-0"/>
+
+
+                            <h:panelGroup class="col-12 md:col-10" layout="block"
+                                          rendered="#{not empty fichaAtendimentoBean.listLojas}">
+
+                                <p:selectOneMenu id="selectOneLojasSeguro"
+                                                 value="#{fichaAtendimentoBean.atendimento.loja}"
+                                                 converter="omnifaces.SelectItemsConverter" filter="true"
+                                                 required="true" requiredMessage="Obrigatório"
+                                                 filterMatchMode="contains">
+
+                                    <f:selectItems value="#{fichaAtendimentoBean.listLojas}" var="loja"
+                                                   itemLabel="#{loja.codigoLoja}" itemValue="#{loja}"/>
+
+                                </p:selectOneMenu>
+
+
+                            </h:panelGroup>
+
+                            <h:panelGroup class="col-12 md:col-10" layout="block"
+                                          rendered="#{empty fichaAtendimentoBean.listLojas}">
+
+                                <p:inputText value="#{fichaAtendimentoBean.atendimento.loja.codigoLoja}"
+                                             id="txtInputLojaSeguro"/>
+
+                            </h:panelGroup>
+
+                            <div class="col-12 md:col-2">
+
+                                <p:message for="selectOneLojasSeguro"
+                                           rendered="#{not empty fichaAtendimentoBean.listLojas}"/>
+                                <p:message for="txtInputLojaSeguro" rendered="#{empty fichaAtendimentoBean.listLojas}"/>
+
+                            </div>
+
+                        </div>
+
+                    </div>
+
+                </p:panel>
+
+                <p:panel header="Planos Contratação" styleClass="mb-3 mt-3">
+
+                    <p:dataTable id="tablePlanos" lazy="false"
+                                 value="#{fichaAtendimentoBean.cartaoProdutoSeguroBmg.listaPlanosSeguroReturn.planos}"
+                                 var="plano" styleClass="ui-datatable-striped ui-datatable-sm"
+                                 emptyMessage="#{msg.emptyMessage}"
+                                 selection="#{fichaAtendimentoBean.planoContratoSeguro}" rowKey="#{plano.codigoPlano}"
+                                 rowSelectMode="checkbox" nativeElements="true">
+
+                        <p:column selectionMode="single" style="width: 5%"/>
+
+                        <p:column headerText="Planos" width="20%">
+
+                            <p:outputLabel value="#{plano.nomePlano}"/>
+
+                        </p:column>
+
+                        <p:column headerText="Coberturas e Beneficios" width="15%">
+
+                            <p:commandButton value="Click para Vizualizar" oncomplete="PF('dlgCobertura').show();"
+                                             process="tablePlanos" update="dlgCobertura"
+                                             styleClass="ui-button-info ui-button-flat text-button">
+
+                                <f:setPropertyActionListener target="#{fichaAtendimentoBean.planoContratoSeguro}"
+                                                             value="#{plano}"/>
+
+                            </p:commandButton>
+
+                        </p:column>
+
+                        <p:column headerText="Valor do Plano" width="10%">
+
+                            <p:outputLabel value="#{plano.valorPremio}"/>
+
+                        </p:column>
+
+
+                    </p:dataTable>
+
+
+                </p:panel>
+
+                <p:panel header="Forma de Pagamento" styleClass="mb-3 p-3">
+
+                    <div class="ui-fluid">
+
+                        <div class="field grid">
+
+                            <p:outputLabel styleClass="col-12 mb-2 md:col-2 md:mb-0" value="Forma  Pagamento:"
+                                           for="selectFormaPagamentoSeguro"/>
+
+                            <div class="col-12 md:col-5">
+
+                                <p:selectOneMenu id="selectFormaPagamentoSeguro"
+                                                 value="#{fichaAtendimentoBean.formaPagamentoSeguro}" required="true"
+                                                 requiredMessage="Obrigatório"
+                                                 converter="omnifaces.SelectItemsConverter" filter="true"
+                                                 filterMatchMode="contains" autoWidth="false">
+
+                                    <f:selectItem itemLabel="Selecione" itemValue=""/>
+
+                                    <f:selectItems value="#{fichaAtendimentoBean.listFormaPagamentoSeguro}" var="forma"
+                                                   itemLabel="#{forma.descricao}" itemValue="#{forma}"/>
+
+                                </p:selectOneMenu>
+
+
+                            </div>
+
+
+                            <div class="col-12 md:col-5 ">
+
+                                <p:commandButton actionListener="#{fichaAtendimentoBean.gerarScriptVenda('HTML')}"
+                                                 partialSubmit="true"
+                                                 process="@this tablePlanos panelGroupOperador selectFormaPagamentoSeguro"
+                                                 update="@form dlgScriptVenda" styleClass="mr-3"
+                                                 value="Script Venda formatado"/>
+                                <p:commandButton actionListener="#{fichaAtendimentoBean.gerarScriptVenda('TEXTO')}"
+                                                 partialSubmit="true"
+                                                 process="@this tablePlanos panelGroupOperador selectFormaPagamentoSeguro"
+                                                 update="@form dlgScriptVenda" value="Script Venda texto"/>
+
+                            </div>
+
+                            <div class="col-12 md:col-5">
+                                <p:message for="selectFormaPagamentoSeguro"/>
+                            </div>
+
+                        </div>
+
+                    </div>
+
+                </p:panel>
+
+                <p:panel header="Endereço / Telefone" styleClass=" mb-3">
+
+                    <div class="ui-fluid formgrid grid">
+
+                        <div class="col-12 md:col-8">
+
+                            <p:dataTable id="tableEnderecoSeguro" widgetVar="tableEnderecoSeguro"
+                                         value="#{fichaAtendimentoBean.atendimento.listaEnderecos}"
+                                         var="endereco" rows="5" paginator="true"
+                                         selection="#{fichaAtendimentoBean.endereco}" rowKey="#{endereco.id}"
+                                         paginatorPosition="bottom" emptyMessage="#{msg.emptyMessage}"
+                                         styleClass="ui-datatable-sm ui-datatable-striped ui-datatable-gridlines"
+                                         currentPageReportTemplate="[#{msg.totalDeRegistros}: {totalRecords}]"
+                                         paginatorTemplate="{CurrentPageReport}  {FirstPageLink} {PreviousPageLink} {PageLinks} {NextPageLink} {LastPageLink} {Exporters}">
+
+                                <f:facet name="header">
+                                    Endereços
+                                </f:facet>
+
+
+                                <p:ajax event="page" global="false"/>
+
+                                <p:column selectionMode="single" style="width: 5%"/>
+
+                                <p:column headerText="Logradouro" width="30%">
+
+                                    <p:outputLabel value="#{endereco.logradouro}"/>
+
+                                </p:column>
+
+                                <p:column headerText="Numero" width="5%">
+
+                                    <p:outputLabel value="#{endereco.numero}"/>
+
+                                </p:column>
+
+                                <p:column headerText="Bairro" width="20%">
+
+                                    <p:outputLabel value="#{endereco.bairro}"/>
+
+                                </p:column>
+
+                                <p:column headerText="Cidade" width="20%">
+
+                                    <p:outputLabel value="#{endereco.cidade}"/>
+
+                                </p:column>
+
+                                <p:column headerText="UF" width="10%">
+
+                                    <p:outputLabel value="#{endereco.uf}"/>
+
+                                </p:column>
+
+                                <p:column headerText="Cep" width="10%">
+
+                                    <p:outputLabel value="#{endereco.cep}"/>
+
+                                </p:column>
+
+                                <p:column headerText="Ação" width="5%" style="text-align:center">
+
+                                    <f:facet name="header">
+
+                                        <p:commandLink id="btnAddEndSeguro" icon="pi pi-plus"
+                                                       styleClass="secondary-button" title="Adicionar Endereço"
+                                                       oncomplete="PF('dlgEndereco').show()"
+                                                       update="tableEnderecoSeguro" global="false"
+                                                       actionListener="#{fichaAtendimentoBean.criarEntidade('ENDERECO')}"
+                                                       ajax="true">
+
+                                            <i class="fa fa-plus-square"/>
+
+                                        </p:commandLink>
+
+
+                                    </f:facet>
+
+                                    <p:commandButton immediate="true" global="false" title="Alterar Endereço"
+                                                     oncomplete="PF('dlgEndereco').show()" update="dlgEndereco"
+                                                     icon="fa fa-fw fa-edit" styleClass="rounded-button text-button">
+
+                                        <f:setPropertyActionListener value="#{endereco}"
+                                                                     target="#{fichaAtendimentoBean.endereco}"/>
+
+                                        <f:setPropertyActionListener value="U" target="#{fichaAtendimentoBean.acao}"/>
+
+                                    </p:commandButton>
+
+                                </p:column>
+
+                            </p:dataTable>
+
+                        </div>
+
+                        <h:panelGroup styleClass="col-12 md:col-4" layout="block" id="pgnTableTelSeguro">
+
+                            <p:dataTable rows="5" paginator="true"
+                                         value="#{fichaAtendimentoBean.atendimento.listaTelefonesOrdenada}"
+                                         paginatorPosition="bottom"
+                                         emptyMessage="#{msg.emptyMessage}"
+                                         currentPageReportTemplate="[ #{msg.totalDeRegistros}: {totalRecords} ]"
+                                         paginatorTemplate="{CurrentPageReport}  {FirstPageLink} {PreviousPageLink} {PageLinks} {NextPageLink} {LastPageLink}"
+                                         var="tel" id="tableTelSeguro" selection="#{fichaAtendimentoBean.telefone}"
+                                         rowKey="#{tel.id}" styleClass="ui-datatable-striped ui-datatable-sm ">
+
+                                <f:facet name="header">
+                                    Telefones
+                                </f:facet>
+
+                                <p:ajax event="page" global="false"/>
+
+                                <p:column selectionMode="single" style="width: 5%"/>
+
+                                <p:column headerText="#{msg.ddd}" style="text-align:center">
+
+                                    <div class="contact-actions">
+
+                                        #{tel.ddd}
+
+                                    </div>
+
+                                </p:column>
+
+                                <p:column headerText="Número" style="text-align:center">
+
+                                    <div class="contact-actions">
+
+                                        #{tel.numero}
+
+                                    </div>
+
+                                </p:column>
+
+                                <p:column width="5%">
+
+                                    <f:facet name="header">
+
+                                        <p:commandLink global="false" immediate="true" update=":dlgTelefone"
+                                                       oncomplete="PF('dlgTelefone').show();"
+                                                       styleClass="rounded-button p-mr-2 secondary-button"
+                                                       title="Adicionar telefone"
+                                                       action="#{fichaAtendimentoBean.criarEntidade('TELEFONE')}">
+
+                                            <i class="fa fa-plus-square"/>
+
+                                        </p:commandLink>
+
+                                    </f:facet>
+
+                                </p:column>
+
+                            </p:dataTable>
+
+                        </h:panelGroup>
+
+                    </div>
+
+                </p:panel>
+
+                <h:panelGroup id="panelGroupOperador" layout="block">
+
+                    <p:panel header="Dados Operador de Vendas" styleClass="mb-3">
+
+                        <div class="ui-fluid">
+
+                            <div class="field grid">
+
+
+                                <p:outputLabel value="CPF Operador Vendas:" styleClass="col-12 mb-2 md:col-2 md:mb-0"/>
+
+
+                                <div class="col-12 md:col-10">
+
+                                    <p:inputText value="#{fichaAtendimentoBean.usuario.cpf}" required="true"
+                                                 id="cpfAgentSeguro" requiredMessage="Obrigatório"/>
+
+                                </div>
+
+                                <p:message for="cpfAgentSeguro"/>
+
+                            </div>
+
+                            <div class="field grid">
+
+
+                                <p:outputLabel value="Login Consig:" styleClass="col-12 mb-2 md:col-2 md:mb-0"/>
+
+
+                                <div class="col-12 md:col-6">
+
+                                    <p:inputText value="#{fichaAtendimentoBean.loginConsig}" required="true"
+                                                 id="txtSeguroLoginConsig" requiredMessage="Obrigatório"/>
+
+                                </div>
+
+                                <p:message for="txtSeguroLoginConsig"/>
+
+                            </div>
+
+                            <div class="field grid">
+
+
+                                <p:outputLabel value="Senha Consig:" styleClass="col-12 mb-2 md:col-2 md:mb-0"/>
+
+
+                                <div class="col-12 md:col-6">
+
+                                    <p:inputText value="#{fichaAtendimentoBean.senhaConsig}" required="true"
+                                                 id="txtSeguroSenhaConsig" type="password"
+                                                 requiredMessage="Obrigatório"/>
+
+                                </div>
+
+                                <p:message for="txtSeguroSenhaConsig"/>
+
+                            </div>
+
+                        </div>
+
+
+                    </p:panel>
+
+                </h:panelGroup>
+
+                <p:panel header="Dados Pessoais" styleClass="mb-3">
+
+                    <div class="ui-fluid">
+
+                        <div class="field grid">
+
+
+                            <p:outputLabel value="Nome:" styleClass="col-12 mb-2 md:col-2 md:mb-0"/>
+
+                            <div class="col-12 md:col-6">
+
+                                <p:inputText value="#{fichaAtendimentoBean.atendimento.nome}" disabled="true"/>
+
+                            </div>
+
+                        </div>
+
+                        <div class="field grid">
+
+
+                            <p:outputLabel styleClass="col-12 mb-2 md:col-2 md:mb-0" value="CPF:"/>
+
+
+                            <div class="col-12 md:col-6">
+
+                                <p:inputText value="#{fichaAtendimentoBean.atendimento.cpf}" readonly="true"
+                                             disabled="true" required="true" id="txtCPFSeguro"/>
+
+
+                            </div>
+
+                            <p:message for="txtCPFSeguro"/>
+
+                        </div>
+
+                        <div class="field grid">
+
+
+                            <p:outputLabel styleClass="col-12 mb-2 md:col-2 md:mb-0" value="Sexo:" style="float: right;"
+                                           for="selectOneSexoSeuro"/>
+
+
+                            <div class="col-12 md:col-6">
+
+                                <p:selectOneMenu id="selectOneSexoSeuro"
+                                                 value="#{fichaAtendimentoBean.atendimento.sexo}"
+                                                 converter="omnifaces.SelectItemsConverter" required="true"
+                                                 requiredMessage="#{msg.requerido}">
+
+                                    <f:selectItem itemLabel="Selecione" noSelectionOption="true"/>
+
+                                    <f:selectItems value="#{fichaAtendimentoBean.listSexoEnum}" var="sexo"
+                                                   itemLabel="#{sexo.constante}" itemValue="#{sexo}"/>
+
+                                </p:selectOneMenu>
+
+                            </div>
+
+                            <p:message for="selectOneSexoSeuro"/>
+
+                        </div>
+
+                        <div class="field grid">
+
+
+                            <p:outputLabel styleClass="col-12 mb-2 md:col-2 md:mb-0" value="Estado Civil:"
+                                           for="selectOneEstadoCivil"/>
+
+
+                            <div class="col-12 md:col-6">
+
+
+                                <p:selectOneMenu id="selectOneEstadoCivil"
+                                                 value="#{fichaAtendimentoBean.atendimento.estadoCivil}"
+                                                 converter="omnifaces.SelectItemsConverter"
+                                                 requiredMessage="#{msg.requerido}" required="true">
+
+                                    <f:selectItem itemLabel="Selecione" noSelectionOption="true"/>
+
+                                    <f:selectItems value="#{fichaAtendimentoBean.estadoCivil}" var="estado"
+                                                   itemLabel="#{estado.descricao}" itemValue="#{estado}"/>
+
+                                </p:selectOneMenu>
+
+                            </div>
+
+                            <p:message for="selectOneEstadoCivil"/>
+
+                        </div>
+
+
+                        <div class="field grid">
+
+
+                            <p:outputLabel styleClass="col-12 mb-2 md:col-2 md:mb-0" value="Data Nascimento:"
+                                           for="txtDataDeNascSeguro"/>
+
+
+                            <div class="col-12 md:col-6">
+
+                                <p:inputMask id="txtDataDeNascSeguro"
+                                             value="#{fichaAtendimentoBean.atendimento.dataNascimento}"
+                                             mask="99/99/9999" required="true"
+                                             requiredMessage="Requerido. Ao Gerar script este campo é preenchido automaticamente. ">
+
+                                    <f:convertDateTime pattern="dd/MM/yyyy"/>
+
+
+                                </p:inputMask>
+
+
+                            </div>
+                            <p:message for="txtDataDeNascSeguro"/>
+
+                        </div>
+
+                        <div class="field grid">
+
+
+                            <p:outputLabel styleClass="col-12 mb-2 md:col-2 md:mb-0" value="Nome Cônjuge:"/>
+
+
+                            <div class="col-12 md:col-6">
+
+                                <p:inputText value="#{fichaAtendimentoBean.atendimento.nomeConjuge}"/>
+
+                            </div>
+
+                        </div>
+
+                        <div class="field grid">
+
+
+                            <p:outputLabel styleClass="col-12 mb-2 md:col-2 md:mb-0" value="Nome Mãe:"
+                                           for="txtSeguroNomeMae"/>
+
+
+                            <div class="col-12 md:col-6">
+
+                                <p:inputText value="#{fichaAtendimentoBean.atendimento.nomeMae}" id="txtSeguroNomeMae"
+                                             required="true"
+                                             requiredMessage="Requerido. Ao Gerar script este campo é preenchido automaticamente."/>
+
+                            </div>
+
+                            <p:message for="txtSeguroNomeMae"/>
+
+                        </div>
+
+                        <div class="field grid">
+
+
+                            <p:outputLabel styleClass="col-12 mb-2 md:col-2 md:mb-0" value="Nome Pai:"/>
+
+
+                            <div class="col-12 md:col-6">
+
+                                <p:inputText value="#{fichaAtendimentoBean.atendimento.nomePai}"/>
+
+                            </div>
+
+                        </div>
+
+                        <div class="field grid">
+
+
+                            <p:outputLabel styleClass="col-12 mb-2 md:col-2 md:mb-0"
+                                           value="Nro.Ident. - Órg.Emissor - UF:"/>
+
+
+                            <div class="col-12 md:col-2">
+
+                                <p:inputText value="#{fichaAtendimentoBean.atendimento.numeroDocumento}"/>
+
+                            </div>
+                            -
+                            <div class="col-12 md:col-2">
+
+                                <p:inputText value="#{fichaAtendimentoBean.atendimento.orgaoDocumento}"/>
+
+                            </div>
+                            -
+                            <div class="col-12 md:col-2">
+
+                                <p:inputText value="#{fichaAtendimentoBean.atendimento.ufDocumento}"/>
+
+                            </div>
+
+                        </div>
+
+                        <div class="field grid">
+
+
+                            <p:outputLabel styleClass="col-12 mb-2 md:col-2 md:mb-0"
+                                           value="Data de Emissão da Identidade:"/>
+
+
+                            <div class="col-12 md:col-10">
+
+                                <p:inputMask id="txtDataDeEmissaoSeguro"
+                                             value="#{fichaAtendimentoBean.atendimento.dataEmissaoDocumento}"
+                                             mask="99/99/9999">
+
+                                    <f:convertDateTime pattern="dd/MM/yyyy"/>
+
+                                </p:inputMask>
+
+
+                            </div>
+
+                        </div>
+
+                    </div>
+
+                </p:panel>
+
+                <p:panel header="Forma de Envio" styleClass="mb-3">
+
+                    <div class="ui-fluid">
+
+                        <div class="field grid">
+
+                            <p:outputLabel value="Forma de Envio:" styleClass="col-12 mb-2 md:col-2 md:mb-0"/>
+
+
+                            <div class="col-12 md:col-6">
+
+                                <p:selectOneMenu id="selectFormaEnvioSeguro" value="#{fichaAtendimentoBean.tipoEnvio}"
+                                                 converter="omnifaces.SelectItemsConverter" required="true"
+                                                 filter="true" filterMatchMode="contains" autoWidth="false">
+
+                                    <f:selectItem itemLabel="Selecione" itemValue=""/>
+
+                                    <f:selectItems value="#{fichaAtendimentoBean.listFormaEnvio}" var="formaEnvio"
+                                                   itemLabel="#{formaEnvio.constante}" itemValue="#{forma}"/>
+
+                                </p:selectOneMenu>
+
+
+                            </div>
+                            <p:message for="selectFormaEnvioSeguro"/>
+
+                        </div>
+
+                    </div>
+
+
+                </p:panel>
+
+                <div style="text-align: center;" class="col-12">
+
+
+                    <p:commandButton type="button" styleClass="mr-4" onclick="PF('dlgPapCardAverbar').hide();"
+                                     value="Fechar"/>
+
+                    <p:commandButton value="Gravar Proposta" update=":formConteudo @form"
+                                     process="@this formPapCard formPapCardAverbar"
+                                     actionListener="#{fichaAtendimentoBean.averbarPropostaSeguroBMG()}"/>
+
+
+                </div>
+
+            </h:form>
+
+        </p:dialog>
+
+        <p:dialog widgetVar="dlgCobertura" id="dlgCobertura" width="55%" header="Cobertura/Beneficios" modal="true"
+                  height="600">
+
+            <div class="mb-5 p-3">
+
+                <div class=" ui-fluid">
+
+                    <ui:repeat var="beneficio" value="#{fichaAtendimentoBean.planoContratoSeguro}">
+
+                        <div class="field grid">
+
+                            <p:outputLabel value="Plano" styleClass="col-12 mb-2 md:col-2 md:mb-0"/>
+
+                            <div class="col-12 md:col-10">
+
+                                <p:outputLabel value="#{beneficio.nomePlano}"/>
+
+                            </div>
+
+                        </div>
+
+                        <div class="field grid">
+
+                            <p:outputLabel value="Valor Capital Segurado" styleClass="col-12 mb-2 md:col-2 md:mb-0"/>
+
+                            <div class="col-12 md:col-10">
+
+                                <p:outputLabel value="#{beneficio.valorCapitalSegurado}"/>
+
+                            </div>
+
+                        </div>
+                        <div class="field grid">
+
+                            <p:outputLabel value="Quantidade Mês Vigente" styleClass="col-12 mb-2 md:col-2 md:mb-0"/>
+
+                            <div class="col-12 md:col-10">
+
+                                <p:outputLabel value="#{beneficio.quantidadeMesVigente}"/>
+
+                            </div>
+
+                        </div>
+
+                    </ui:repeat>
+                </div>
+
+            </div>
+
+            <p:panel header="Cobertura" style="padding: 5px">
+
+                <div class=" ui-fluid" style="padding: 5px">
+
+                    <ui:repeat var="cobertura" value="#{fichaAtendimentoBean.planoContratoSeguro.coberturas}">
+
+                        <div class="mb:col-3">
+
+                            <p:fieldset legend="#{cobertura.nomeCobertura}" styleClass="mb-2 fild-set-default-sem-borda"
+                                        style="padding:0px 20px">
+
+                                <div class="field grid">
+
+                                    <p:outputLabel value="Codigo Cobertura" styleClass="col-12 mb-4 md:col-4 md:mb-0"/>
+
+                                    <div class="col-12 md:col-2">
+
+                                        <p:outputLabel value="#{cobertura.codigoCobertura}"/>
+
+                                    </div>
+
+                                </div>
+
+                                <div class="field grid">
+
+                                    <p:outputLabel value="Codigo Produto" styleClass="col-12 mb-4 md:col-4 md:mb-0"/>
+
+                                    <div class="col-12 md:col-2">
+
+                                        <p:outputLabel value="#{cobertura.codigoProdutoSeguro}"/>
+
+                                    </div>
+
+                                </div>
+
+                                <div class="field grid">
+
+                                    <p:outputLabel value="Quantidade Mês Vigente"
+                                                   styleClass="col-12 mb-4 md:col-4 md:mb-0"/>
+
+                                    <div class="col-12 md:col-2">
+
+                                        <p:outputLabel value="#{cobertura.valorBeneficio}"/>
+
+                                    </div>
+
+                                </div>
+
+                            </p:fieldset>
+
+                        </div>
+
+                    </ui:repeat>
+                </div>
+
+            </p:panel>
+
+            <div style="text-align: center;" class="col-12">
+
+                <p:commandButton type="button" icon="pi pi-times" onclick="PF('dlgCobertura').hide();" value="Fechar"/>
+
+            </div>
+
+        </p:dialog>
+
+        <p:dialog widgetVar="dlgScriptVenda" id="dlgScriptVenda" styleClass="dialog-formulario" width="90%"
+                  maximizable="true" header="#{fichaAtendimentoBean.tituloScriptPapCard}" modal="true" height="650"
+                  style="font-size: 16px;line-height: 1.7">
+
+            <div class=" ui-fluid" style="padding: 5px">
+
+                <div class=" col-12">
+
+                    <div class="card" style="line-height: 1.7;">
+
+                        <h:outputFormat escape="false" value="#{fichaAtendimentoBean.scriptPapCard}"/>
+
+                    </div>
+                </div>
+
+            </div>
+
+            <div style="text-align: center;" class="col-12">
+
+                <p:commandButton type="button" icon="pi pi-times" onclick="PF('dlgScriptVenda').hide();"
+                                 value="Fechar" styleClass="p-mr-3"/>
+
+            </div>
+
+        </p:dialog>
+
+    </h:panelGroup>
+
+
+</ui:fragment>

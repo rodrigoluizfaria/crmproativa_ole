@@ -1,0 +1,322 @@
+<ui:composition xmlns="http://www.w3.org/1999/xhtml"
+                xmlns:h="http://java.sun.com/jsf/html"
+                xmlns:f="http://java.sun.com/jsf/core"
+                xmlns:ui="http://java.sun.com/jsf/facelets"
+                xmlns:p="http://primefaces.org/ui" template="/WEB-INF/template.xhtml">
+
+
+    <ui:define name="viewname">
+
+        <div class="bcca-breadcrumb">
+            <div class="bcca-breadcrumb-item bg-primary-500 hover:bg-primary-700">
+                <p:link outcome="/pages/administrativo/upload" styleClass="uppercase"
+                        style="text-decoration: none">IMPORTAÇÃO BACKOFFICE</p:link>
+            </div>
+            <div class="bcca-breadcrumb-item uppercase">ADMINISTRATIVO</div>
+        </div>
+
+    </ui:define>
+
+    <ui:define name="content">
+
+        <p:growl id="grl" widgetVar="grl" globalOnly="true" escape="false" showSummary="false" life="8000"
+                 showDetail="true" sticky="false">
+        </p:growl>
+
+        <h:form id="formConteudo" prependId="false">
+
+            <p:poll interval="10" listener="#{extratorBean.pesquisar()}" process="@this" update="panelExtrator"
+                    global="false"/>
+
+            <div class="col-12">
+
+                <div class="grid card">
+
+                    <div class="field col-12 md:col-6">
+
+                        <p:fieldset legend="Selecione o Arquivo .csv"
+                                    styleClass="fild-set-default-sem-borda p-field-set " style="padding: 0px 20px;">
+
+                            <div class="ui-fluid formgrid grid">
+
+                                <div class="field col-12 md:col-4">
+
+                                    <p:fileUpload auto="true" value="#{extratorBean.file}"
+                                                  chooseIcon="pi pi-folder-open" label="Escolha"
+                                                  allowTypes="/(\.|\/)(CSV|csv)$/"
+                                                  invalidFileMessage="São permitidas somente CSV (csv,CSV)"
+                                                  update="grl pngParam pngDadosImportacao btnProcessar"
+                                                  sizeLimit="15000000" process="@this"
+                                                  listener="#{extratorBean.handleFileUpload}" id="fileUpload"
+                                                  mode="advanced" skinSimple="true"
+                                                  invalidSizeMessage="tamanho maximo excedido: "/>
+
+                                </div>
+
+                                <div class="field col-12 md:col-6">
+
+                                    <h:panelGroup id="pngParam" styleClass="col-12 " layout="block">
+
+                                        <div class="field grid">
+
+
+                                            <p:outputLabel value="Nome do Arquivo:"  styleClass="col-12 mb-2 md:col-4 md:mb-0"/>
+
+                                            <div class="col-12 md:col-8">
+                                                #{extratorBean.importacao.nomeArquivo}
+                                            </div>
+
+                                        </div>
+
+                                        <div class="field grid">
+
+                                            <p:outputLabel value="Total de linhas:"  styleClass="col-12 mb-2 md:col-4 md:mb-0"/>
+
+                                            <div class="col-12 md:col-8">
+
+                                                #{extratorBean.qtidadeLinhas}</div>
+                                        </div>
+
+
+                                        <div class="field grid">
+
+                                            <p:outputLabel for="ckbIntegrada" value="Cabeçalho:"
+                                                           styleClass="col-12 mb-2 md:col-4 md:mb-0"/>
+
+                                            <div class="col-12 md:col-8">
+
+                                                #{extratorBean.qtidadeColunas}
+                                                <i class="fa fa-w fa-circle-info ml-3 "
+                                                   title="#{extratorBean.importacao.header}" id="focus"
+                                                   aria-hidden="true"/>
+
+                                            </div>
+
+                                        </div>
+
+                                        <div class="field grid">
+
+                                            <p:outputLabel value="Log:" styleClass="col-12 mb-2 md:col-4 md:mb-0"/>
+
+                                            <div class="col-12 md:col-8">
+
+                                                #{extratorBean.logImportacao}</div>
+
+                                        </div>
+
+                                        <div class="field grid">
+
+                                            <p:outputLabel value="Mensagens:"
+                                                           styleClass="col-12 mb-2 md:col-4 md:mb-0"/>
+
+                                            <div class="col-12 md:col-8">
+
+                                                <p:messages id="msg" closable="true"
+                                                            forIgnores="selectInstituicaoFinanceira"/>
+
+                                            </div>
+
+                                        </div>
+
+                                    </h:panelGroup>
+
+                                </div>
+
+                            </div>
+
+                        </p:fieldset>
+
+                    </div>
+
+                    <h:panelGroup styleClass="field col-12 md:col-6" id="pngDadosImportacao" layout="block">
+
+                        <p:fieldset legend="Dados da importação" styleClass="fild-set-default-sem-borda" style=" padding: 0px 20px;">
+
+                            <div class="ui-fluid formgrid grid">
+
+                                <div class="field col-12 md:col-6">
+
+                                    <h:outputLabel for="txtDescricao" value="Descrição"/>
+
+                                    <p:inputText value="#{extratorBean.importacao.descricao}" id="txtDescricao"
+                                                 maxlength="150"/>
+
+                                </div>
+
+                                <div class="field col-12 md:col-6">
+
+                                    <h:outputLabel for="selectInstituicaoFinanceira" value="Instituição Financeira:"/>
+
+                                    <p:selectOneMenu id="selectInstituicaoFinanceira"
+                                                     value="#{extratorBean.importacao.instituicaoFinanceira}"
+                                                     required="true" requiredMessage="#{msg.requerido}"
+                                                     autoWidth="false" filter="true" filterMatchMode="contains"
+                                                     converter="omnifaces.SelectItemsConverter">
+
+                                        <f:selectItem itemLabel="Selecione" noSelectionOption="true"/>
+
+                                        <f:selectItems value="#{extratorBean.instituicoesFinanceiras}" var="instituicao"
+                                                       itemLabel="#{instituicao.constante}" itemValue="#{instituicao}"/>
+
+                                    </p:selectOneMenu>
+
+                                    <p:message for="selectInstituicaoFinanceira"/>
+
+                                </div>
+
+                                <div class="field grid mb:col-4 mr-5 ml-5">
+
+                                    <p:outputLabel value="Integrar Propostas existentes "/>
+
+                                    <div class="ml-6">
+
+                                        <p:selectBooleanCheckbox id="ckbIntegrada"
+                                                                 value="#{extratorBean.importacao.integrarPropostas}"/>
+
+                                    </div>
+
+                                </div>
+
+                                <div class="field grid mb:col-4 mr-5 ml-5">
+
+                                    <p:outputLabel value="Validar Status Consistências"/>
+
+                                    <div class="ml-6">
+
+                                        <p:selectBooleanCheckbox id="chkStatus" value="#{extratorBean.validarStatus}"
+                                                                 syleClass="p-col-12 p-ml-4 "/>
+
+                                    </div>
+
+                                </div>
+
+                            </div>
+
+                        </p:fieldset>
+
+
+                    </h:panelGroup>
+
+                    <h:panelGroup id="groupBtn" styleClass="col-12 text-right"  layout="block">
+
+                        <p:commandButton value="Processar importação" id="btnProcessar"
+                                         disabled="#{extratorBean.fileByte eq null}"
+                                         actionListener="#{extratorBean.preSalvar()}" update="@form :formTable"
+                                         global="true" styleClass="mr-3 ui-button-raised" />
+
+                    </h:panelGroup>
+                </div>
+
+            </div>
+
+            <div class="mt-3" >
+
+                <h:panelGroup id="panelExtrator" styleClass="card" layout="block">
+
+
+
+                        <p:dataTable id="tableAtendimentos" var="extrator" rows="15"
+                                     paginator="true" paginatorPosition="bottom"
+                                     value="#{extratorBean.listExtracaoCompleta}"
+                                     emptyMessage="#{acompanhamentoPropostasBean.listAtendimentos eq null? '' : msg.emptyMessage}"
+                                     currentPageReportTemplate="[#{msg.totalDeRegistros}: {totalRecords}]"
+                                     paginatorTemplate="{CurrentPageReport}  {FirstPageLink} {PreviousPageLink} {PageLinks} {NextPageLink} {LastPageLink} {Exporters}"
+                                     styleClass="ui-datatable-sm ui-datatable-striped ui-datatable-gridlines">
+
+                            <p:ajax event="page"/>
+
+                            <p:ajax event="sort" global="false"/>
+
+                            <p:column headerText="Data" sortBy="#{extrator.dataInicio}" width="10%">
+
+                                <h:outputLabel value="#{extrator.dataInicio}">
+
+                                    <f:convertDateTime pattern="dd/MM/yyyy HH:mm:ss"/>
+
+                                </h:outputLabel>
+
+                            </p:column>
+
+                            <p:column headerText="Descrição" sortBy="#{extrator.descricao}" width="20%">
+
+                                <h:outputLabel value="#{extrator.descricao}"/>
+
+                            </p:column>
+
+                            <p:column headerText="Arquivo" sortBy="#{extrator.nomeArquivo}" width="20%">
+
+                                <h:outputLabel value="#{extrator.nomeArquivo}"/>
+
+                            </p:column>
+
+                            <p:column headerText="Qtdade. linhas" sortBy="#{extrator.qtidadeLinhas}">
+
+                                <h:outputLabel value="#{extrator.qtidadeLinhas}"/>
+
+                            </p:column>
+
+                            <p:column headerText="Qtdade importado" sortBy="#{extrator.qtidadeImportado}">
+
+                                <h:outputLabel value="#{extrator.qtidadeImportado}"/>
+
+                            </p:column>
+
+                            <p:column headerText="Adesão atualizadas" sortBy="#{extrator.quantidadeAdesaoEncontrada}">
+
+                                <h:outputLabel value="#{extrator.quantidadeAdesaoEncontrada}"/>
+
+                            </p:column>
+
+                            <p:column headerText="Integradas" sortBy="#{extrator.qtidadeImportadoIntegrado}">
+
+                                <h:outputLabel value="#{extrator.qtidadeImportadoIntegrado}"/>
+
+                            </p:column>
+
+                            <p:column headerText="Status" sortBy="#{extrator.statusImportacao.toString()}">
+
+                                <h:panelGroup
+                                        styleClass="product-badge #{extratorBean.retornarStatusCss(extrator.statusImportacao)} ">#{extrator.statusImportacao.name()}
+
+
+                                </h:panelGroup>
+
+                            </p:column>
+
+                            <p:column headerText="Log" sortBy="#{extrator.log}">
+
+                                <h:outputLabel value="#{extrator.log}"/>
+
+                            </p:column>
+
+                            <p:column headerText="Arquivo" sortBy="#{extrator.statusImportacao.name()}" width="5%"
+                                      style="text-align:center">
+
+                                <p:commandButton actionListener="#{extratorBean.onUploadArquivo(extrator)}"
+                                                 process="@this" immediate="true" partialSubmit="true"
+                                                 title="Baixar o arquivo importado." icon="pi pi-download" ajax="false"
+                                                 styleClass="ui-button-flat rounded-button">
+
+                                    <p:fileDownload value="#{extratorBean.arquivoExtrator}"/>
+
+                                </p:commandButton>
+
+                            </p:column>
+
+                        </p:dataTable>
+
+
+
+
+                </h:panelGroup>
+
+            </div>
+
+        </h:form>
+
+        <ui:include src="/pages/administrativo/extratorDataTable.xhtml"/>
+
+
+    </ui:define>
+
+</ui:composition>

@@ -1,0 +1,116 @@
+<ui:fragment xmlns="http://www.w3.org/1999/xhtml"
+             xmlns:h="http://java.sun.com/jsf/html"
+             xmlns:f="http://java.sun.com/jsf/core"
+             xmlns:o="http://omnifaces.org/ui"
+             xmlns:pe="http://primefaces.org/ui/extensions"
+             xmlns:ui="http://java.sun.com/jsf/facelets"
+             xmlns:p="http://primefaces.org/ui"
+             xmlns:pro="http://proativaservicos.com/functions">
+
+    <p:dialog widgetVar="dlgPwd" id="dlgPwd" width="1000px" minimizable="true" styleClass="dialog-formulario"
+              header="Painel Agente" style="backgound:#fffff">
+
+        <h:panelGroup id="pgCadastro" styleClass="p-col-12" layout="block"
+                      rendered="#{fichaAtendimentoPreditivoBean.usuario.pontoAtendimento.pabx.tipo eq 'VSPHONE'}">
+
+            <div class="grid justify-center">
+
+                <div class="col-12">
+
+                    <div class="card ui-fluid">
+
+                        <div class="field grid">
+
+                            <p:outputLabel styleClass="col-12 mb-2 md:col-2 md:mb-0">Agente: </p:outputLabel>
+
+                            <div class="col-6 md:col-10">
+
+                                <p:outputLabel>#{fichaAtendimentoPreditivoBean.usuario.login}</p:outputLabel>
+
+                            </div>
+
+                        </div>
+
+                        <!-- 		<div class="field grid">
+
+                            <p:outputLabel 		styleClass="p-col-6 p-mb-2 p-md-2 p-mb-md-0">Cod Agent Discador: </p:outputLabel>
+
+                            <div class="col-12 md:col-10">
+
+                                <p:outputLabel 	> #{fichaAtendimentoPreditivoBean.usuario.empresa.cnpj}#{pro:retornarLeftPadZero(fichaAtendimentoPreditivoBean.usuario.id,5)}</p:outputLabel>
+
+                            </div>
+                        </div> -->
+
+
+                        <div class="field grid">
+
+                            <p:outputLabel styleClass="col-12 mb-2 md:col-2 md:mb-0">Ramal:</p:outputLabel>
+
+                            <div class="col-12 md:col-10">
+
+                                <p:outputLabel value="#{fichaAtendimentoPreditivoBean.pontoAtendimento.ramal}"
+                                               style="font-weight:normal"/>
+
+                            </div>
+
+                        </div>
+
+                        <div class="field grid">
+
+                            <p:outputLabel styleClass="col-12 mb-2 md:col-2 md:mb-0">Discador:</p:outputLabel>
+
+                            <div class="col-12 md:col-10">
+
+                                <p:outputLabel value="#{fichaAtendimentoPreditivoBean.pontoAtendimento.pabx.descricao}"
+                                               style="font-weight:normal"/>
+
+                            </div>
+
+                        </div>
+
+                        <div class="field grid">
+
+                            <p:outputLabel styleClass="col-12 mb-2 md:col-2 md:mb-0">Retorno Discador: </p:outputLabel>
+
+                            <div class="col-12 md:col-10">
+
+                                <p:outputLabel>#{fichaAtendimentoPreditivoBean.usuario.respostaLoginPowerDialer.message}</p:outputLabel>
+
+                            </div>
+
+                        </div>
+
+                        <div class="field grid">
+
+                            <p:outputLabel styleClass="col-12 mb-2 md:col-2 md:mb-0">Filas Associadas: </p:outputLabel>
+
+                            <div class="col-12 md:col-10">
+
+                                <p:outputLabel>#{fichaAtendimentoPreditivoBean.retornarFilas()}</p:outputLabel>
+
+                            </div>
+                        </div>
+
+                    </div>
+
+                </div>
+
+            </div>
+
+            <div class="col-12">
+
+                <div style="float: right;">
+
+                    <p:commandButton onclick="PF('dlgPwd').hide();" value="Sair" icon="pi pi-times" global="false"/>
+
+                </div>
+
+            </div>
+
+        </h:panelGroup>
+
+    </p:dialog>
+
+
+</ui:fragment>

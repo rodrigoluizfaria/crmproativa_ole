@@ -1,0 +1,130 @@
+<ui:composition xmlns="http://www.w3.org/1999/xhtml"
+                xmlns:h="http://java.sun.com/jsf/html"
+                xmlns:f="http://java.sun.com/jsf/core"
+                xmlns:ui="http://java.sun.com/jsf/facelets"
+                 xmlns:comboempresa="http://java.sun.com/jsf/composite/componentes"
+                xmlns:p="http://primefaces.org/ui" template="/WEB-INF/template.xhtml">
+
+
+    <ui:param name="viewname" value="DASHBOARD ATENDIMENTOS"/>
+
+    <ui:define name="viewname">
+
+        <div class="bcca-breadcrumb">
+            <div class="bcca-breadcrumb-item bg-primary-500 hover:bg-primary-700">
+                <p:link outcome="/pages/dashboard/dashBoardAtendimentos" styleClass="uppercase"
+                        style="text-decoration: none">ATENDIMENTOS</p:link>
+            </div>
+            <div class="bcca-breadcrumb-item uppercase">DASHBOARD</div>
+        </div>
+
+    </ui:define>
+
+    <ui:define name="content">
+
+        <div class="p-grid justify-center ">
+
+            <p:growl id="grl" widgetVar="grl" globalOnly="true" escape="false" showSummary="false" life="8000"
+                     showDetail="true" sticky="false">
+
+                <p:autoUpdate/>
+
+            </p:growl>
+
+
+            <h:form prependId="false">
+
+                <div class="card">
+
+                        <div class="ui-fluid grid formgrid">
+
+                            <comboempresa:selectEmpresa id="cmpEmpresa" managedBean="#{dashboardAtendimentoBean}"
+                                                        value="#{dashboardAtendimentoBean.empresa}" ajax="true" style="md:col-2"
+                                                        update="selectOneEquipe selectOneUsuario" filter="true"
+                                                        exibirSelecione="false"/>
+
+
+                            <div class="field col-12 md:col-2">
+
+                                <p:outputLabel for="selectOneEquipe" value="Equipes"/>
+
+                                <p:selectCheckboxMenu id="selectOneEquipe" onchange="onChangeSelectCheckBox(this);"
+                                                      value="#{dashboardAtendimentoBean.arrayEquipesSelecionadas}"
+                                                      multiple="true" label="#{msg.selecione}">
+
+
+                                    <f:selectItems value="#{dashboardAtendimentoBean.listEquipes}" var="equipe"
+                                                   itemLabel="#{equipe.nome}" itemValue="#{equipe.id}"/>
+
+                                </p:selectCheckboxMenu>
+
+
+                            </div>
+
+                            <div class="field col-12 md:col-2">
+
+                                <p:outputLabel for="selectOneUsuario" value="Usuarios"/>
+
+                                <p:selectCheckboxMenu id="selectOneUsuario" on="onChangeSelectCheckBox(this);"
+                                                      value="#{dashboardAtendimentoBean.arrayUsuariosSelecionados}"
+                                                      label="Operadores">
+
+
+                                    <f:selectItems value="#{dashboardAtendimentoBean.listUsuarios}" var="usuario"
+                                                   itemLabel="#{usuario.nome}" itemValue="#{usuario.id}"/>
+
+                                </p:selectCheckboxMenu>
+
+
+                            </div>
+
+                            <div class="field col-12 md:col-2">
+
+                                <p:outputLabel value="Data Inicial" id="lblDataInicial" for="dataInicial"/>
+
+                                <p:datePicker value="#{dashboardAtendimentoBean.dateInicial}" pattern="dd/MM/yyyy"
+                                              id="dataInicial" showIcon="true"/>
+
+                            </div>
+
+                            <div class="field col-12 md:col-2">
+
+                                <p:outputLabel value="Data Final" id="lblDataFinal" for="dataFinal"/>
+
+                                <p:datePicker value="#{dashboardAtendimentoBean.dataFinal}" pattern="dd/MM/yyyy"
+                                              id="dataFinal" showIcon="true"/>
+
+                            </div>
+
+                            <div class="field col-12 md:col-2">
+
+                                <p:outputLabel value="&#160;&#160;"/>
+
+                                <div>
+
+                                    <p:commandButton value="Vizualizar" styleClass="ui-button-raised"
+                                                     icon="pi pi-eye"
+                                                     actionListener="#{dashboardAtendimentoBean.pesquisar()}"
+                                                     global="true" update="@form"/>
+                                </div>
+
+                            </div>
+
+
+                        </div>
+
+
+
+
+                    <div class="p-col-12">
+                        <p:lineChart model="#{dashboardAtendimentoBean.lineChartModel}"
+                                     style="width: 100%; height: 500px;"/>
+                    </div>
+
+                </div>
+
+            </h:form>
+        </div>
+    </ui:define>
+
+</ui:composition>

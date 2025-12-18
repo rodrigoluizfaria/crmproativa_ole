@@ -1,0 +1,201 @@
+<ui:composition xmlns="http://www.w3.org/1999/xhtml"
+                xmlns:h="http://java.sun.com/jsf/html"
+                xmlns:f="http://java.sun.com/jsf/core"
+                xmlns:ui="http://java.sun.com/jsf/facelets"
+                xmlns:comboempresa="http://java.sun.com/jsf/composite/componentes"
+                xmlns:p="http://primefaces.org/ui" template="/WEB-INF/template.xhtml">
+
+
+    <ui:define name="viewname">
+
+        <div class="bcca-breadcrumb">
+            <div class="bcca-breadcrumb-item bg-primary-500 hover:bg-primary-700">
+                <p:link outcome="/pages/relatorios/relatorioAcesso" styleClass="uppercase"
+                        style="text-decoration: none">RELATÓRIOS ACESSO</p:link>
+            </div>
+            <div class="bcca-breadcrumb-item uppercase">RELATÓRIOS</div>
+        </div>
+
+    </ui:define>
+
+
+    <ui:define name="content">
+
+        <div class="p-grid justify-center ">
+
+            <p:growl id="grl" widgetVar="grl" globalOnly="true" escape="false" showSummary="false" life="8000"
+                     showDetail="true" sticky="false">
+
+                <p:autoUpdate/>
+
+            </p:growl>
+
+            <h:form id="formConteudo" prependId="false">
+
+                    <div class="card">
+
+                        <h:panelGroup id="pamelAcessos" layout="block" styleClass="ui-fluid formgrid grid">
+
+                            <comboempresa:selectEmpresa id="cmpEmpresa" managedBean="#{relatoriosAcesso}"
+                                                        value="#{relatoriosAcesso.empresa}" ajax="true" style="md:col-2"
+                                                        update=":formConteudo:selectOneEquipe :formConteudo:selectOneUsuarios"
+                                                        filter="false"/>
+
+
+                            <div class="field col-12 md:col-2">
+
+                                <p:outputLabel value="Equipe " for="selectOneEquipe"/>
+
+                                <p:selectOneMenu id="selectOneEquipe" value="#{relatoriosAcesso.idEquipe}" filter="true"
+                                                 filterMatchMode="contains" autoWidth="false">
+
+                                    <f:selectItem itemLabel="Selecione" noSelectionOption="true" itemValue="#{null}"/>
+
+                                    <f:selectItems value="#{relatoriosAcesso.listEquipes}" var="equipe"
+                                                   itemLabel="#{equipe.nome}" itemValue="#{equipe.id}"/>
+
+                                    <p:ajax global="false" event="change" update="selectOneUsuarios" process="@this"
+                                            listener="#{relatoriosAcesso.onChangeEquipe()}" partialSubmit="true"/>
+
+                                </p:selectOneMenu>
+
+                            </div>
+
+                            <div class="field col-12 md:col-2">
+
+                                <p:outputLabel value="Usuarios " for="selectOneUsuarios"/>
+
+                                <p:selectOneMenu id="selectOneUsuarios" value="#{relatoriosAcesso.idUsuario}"
+                                                 converter="omnifaces.SelectItemsConverter" filter="true"
+                                                 filterMatchMode="contains" autoWidth="false">
+
+                                    <f:selectItem noSelectionOption="true" itemLabel="Selecione"/>
+
+                                    <f:selectItems value="#{relatoriosAcesso.listUsuarios}" var="operador"
+                                                   itemLabel="#{operador.nome}" itemValue="#{operador.id}"/>
+
+                                </p:selectOneMenu>
+
+                            </div>
+
+                            <div class="field col-12 md:col-2">
+
+                                <p:outputLabel value="Data inicio"/>
+
+                                <p:datePicker id="calendarDataInicioPesquisa" required="true"
+                                              value="#{relatoriosAcesso.dataInicio}" showButtonBar="true"
+                                              showIcon="true" pattern="dd/MM/yyyy" locale="pt_BR"
+                                              requiredMessage="#{msg.requerido}"/>
+
+                                <p:message for="calendarDataInicioPesquisa"/>
+
+                            </div>
+
+                            <div class="field col-12 md:col-2">
+
+                                <p:outputLabel value="Data fim"/>
+
+                                <p:datePicker id="calendarDataFimPesquisa" required="true"
+                                              value="#{relatoriosAcesso.dataFinal}" showButtonBar="true" showIcon="true"
+                                              pattern="dd/MM/yyyy" locale="pt_BR" requiredMessage="#{msg.requerido}"/>
+                                <p:message for="calendarDataFimPesquisa"/>
+
+                            </div>
+
+                        </h:panelGroup>
+                            <div class="mt-5">
+
+                                <p:commandButton styleClass="mr-3 ui-button-raised"
+                                                 actionListener="#{relatoriosAcesso.pesquisar()}" value="Pesquisar"
+                                                 id="btnPesquisar" icon="pi pi-search" update="@form"/>
+
+                                <p:commandButton id="btnExportarPesquisa" icon="pi pi-upload"
+                                                 styleClass="ui-button-outlined ui-button-raised" value="#{msg.exportar}" ajax="false"
+                                                 disabled="#{empty relatoriosAcesso.listRelatoriosAcessos}"
+                                                 immediate="true"
+                                                 rendered="#{sessionScope['usuario'].permissaoExportar}">
+
+                                    <p:dataExporter target="tableAcesso" type="xls" fileName="relatorioAcessos"/>
+
+                                </p:commandButton>
+
+
+                            </div>
+
+
+
+                    </div>
+
+
+
+                <div class="mt-4 ">
+
+                    <div class="card">
+
+                        <div class="field col-12 md:col-12">
+
+                            <p:dataTable id="tableAcesso" var="acesso" rows="20"
+                                         paginator="true" paginatorPosition="bottom"
+                                         value="#{relatoriosAcesso.listRelatoriosAcessos}"
+                                         emptyMessage="#{relatoriosAcesso.listRelatoriosAcessos eq null? '' : msg.emptyMessage}"
+                                         currentPageReportTemplate="[#{msg.totalDeRegistros}: {totalRecords}]"
+                                         paginatorTemplate="{CurrentPageReport}  {FirstPageLink} {PreviousPageLink} {PageLinks} {NextPageLink} {LastPageLink} {Exporters}"
+                                         styleClass="ui-datatable-striped ui-datatable-sm default ">
+
+                                <p:ajax event="page" global="false"/>
+
+                                <p:ajax event="sort" global="false"/>
+
+                                <p:column headerText="Usuario" sortBy="#{acesso[0]}" width="40%">
+
+                                    <h:outputLabel value="#{acesso[0]}"/>
+
+                                </p:column>
+
+                                <p:column headerText="Data" sortBy="#{acesso[1]}" width="20%">
+
+                                    <h:outputLabel value="#{acesso[1]}">
+
+                                        <f:convertDateTime pattern="dd/MM/yyyy" timeZone="GMT-3"/>
+
+                                    </h:outputLabel>
+
+                                </p:column>
+
+                                <p:column headerText="Hora Primeiro Evento" sortBy="#{acesso[2]}" width="20%">
+
+                                    <h:outputLabel value="#{acesso[2]}">
+
+                                        <f:convertDateTime pattern="HH:mm:ss" timeZone="GMT-3"/>
+
+                                    </h:outputLabel>
+
+                                </p:column>
+
+                                <p:column headerText="Hora Último Evento" sortBy="#{acesso[3]}" width="20%">
+
+                                    <h:outputLabel value="#{acesso[3]}">
+
+                                        <f:convertDateTime pattern="HH:mm:ss" timeZone="GMT-3"/>
+
+                                    </h:outputLabel>
+
+                                </p:column>
+
+
+                            </p:dataTable>
+
+                        </div>
+
+                    </div>
+
+                </div>
+
+            </h:form>
+
+        </div>
+
+
+    </ui:define>
+
+</ui:composition>

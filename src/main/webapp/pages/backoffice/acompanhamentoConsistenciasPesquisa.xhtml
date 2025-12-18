@@ -1,0 +1,486 @@
+<ui:fragment xmlns="http://www.w3.org/1999/xhtml"
+             xmlns:h="http://java.sun.com/jsf/html"
+             xmlns:f="http://java.sun.com/jsf/core"
+             xmlns:ui="http://java.sun.com/jsf/facelets"
+             xmlns:matriz="http://java.sun.com/jsf/composite/componentes"
+             xmlns:p="http://primefaces.org/ui">
+
+
+    <h:form id="formBackofficePesquisa" prependId="false">
+
+        <p:dialog modal="true" widgetVar="statusDialog" header="Processando" draggable="false" closable="false"
+                  resizable="false" style="text-align:center;" width="15%" responsive="true" appendTo="@(body)">
+            <i class="ml-3 pi pi-spinner pi-spin" style="font-size:3rem"/>
+        </p:dialog>
+
+        <script>
+            //<![CDATA[
+            function startModal() {
+                PF('statusDialog').show();
+            }
+
+            function stopModal() {
+                PF('statusDialog').hide();
+            }
+
+            //]]>
+        </script>
+
+        <div class="grid col-12  mt-3">
+
+            <matriz:selectEmpresa id="cmpEmpresa" managedBean="#{acompanhamentoConsistencias}"
+                                  value="#{acompanhamentoConsistencias.empresa}" ajax="true" update="@form"
+                                  filter="true" exibirSelecione="true"
+                                  selecioneItemLabel="Selecione" required="true" style="field col-12 md:col-2"/>
+
+
+            <div class="field col-12 md:col-2">
+
+                <p:outputLabel value="Loja"/>
+
+                <p:selectOneMenu id="selecLoja" value="#{acompanhamentoConsistencias.loja}" filter="true"
+                                 filterMatchMode="contains" autoWidth="false">
+
+                    <f:selectItem itemLabel="Selecione" itemValue=""/>
+
+                    <f:selectItems value="#{acompanhamentoConsistencias.listLojas}" var="loja"
+                                   itemLabel="#{loja.codigoLoja}" itemValue="#{loja.id}"/>
+
+                </p:selectOneMenu>
+
+            </div>
+
+            <div class="field col-12 md:col-2">
+
+                <p:outputLabel value="Consistencias"/>
+
+                <p:selectOneMenu id="selectConsistencias" value="#{acompanhamentoConsistencias.consistencia}"
+                                 filter="true" filterMatchMode="contains" autoWidth="false">
+
+                    <f:selectItem itemLabel="Selecione" itemValue=""/>
+
+                    <f:selectItems value="#{acompanhamentoConsistencias.listConsistencias}" var="consistencia"
+                                   itemLabel="#{consistencia.codigoConcistencia}" itemValue="#{consistencia.id}"/>
+
+                </p:selectOneMenu>
+
+            </div>
+
+            <div class="field col-12 md:col-2">
+
+                <p:outputLabel value="Produto"/>
+
+                <p:selectOneMenu id="selectProduto" value="#{acompanhamentoConsistencias.produto}" filter="true"
+                                 filterMatchMode="contains" autoWidth="false">
+
+                    <f:selectItem itemLabel="Selecione" itemValue=""/>
+
+                    <f:selectItems value="#{acompanhamentoConsistencias.listProdutos}" var="produto"
+                                   itemLabel="#{produto.descricao}" itemValue="#{produto.id}"/>
+
+                </p:selectOneMenu>
+
+            </div>
+
+            <div class="field col-12 md:col-2">
+
+                <p:outputLabel value="Equipe"/>
+
+                <p:selectOneMenu id="selectEquipe" value="#{acompanhamentoConsistencias.equipe}" filter="true"
+                                 filterMatchMode="contains" autoWidth="false">
+
+                    <f:selectItem itemLabel="Selecione" itemValue=""/>
+
+                    <f:selectItems value="#{acompanhamentoConsistencias.listEquipes}" var="equipe"
+                                   itemLabel="#{equipe.nome}" itemValue="#{equipe.id}"/>
+
+                    <p:ajax listener="#{acompanhamentoConsistencias.onChangeEquipe(acompanhamentoConsistencias.equipe)}"
+                            update="selectOperador" global="false"/>
+
+                </p:selectOneMenu>
+
+            </div>
+
+            <div class="field col-12 md:col-2">
+
+                <p:outputLabel value="Usuário"/>
+
+                <p:selectOneMenu id="selectOperador" value="#{acompanhamentoConsistencias.operador}" filter="true"
+                                 filterMatchMode="contains" autoWidth="false">
+
+                    <f:selectItem itemLabel="Selecione" itemValue=""/>
+
+                    <f:selectItems value="#{acompanhamentoConsistencias.listOperador}" var="operador"
+                                   itemLabel="#{operador.nome}" itemValue="#{operador.id}"/>
+
+                </p:selectOneMenu>
+
+            </div>
+
+            <div class="field col-12 md:col-2">
+
+                <p:outputLabel value="Status"/>
+
+                <p:selectOneMenu id="selectStatus" value="#{acompanhamentoConsistencias.status}" filter="true"
+                                 filterMatchMode="contains" autoWidth="false"
+                                 converter="omnifaces.SelectItemsConverter">
+
+                    <f:selectItem itemLabel="Selecione" itemValue=""/>
+
+                    <f:selectItems value="#{acompanhamentoConsistencias.listStatusAtendimento}" var="status"
+                                   itemLabel="#{status.descricao}" itemValue="#{status}"/>
+                    <p:ajax process="@this" listener="#{acompanhamentoConsistencias.onChangeStatus}"
+                            update="selectMotivo selectSubMotivo" global="false"/>
+
+                </p:selectOneMenu>
+
+            </div>
+
+            <div class="field col-12 md:col-2">
+
+                <p:outputLabel value="Motivo"/>
+
+                <p:selectOneMenu id="selectMotivo" value="#{acompanhamentoConsistencias.motivo}" filter="true"
+                                 filterMatchMode="contains" autoWidth="false"
+                                 converter="omnifaces.SelectItemsConverter">
+
+                    <f:selectItem itemLabel="Selecione" itemValue=""/>
+
+                    <f:selectItems value="#{acompanhamentoConsistencias.listMotivos}" var="motivo"
+                                   itemLabel="#{motivo.descricao}" itemValue="#{motivo}"/>
+                    <p:ajax process="@this" listener="#{acompanhamentoConsistencias.onSelectMotivo}"
+                            update="selectSubMotivo" global="false"/>
+
+                </p:selectOneMenu>
+
+            </div>
+
+
+            <div class="field col-12 md:col-2">
+
+                <p:outputLabel value="Submotivo"/>
+
+                <p:selectOneMenu id="selectSubMotivo" value="#{acompanhamentoConsistencias.subMotivo}" filter="true"
+                                 filterMatchMode="contains" autoWidth="false"
+                                 converter="omnifaces.SelectItemsConverter">
+
+                    <f:selectItem itemLabel="Selecione" itemValue=""/>
+
+                    <f:selectItems value="#{acompanhamentoConsistencias.listSubMotivos}" var="submotivo"
+                                   itemLabel="#{submotivo.descricao}" itemValue="#{submotivo}"/>
+
+                </p:selectOneMenu>
+
+            </div>
+
+
+            <div class="field col-12 md:col-2">
+
+                <p:outputLabel value="CPF"/>
+
+                <p:inputText id="txtCpfPesquisa" value="#{acompanhamentoConsistencias.cpf}"/>
+
+            </div>
+
+            <div class="field col-12 md:col-2">
+
+                <p:outputLabel value="Nome"/>
+
+                <p:inputText id="txtNomePesquisa" value="#{acompanhamentoConsistencias.nome}"/>
+
+            </div>
+
+            <div class="field col-12 md:col-2">
+
+                <p:outputLabel value="Adesão"/>
+
+                <p:inputText id="txtAdesaoPesquisa" value="#{acompanhamentoConsistencias.adesao}"/>
+
+            </div>
+
+            <div class="field col-12 md:col-2">
+
+
+                <p:outputLabel value="Tratada"/>
+
+                <p:selectOneMenu id="selectTradata" value="#{acompanhamentoConsistencias.tratada}" filter="true"
+                                 filterMatchMode="contains" autoWidth="false">
+
+                    <f:selectItem itemLabel="Selecione" itemValue=""/>
+                    <f:selectItem itemLabel="Sim" itemValue="true"/>
+                    <f:selectItem itemLabel="Não" itemValue="false"/>
+
+
+                </p:selectOneMenu>
+
+
+            </div>
+
+            <div class="field col-12 md:col-2">
+
+                <p:outputLabel value="Data inicio"/>
+
+                <p:datePicker id="calendarDataInicioPesquisa" value="#{acompanhamentoConsistencias.dataInicio}"
+                              showButtonBar="true" showIcon="true" monthNavigator="true" yearNavigator="true"
+                              pattern="dd/MM/yyyy"/>
+
+
+            </div>
+
+            <div class="field col-12 md:col-2">
+
+                <p:outputLabel value="Data fim"/>
+
+                <p:datePicker id="calendarDataFimPesquisa" value="#{acompanhamentoConsistencias.dataFim}"
+                              showButtonBar="true" showIcon="true" monthNavigator="true" yearNavigator="true"
+                              pattern="dd/MM/yyyy"/>
+
+
+            </div>
+
+            <div class="field col-6">
+
+                <p:outputLabel value="&#160;&#160;" id="txtPesquisaEspaco"/>
+
+
+                <div>
+
+                    <p:commandButton value="Pesquisar" icon="pi pi-search" styleClass="ui-button-raised mr-3"
+                                     actionListener="#{acompanhamentoConsistencias.pesquisarAtendimentosBackoffice()}"
+                                     update="@form"/>
+
+                    <p:menuButton icon="pi pi-download" id="btnExportarPesquisa" value="#{msg.exportar}"
+                                  styleClass="ui-button-raised ui-button-secondary" ajax="false"
+                                  disabled="#{empty acompanhamentoConsistencias.listAtendimentos}" immediate="true"
+                                  rendered="#{sessionScope['usuario'].permissaoExportar}">
+
+
+                        <p:menuitem value="Exportar Completo" ajax="false" icon="pi pi-arrow-down" global="false">
+                            <p:dataExporter target="tableAtendimentos" type="xls" fileName="atendimentos"/>
+                        </p:menuitem>
+
+                        <p:menuitem value="Exportar Completo" ajax="false" icon="pi pi-arrow-down" global="false"
+                                    onclick="PrimeFaces.monitorDownload(startModal, stopModal);">
+                            <p:fileDownload value="#{acompanhamentoConsistencias.file}"/>
+                        </p:menuitem>
+
+                    </p:menuButton>
+
+                </div>
+
+            </div>
+
+            <div class="mt-3">
+
+                <p:dataTable id="tableAtendimentos" var="atendimento" rows="15" paginator="true"
+                             paginatorPosition="bottom" value="#{acompanhamentoConsistencias.listAtendimentos}"
+                             emptyMessage="#{acompanhamentoConsistencias.listAtendimentos eq null? '' : msg.emptyMessage}"
+                             rowKey="#{atendimento[0]}"
+                             currentPageReportTemplate="[#{msg.totalDeRegistros}: {totalRecords}]"
+                             paginatorTemplate="{CurrentPageReport}  {FirstPageLink} {PreviousPageLink} {PageLinks} {NextPageLink} {LastPageLink} {Exporters}"
+                             styleClass="ui-datatable-sm ui-datatable-striped ui-datatable-gridlines">
+
+                    <p:ajax event="page"/>
+
+                    <p:ajax event="sort" global="false"/>
+
+                    <p:column style="width:2rem" exportable="false">
+
+                        <p:rowToggler/>
+
+                    </p:column>
+
+                    <p:column headerText="Data" sortBy="#{atendimento[5]}" width="10%">
+
+                        <h:outputLabel value="#{atendimento[5]}">
+
+                            <f:convertDateTime pattern="dd/MM/yyyy HH:mm:ss"/>
+
+                        </h:outputLabel>
+
+                    </p:column>
+
+                    <p:column headerText="Cliente" sortBy="#{atendimento[2]}" width="12%">
+
+                        <h:outputLabel value="#{atendimento[2]}"/>
+
+                    </p:column>
+
+                    <p:column headerText="CPF" sortBy="#{atendimento[3]}" width="7%">
+
+                        <h:outputLabel value="#{atendimento[3]}"/>
+
+                    </p:column>
+
+                    <p:column headerText="Adesão" sortBy="#{atendimento[4]}" width="10%">
+
+                        <h:outputLabel value="#{atendimento[4]}"/>
+
+                    </p:column>
+
+                    <p:column headerText="Usuário" sortBy="#{atendimento[10]}" width="15%">
+
+                        <h:outputLabel value="#{atendimento[10]}"/>
+
+                    </p:column>
+
+
+                    <p:column headerText="Status" sortBy="#{atendimento[11]}" width="15%">
+
+                        <h:outputLabel value="#{atendimento[11]}"/>
+
+                    </p:column>
+
+
+                    <p:column headerText="Loja" sortBy="#{atendimento[9]}" width="5%">
+
+                        <h:outputLabel value="#{atendimento[9]}"/>
+
+                    </p:column>
+
+                    <p:column headerText="Produto" sortBy="#{atendimento[12]}" width="5%">
+
+                        <h:outputLabel value="#{atendimento[14]}"/>
+
+                    </p:column>
+
+                    <p:column headerText="Valor Liberado" sortBy="#{atendimento[7]}" width="5%">
+
+                        <h:outputLabel value="#{atendimento[7]}">
+                            <f:convertNumber type="currency" locale="pt-br" currencySymbol="R$"/>
+                        </h:outputLabel>
+
+                        <f:facet name="footer">
+
+                            <h:outputLabel value="#{acompanhamentoConsistencias.total}">
+                                <f:convertNumber type="currency" locale="pt-br" currencySymbol="R$"/>
+                            </h:outputLabel>
+                        </f:facet>
+
+                    </p:column>
+
+                    <p:column width="5%" exportable="false">
+
+
+                        <p:commandButton icon="pi pi-chevron-circle-right" styleClass="rounded-button ui-button-flat"
+                                         oncomplete="PF('dlgConfirmarAntecipacaoNaoTrabalhado').show();" global="false"
+                                         id="btnAdiantarAtn" title="Trabalhar Atendimento">
+
+                            <f:setPropertyActionListener value="#{atendimento[0]}"
+                                                         target="#{acompanhamentoConsistencias.idAtendimento}"/>
+
+                        </p:commandButton>
+
+                        <p:commandButton styleClass="rounded-button ui-button-flat" icon="fa fa-list-alt"
+                                         onclick="PF('dlgVisualizarAtendimento').show()" update=":formVisualizar"
+                                         title="Visualizar" immediate="true"
+                                         action="#{acompanhamentoConsistencias.visualizarAtendimento(atendimento[0])}"/>
+
+                    </p:column>
+
+                    <p:rowExpansion>
+
+                        <div class="grid col-12 " style="padding: 30px 10px;">
+
+                            <div class="field col-12 md:col-4">
+
+                                <p:panelGrid columns="2" columnClasses="ui-grid-col-4,ui-grid-col-4"
+                                             layout="grid"
+                                             styleClass="ui-panelgrid-cell ui-panelgrid-content ui-fluid"
+                                             style="border:0px none; background-color:transparent;">
+
+                                    <f:facet name="header">
+                                        <div class="text-left font-bold border-round p-3 mr-2"
+                                             style="background: #F6F8FA;">
+                                            Tabulações
+                                        </div>
+                                    </f:facet>
+
+
+                                    <h:outputText value="Status:"/>
+                                    <h:outputText value="#{atendimento[11]}"/>
+
+                                    <h:outputText value="Motivo:"/>
+                                    <h:outputText value="#{atendimento[12]}"/>
+
+                                    <h:outputText value="Submotivo:"/>
+                                    <h:outputText value="#{atendimento[13]}"/>
+
+
+                                </p:panelGrid>
+
+                            </div>
+
+                            <div class="field col-12 md:col-8">
+
+                                <p:dataTable var="concistencia" value="#{atendimento[16]}"
+                                             styleClass="ui-datatable-sm ui-datatable-striped ui-datatable-gridlines"
+                                             rendered="#{atendimento[16] ne null}" rowExpandMode="single">
+
+                                    <f:facet name="header">
+                                        Lista de consistências.
+                                    </f:facet>
+
+                                    <p:column headerText="Codigo" width="5%">
+                                        <h:outputText
+                                                value=" #{not empty concistencia[0] ? concistencia[3] : 'Nenhuma consistência cadastrada.'}  "
+                                                title="#{concistencia[1]}"/>
+                                    </p:column>
+
+
+                                    <p:column headerText="Instituição" width="5%">
+                                        <h:outputText value="#{concistencia[2]}"/>
+                                    </p:column>
+
+                                    <p:column headerText="Convênio" width="5%">
+                                        <h:outputText value="#{concistencia[5]}"/>
+                                    </p:column>
+
+                                    <p:column headerText="Prazo" width="5%">
+                                        <h:outputText value="#{concistencia[6]}"/>
+                                    </p:column>
+
+                                    <p:column headerText="Resp" width="5%">
+                                        <h:outputText value="#{concistencia[7]}"/>
+                                    </p:column>
+
+                                    <p:column headerText="Tratada" width="5%">
+                                        <h:outputText
+                                                value="#{((concistencia[9] eq false or empty concistencia[9]) and not empty concistencia[0]  ) ? 'Não' : 'Sim'}"
+                                                styleClass="product-badge status-#{concistencia[9] eq false or empty concistencia[9] ? 'outofstock' : 'instock' }"
+                                                rendered="#{not empty concistencia[0]}"/>
+                                    </p:column>
+
+                                    <p:column headerText="Arquivos" width="5%">
+
+                                        <p:commandButton styleClass="rounded-button text-button secondary-button p-ml-5"
+                                                         icon="fa fa-download"
+                                                         actionListener="#{acompanhamentoConsistencias.onBaixarAnexo(atendimento[4] ,concistencia[10])}"
+                                                         ajax="false" title="Baixar anexos: #{concistencia[10]} "
+                                                         rendered="#{not empty concistencia[10]}">
+                                            <p:fileDownload value="#{acompanhamentoConsistencias.fileRar}"/>
+                                        </p:commandButton>
+
+                                        <p:graphicImage rendered="#{empty concistencia[10]}" styleClass="p-ml-5"
+                                                        name="img/down_fail.png" title="Nenhum arquivo enviado"/>
+
+                                    </p:column>
+
+
+                                </p:dataTable>
+
+                            </div>
+
+                        </div>
+
+                    </p:rowExpansion>
+
+                </p:dataTable>
+
+            </div>
+
+        </div>
+
+    </h:form>
+
+</ui:fragment>

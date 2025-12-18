@@ -1,0 +1,130 @@
+<ui:fragment xmlns="http://www.w3.org/1999/xhtml"
+             xmlns:h="http://java.sun.com/jsf/html"
+             xmlns:f="http://java.sun.com/jsf/core"
+             xmlns:ui="http://java.sun.com/jsf/facelets"
+             xmlns:p="http://primefaces.org/ui" template="/WEB-INF/template.xhtml">
+
+
+    <p:growl id="grl" widgetVar="grl" globalOnly="true" escape="false" showSummary="false" life="8000" showDetail="true"
+             sticky="false">
+
+        <p:autoUpdate/>
+
+    </p:growl>
+
+
+    <h:form id="formConsultaPesquisa" prependId="false">
+
+        <p:remoteCommand name="consultar" update="@form"
+                         actionListener="#{fichaAtendimentoConsultaBean.consultarPortabilidades()}"/>
+
+        <div class="flex flex-wrap">
+
+            <div class="card col-12 md:col-4" style="padding: 10px 15px !important;">
+
+                <div class="ui-fluid formgrid grid ">
+
+                    <div class="field col-12 md:col-8" style="margin-bottom: 0px;">
+
+                        <p:outputLabel value="CPF" for="txtCpf"/>
+
+                        <p:inputText value="#{fichaAtendimentoConsultaBean.cpf}" id="txtCpf" required="true"
+                                     requiredMessage="Requerido"/>
+                        <p:message for="txtCpf"/>
+
+                    </div>
+
+
+                    <div class="field col-12 md:col-4">
+
+                        <p:outputLabel value=""/>
+
+                        <div style="margin-top: 5px">
+
+                            <p:commandButton value="Pesquisar" id="btnCalculadora" icon="pi pi-search"
+                                             styleClass="ui-button-raised mr-3" process="@this txtCpf"
+                                             actionListener="#{fichaAtendimentoConsultaBean.pesquisarAtendimentos()}"
+                                             update="@form"/>
+
+                        </div>
+
+                    </div>
+
+                </div>
+
+            </div>
+
+        </div>
+
+        <div class="col-12 " style="padding-left: 0">
+
+            <div class="ui-fluid  formgrid grid">
+
+                <h:panelGroup styleClass="field col-12 border-bottom-2 border-300  " style="margin-left: 7px;" layout="block" rendered="#{not empty fichaAtendimentoConsultaBean.atendimento.nome}" >
+                    <div class="  field col-12 md:col-4 mt-3  "  style="margin-left: 7px;padding: 0 !important;margin-bottom: 5px;">
+                    <span>   #{fichaAtendimentoConsultaBean.atendimento.nome}</span>
+
+                    </div>
+                </h:panelGroup>
+
+
+                <h:panelGroup styleClass="field col-12 border-bottom-2 border-300  " style="margin-left: 7px;" layout="block" rendered="#{not empty fichaAtendimentoConsultaBean.menssagem}" >
+                    <div class="  field col-12 md:col-4 mt-3  "  style="margin-left: 7px;padding: 0 !important;margin-bottom: 5px;">
+                        <span>   #{fichaAtendimentoConsultaBean.menssagem}</span>
+
+                    </div>
+
+                </h:panelGroup>
+
+                <ui:repeat value="#{fichaAtendimentoConsultaBean.listPortabilidades}" var="port">
+
+                    <div class="field col-12 md:col-3 ">
+
+                        <div class="card hover:surface-100 cursor-pointer  col-12 border-black-alpha-70 "
+                             style="display: inline-flex; padding: 0px; width: 100%"
+                             onclick="runRemoteCommand('#{port.especie}');">
+
+                            <div class="col-12" style="padding: 0">
+
+                                <div class="p-3 col-12  border-bottom-3 border-300 bg-primary-200">
+                                    <span class="font-semibold col-12 pb-2 text-xl font-semibold ">Espécie:  #{port.especie}</span>
+                                </div>
+                                <div class="p-3">
+                                    <h6>Beneficio: #{port.beneficio}</h6>
+
+                                    <h6>Qtdade contratos:  #{fichaAtendimentoConsultaBean.retornarQuantidadeContratosPorEspecie(port.especie)}</h6>
+
+                                    <h6>Atualização:
+
+                                        <h:outputLabel value="#{fichaAtendimentoConsultaBean.atendimento.dataCadastro}">
+
+                                            <f:convertDateTime pattern="dd/MM/yyyy"/>
+
+                                        </h:outputLabel>
+
+                                    </h6>
+                                </div>
+                            </div>
+
+                        </div>
+
+                    </div>
+
+                </ui:repeat>
+
+            </div>
+
+        </div>
+
+        <script>
+            function runRemoteCommand(atendimento) {
+
+                console.log(atendimento);
+                consultar([{name: 'id', value: atendimento}]);
+
+            }
+        </script>
+
+    </h:form>
+
+</ui:fragment>

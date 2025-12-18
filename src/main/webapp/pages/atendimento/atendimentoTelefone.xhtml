@@ -1,0 +1,62 @@
+<ui:fragment xmlns="http://www.w3.org/1999/xhtml"
+	xmlns:h="http://java.sun.com/jsf/html"
+	xmlns:f="http://java.sun.com/jsf/core"
+	xmlns:o="http://omnifaces.org/ui"
+	xmlns:ui="http://java.sun.com/jsf/facelets"
+	xmlns:p="http://primefaces.org/ui">
+
+	<!--  -->
+	<p:dialog id="dlgTelefone" widgetVar="dlgTelefone" modal="true"	draggable="false" resizable="false" closable="false" visible="false"
+		width="300" header="Cadastro Telefone">
+
+		<h:form id="formTelefone" prependId="false"	rendered="#{fichaAtendimentoBean.atendimento ne null and fichaAtendimentoBean.telefone ne null}">
+
+			<div class="ui-fluid formgrid grid">
+
+					 <div class="field col-12 md:col-4">
+
+						<p:outputLabel value="#{msg.ddd}" for="txtDDD" />
+
+						<p:inputText maxlength="2" required="true"	requiredMessage="#{msg.requerido}" id="txtDDD"	onkeypress="return somenteNumeros(event)"	value="#{fichaAtendimentoBean.telefone.ddd}" />
+
+						<p:message id="msgDDD" for="txtDDD" />
+
+					</div>
+
+					 <div class="field col-12 md:col-8">
+
+						<p:outputLabel value="Número:" for="txtNumeroTel" />
+
+						<p:inputText maxlength="9" id="txtNumeroTel" required="true" requiredMessage="#{msg.requerido}"	onkeypress="return somenteNumeros(event)"	value="#{fichaAtendimentoBean.telefone.numero}">
+
+							<o:validator validatorId="jakarta.faces.Length" minimum="8"	message="Deve conter no minimo 8 digitos" />
+
+						</p:inputText>
+
+						<p:message for="txtNumeroTel" id="msgTel" />
+
+					</div>
+					
+
+
+				 <div class="field col-12 md-12">
+
+					<div class="div_btn_rigth" style="margin: 5px 0px; float: right;">
+
+						<p:commandButton value="Salvar" icon="pi pi-save "	id="btnSalvarTelefone" 	styleClass="ui-button-raised mr-3"	actionListener="#{fichaAtendimentoBean.salvarEntidade('TELEFONE')}"	update="groupTel @form :tableTelSeguro :tableTelRefin   :pgnTableTelSaque" />
+
+						<p:commandButton value="Fechar" icon="pi pi-times"	id="btnSairTelefone" styleClass="ui-button-raised"		onclick="PF('dlgTelefone').hide();" global="false" process="@this"/>
+
+					</div>
+
+				</div>
+
+				</div>
+				
+
+
+		</h:form>
+
+	</p:dialog>
+
+</ui:fragment>

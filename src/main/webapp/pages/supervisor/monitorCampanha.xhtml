@@ -1,0 +1,470 @@
+<ui:composition xmlns="http://www.w3.org/1999/xhtml"
+	xmlns:h="http://java.sun.com/jsf/html"
+	xmlns:f="http://java.sun.com/jsf/core"
+	xmlns:ui="http://java.sun.com/jsf/facelets"
+	xmlns:pe="http://primefaces.org/ui/extensions"
+	xmlns:matriz="http://java.sun.com/jsf/composite/componentes"
+	xmlns:p="http://primefaces.org/ui" template="/WEB-INF/template.xhtml">
+
+
+
+	<ui:define name="viewname">
+
+		<div class="bcca-breadcrumb">
+			<div class="bcca-breadcrumb-item bg-primary-500 hover:bg-primary-700 ">
+				<p:link outcome="/pages/supervisor/monitorCampanha" styleClass="uppercase"
+						style="text-decoration: none">MONITOR CAMPANHA</p:link>
+			</div>
+			<div class="bcca-breadcrumb-item uppercase">SUPERVISOR</div>
+		</div>
+
+	</ui:define>
+
+	<ui:define name="content">
+
+		<p:growl id="grl" widgetVar="grl" globalOnly="true" escape="false"	showSummary="false" life="8000" showDetail="true" sticky="false">
+
+			<p:autoUpdate />
+
+		</p:growl>
+
+		<p:growl id="grlNo" widgetVar="grl" escape="false" showSummary="false"	life="8000" showDetail="true" sticky="false" />
+
+		<h:form id="formPrincipal" prependId="false">
+
+			<!-- <p:poll listener="#{supervisorMonitorCampanhaBean.pesquisar()}" update="@form" interval="30"  /> -->
+
+			<div class="card">
+
+				<div class="ui-fluid formgrid grid">
+
+					<matriz:selectEmpresa id="cmpEmpresa" style="md:col-3"	managedBean="#{supervisorMonitorCampanhaBean}"	value="#{supervisorMonitorCampanhaBean.empresa}" required="true"	ajax="true" update="@form" filter="true" exibirSelecione="false" />
+
+					<div class="field col-12 md:col-3">
+
+						<p:outputLabel value="Status Campanha" />
+
+						<p:selectOneMenu id="selectEquipe"	value="#{supervisorMonitorCampanhaBean.idStatusCampanha}"	filter="true" filterMatchMode="contains">
+
+							<f:selectItem itemLabel="Selecione" itemValue="" />
+
+							<f:selectItems	value="#{supervisorMonitorCampanhaBean.listStatusCampanha}"	var="status" itemLabel="#{status.descricao}"
+								itemValue="#{status.id}" />
+
+							<p:ajax	listener="#{supervisorMonitorCampanhaBean.onChangeStatusCampanha()}" process="@this" partialSubmit="true" update=":selectCampanha"
+								global="false" />
+
+						</p:selectOneMenu>
+
+					</div>
+
+					<div class="field col-12 md:col-3">
+
+						<p:outputLabel value="Campanha" for="selectCampanha" />
+
+						<p:selectOneMenu id="selectCampanha" value="#{supervisorMonitorCampanhaBean.idCampanha}" filter="true"	filterMatchMode="contains" required="true" requiredMessage="#{msg.requerido}" autoWidth="false">
+
+							<f:selectItem itemLabel="Selecione" itemValue="" />
+
+							<f:selectItems	value="#{supervisorMonitorCampanhaBean.listCampanha}" var="campanha" itemLabel="#{campanha.descricao}"
+								itemValue="#{campanha.id}" />
+
+						</p:selectOneMenu>
+
+						<p:message for="selectCampanha" id="msgCampanha" />
+
+					</div>
+
+					<div class="field col-12 md:col-3">
+
+						<p:outputLabel value="Data Inicio" />
+
+						<p:datePicker value="#{supervisorMonitorCampanhaBean.dataInicio}" showButtonBar="true" showIcon="true" pattern="dd/MM/yyyy" />
+
+					</div>
+
+					<div class="field col-12 md:col-3">
+
+						<p:outputLabel value="Data Fim" />
+
+						<p:datePicker value="#{supervisorMonitorCampanhaBean.dataFim}" showButtonBar="true" showIcon="true" pattern="dd/MM/yyyy" />
+
+					</div>
+
+				<div class="field col-12 md:col-3 mb-3" >
+
+						<p:outputLabel value="Status de Atendimento" />
+						
+						<p:selectCheckboxMenu id="selectCheckBoxStatus"	value="#{supervisorMonitorCampanhaBean.listStatusSelect}" filter="true" label="Status" filterMatchMode="startsWith" >
+
+							<f:selectItems	value="#{supervisorMonitorCampanhaBean.listStatusAtendimento}"	var="status" itemLabel="#{status.descricao}"	itemValue="#{status.id}" />
+
+						</p:selectCheckboxMenu>
+
+					</div>
+					
+					<div class="field col-12 mt-3">
+
+						<p:commandButton value="Pesquisar" icon="pi pi-search" 	action="#{supervisorMonitorCampanhaBean.pesquisar()}"
+							update="@form" styleClass="ui-button-raised  mr-3" global="true"/>
+
+						<p:commandButton value="Exportar" icon="pi pi-upload"	rendered="#{sessionScope['usuario'].permissaoExportar}"
+							action="#{supervisorMonitorCampanhaBean.pesquisar()}" ajax="false" update="@form" styleClass="ui-button-raised "
+							disabled="#{empty supervisorMonitorCampanhaBean.listQuantidades or empty supervisorMonitorCampanhaBean.listQuantidadeStatus}">
+
+							<p:dataExporter target="tableQtidadeAtendimento,tableFinalizados,tableQtidadeStatus,tableQtidadeStatusTelefone"  type="xls" fileName="monitor_Campanha" />
+
+						</p:commandButton>
+
+					</div>
+
+					<h:panelGroup styleClass="field col-12 md:col-12"	style="margin-top: 15px" layout="block" id="panelDash">
+
+						<div class="ui-fluid formgrid grid">
+
+							<div class="field col-12 md:col-10">
+
+								<p:dataTable id="tableQtidadeAtendimento" var="qtidade"	rows="15" paginator="true" paginatorPosition="bottom"
+									value="#{supervisorMonitorCampanhaBean.listQuantidades}" emptyMessage="#{supervisorBackofficeBean.listAtendimentos eq null? '' : msg.emptyMessage}"
+									currentPageReportTemplate="[#{msg.totalDeRegistros}: {totalRecords}]" paginatorTemplate="{CurrentPageReport}  {FirstPageLink} {PreviousPageLink} {PageLinks} {NextPageLink} {LastPageLink} {Exporters}">
+
+									<p:ajax event="sort" global="false" />
+
+									<p:column headerText="Total de Atendimentos" >
+
+										<f:facet name="header">
+											<h:outputText value="Total de Atendimentos" />
+										</f:facet>
+
+										<h:outputText value="#{qtidade[0]}" />
+
+									</p:column>
+
+									<p:column >
+
+										<f:facet name="header">
+											<h:outputText value="Total de Telefones" />
+										</f:facet>
+
+										<h:outputText value="#{supervisorMonitorCampanhaBean.qtidadeTotalTelefones}" />
+
+									</p:column>
+									
+									<p:column  headerText="Spin">
+									
+										<h:outputText value="#{supervisorMonitorCampanhaBean.spin}" />
+									
+									</p:column>
+
+									<p:column headerText="Atendidos" >
+
+										<f:facet name="header">
+											<h:outputText value="Total Realizados" />
+										</f:facet>
+
+
+										<h:outputText value="#{qtidade[1]}" id="total" />
+
+										<pe:tooltip for="total" rendered="#{not empty qtidade[1] and not empty qtidade[0] and qtidade[0] gt 0}" >
+
+											<!-- <p:progressBar value="#{qtidade[1]*100/qtidade[0]}"	displayOnly="true" style="height: 1rem"  /> -->
+											<p:progressBar value="#{supervisorMonitorCampanhaBean.retornarValor(qtidade[1],qtidade[0])}"	displayOnly="true" style="height: 1rem"  />
+
+										</pe:tooltip>
+
+									</p:column>
+
+									<p:column headerText="Finalizados" >
+
+										<f:facet name="header">
+											<h:outputText value="Total Finalizados" />
+										</f:facet>
+
+										<h:outputText value="#{qtidade[2]}" id="finalizados" rendered="#{not empty qtidade[2] and not empty qtidade[0] and qtidade[0] gt 0 }" />
+
+										<pe:tooltip for="finalizados">
+
+											<!--<p:progressBar value="#{qtidade[2]*100/qtidade[0]}"	displayOnly="true" style="height: 1rem" />-->
+											<p:progressBar value="#{supervisorMonitorCampanhaBean.retornarValor(qtidade[2],qtidade[0])}"	displayOnly="true" style="height: 1rem"  />
+
+
+										</pe:tooltip>
+
+									</p:column>
+
+									<p:column headerText="Perc. Realizados" >
+
+										<f:facet name="header">
+											<h:outputText value="Perc Realizados" />
+										</f:facet>
+
+										<h:outputText value="#{qtidade[3]}">
+											<f:convertNumber pattern="#0.00 %" />
+										</h:outputText>
+
+									</p:column>
+
+									<p:column headerText="Perc. Finalizados" >
+
+										<f:facet name="header">
+											<h:outputText value="Perc Finalizados" />
+										</f:facet>
+
+										<h:outputText value="#{qtidade[4]}" id="perc">
+											<f:convertNumber pattern="#0.00 %" />
+										</h:outputText>
+
+									</p:column>
+
+									<p:column headerText="Quantidade Restante" >
+
+										<f:facet name="header">
+											<h:outputText value="Atendimentos a realizar" />
+										</f:facet>
+
+										<h:outputText value="#{qtidade[5]}" id="realizar">
+
+
+										</h:outputText>
+
+										<pe:tooltip for="realizar" rendered="#{not empty qtidade[5] and not empty qtidade[0] and qtidade[0] gt 0}">
+
+					<!--						<p:progressBar value="#{(qtidade[5]*100)/qtidade[0]}" displayOnly="true" style="height: 1rem" />-->
+
+											<p:progressBar value="#{supervisorMonitorCampanhaBean.retornarValor(qtidade[5],qtidade[0])}"	displayOnly="true" style="height: 1rem"  />
+										</pe:tooltip>
+
+									</p:column>
+
+								</p:dataTable>
+
+							</div>
+
+
+							<div class="col-12">
+							
+								<div class="ui-fluid formgrid grid">
+								
+									<div class="field col-12 md:col-6">
+
+										<p:dataTable id="tableFinalizados" var="finalizadosDia"	value="#{supervisorMonitorCampanhaBean.listAtendimentosFinalizadosDia}"
+											emptyMessage="#{supervisorMonitorCampanhaBean.listAtendimentosFinalizadosDia eq null? '' : msg.emptyMessage}" styleClass="ui-table-header-align-left ui-datatable-striped ui-datatable-sm ui-datatable-gridlines centeralizarColum">
+
+											<p:ajax event="sort" global="false" />
+
+											<p:column headerText="Data " sortBy="#{finalizadosDia[0]}" styleClass="centeralizarColum">
+
+												<f:facet name="header">
+													<h:outputText value="Data" />
+												</f:facet>
+
+												<h:outputText value="#{finalizadosDia[0]}" />
+
+												<f:facet name="footer">
+													<h:outputText value="Total" />
+												</f:facet>
+
+											</p:column>
+
+
+											<p:column headerText="Quantidade Finalizados"	sortBy="#{finalizadosDia[1]}" styleClass="centeralizarColum">
+
+												<f:facet name="header">
+												
+													<h:outputText value="Quantidade Finalizados" />
+													
+												</f:facet>
+
+
+												<h:outputText value="#{finalizadosDia[1]}" />
+
+												<f:facet name="footer">
+
+													<h:outputText value="#{supervisorMonitorCampanhaBean.qtidadeFinalizados}" />
+
+												</f:facet>
+
+											</p:column>
+
+										</p:dataTable>
+
+									</div>
+									<div class="field col-12 md:col-6 mt-3">
+									</div>
+
+									<!-- STATUS ATENDIMENTO -->
+									<div class="col-12 md:col-6 mt-3">
+
+										<p:dataTable id="tableQtidadeStatus" var="qtidadeStatus" rows="15" paginator="true" paginatorPosition="bottom" styleClass="ui-table-header-align-left ui-datatable-striped ui-datatable-sm ui-datatable-gridlines centeralizarColum"
+											value="#{supervisorMonitorCampanhaBean.listQuantidadeStatus}" emptyMessage="#{supervisorMonitorCampanhaBean.listQuantidadeStatus eq null? '' : msg.emptyMessage}"
+											currentPageReportTemplate="[#{msg.totalDeRegistros}: {totalRecords}]"	paginatorTemplate="{CurrentPageReport}  {FirstPageLink} {PreviousPageLink} {PageLinks} {NextPageLink} {LastPageLink} {Exporters}">
+
+											<p:ajax event="page" global="false" />
+											<p:ajax event="sort" global="false" />
+
+											<p:column sortBy="#{qtidadeStatus[0]}" width="50%" styleClass="centeralizarColum">
+
+												<f:facet name="header">
+												
+													<h:outputText value="Status do Atendimento" />
+													
+												</f:facet>
+
+
+												<h:outputText value="#{qtidadeStatus[0]}" />
+
+												<f:facet name="footer">
+												
+													<h:outputText value="Total" style="text-aling:lefth" />
+													
+												</f:facet>
+
+											</p:column>
+
+											<p:column sortBy="#{qtidadeStatus[1]}" width="25%" styleClass="centeralizarColum">
+
+												<f:facet name="header">
+												
+													<h:outputText value="Quantidade" />
+													
+												</f:facet>
+
+												<h:outputText value="#{qtidadeStatus[1]}" />
+
+												<f:facet name="footer">
+
+													<h:outputText	value="#{supervisorMonitorCampanhaBean.qtidadeTotalAtendimentos}" />
+
+												</f:facet>
+
+											</p:column>
+
+											<p:column sortBy="#{qtidadeStatus[2]}" width="30%" styleClass="centeralizarColum">
+
+												<f:facet name="header">
+												
+													<h:outputText value="Perc Atendimentos Realizados" />
+													
+												</f:facet>
+
+												<h:outputText value="#{qtidadeStatus[2]}">
+
+													<f:convertNumber pattern="#0.00 %" />
+
+												</h:outputText>
+
+												<f:facet name="footer">
+
+													<h:outputText value="#{supervisorMonitorCampanhaBean.qtdPorcetagemAtendimentosStatus}">
+
+														<f:convertNumber pattern="#0.00 %" />
+
+													</h:outputText>
+
+												</f:facet>
+
+											</p:column>
+
+										</p:dataTable>
+
+
+									</div>
+
+
+									<div class="col-12 md:col-6 mt-3">
+
+										<p:dataTable id="tableQtidadeStatusTelefone" var="statusTeul"	rows="15" paginator="true" paginatorPosition="bottom" styleClass="ui-table-header-align-left ui-datatable-striped ui-datatable-sm ui-datatable-gridlines centeralizarColum"
+											value="#{supervisorMonitorCampanhaBean.listQuantidadeStatusTelefones}"	emptyMessage="#{supervisorMonitorCampanhaBean.listQuantidadeStatusTelefones eq null? '' : msg.emptyMessage}"
+											currentPageReportTemplate="[#{msg.totalDeRegistros}: {totalRecords}]" paginatorTemplate="{CurrentPageReport}  {FirstPageLink} {PreviousPageLink} {PageLinks} {NextPageLink} {LastPageLink} {Exporters}">
+
+											<p:ajax event="page" global="false" />
+											<p:ajax event="sort" global="false" />
+
+											<p:column headerText="Status por Telefone "	sortBy="#{statusTeul[0]}" width="50%" styleClass="centeralizarColum">
+											
+													<f:facet name="header">
+											<h:outputText value="Status por Telefone" />
+										</f:facet>
+
+												<h:outputLabel value="#{statusTeul[0]}" />
+
+												<f:facet name="footer">
+												
+													<h:outputText value="Total" style="text-aling:lefth" />
+													
+												</f:facet>
+
+											</p:column>
+
+											<p:column headerText="Quantidade " sortBy="#{statusTeul[1]}" width="25%" styleClass="centeralizarColum">
+											
+														<f:facet name="header">
+														<h:outputText value="Quantidade" />
+										</f:facet>
+											
+
+												<h:outputLabel value="#{statusTeul[1]}" />
+
+												<f:facet name="footer">
+
+													<h:outputLabel	value="#{supervisorMonitorCampanhaBean.qtidadeTotalTelefonesStatus}" />
+
+												</f:facet>
+
+											</p:column>
+
+											<p:column headerText="Perc Atendimemtos Realizados"	sortBy="#{statusTeul[1]}" width="30%" styleClass="centeralizarColum">
+
+										<f:facet name="header">
+											<h:outputText value="Perc Atendimemtos Realizados" />
+										</f:facet>
+												<h:outputLabel	value="#{statusTeul[1].toString() / supervisorMonitorCampanhaBean.qtidadeTotalTelefonesStatus}">
+
+													<f:convertNumber pattern="#0.00 %" />
+
+												</h:outputLabel>
+
+												<f:facet name="footer">
+
+													<h:outputText value="100,00 %"	rendered="#{not empty supervisorMonitorCampanhaBean.listQuantidadeStatus}" />
+
+												</f:facet>
+
+
+											</p:column>
+
+										</p:dataTable>
+
+									</div>
+
+
+
+									<h:panelGroup styleClass="col-12 md:col-6 mt-3" layout="block"	rendered="#{not empty supervisorMonitorCampanhaBean.polarChartStatusAtendimento}">
+
+										<p:polarAreaChart model="#{supervisorMonitorCampanhaBean.polarChartStatusAtendimento}"	style="width: 100%; height: 500px;" />
+								
+									</h:panelGroup>
+
+									<h:panelGroup styleClass="col-12 md:col-6 mt-3" layout="block" rendered="#{not empty supervisorMonitorCampanhaBean.polarChart}">
+
+										<p:polarAreaChart model="#{supervisorMonitorCampanhaBean.polarChart}" style="width: 100%; height: 500px;" />
+
+									</h:panelGroup>
+
+								</div>
+
+							</div>
+							
+						</div>
+						
+					</h:panelGroup>
+						
+				</div>
+					
+			</div>
+
+		</h:form>
+
+	</ui:define>
+
+</ui:composition>

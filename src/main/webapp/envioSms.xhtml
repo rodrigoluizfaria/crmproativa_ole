@@ -1,0 +1,154 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml"
+	xmlns:h="http://java.sun.com/jsf/html"
+	xmlns:f="http://java.sun.com/jsf/core"
+	xmlns:pe="http://primefaces.org/ui/extensions"
+	xmlns:ui="http://java.sun.com/jsf/facelets"
+	xmlns:p="http://primefaces.org/ui">
+
+<h:head>
+
+	<f:facet name="first">
+
+		<meta http-equiv="X-UA-Compatible" content="IE=edge" />
+		<meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
+		<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=0" />
+		<meta name="apple-mobile-web-app-capable" content="yes" />
+		<link rel="shortcut icon" href="#{request.contextPath}/resources/img/favicon.ico" type="image/x-icon"></link>
+		<link rel="icon" href="#{request.contextPath}/resources/img/favicon.ico" type="image/x-icon"></link>
+      ´	
+        </f:facet>
+	<h:outputScript name="js/script.js?v6" />
+	<title>Proatend -</title>
+
+</h:head>
+
+
+<h:body styleClass="login-body ">
+
+	<div class="layout-content" style="padding: 1rem 2rem;">
+
+		<p:growl id="grl" widgetVar="grl" globalOnly="true" escape="false"	showSummary="false" life="8000" showDetail="true" sticky="false">
+
+			<p:autoUpdate />
+
+		</p:growl>
+
+		<h:form id="formConteudo" prependId="false">
+
+			<div class="p-grid p-justify-center">
+
+				<div class="p-col-7">
+
+					<div class="card grid-item" style="padding: 6px 12px;">
+
+						<div class="field col-12" style="padding: 0px;">
+
+							<p:graphicImage name="img/sms.png" style="float: right;" />
+
+							<h4>Envio sms</h4>
+
+
+						</div>
+
+					</div>
+				</div>
+
+
+			</div>
+
+			<div class="p-grid p-justify-center"  >
+
+					<h:panelGroup styleClass="p-col-7" layout="block" id="pnpSend" >
+
+					<div class="card grid-item">
+
+						<div class="ui-fluid p-formgrid p-grid">
+
+							<div class="field col-12md:col-4">
+
+								<p:outputLabel for="inputPabxDesc" value="Número" />
+
+								<p:inputText id="inputPabxDesc"
+									value="#{envioSmsOpenVox.numero}" maxlength="11"
+									validatorMessage="O número informado não é valido."
+									onkeypress="return somenteNumeros(event)" required="true"
+									requiredMessage="Informe o número do telefone">
+									<f:validator validatorId="converter.ValidarTelefone" />
+								</p:inputText>
+								<p:message for="inputPabxDesc" />
+								<small>Entre com o número do telefone. DDD + nº
+									telefone.</small>
+
+							</div>
+							
+										
+							<div class="field col-12md:col-4">
+								<p:outputLabel for="selectBot" value="Bot" />
+								<p:selectOneMenu id="selectBot"
+									value="#{envioSmsOpenVox.bot}"
+									converter="omnifaces.SelectItemsConverter">
+									<f:selectItems value="#{envioSmsOpenVox.listBot}"
+										var="b" itemLabel="#{b.descricao} - #{b.numero}" itemValue="#{b}"></f:selectItems>
+								</p:selectOneMenu>
+											<p:selectBooleanCheckbox value="#{envioSmsOpenVox.validarBot}" >
+            <p:ajax update="txtMsg" />
+        </p:selectBooleanCheckbox><span class="p-ml-2">Gerar Link whatsapp.</span>
+			</div>
+							
+							<div class="field col-12md:col-4">
+								<p:outputLabel for="selectIntegra" value="Gateway SMS" />
+								<p:selectOneMenu id="selectIntegra"
+									value="#{envioSmsOpenVox.integracao}"
+									converter="omnifaces.SelectItemsConverter">
+									<f:selectItems value="#{envioSmsOpenVox.listIntegracaoSms}"
+										var="i" itemLabel="#{i.descricao}" itemValue="#{i}"></f:selectItems>
+								</p:selectOneMenu>
+							</div>
+				
+							<div class="field col-12">
+
+								<p:outputLabel for="inputPabxDesc" value="Mensagem" />
+
+								<p:inputTextarea id="txtMsg" value="#{envioSmsOpenVox.msg}" rows="5"
+									cols="30" counter="display" maxlength="160" counterTemplate="{0} caracteres restantes" autoResize="false">
+
+								</p:inputTextarea>
+
+								<h:outputText id="display" />
+
+						
+							</div>
+
+						</div>
+					
+						
+						<div class="field col-12" style="padding: 0;margin-bottom: 0;text-align: center">
+							<p:commandButton value="Enviar"  icon="fa fa-paper-plane-o" styleClass="outlined-button raised-button secondary-button"  onstart="PF('bllock').block()" oncomplete="PF('bllock').unblock()"  actionListener="#{envioSmsOpenVox.enviar}" update="@form grl" /> 
+</div>
+					</div>
+
+				</h:panelGroup>
+
+
+			</div>
+
+<pe:blockUI target="pnpSend" widgetVar="bllock">
+    <h:panelGrid columns="2">
+        <h:graphicImage library="img" name="ajax-loader.gif"
+                        style="margin-right: 12px; vertical-align: middle;"/>
+        <h:outputText value="Enviando menssagem..." style="white-space: nowrap;"/>
+    </h:panelGrid>
+</pe:blockUI>
+
+	
+		</h:form>
+
+	</div>
+	<h:outputStylesheet name="css/primeicons.css" library="diamond-layout" />
+	<h:outputStylesheet name="css/primeflex.min.css" library="diamond-layout" />
+	
+	<h:outputStylesheet id="layout-scheme" name="css/layout-light.css"	library="diamond-layout" />
+
+</h:body>
+</html>

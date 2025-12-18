@@ -1,0 +1,64 @@
+<ui:fragment xmlns="http://www.w3.org/1999/xhtml"
+	xmlns:h="http://java.sun.com/jsf/html"
+	xmlns:f="http://java.sun.com/jsf/core"
+	xmlns:ui="http://java.sun.com/jsf/facelets"
+	xmlns:p="http://primefaces.org/ui">
+
+	<!--  -->
+	<p:dialog id="dlgFila" widgetVar="dlgFila" modal="true"	draggable="true" resizable="false" closable="true" visible="false"	width="30%" header="Cadastro Fila" styleClass="dialog-formulario" appendTo="@(body)">
+
+		<h:form id="formFila" prependId="false">
+
+			<div class="col-12 fluid formgrid grid">
+
+				<div class="field col-12 ">
+
+					<p:outputLabel value="ID Fila:" id="lblIdFila" for="txtIdFila" styleClass="mr-4" />
+
+					<p:inputText id="txtIdFila" required="true" requiredMessage="Requerido" value="#{campanhaBean.fila.nome}" />
+					<p:message for="txtIdFila" id="msgFila" ></p:message>
+
+				</div>
+
+				<div class="col-12 mt-4 text-center">
+
+					<p:commandButton value="salvar" update="linhaFila tableFilas txtIdFila msgFila" icon="pi pi-save" actionListener="#{campanhaBean.salvarFila()}"
+						process="@this txtIdFila" partialSubmit="true" styleClass="ui-button-raised mr-2" />
+						
+					<p:commandButton value="fechar" onclick="PF('dlgFila').hide()" update="linhaFila" style="margin-top:10px" global="false" styleClass="ui-button-raised ui-button-secondary mr-2" icon="pi pi-times"/>
+
+				</div>
+
+				<div class="col-12  mt-4">
+
+					<p:dataTable paginator="true" value="#{campanhaBean.listFilas}"
+						paginatorPosition="bottom" emptyMessage="#{msg.emptyMessage}"
+						paginatorTemplate="{CurrentPageReport}  {FirstPageLink} {PreviousPageLink} {PageLinks} {NextPageLink} {LastPageLink}"
+						currentPageReportTemplate="[#{msg.totalDeRegistros}: {totalRecords}]"
+						var="fila" id="tableFilas" rows="5">
+
+						<p:column headerText="Fila">
+							<p:outputLabel value="#{fila.nome}" />
+						</p:column>
+
+						<p:column width="15%" style="text-align:center">
+
+							<p:commandButton icon="fa fw fa-edit" styleClass="rounded-button  mr-2 mb-2"	process="@this" update="@form linhaFila" title="Editar" global="false">
+
+								<f:setPropertyActionListener value="#{fila}" target="#{campanhaBean.fila}" />
+
+							</p:commandButton>
+
+						</p:column>
+
+					</p:dataTable>
+
+				</div>
+
+			</div>
+
+		</h:form>
+
+	</p:dialog>
+
+</ui:fragment>

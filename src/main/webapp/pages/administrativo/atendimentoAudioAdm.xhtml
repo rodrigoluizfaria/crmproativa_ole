@@ -1,0 +1,129 @@
+<ui:fragment xmlns="http://www.w3.org/1999/xhtml"
+             xmlns:h="http://java.sun.com/jsf/html"
+             xmlns:f="http://java.sun.com/jsf/core"
+             xmlns:o="http://omnifaces.org/ui"
+             xmlns:pe="http://primefaces.org/ui/extensions"
+             xmlns:ui="http://java.sun.com/jsf/facelets"
+             xmlns:p="http://primefaces.org/ui">
+
+    <!-- DLG MODAL -->
+    <p:dialog id="dlgAudioAdm" widgetVar="dlgAudioAdm" modal="true" draggable="false" resizable="false" closable="false"
+              visible="false" width="70%" styleClass="dialog-formulario" responsive="true"
+              header="ÁUDIOS ATENDIMENTO:  #{supervisorBackofficeBean.clienteAudio}" appendTo="@(body)">
+
+        <h:panelGroup rendered="#{(conciliarAudioBean.listAtendimentosAudios eq null or empty conciliarAudioBean.listAtendimentosAudios)}">
+
+            <div class="col-12 mb-5 ">
+
+                <div class=" ui-fluid">
+
+                    <div class="card col-12  ">
+
+                        <p:outputLabel value="Nenhum áudio Disponivel...."/>
+
+                    </div>
+
+                </div>
+
+            </div>
+
+
+        </h:panelGroup>
+
+        <h:form id="formAudio" prependId="false">
+
+
+            <h:panelGroup styleClass="col-12 " rendered="#{not empty conciliarAudioBean.listAtendimentosAudios}"
+                          layout="block">
+
+                <div class="ui-fluid card">
+
+                    <h4>Áudios Dispóniveis para conciliar</h4>
+
+                    <p:dataTable id="tableConciliar" var="audioAnexo" rows="5" paginator="true"
+                                 paginatorPosition="bottom" value="#{conciliarAudioBean.listAtendimentosAudios}"
+                                 emptyMessage="#{conciliarAudioBean.listAtendimentosAudios eq null? '' : msg.emptyMessage}"
+                                 currentPageReportTemplate="[#{msg.totalDeRegistros}: {totalRecords}]"
+                                 paginatorTemplate="{CurrentPageReport}  {FirstPageLink} {PreviousPageLink} {PageLinks} {NextPageLink} {LastPageLink} {Exporters}"
+                                 styleClass="ui-datatable-striped ui-datatable-sm">
+
+                        <p:ajax event="page"/>
+
+                        <p:ajax event="sort" global="false"/>
+
+                        <p:column headerText="Data Anexo" sortBy="#{audioAnexo.dataAnexo}" width="10%">
+
+                            <h:outputLabel value="#{audioAnexo.dataAnexo}">
+
+                                <f:convertDateTime pattern="dd/MM/yyyy HH:mm:ss"/>
+
+                            </h:outputLabel>
+
+
+                        </p:column>
+
+                        <p:column headerText="Arquivo" sortBy="#{audioAnexo.nomeArquivo}" width="70%">
+
+                            <h:outputLabel value="#{audioAnexo.nomeArquivo}"
+                                           title="Nome original: #{audioAnexo.nomeArquivoOriginal}">
+
+
+                            </h:outputLabel>
+
+                        </p:column>
+
+                        <p:column headerText="Tamanho" sortBy="#{audioAnexo.nomeArquivo}" width="10%">
+
+                            <h:outputLabel value="#{audioAnexo.tamanhoArquivo / 1000} KB">
+
+                                <f:convertNumber pattern="#0.000"/>
+
+                            </h:outputLabel>
+
+                        </p:column>
+
+                        <p:column headerText="Audio" width="10%">
+
+                            <p:commandLink styleClass="rounded-button text-button" update="msgAudio" title="baixar"
+                                           ajax="false"
+                                           actionListener="#{conciliarAudioBean.baixarArquivoWav(audioAnexo)}">
+
+                                <!--	<i class="pi pi-download" />-->
+                                <i class="fa fa-sharp  fa-download fa-lg ui-button-secondary"></i>
+                                <p:fileDownload value="#{conciliarAudioBean.fileWav}"/>
+
+                            </p:commandLink>
+
+
+                        </p:column>
+
+                    </p:dataTable>
+
+
+                    <p:messages id="msgAudio"/>
+
+
+                </div>
+
+
+            </h:panelGroup>
+
+        </h:form>
+
+
+        <f:facet name="footer">
+
+
+            <div style="text-align: center;">
+
+                <p:commandButton type="button" value="Sair" id="btnSair" icon="pi pi-times"
+                                 onclick="PF('dlgAudioAdm').hide();" styleClass="mt-3 ui-button-raised"/>
+
+            </div>
+        </f:facet>
+
+
+    </p:dialog>
+
+
+</ui:fragment>

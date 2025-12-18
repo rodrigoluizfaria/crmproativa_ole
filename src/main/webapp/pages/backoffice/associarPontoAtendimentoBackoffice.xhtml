@@ -1,0 +1,142 @@
+
+<ui:composition xmlns="http://www.w3.org/1999/xhtml"
+	xmlns:h="http://java.sun.com/jsf/html"
+	xmlns:f="http://java.sun.com/jsf/core"
+	xmlns:ui="http://java.sun.com/jsf/facelets"
+	xmlns:p="http://primefaces.org/ui" template="/WEB-INF/template.xhtml">
+
+
+	<ui:define name="viewname">
+		<div class="bcca-breadcrumb">
+			<div class="bcca-breadcrumb-item bg-primary-500 hover:bg-primary-700">
+				<p:link outcome="/pages/backoffice/associarPontoAtendimentoBackoffice"
+						style="text-decoration: none">PONTO ATENDIMENTO</p:link>
+			</div>
+			<div class="bcca-breadcrumb-item ">BACKOFFICE</div>
+		</div>
+
+	</ui:define>
+
+	<ui:define name="content">
+
+		<p:growl id="grl" widgetVar="grl" globalOnly="true" escape="false"	showSummary="false" life="8000" showDetail="true" sticky="false">
+
+			<!-- <p:autoUpdate /> -->
+
+		</p:growl>
+
+		<p:growl id="grlNo" widgetVar="grl" escape="false" showSummary="false"	life="8000" showDetail="true" sticky="false" />
+
+		<h:form id="formPontoAtendimento" prependId="false">
+
+
+			<div class="grid justify-center">
+
+				<div class="col-12 md:col-8">
+
+					<div class="card ui-fluid ">
+
+						<h5>Selecione o ramal de atendimento.</h5>
+
+						<div class="ui-fluid formgrid grid col-12">
+
+							<div class="field col-12 md:col-4">
+
+								<p:outputLabel value="Ramal:" for="selectPontoAtendimento" />
+
+								<p:selectOneMenu id="selectPontoAtendimento" value="#{associarPontoAtendimentoBean.pontoAtendimento}"	converter="omnifaces.SelectItemsConverter" autoWidth="false"	filter="true" filterMatchMode="contains">
+
+									<f:selectItem itemLabel="Selecione" itemValue="" />
+
+									<f:selectItems value="#{associarPontoAtendimentoBean.listPontoAtendimentos}" var="pontoAtendimento" itemLabel="#{pontoAtendimento.descricao} - #{pontoAtendimento.pabx.tipo.constante}" itemValue="#{pontoAtendimento}" />
+								
+									 <f:ajax listener="#{associarPontoAtendimentoBean.onChangePontoAtendimento()}" render="@form" execute="@this" /> 
+								
+								</p:selectOneMenu>
+								
+								<p:message for="selectPontoAtendimento" />
+
+							</div>
+							
+								<h:panelGroup styleClass="col-12 md:col-3" layout="block" rendered="#{associarPontoAtendimentoBean.exibirPainelConfirm}">
+							
+										<p:outputLabel  for="txtRamal" value="Informe o numero falado" />
+
+										<p:inputText id="txtRamal" value="#{associarPontoAtendimentoBean.ramalConfirm}" />
+										
+								</h:panelGroup>
+
+							<h:panelGroup styleClass="field col-12 md:col-2" layout="block" rendered="#{associarPontoAtendimentoBean.exibirBtnAssociar}">
+							
+										<p:outputLabel value="&#160;" />
+		
+										<div>
+										
+											<p:commandButton value="Selecionar"	actionListener="#{associarPontoAtendimentoBean.associarPontoAtendimento()}"	 styleClass="ui-button-raised" icon="pi pi-check" update="@form" />
+		
+										</div>
+										
+								</h:panelGroup>
+									
+									
+									<h:panelGroup  layout="block" styleClass="col-12 md:col-3" rendered="#{associarPontoAtendimentoBean.exibirBtnVerificar}">
+									
+									<p:outputLabel value="&#160;" />
+									
+										<div>
+										
+											<p:commandButton value="Verificar ramal" styleClass="raised-button secondary-button" actionListener="#{associarPontoAtendimentoBean.doVerificarPontoAtendimento()}"	icon="fa fa-phone" update="@form grl" />
+											
+										</div>
+										
+									</h:panelGroup>
+									
+				
+							
+							
+						</div>
+						
+						<div class="field col-12 md:col-8">
+						
+					   <p:messages id="messages"  closable="true">
+					   
+        					    <p:autoUpdate/>
+        					    
+     				   </p:messages>
+     				   						
+						</div>
+						
+						<div class="p-col-12">
+						
+						
+									
+						</div>
+
+					</div>
+					
+				</div>
+				
+			<h:panelGroup  layout="block" styleClass="col-12 md:col-4 mt-1" rendered="#{associarPontoAtendimentoBean.exibirBtnVerificar}">
+			
+				<div class="card ui-fluid ">
+								
+						<ul>
+						
+							<li>Click no botão verificar ramal.</li>
+							<li>O seu ramal será chamado.</li>
+							<li>Caso não chame, por favor verifique se o seu ramal está correto.</li>
+							<li>Caso positivo informe o número falado.</li>
+							
+						</ul>
+						
+					</div>
+				
+				</h:panelGroup>
+
+			</div>
+			
+		</h:form>
+
+	</ui:define>
+
+</ui:composition>

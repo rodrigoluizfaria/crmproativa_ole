@@ -1,0 +1,281 @@
+<ui:composition xmlns="http://www.w3.org/1999/xhtml"
+                xmlns:h="http://java.sun.com/jsf/html"
+                xmlns:f="http://java.sun.com/jsf/core"
+                xmlns:ui="http://java.sun.com/jsf/facelets"
+                xmlns:matriz="http://java.sun.com/jsf/composite/componentes"
+                xmlns:p="http://primefaces.org/ui" template="/WEB-INF/template.xhtml">
+
+    <ui:define name="viewname">
+
+        <div class="bcca-breadcrumb" style="font-size: .75em;">
+
+            <div class="bcca-breadcrumb-item bg-primary-500 hover:bg-primary-700" >
+                <p:link outcome="/pages/administrativo/conciliarAudioAnexo" style="text-decoration: none">CONCILIAR ÁUDIO ANEXO</p:link>
+                 <i class="fa fa-volume-high  fa-2xs  " style="color: #ffffff" /></div>
+            <div class="bcca-breadcrumb-item ">ADMINISTRATIVO</div>
+
+        </div>
+
+
+    </ui:define>
+
+    <ui:define name="content">
+
+        <p:growl id="grl" widgetVar="grl" globalOnly="true" escape="false"
+                 showSummary="false" life="8000" showDetail="true" sticky="false">
+
+            <p:autoUpdate/>
+
+        </p:growl>
+
+        <script type="text/javascript">
+            //<![CDATA[
+            function start() {
+                PF('statusDialog').show();
+            }
+
+            function stop() {
+                PF('statusDialog').hide();
+            }
+
+            //]]>
+        </script>
+
+        <h:form prependId="false" id="formConciliar">
+
+            <div class="card">
+
+                <div class="ui-fluid formgrid grid">
+
+                    <matriz:selectEmpresa id="cmpEmpresa" managedBean="#{conciliarAudioBean}"
+                                          value="#{conciliarAudioBean.empresa}" ajax="true"
+                                          update="selectProduto conciliarTableAnexo" filter="true"
+                                          exibirSelecione="true" selecioneItemLabel="Selecione" required="true"
+                                          style="col-12 md:col-2"/>
+
+
+                    <div class="field col-12 md:col-2">
+
+                        <p:outputLabel value="Adesão"/>
+
+                        <p:inputText id="txtAdesao" value="#{conciliarAudioBean.adesao}"/>
+
+                    </div>
+
+                    <div class="field col-12 md:col-2">
+
+                        <p:outputLabel value="CPF"/>
+
+                        <p:inputText id="txtCpf" value="#{conciliarAudioBean.cpf}"/>
+
+                    </div>
+
+                    <div class="field col-12 md:col-2">
+
+                        <p:outputLabel value="Produto: "/>
+
+                        <p:selectOneMenu id="selectProduto" value="#{conciliarAudioBean.idProduto}" filter="true"
+                                         filterMatchMode="contains" autoWidth="false">
+
+                            <f:selectItem itemLabel="Selecione" itemValue=""/>
+
+                            <f:selectItems value="#{conciliarAudioBean.listProdutos}" var="produto"
+                                           itemLabel="#{produto.descricao}" itemValue="#{produto.id}"/>
+
+                        </p:selectOneMenu>
+
+                    </div>
+
+                    <div class="field col-12 md:col-2">
+
+                        <p:outputLabel value="Data Inicio"/>
+
+                        <p:datePicker id="calendarDataInicioPesquisa" value="#{conciliarAudioBean.dataInicio}"
+                                      showButtonBar="true" monthNavigator="true" yearNavigator="true" showWeek="true"
+                                      showIcon="true" pattern="dd/MM/yyyy"/>
+
+                    </div>
+
+                    <div class="field col-12 md:col-2">
+
+                        <p:outputLabel value="Data fim:"/>
+
+                        <p:datePicker id="calendarDataFimPesquisa"
+                                      value="#{conciliarAudioBean.dataFim}" showButtonBar="true"
+                                      monthNavigator="true" yearNavigator="true" showWeek="true"
+                                      showIcon="true" pattern="dd/MM/yyyy"/>
+
+                    </div>
+
+                    <div class="field col-12 ">
+
+                        <div class="field grid">
+
+                            <div class="col-12  md:col-2 mb-md-0 div-vertical p-p-5">
+
+                                <p:outputLabel value="Pesquisar audios conciliados:"
+                                               styleClass="col-12 md:col-2 p-mb-md-0"/>
+
+                            </div>
+
+                            <div class="col-12 md:col-4">
+
+                                <p:selectBooleanCheckbox value="#{conciliarAudioBean.conciliar}"/>
+
+                            </div>
+
+
+                        </div>
+
+
+                    </div>
+
+                    <div class="field col-12 ">
+
+                        <p:commandButton value="Pesquisar" styleClass="mr-3 ui-button-raised " id="btnBaixar"
+                                         action="#{conciliarAudioBean.pesquisar()}" update="@form" icon="pi pi-search"/>
+
+
+                    </div>
+
+                </div>
+
+            </div>
+
+
+            <div >
+
+                <div class="card p-3">
+
+                    <p:dataTable id="conciliarTableAnexo" value="#{conciliarAudioBean.listConciliar}"
+                                 rowKey="#{conciliar[0]}" selection="#{conciliarAudioBean.listConciliarSelecionados}"
+                                 var="conciliar" rows="15" paginator="true" paginatorPosition="bottom"
+                                 emptyMessage="#{msg.emptyMessage}"
+                                 styleClass="ui-datatable-striped ui-datatable-gridlines ui-datatable-sm"
+                                 currentPageReportTemplate="[#{msg.totalDeRegistros}: {totalRecords}]"
+                                 rowsPerPageTemplate="5,15,35"
+                                 paginatorTemplate="{CurrentPageReport}  {FirstPageLink} {PreviousPageLink} {PageLinks} {NextPageLink} {LastPageLink} {Exporters}">
+
+                        <p:column selectionMode="multiple" style="width:16px;text-align:center"/>
+                        <p:column headerText="Data Atendimento" sortBy="#{conciliar[16]}">
+
+                            <h:outputText value="#{conciliar[15]}"/>
+
+                        </p:column>
+                        <p:column headerText="CPF" sortBy="#{conciliar[3]}">
+
+                            <h:outputText value="#{conciliar[3]}"/>
+
+                        </p:column>
+
+                        <p:column headerText="Adesão" sortBy="#{conciliar[4]}">
+
+                            <h:outputText value="#{conciliar[4]}"/>
+
+                        </p:column>
+
+                        <p:column headerText="Nome" sortBy="#{conciliar[2]}">
+
+                            <h:outputText value="#{conciliar[2]}"/>
+
+                        </p:column>
+
+                        <p:column headerText="Produto" sortBy="#{conciliar[7]}">
+
+                            <h:outputText value="#{conciliar[7]}"/>
+
+                        </p:column>
+
+                        <p:column headerText="Status Atendimento" sortBy="#{conciliar[5]}">
+
+                            <h:outputText value="#{conciliar[5]}"/>
+
+                        </p:column>
+
+                        <p:column headerText="Agente" sortBy="#{conciliar[6]}">
+
+                            <h:outputText value="#{conciliar[6]}"/>
+
+                        </p:column>
+
+                        <p:column headerText="Vlr liberado" sortBy="#{conciliar[13]}">
+
+                            <h:outputLabel value="#{conciliar[13]}">
+                                <f:convertNumber type="currency" locale="pt-br" currencySymbol="R$"/>
+                            </h:outputLabel>
+
+                        </p:column>
+
+                        <p:column headerText="Conciliado" sortBy="#{conciliar[17]}">
+
+                            <h:outputText value="#{conciliar[17]}"/>
+
+                        </p:column>
+
+                        <p:column headerText="#{msg.acao}" style="text-align:center;" exportable="false" width="10%">
+
+                            <p:commandButton icon="fa fa-file-audio " style="font-size: 5px" title="Baixar audio"
+                                             styleClass="rounded-button ui-button-flat ui-button-secondary"
+                                             action="#{conciliarAudioBean.onConciliar(conciliar[0] , conciliar[4])}"
+                                             oncomplete="PF('dlgAudioAdm').show();" ajax="false">
+
+
+                            </p:commandButton>
+
+                            <p:commandButton icon="pi pi-align-center " style="font-size: 5px" title="Transcrição"
+                                             styleClass="rounded-button ui-button-flat ui-button-secondary" update="formConciliarView"
+                                             actionListener="#{conciliarAudioBean.onTranscreverAudio(conciliar[0])}"
+                                             oncomplete="PF('dlgConciliarView').show();" >
+
+
+                            </p:commandButton>
+
+                        </p:column>
+
+                        <f:facet name="footer" >
+
+                            <p:commandButton value="Baixar selecionados" icon="pi pi-download" disabled="#{empty conciliarAudioBean.listConciliar}"
+                                             onclick="PrimeFaces.monitorDownload(start, stop);" ajax="false"
+                                             styleClass="ui-button-raised  mr-3"
+                                             actionListener="#{conciliarAudioBean.onBaixarAudiosSelecionados()}">
+
+                                <p:fileDownload value="#{conciliarAudioBean.fileRar}"/>
+
+                            </p:commandButton>
+
+                            <p:commandButton value="Enviar SFTP" styleClass="mr-3 ui-button-raised " disabled="#{empty conciliarAudioBean.listConciliar}"
+                                             id="btnEnvio" action="#{conciliarAudioBean.onModalSftp()}"
+                                             update="@form formAudioEnvio" icon="fa fa-sharp fa-upload"/>
+
+                            <p:commandButton value="Alterar momeclatura" styleClass="mr-3 ui-button-raised ui-button-outlined" disabled="#{empty conciliarAudioBean.listConciliar}"
+                                             id="btnRenomear" action="#{conciliarAudioBean.onRenomearGravacaoSelecionadas()}"
+                                             update="@form formAudioEnvio" />
+
+                        </f:facet>
+
+                    </p:dataTable>
+
+                    <p:dialog modal="true" widgetVar="statusDialog" header="" draggable="false" closable="false"
+                              resizable="false" width="20%">
+
+                        <div class=" col-12 " style="text-align: center;">
+                            <i class="pi pi-spin pi-spinner mr-3" style="font-size: 2rem;padding-right: 16px"></i>
+                            <span style="font-size: 16px"> Processando, Aguarde....</span>
+                        </div>
+
+                    </p:dialog>
+
+
+                </div>
+
+            </div>
+
+        </h:form>
+
+        <ui:include src="/pages/administrativo/atendimentoAudioAdm.xhtml"/>
+        <ui:include src="/pages/administrativo/modalSftp.xhtml"/>
+        <ui:include src="/pages/administrativo/modalConciliarView.xhtml"/>
+
+    </ui:define>
+
+</ui:composition>

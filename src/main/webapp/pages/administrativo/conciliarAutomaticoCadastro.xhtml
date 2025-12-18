@@ -1,0 +1,139 @@
+<ui:fragment xmlns="http://www.w3.org/1999/xhtml"
+             xmlns:h="http://java.sun.com/jsf/html"
+             xmlns:f="http://java.sun.com/jsf/core"
+             xmlns:ui="http://java.sun.com/jsf/facelets"
+             xmlns:comboempresa="http://java.sun.com/jsf/composite/componentes"
+             xmlns:matriz="http://java.sun.com/jsf/composite/componentes"
+             xmlns:p="http://primefaces.org/ui" template="/WEB-INF/template.xhtml">
+
+    <p:growl id="grl" widgetVar="grl" globalOnly="true" escape="false"
+             showSummary="false" life="8000" showDetail="true" sticky="false">
+
+        <p:autoUpdate/>
+    </p:growl>
+
+    <h:form id="formCadastro">
+
+        <div class="card">
+
+            <div class="ui-fluid formgrid grid">
+
+                <comboempresa:selectEmpresa id="cmdEmpresa" managedBean="#{cadastroConciliarAudioBean}"
+                                            value="#{cadastroConciliarAudioBean.conciliar.empresa}" update="@form"
+                                            filter="true" exibirSelecione="true"
+                                            selecioneItemLabel="Selecione" ajax="true" style="col-12 md:col-3"/>
+
+
+                <div class="field col-12 md:col-3">
+
+                    <p:outputLabel for="inputConciliarDesc" value="#{msg.descricao}"/>
+
+                    <p:inputText id="inputConciliarDesc" value="#{cadastroConciliarAudioBean.conciliar.descricao}"
+                                 maxlength="100" required="true" requiredMessage="#{msg.requerido}"/>
+
+                    <p:message for="inputConciliarDesc"/>
+
+                </div>
+
+                <div class="field col-12 md:col-3">
+
+                    <p:outputLabel value="Prefixo arquivo"/>
+
+                    <p:inputText value="#{cadastroConciliarAudioBean.conciliar.prefixoArquivoCompactado}"
+                                 maxlength="20"/>
+
+
+                </div>
+
+                <div class="field col-12 md:col-3">
+
+                    <p:outputLabel for="selectLojaCadastro" value="Loja"/>
+
+                    <p:selectOneMenu id="selectLojaCadastro" value="#{cadastroConciliarAudioBean.conciliar.loja}"
+                                     required="true" requiredMessage="#{msg.requerido}"
+                                     converter="omnifaces.SelectItemsConverter">
+
+                        <f:selectItem itemLabel="Selecione" noSelectionOption="true"/>
+
+                        <f:selectItems value="#{cadastroConciliarAudioBean.listLojas}" var="loja"
+                                       itemLabel="#{loja.codigoLoja}" itemValue="#{loja}"/>
+
+                    </p:selectOneMenu>
+
+                    <p:message for="selectLojaCadastro"/>
+
+                </div>
+
+                <div class="field col-12 md:col-3">
+
+                    <p:outputLabel for="selectOneSftpCadastro" value="Servidor SFTP"/>
+
+                    <p:selectOneMenu id="selectOneSftpCadastro" value="#{cadastroConciliarAudioBean.conciliar.sftp}"
+                                     required="true" requiredMessage="#{msg.requerido}"
+                                     converter="omnifaces.SelectItemsConverter">
+
+                        <f:selectItem itemLabel="Selecione" noSelectionOption="true"/>
+                        <f:selectItems value="#{cadastroConciliarAudioBean.listSftps}" var="sftp"
+                                       itemLabel="#{sftp.descricao}" itemValue="#{sftp}"/>
+
+                    </p:selectOneMenu>
+
+                    <p:message for="selectOneSftpCadastro"/>
+
+                </div>
+
+                <div class="field col-12 md:col-3">
+
+                <p:outputLabel for="selectOneCron" value="Périodo envio"/>
+
+                    <p:selectOneMenu id="selectOneCron" value="#{cadastroConciliarAudioBean.conciliar.intervalo}"
+                                     required="true" requiredMessage="Requerido">
+
+                        <f:selectItem itemLabel="Selecione" noSelectionOption="true"/>
+                        <f:selectItems value="#{cadastroConciliarAudioBean.cronEnum}" var="cron"
+                                       itemLabel="#{cron.constante}" itemValue="#{cron}"/>
+
+                    </p:selectOneMenu>
+
+                    <p:message for="selectOneCron"/>
+
+                </div>
+
+                <div class="field col-12 md:col-3">
+
+                    <p:outputLabel for="selectOneAtivo" value="Acesso"/>
+
+                    <p:selectOneMenu id="selectOneAtivo" value="#{cadastroConciliarAudioBean.conciliar.ativo}"
+                                     required="true" requiredMessage="Requerido">
+
+                        <f:selectItem itemLabel="Selecione" noSelectionOption="true"/>
+                        <f:selectItems value="#{cadastroConciliarAudioBean.tipoAcessoEnum}" var="acesso"
+                                       itemLabel="#{acesso.constante}" itemValue="#{acesso}"/>
+
+                    </p:selectOneMenu>
+
+                    <p:message for="selectOneAtivo"/>
+
+                </div>
+
+
+            </div>
+
+
+            <div class="mt-4">
+
+                <p:commandButton value="Salvar" styleClass="mr-3 ui-button-raised" id="btnSalvar"
+                                 action="#{cadastroConciliarAudioBean.salvar()}" update="@form grl" icon="pi pi-save"/>
+
+                <p:commandButton value="Voltar" styleClass="ui-button-raised ui-button-outlined" id="btnVoltar"
+                                 ajax="false" action="#{cadastroConciliarAudioBean.voltar()}" immediate="true"
+                                 icon="pi pi-arrow-circle-left"/>
+
+            </div>
+
+        </div>
+
+    </h:form>
+
+
+</ui:fragment>

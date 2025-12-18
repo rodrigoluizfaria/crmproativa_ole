@@ -1,0 +1,70 @@
+<ui:fragment xmlns="http://www.w3.org/1999/xhtml"
+	xmlns:h="http://java.sun.com/jsf/html"
+	xmlns:f="http://java.sun.com/jsf/core"
+	xmlns:o="http://omnifaces.org/ui"
+	xmlns:pe="http://primefaces.org/ui/extensions"
+	xmlns:ui="http://java.sun.com/jsf/facelets"
+	xmlns:p="http://primefaces.org/ui">
+
+	<!-- DLG MODAL -->
+	<p:dialog id="dlgUpload" widgetVar="dlgUpload" style="background: #fff" modal="true"	draggable="true" resizable="false" closable="true" visible="false" width="60%" styleClass="dialog-formulario" responsive="true" header="" appendTo="@(body)">
+		
+		<h:form id="formUploadModal" prependId="false" >
+
+
+			<h:panelGroup styleClass="grid " layout="block">
+
+				<div class="col-12  ">
+
+				<h4 style="font-size: 1rem;">Selecione ou arraste o arquivo no card abaixo.</h4>
+
+
+
+		<!-- 				<div class="p-field p-col-12 p-md-6">
+
+							<p:outputLabel for="txtDescricao" value="Descrição" />
+							
+								<p:inputText  value="#{uploadBean.arquivo.descricao}" required="true" requiredMessage="Obrigatório" id="txtDescricao" maxlength="50" >
+							
+							</p:inputText>
+							
+							<p:message for="txtDescricao"/>
+							
+							
+						</div>
+						
+						<div class="p-field p-col-12 p-md-6">
+
+							<p:outputLabel for="txtNomeArquivo" value="Nome do arquivo" />
+							
+								<p:inputText  value="#{uploadBean.arquivo.nomeArquivo}" required="true" requiredMessage="Obrigatório" id="txtNomeArquivo" maxlength="50" >
+							
+							</p:inputText>
+							
+							<p:message for="txtNomeArquivo"/>
+							
+							
+						</div> -->
+						
+						<div class="field col-12">
+
+							 <p:fileUpload listener="#{uploadBean.handleFileUpload}"   styleClass="upload-default"  invalidSizeMessage="tamanho maximo excedido: " update="conciliarUploads " allowTypes="/(\.|\/)(CSV|csv)$/" invalidFileMessage="São permitidas somente CSV (csv,CSV)"  multiple="true" mode="advanced" dragDropSupport="true" label="Selecione arquivo"  cancelLabel="Cancelar" uploadLabel="Enviar"  />					
+													
+						</div>
+
+						
+	
+						</div>
+						
+
+			
+
+			</h:panelGroup>
+					
+		</h:form>
+
+
+	</p:dialog>
+		
+
+</ui:fragment>

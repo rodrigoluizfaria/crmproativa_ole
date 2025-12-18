@@ -1,0 +1,111 @@
+<ui:fragment xmlns="http://www.w3.org/1999/xhtml"
+	xmlns:h="http://java.sun.com/jsf/html"
+	xmlns:f="http://java.sun.com/jsf/core"
+	xmlns:o="http://omnifaces.org/ui"
+	xmlns:pe="http://primefaces.org/ui/extensions"
+	xmlns:ui="http://java.sun.com/jsf/facelets"
+	xmlns:p="http://primefaces.org/ui">
+
+	<h:form id="formModalAdiantarAtendimento" prependId="false">
+
+		<div class="grid mt-4">
+
+
+				<div class="field col-12 md:col-3">
+
+				<p:outputLabel value="Pesquisar por"/>
+
+				<p:selectOneButton unselectable="false" value="#{meusAtendimentosBean.valorPesquisaAdianteamento}">
+				
+					<f:selectItem itemLabel="CPF" itemValue="CPF"/>
+	         	    <f:selectItem itemLabel="TELEFONE" itemValue="TELEFONE"/>
+          			<p:ajax update="@form" process="@this" global="false"/>
+				
+				</p:selectOneButton>
+
+			</div>
+
+			<div class="field col-12 md:col-3">
+
+				<p:outputLabel value="#{meusAtendimentosBean.valorPesquisaAdianteamento}" id="lblAdiantarCpf" for="txtAdiantarCpf" />
+
+				<p:inputText value="#{meusAtendimentosBean.cpf}" id="txtAdiantarCpf" required="true" requiredMessage="#{msg.requerido}"
+							  maxlength="14" onkeypress="return somenteNumeros(event)" />
+
+				<p:message for="txtAdiantarCpf" id="msgCpf" />
+			</div>
+
+			<div class="field col-12 md:col-3">
+
+				<p:outputLabel value="&#160;" id="txtPesquisaAdiantarEspaco" />
+
+				<div>
+
+					<p:commandButton value="Pesquisar" icon="pi pi-search" styleClass="ui-button-raised" actionListener="#{meusAtendimentosBean.pesquisarAtendimentosParaAdiantar()}"	partialSubmit="true" process="@this txtAdiantarCpf"
+						update="txtAdiantarCpf tableAtendimentosAdiantar tooltip msgCpf" />
+
+				</div>
+
+			</div>
+
+			<div class="mt-4">
+
+				<p:dataTable id="tableAtendimentosAdiantar" var="atendimento" rows="15" paginator="true" paginatorPosition="bottom"	value="#{meusAtendimentosBean.listAtendimentosParaAdiantar}"
+					emptyMessage="#{meusAtendimentosBean.listAtendimentosParaAdiantar eq nulll? ''  : msg.emptyMessage}" currentPageReportTemplate="[#{msg.totalDeRegistros}: {totalRecords}]"
+					paginatorTemplate="{CurrentPageReport}  {FirstPageLink} {PreviousPageLink} {PageLinks} {NextPageLink} {LastPageLink} {Exporters}" styleClass="ui-datatable-striped ui-datatable-gridlines ui-datatable-sm">
+
+					<p:ajax event="sort" global="false" />
+					<p:ajax event="page" global="false" />
+
+					<p:column headerText="Campanha">
+
+						<p:outputLabel value="#{atendimento[1]}" />
+
+					</p:column>
+
+					<p:column headerText="Nome">
+
+						<p:outputLabel value="#{atendimento[2]}" />
+
+					</p:column>
+
+					<p:column headerText="CPF">
+
+						<p:outputLabel value="#{atendimento[3]}" />
+
+					</p:column>
+
+					<p:column headerText="Ação" width="10%">
+
+						<p:commandButton icon="pi pi-chevron-circle-right"	styleClass="rounded-button ui-button-flat"	oncomplete="PF('dlgConfirmarAntecipacaoNaoTrabalhado').show();"
+										 global="false" id="btnAdiantarAtn" title="Antecipar Atendimento">
+
+							<f:setPropertyActionListener value="#{atendimento[0]}"	target="#{meusAtendimentosBean.idAtendimento}" />
+
+						</p:commandButton>
+
+					</p:column>
+
+				</p:dataTable>
+
+			</div>
+
+		</div>
+
+		<p:confirmDialog id="dlgConfirmarAntecipacaoNaoTrabalhado" widgetVar="dlgConfirmarAntecipacaoNaoTrabalhado" message="Antecipar Atendimento?" header="Confirmar" appendTo="@(body)" >
+
+			<p:commandButton id="simConfirmaNaotrabalhado" value="Sim" icon="pi pi-check" action="#{meusAtendimentosBean.adiantarFichaAtendimentoNaoTrabalado()}"
+							 oncomplete="PF('dlgConfirmarAntecipacaoNaoTrabalhado').hide();" immediate="true">
+
+			</p:commandButton>
+
+			<p:commandButton id="naoConfirmaNaotrabalhado" type="button" icon="pi pi-times"	onclick="PF('dlgConfirmarAntecipacaoNaoTrabalhado').hide();" value="Não" />
+
+		</p:confirmDialog>
+
+
+		<pe:tooltip id="tooltip" global="true" for="@(.ui-state-error)"	header="Erro" styleClass="qtip qtip-red qtip-rounded qtip-shadow" myPosition="left center" atPosition="right center" />
+	
+	</h:form>
+
+</ui:fragment>

@@ -1,0 +1,74 @@
+<ui:fragment xmlns="http://www.w3.org/1999/xhtml"
+	xmlns:h="http://java.sun.com/jsf/html"
+	xmlns:f="http://java.sun.com/jsf/core"
+	xmlns:o="http://omnifaces.org/ui"
+	xmlns:pe="http://primefaces.org/ui/extensions"
+	xmlns:ui="http://java.sun.com/jsf/facelets"
+	xmlns:p="http://primefaces.org/ui">
+
+	<p:dialog id="dlgAganda" widgetVar="dlgAganda" width="600" header="Detalhes do Evento" modal="true" resizable="false" draggable="false" appendTo="@(body)">
+
+		<h:form id="formModalAgenda" prependId="false">
+
+			<div class="ui-fluid formgrid grid ">
+
+				<div class="field col-12 ">
+
+					<p:outputLabel value="Titulo" for="txtTitulo" />
+
+					<p:inputText id="txtTitulo"	value="#{meusAtendimentosBean.anotacao.titulo}" required="true"	requiredMessage="Informe o título da anotação" />
+					
+					<pe:tooltip for="txtTitulo"	value="Título que será exibido na Agenda" header="Info"	styleClass="qtip qtip-green qtip-rounded qtip-shadow" />
+
+				</div>
+
+				<div class="field col-12 md:col-6">
+
+					<p:outputLabel value="Inicio Evento" for="dateInicio" />
+
+					<p:calendar id="dateInicio" pattern="dd/MM/yyyy HH:mm" value="#{meusAtendimentosBean.anotacao.dataInicio}" />
+
+				</div>
+
+				<div class="field col-12 md:col-6">
+
+					<p:outputLabel value="Fim do Evento" for="dateFim" />
+
+					<p:calendar id="dateFim" pattern="dd/MM/yyyy HH:mm"	value="#{meusAtendimentosBean.anotacao.dataFim}" />
+
+				</div>
+
+				<div class="field col-12">
+
+					<p:messages id="msg" />
+
+				</div>
+
+				<div class="field col-12 ">
+
+					<p:outputLabel value="Anotação:" for="txtAnotacao" />
+
+					<p:inputTextarea id="txtAnotacao" rows="10" required="true" value="#{meusAtendimentosBean.anotacao.anotacao}" requiredMessage="Informe sua anotação" />
+
+				</div>
+
+				<div class="field col-12 ">
+
+					<p:commandButton value="Salvar" icon="pi pi-save" action="#{meusAtendimentosBean.salvarAnotacao()}"	update="@form tabView:scheduleAgenda msg grlNo"
+						id="btnSalvarAnotacao" styleClass="mr-3 ui-button-raised" />
+				
+					<p:commandButton value="Excluir" icon="pi pi-trash"	action="#{meusAtendimentosBean.deletarAnotacao()}" update="@form tabView:scheduleAgenda msg grlNo"
+						id="btnExcluirAnotacao" styleClass="ui-button-outlined ui-button-raised ui-button-danger mr-3"/>
+					
+					<p:commandButton value="Sair" icon="pi pi-times" styleClass="ui-button-outlined ui-button-raised" onclick="PF('dlgAganda').hide();" immediate="true" global="false"
+						process="@this" />
+
+				</div>
+
+			</div>
+
+		</h:form>
+
+	</p:dialog>
+
+</ui:fragment>

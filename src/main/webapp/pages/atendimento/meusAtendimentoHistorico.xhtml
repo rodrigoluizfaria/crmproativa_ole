@@ -1,0 +1,110 @@
+<ui:fragment xmlns="http://www.w3.org/1999/xhtml"
+	xmlns:h="http://java.sun.com/jsf/html"
+	xmlns:f="http://java.sun.com/jsf/core"
+	xmlns:o="http://omnifaces.org/ui"
+	xmlns:pe="http://primefaces.org/ui/extensions"
+	xmlns:ui="http://java.sun.com/jsf/facelets"
+	xmlns:p="http://primefaces.org/ui">
+
+	<h:form id="forHistorico" prependId="false">
+
+		<div class="grid mt-4">
+
+			<div class="field col-12 md:col-4">
+
+				<p:outputLabel value="CPF" for="txtCpfHistoricoPesquisa"
+					id="lblCpfAdiantar" />
+
+				<p:inputText id="txtCpfHistoricoPesquisa"	value="#{meusAtendimentosBean.cpf}"	onkeypress="return somenteNumeros(event)" required="true"	requiredMessage="#{msg.requerido}"
+								maxlength="14"  />
+
+				<p:message for="txtCpfHistoricoPesquisa" id="msgHistorico" />
+			</div>
+
+			<div class="field col-12 md:col-3">
+
+				<p:outputLabel value="&#160;" id="txtPesquisaHistoricoEspaco" />
+
+				<div>
+
+					<p:commandButton value="Pesquisar" icon="pi pi-search"	id="btnPesquisarHistorico" partialSubmit="true"	process="@this txtCpfHistoricoPesquisa"	actionListener="#{meusAtendimentosBean.pesquisarHistoricosAtendimentos()}"
+						update="tooltipHistorico txtCpfHistoricoPesquisa tableAtendimentosHistoricos msgHistorico" styleClass="ui-button-raised" />
+
+				</div>
+
+			</div>
+
+			<div class="mt-4">
+
+				<p:dataTable id="tableAtendimentosHistoricos" var="atendimento"
+					rows="15" paginator="true" paginatorPosition="bottom" styleClass="ui-datatable-sm ui-datatable-gridlines ui-datatable-striped"
+					value="#{meusAtendimentosBean.listHistoricosAtendimentos}"
+					emptyMessage="#{meusAtendimentosBean.listHistoricosAtendimentos eq nulll? ''  : msg.emptyMessage}"
+					currentPageReportTemplate="[#{msg.totalDeRegistros}: {totalRecords}]"
+					paginatorTemplate="{CurrentPageReport}  {FirstPageLink} {PreviousPageLink} {PageLinks} {NextPageLink} {LastPageLink} {Exporters}">
+
+					<p:ajax event="page" global="false" />
+
+					<p:ajax event="sort" global="false" />
+
+					<p:column headerText="Data" sortBy="#{atendimento[4]}" width="15%">
+
+						<h:outputLabel value="#{atendimento[4]}">
+
+							<f:convertDateTime pattern="dd/MM/yyyy HH:mm:ss" />
+
+						</h:outputLabel>
+
+					</p:column>
+
+					<p:column headerText="Campanha" sortBy="#{atendimento[0]}"	width="20%">
+
+						<h:outputLabel value="#{atendimento[0]}" />
+
+					</p:column>
+
+					<p:column headerText="Atendimento" sortBy="#{atendimento[1]}" width="10%">
+
+						<h:outputLabel value="#{atendimento[1]}" />
+
+					</p:column>
+
+					<p:column headerText="Usuário" sortBy="#{atendimento[2]}" width="15%">
+
+						<h:outputLabel value="#{atendimento[2]}" />
+
+					</p:column>
+
+					<p:column headerText="Agendamento" sortBy="#{atendimento[5]}"	width="15%">
+
+						<h:outputLabel value="#{atendimento[5]}">
+
+							<f:convertDateTime pattern="dd/MM/yyyy HH:mm:ss" />
+
+						</h:outputLabel>
+
+					</p:column>
+
+					<p:column headerText="Status" sortBy="#{atendimento[3]}" width="10%">
+
+						<h:outputLabel value="#{atendimento[3]}" />
+
+					</p:column>
+
+					<p:column headerText="Manifesto" sortBy="#{atendimento[6]}"	width="25%">
+
+						<h:outputLabel value="#{atendimento[6]}" />
+
+					</p:column>
+
+				</p:dataTable>
+
+			</div>
+
+			<pe:tooltip id="tooltipHistorico" global="true"	for="@(.ui-state-error)" header="Erro" styleClass="qtip qtip-red qtip-rounded qtip-shadow" myPosition="left center" atPosition="right center" />
+			
+		</div>
+
+	</h:form>
+
+</ui:fragment>

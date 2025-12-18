@@ -1,0 +1,138 @@
+<ui:fragment xmlns="http://www.w3.org/1999/xhtml"
+             xmlns:h="http://java.sun.com/jsf/html"
+             xmlns:f="http://java.sun.com/jsf/core"
+             xmlns:ui="http://java.sun.com/jsf/facelets"
+             xmlns:p="http://primefaces.org/ui" template="/WEB-INF/template.xhtml"
+             xmlns:matriz="http://java.sun.com/jsf/composite/componentes"
+             xmlns:c="http://java.sun.com/jsp/jstl/core">
+
+    <p:growl id="grl" widgetVar="grl" globalOnly="true" escape="false" showSummary="false" life="8000" showDetail="true"
+             sticky="false">
+
+        <p:autoUpdate/>
+
+    </p:growl>
+
+
+    <h:form id="formPesquisa" prependId="false">
+
+
+        <div class="card">
+
+            <div class="ui-fluid formgrid grid">
+
+                <matriz:selectEmpresa id="cmpEmpresa"
+                                      managedBean="#{expedienteBean}" style="col-12 md:col-3"
+                                      value="#{expedienteBean.expediente.empresa}" update="@form"
+                                      filter="true" exibirSelecione="true"
+                                      selecioneItemLabel="Selecione" required="false"
+                                      rendered="#{sessionScope['usuario'].empresa.possuiFiliais}"/>
+
+                <div class="field col-12 md:col-3">
+
+                    <p:outputLabel for="txtDescricao" id="lblDescricao"
+                                   value="#{msg.descricao}"/>
+
+                    <p:inputText id="txtDescricao"
+                                 value="#{expedienteBean.expediente.descricao}"/>
+
+                </div>
+
+                <div class="field col-12 md:col-3">
+
+                    <p:outputLabel for="selectOneAcao" value="#{msg.acao}"/>
+
+                    <p:selectOneMenu id="selectOneAcao"
+                                     value="#{expedienteBean.expediente.acesso}">
+
+                        <f:selectItem itemLabel="#{msg.selecione}"
+                                      noSelectionOption="true"/>
+
+                        <f:selectItems value="#{expedienteBean.tipoAcessoEnum}"
+                                       var="acesso" itemLabel="#{acesso.constante}"
+                                       itemValue="#{acesso}"/>
+
+                    </p:selectOneMenu>
+
+                </div>
+
+            </div>
+                <div class="mt-5">
+
+                    <p:commandButton id="btnPesquisa" value="#{msg.pesquisar}" styleClass="mr-3 ui-button-raised"
+                                     icon="pi pi-search" action="#{expedienteBean.pesquisar()}"
+                                     update=":formPesquisa:tableExpediente grl"/>
+
+                    <p:commandButton id="btnExportar" styleClass="mr-3 ui-button-raised ui-button-outlined"
+                                     icon="pi pi-file-excel" value="#{msg.exportar}" ajax="false"
+                                     onclick="disableModalLoading()"
+                                     rendered="#{sessionScope['usuario'].permissaoExportar}"
+                                     disabled="#{empty expedienteBean.listExpedientes}">
+
+                        <p:dataExporter target="tableExpediente" type="xls" fileName="expediente"/>
+
+                    </p:commandButton>
+
+                    <p:commandButton id="btnNovo" value="#{msg.novo}" icon="pi pi-plus-circle"
+                                     styleClass="ui-button-raised ui-button-outlined"
+                                     actionListener="#{expedienteBean.novo()}" ajax="false"/>
+
+                </div>
+
+
+
+
+        </div>
+
+        <div class=" mt-4">
+
+            <div class="card">
+
+                <p:dataTable value="#{expedienteBean.listExpedientes}"
+                             var="expediente" id="tableExpediente" paginator="true"
+                             paginatorPosition="bottom" styleClass="ui-datatable-striped ui-datatable-gridlines"
+                             emptyMessage="Nenhum registro encontrado"
+                             currentPageReportTemplate="[#{msg.totalDeRegistros}: {totalRecords}]"
+                             paginatorTemplate="{CurrentPageReport}  {FirstPageLink} {PreviousPageLink} {PageLinks} {NextPageLink} {LastPageLink}"
+                             widgetVar="wgtExpediente">
+
+
+                    <p:column headerText="#{msg.empresa}">
+
+                        <h:outputText value="#{expediente.empresa.nome}"/>
+
+                    </p:column>
+
+                    <p:column headerText="#{msg.descricao}">
+
+                        <h:outputText value="#{expediente.descricao}"/>
+
+                    </p:column>
+
+                    <p:column headerText="#{msg.acesso}">
+
+                        <h:outputText value="#{expediente.acesso.constante}"/>
+
+                    </p:column>
+
+                    <p:column style="text-align:center;width:50px">
+
+                        <p:commandButton icon="fa fw fa-edit"
+                                         styleClass="rounded-button ui-button-flat" title="alterar"
+                                         action="#{expedienteBean.editar(expediente)}" ajax="false">
+
+                        </p:commandButton>
+
+                    </p:column>
+
+                </p:dataTable>
+
+            </div>
+
+        </div>
+
+
+    </h:form>
+
+
+</ui:fragment>

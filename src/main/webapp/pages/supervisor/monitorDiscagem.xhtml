@@ -1,0 +1,240 @@
+<ui:composition xmlns="http://www.w3.org/1999/xhtml"
+	xmlns:h="http://java.sun.com/jsf/html"
+	xmlns:f="http://java.sun.com/jsf/core"
+	xmlns:ui="http://java.sun.com/jsf/facelets"
+	xmlns:matriz="http://java.sun.com/jsf/composite/componentes"
+	xmlns:p="http://primefaces.org/ui" template="/WEB-INF/template.xhtml">
+
+
+	<ui:define name="title">Backoffice Supervisor</ui:define>
+
+	<ui:define name="viewname">Backoffice Supervisor</ui:define>
+
+	<ui:define name="content">
+
+		<p:growl id="grl" widgetVar="grl" globalOnly="true" escape="false"
+			showSummary="false" life="8000" showDetail="true" sticky="false">
+
+			<p:autoUpdate />
+
+		</p:growl>
+
+		<p:growl id="grlNo" widgetVar="grl" escape="false" showSummary="false"
+			life="8000" showDetail="true" sticky="false" />
+
+		<div class="title-breadcrumb">
+
+			<ul class="breadcrumb">
+
+				<li><span style="user-select: none;">Backoffice</span></li>
+
+				<li><span>Discagem</span></li>
+
+			</ul>
+
+		</div>
+
+		<h:form id="formBackofficeCampanha" prependId="false">
+
+			<div class="card">
+
+				<div class="ui-fluid formgrid grid">
+
+					<matriz:selectEmpresa id="selectEmpresaCampanha"
+						managedBean="#{supervisorMonitorDiscagem}"
+						value="#{supervisorMonitorDiscagem.empresa}" ajax="true"
+						update="@form" filter="true" exibirSelecione="true"
+						required="true" />
+
+
+					<div class="field col-12 md:col-2">
+
+						<p:outputLabel value="Status Campanha" />
+
+						<p:selectOneMenu id="selectStatusCampanha"
+							value="#{supervisorMonitorDiscagem.statusCampanhaLong}"
+							filter="true" filterMatchMode="contains">
+
+							<f:selectItem itemLabel="Selecione" itemValue="" />
+
+							<f:selectItems
+								value="#{supervisorMonitorDiscagem.listStatusCampanha}"
+								var="statusCampanha" itemLabel="#{statusCampanha.descricao}"
+								itemValue="#{statusCampanha.id}" />
+
+							<p:ajax process="@this" partialSubmit="true"
+								update="selectCampanha"
+								listener="#{supervisorMonitorDiscagem.changeCampanha()}" />
+
+
+						</p:selectOneMenu>
+
+					</div>
+					
+								<div class="field col-12 md:col-2">
+
+						<p:outputLabel value="Campanha" />
+
+						<p:selectOneMenu id="selectCampanha"
+							value="#{supervisorMonitorDiscagem.campanhaLong}" filter="true"
+							filterMatchMode="contains">
+
+							<f:selectItem itemLabel="Selecione" itemValue="" />
+
+							<f:selectItems value="#{supervisorMonitorDiscagem.listCampanha}"
+								var="campanha" itemLabel="#{campanha.descricao}"
+								itemValue="#{campanha.id}" />
+
+							<p:ajax process="@this" partialSubmit="true"
+								update="selectEquipe"
+								listener="#{supervisorMonitorDiscagem.changeEquipe()}" />
+
+						</p:selectOneMenu>
+
+					</div>
+					
+
+					<div class="field col-12 md:col-2">
+
+						<p:outputLabel value="Equipe" />
+
+						<p:selectOneMenu id="selectEquipe"
+							value="#{supervisorMonitorDiscagem.equipeLong}" filter="true"
+							filterMatchMode="contains">
+
+							<f:selectItem itemLabel="Selecione" itemValue="" />
+
+							<f:selectItems value="#{supervisorMonitorDiscagem.listEquipe}"
+								var="equipe" itemLabel="#{equipe.nome}" itemValue="#{equipe.id}" />
+								
+				
+
+
+						</p:selectOneMenu>
+
+					</div>
+
+					<div class="field col-12 md:col-2">
+
+						<p:outputLabel value="Data Inicio" />
+
+						<p:datePicker id="calendarDataInicio"
+							value="#{supervisorMonitorDiscagem.dataInicio}"
+							showButtonBar="true" showIcon="true" readonlyInput="true"
+							pattern="dd/MM/yyyy" />
+
+
+					</div>
+
+					<div class="field col-12 md:col-2">
+
+						<p:outputLabel value="Data Fim" />
+
+						<p:datePicker id="calendarDataFim"
+							value="#{supervisorMonitorDiscagem.dataFim}"
+							showButtonBar="true" showIcon="true" readonlyInput="true"
+							pattern="dd/MM/yyyy" />
+
+
+					</div>
+
+					<div class="field col-12 md:col-2">
+
+						<p:outputLabel value="&#160;&#160;" id="txtPesquisaEspaco" />
+
+
+						<div>
+
+							<p:commandButton value="Pesquisar" icon="pi pi-search"
+								styleClass="raised-button mr-3"
+								action="#{supervisorMonitorDiscagem.pesquisar()}"
+								actionListener="#{supervisorBackofficeBean.pesquisarAtendimentos()}"
+								update="@form" />
+
+
+						</div>
+
+					</div>
+
+
+
+				</div>
+
+				<div class="col-12">
+
+					<p:dataTable id="tableAtendimentos" var="qtidade" rows="15"
+						paginator="true" paginatorPosition="bottom"
+						value="#{supervisorMonitorDiscagem.listQuatidades}"
+						emptyMessage="#{supervisorMonitorDiscagem.listQuatidades eq null? '' : msg.emptyMessage}"
+						currentPageReportTemplate="[#{msg.totalDeRegistros}: {totalRecords}]"
+						paginatorTemplate="{CurrentPageReport}  {FirstPageLink} {PreviousPageLink} {PageLinks} {NextPageLink} {LastPageLink} {Exporters}"
+						reflow="true">
+
+						<p:ajax event="sort" global="false" />
+
+						<p:column style="width:16px">
+							<p:rowToggler />
+						</p:column>
+
+						<p:column headerText="Campanha" width="30%">
+							<p:outputLabel value="#{qtidade[0]}" />
+						</p:column>
+
+						<p:column headerText="Total Aten Realizados" width="15%">
+							<p:outputLabel value="#{qtidade[1]}" />
+						</p:column>
+
+						<p:column headerText="Total Aten Discados" width="15%">
+							<p:outputLabel value="#{qtidade[2]}" />
+
+						</p:column>
+
+						<p:column headerText="Total Aten Não Discados" width="15%">
+							<p:outputLabel value="#{qtidade[3]}" />
+						</p:column>
+
+						<p:rowExpansion>
+
+							<p:dataTable id="tableSubAtendimentos" var="sub"
+								value="#{qtidade[4]}" rows="15" emptyMessage=""
+								style="width:50%;margin-left:35px"
+								styleClass="ui-datatable-striped ui-datatable-gridlines ui-datatable-sm"
+								reflow="true">
+								<p:ajax event="sort" global="false" />
+
+								<p:column headerText="Usuario" width="55%" sortBy="#{sub[0]}">
+
+									<p:outputLabel value="#{sub[0]}" />
+
+								</p:column>
+
+
+								<p:column headerText="Discado" width="15%">
+
+									<p:outputLabel value="#{sub[1]}" />
+
+								</p:column>
+
+								<p:column headerText="Não Discado" width="15%">
+
+									<p:outputLabel value="#{sub[2]}" />
+
+								</p:column>
+
+							</p:dataTable>
+
+						</p:rowExpansion>
+
+
+
+					</p:dataTable>
+
+				</div>
+
+			</div>
+
+		</h:form>
+
+	</ui:define>
+
+</ui:composition>

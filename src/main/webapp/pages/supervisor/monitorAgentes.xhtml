@@ -1,0 +1,324 @@
+<ui:composition xmlns="http://www.w3.org/1999/xhtml"
+                xmlns:h="http://java.sun.com/jsf/html"
+                xmlns:f="http://java.sun.com/jsf/core"
+                xmlns:ui="http://java.sun.com/jsf/facelets"
+                xmlns:o="http://omnifaces.org/ui"
+                xmlns:of="http://omnifaces.org/functions"
+                xmlns:matriz="http://java.sun.com/jsf/composite/componentes"
+                xmlns:p="http://primefaces.org/ui" template="/WEB-INF/template.xhtml">
+
+
+    <ui:define name="viewname">
+
+        <div class="bcca-breadcrumb">
+            <div class="bcca-breadcrumb-item bg-primary-500 hover:bg-primary-700">
+                <p:link outcome="/pages/supervisor/monitorAgentes" styleClass="uppercase"
+                        style="text-decoration: none">MONITOR AGENTE</p:link>
+            </div>
+            <div class="bcca-breadcrumb-item uppercase">SUPERVISOR</div>
+        </div>
+
+    </ui:define>
+
+    <ui:define name="content">
+
+        <style type="text/css">
+
+            .old {
+                background-color: #fca752 !important;
+                background-image: none !important;
+                color: #000000 !important;
+            }
+
+        </style>
+
+        <script>
+
+            function onInit() {
+
+                $("#spin").addClass("fa fa-spinner fa-spin fa-3x fa-fw");
+
+            }
+
+            function onRemove() {
+
+                $("#spin").removeClass("fa fa-spinner fa-spin fa-3x fa-fw");
+
+            }
+
+        </script>
+
+        <p:growl id="grl" widgetVar="grl" globalOnly="true" escape="false" showSummary="false" life="8000"
+                 showDetail="true" sticky="false">
+
+            <p:autoUpdate/>
+
+        </p:growl>
+
+        <p:growl id="grlNo" widgetVar="grl" escape="false" showSummary="false" life="8000" showDetail="true"
+                 sticky="false"/>
+
+        <h:form id="formMonitorPausa" prependId="false">
+
+            <p:poll listener="#{supervisorMonitorAtividadeBean.pesquisar()}"
+                    rendered="#{supervisorMonitorAtividadeBean.taxaAtualizacao != 0}" onstart="onInit();"
+                    oncomplete="onRemove();" update="pgOperacional"
+                    interval="#{supervisorMonitorAtividadeBean.taxaAtualizacao.toString()}" global="false"/>
+
+            <div class="card border-left border-primary-700"  style="margin-bottom: 6px;">
+
+                <div class="ui-fluid formgrid grid">
+
+                    <matriz:selectEmpresa id="cmpEmpresa" managedBean="#{supervisorMonitorAtividadeBean}"
+                                          value="#{supervisorMonitorAtividadeBean.empresa}" ajax="true" update="@form"
+                                          filter="true" required="false"/>
+
+                    <div class="field col-12 md:col-3">
+
+                        <p:outputLabel value="Equipe"/>
+
+                        <p:selectOneMenu id="selectEquipe" value="#{supervisorMonitorAtividadeBean.idEquipe}"
+                                         filter="true" filterMatchMode="contains">
+
+                            <f:selectItem itemLabel="Selecione" itemValue=""/>
+                            <f:selectItems value="#{supervisorMonitorAtividadeBean.listEquipes}" var="equipe"
+                                           itemLabel="#{equipe.nome}" itemValue="#{equipe.id}"/>
+
+                            <p:ajax listener="#{supervisorMonitorAtividadeBean.pesquisar()}" update="@form"
+                                    global="false"/>
+
+                        </p:selectOneMenu>
+
+                    </div>
+
+                    <div class="field col-12 md:col-2 mt-5  " style=" margin-bottom: 0;  padding: 0px;">
+
+                        <div style="display: flex; ">
+
+                            <p:commandButton
+                                    icon="#{supervisorMonitorAtividadeBean.vizualizacao eq 'GRID' ? 'pi pi-list' : 'pi pi-th-large' }"
+                                    styleClass="ui-button-raised rounded-button  ml-2" process="@this" update="@form"
+                                    global="false"
+                                    actionListener="#{supervisorMonitorAtividadeBean.alterarVizualizacao()}"/>
+
+                        </div>
+
+                    </div>
+
+                    <div class="#{supervisorMonitorAtividadeBean.usuario.empresa.possuiFiliais ? 'field col-12 md:col-5' : 'field col-12 md:col-7 '} "
+                         style=" margin-bottom: 0;  padding: 0px;">
+
+
+                        <div class="field col-12 md:col-2 mt-4"
+                             style="float: right;margin-top: 15px; margin-bottom: 0;">
+
+                            <p:commandButton icon="pi pi-refresh" styleClass="rounded-button ui-button-outlined"
+                                             update="@form"
+                                             actionListener="#{supervisorMonitorAtividadeBean.onUpdate()}"/>
+                            <i class="" style="font-size: 2rem;" id="spin"></i>
+
+                        </div>
+
+                        <div class="field col-12 md:col-4" style="float: right;margin-bottom: 0;">
+
+                            <p:outputLabel value="Taxa de atualização"/>
+
+                            <p:selectOneMenu value="#{supervisorMonitorAtividadeBean.taxaAtualizacao}">
+
+                                <f:selectItem itemLabel="Não atualizar" itemValue="0"/>
+                                <f:selectItem itemLabel="5 segundos" itemValue="5"/>
+                                <f:selectItem itemLabel="10 segundos" itemValue="10"/>
+                                <f:selectItem itemLabel="20 segundos" itemValue="20"/>
+                                <f:selectItem itemLabel="30 segundos" itemValue="30"/>
+
+                                <p:ajax process="@this" update="@form" global="false"/>
+
+                            </p:selectOneMenu>
+
+                        </div>
+
+                    </div>
+
+                </div>
+
+            </div>
+
+            <h:panelGroup id="pgOperacional">
+
+                <h:panelGroup styleClass=" formgrid grid mt-4" layout="block" rendered="#{supervisorMonitorAtividadeBean.vizualizacao eq 'GRID'}">
+
+                    <ui:repeat var="agente" value="#{supervisorMonitorAtividadeBean.listaMonitorAgente}">
+
+                        <div class="field col-12 md:col-3" style="border-left-color: #{agente[13]};">
+
+                            <div class="card" style="padding: 0px;height: 100%">
+
+                                <div class="col-12 border-bottom-2 p-3 #{agente[13]} text-white " style="background-color: #{agente[13]}">
+
+                                    <div class="ui-fluid formgrid grid">
+
+                                        <div class="white-space-nowrap overflow-hidden text-overflow-ellipsis col-4"
+                                             style="padding: 0px;">
+                                            #{agente[1]}
+                                        </div>
+
+                                        <div class="relative col-8" style="padding: 0px;padding-right: 6px">
+                                            <div class="  font-semibold flex align-items-center justify-content-end  border-round"
+                                                 style="top: -18px">#{agente[0]}<i class="ml-3 fa-solid fa-headset"></i>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <div class="pl-5 pr-5">
+
+                                    <div class="ui-fluid grid formgrid pt-4 border-bottom-1 border-400  "
+                                         style="padding-bottom: 0px;">
+
+                                        <div class="col-8 pt-2">
+
+                                            <div class="col-12 mb-3">
+                                                <span class="font-semibold">  Equipe: </span> #{agente[2]}
+                                            </div>
+                                            <div class="col-12 mb-3">
+                                                <span class="font-semibold">  Ramal: </span>#{agente[3]}
+                                            </div>
+
+                                        </div>
+
+                                        <div class="col-4 align-content-center text-center pr-1 ">
+                                            <o:graphicImage
+                                                    value="#{supervisorMonitorPausaBean.retornarFoto(agente[10], agente[9])}"
+                                                    dataURI="true" height="45"
+                                                    title="#{agente[1]}"/>
+                                            <p class="text-uppercase mb-2 font-semibold "
+                                            >#{agente[12]}</p>
+                                        </div>
+
+                                    </div>
+
+                                    <div class="ui-fluid grid formgrid pt-4 " style="padding-bottom: 0px;">
+
+
+                                        <!--  <div class="col-6">
+
+                                              <h5 style="padding: 0px 12px; ;margin-bottom: 10px;font-size: 14px">#{agente[0]}</h5>
+
+                                          </div>-->
+
+
+                                        <div class="col-12 border-bottom-1 border-400">
+
+                                            <div class="grid-item" style="margin: 0px 10px;">
+                                                <p class="uppercase mb-3 " style="line-height: 1;">#{agente[4]}</p>
+                                                <p class="uppercase mb-3 " style="line-height: 1;">#{agente[5]}</p>
+                                                <p class="uppercase mb-3 " style="line-height: 1;">#{agente[6]}</p>
+                                                <p class=" mb-3 font-semibold "
+                                                   style="color: #{agente[8]};"> #{agente[7]} </p>
+                                            </div>
+
+                                        </div>
+
+                                        <div class="col-12 pt-2 pl-4 text-center">
+
+                                            <p:commandButton icon="pi pi-sign-out" title="deslogar"
+                                                             styleClass="secondary-button ui-button-outlined rounded-button mr-2 mb-2"
+                                                             update="@form"
+                                                             actionListener="#{supervisorMonitorAtividadeBean.onDeslogar(agente[11])}"/>
+
+                                            <p:commandButton rendered="#{agente[0] eq 'ATENDIMENTO INICIADO'}"
+                                                             icon="fa fa-volume-up"
+                                                             onclick="window.location='sip:*99*#{agente[3]}@10.8.1.251'"
+                                                             title="escutar"
+                                                             styleClass="ui-button-secondary ui-button-outlined rounded-button mr-2 mb-2"
+                                                             type="button"/>
+                                        </div>
+
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+
+                    </ui:repeat>
+
+                </h:panelGroup>
+
+                <h:panelGroup styleClass="card mt-5 " layout="block"
+                              rendered="#{supervisorMonitorAtividadeBean.vizualizacao eq 'TABLE'}">
+
+
+                    <p:dataTable var="agente" value="#{supervisorMonitorAtividadeBean.listaMonitorAgente}"
+                                 styleClass="ui-datatable-sm" emptyMessage="">
+
+                        <f:facet name="header">
+
+                            <div style="text-align: end;">
+                                Total de registros: #{supervisorMonitorAtividadeBean.listaMonitorAgente.size()} |&#160;&#160; Pausa: #{empty supervisorMonitorAtividadeBean.emPausa ? '0' : supervisorMonitorAtividadeBean.emPausa } &#160;&#160;|&#160;&#160; Aguardando: #{empty supervisorMonitorAtividadeBean.aguardando ? 0 : supervisorMonitorAtividadeBean.aguardando } &#160;&#160;|&#160;&#160; Em atendimento: #{empty supervisorMonitorAtividadeBean.emAtendimento ? '0' : supervisorMonitorAtividadeBean.emAtendimento}
+                            </div>
+
+                        </f:facet>
+
+                        <p:column headerText="Agente" width="20%" sortBy="#{agente[12]}">
+
+                            <h:outputText value="#{agente[12]}"/>
+
+                            <p:commandButton icon="pi pi-sign-out" title="deslogar"
+                                             styleClass="ui-button-flat ui-button-secondary ml-2 " update="@form"
+                                             actionListener="#{supervisorMonitorAtividadeBean.onDeslogar(agente[11])}"/>
+
+
+                        </p:column>
+
+                        <p:column headerText="Ramal" width="5%">
+                            <h:outputText value="#{agente[3]}"/>
+                        </p:column>
+
+                        <p:column headerText="Equipe" sortBy="#{agente[2]}">
+                            <h:outputText value="#{agente[2]}"/>
+                        </p:column>
+
+
+                        <p:column headerText="Evento/Cliente">
+                            <h:outputText value="#{agente[4]}  "/>
+                        </p:column>
+
+                        <p:column headerText="Campanha">
+                            <h:outputText value="#{of:replaceAll(agente[5], 'CAMPANHA:', '')}  "/>
+                        </p:column>
+
+                        <p:column headerText="Inicio" width="10%">
+                            <h:outputText value="#{of:replaceAll(agente[6], 'INÍCIO:', '')}  "/>
+                        </p:column>
+
+                        <p:column headerText="Duração" style="color: #{agente[8]};" sortBy="#{agente[7]}" width="10%">
+                            <h:outputText value="#{agente[7]}"/>
+                        </p:column>
+
+                        <p:column headerText="Tipo" styleClass="#{agente[13]}" sortBy="#{agente[0]}">
+
+                            <h:outputText value="#{agente[0]}" style="color:#fff;"/>
+
+                            <h:panelGroup rendered="#{agente[0] eq 'ATENDIMENTO INICIADO'}">
+
+                                <i class="fa fa-volume-up" onclick="window.location='sip:*99*#{agente[3]}@10.8.1.251'"
+                                   style="float: right;cursor: pointer;color:#fff;" title="escutar"
+                                   aria-hidden="true"></i>
+
+                            </h:panelGroup>
+
+
+                        </p:column>
+
+                    </p:dataTable>
+
+
+                </h:panelGroup>
+
+            </h:panelGroup>
+
+        </h:form>
+
+    </ui:define>
+
+</ui:composition>

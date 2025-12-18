@@ -1,0 +1,65 @@
+<ui:fragment xmlns="http://www.w3.org/1999/xhtml"
+	xmlns:h="http://java.sun.com/jsf/html"
+	xmlns:f="http://java.sun.com/jsf/core"
+	xmlns:o="http://omnifaces.org/ui"
+	xmlns:ui="http://java.sun.com/jsf/facelets"
+	xmlns:p="http://primefaces.org/ui">
+
+	<!--  -->
+	<p:dialog id="dlgTelefoneIndicacao" widgetVar="dlgTelefoneIndicacao" modal="true"	draggable="false" resizable="false" closable="false" visible="false"
+		width="300" header="Cadastro Telefone Indicação">
+
+		<h:form id="formTelefoneIndicacao" prependId="false"	rendered="#{fichaAtendimentoBean.atendimento ne null and fichaAtendimentoBean.telefoneIndicacao ne null}">
+
+			<div class="col-12">
+
+			<div class="ui-fluid formgrid grid">
+
+					 <div class="field col-12 md:col-4">
+
+						<p:outputLabel value="#{msg.ddd}" for="txtDDDIndicacao" />
+
+						<p:inputText maxlength="2" required="true"	requiredMessage="#{msg.requerido}" id="txtDDDIndicacao"	onkeypress="return somenteNumeros(event)"	value="#{fichaAtendimentoBean.telefoneIndicacao.ddd}" />
+
+						<p:message for="txtDDDIndicacao" />
+
+					</div>
+
+					 <div class="field col-12 md:col-8">
+
+						<p:outputLabel value="Número:" for="txtNumeroTelIndicacao" />
+
+						<p:inputText maxlength="9" id="txtNumeroTelIndicacao" required="true" requiredMessage="#{msg.requerido}"	onkeypress="return somenteNumeros(event)"	value="#{fichaAtendimentoBean.telefoneIndicacao.numero}">
+
+							<o:validator validatorId="jakarta.faces.Length" minimum="8"	message="Deve conter no minimo 8 digitos" />
+
+						</p:inputText>
+
+						<p:message for="txtNumeroTelIndicacao"  />
+
+					</div>
+					
+					<p:messages id="msgIndicacao" />
+
+
+				 <div class="field col-12 ">
+
+					<div class="div_btn_rigth" style="margin: 5px 0px; float: right;">
+
+						<p:commandButton value="Salvar" icon="pi pi-save "	id="btnSalvarTelefoneIndicacao" 	oncomplete="PF('dlgTelefoneIndicacao').hide();" styleClass="ui-button-raised mr-3"	actionListener="#{fichaAtendimentoBean.salvarEntidade('TELEFONE_INDICACAO')}"	update="@form :tabAtendimento:tableTelIndicado " />
+
+						<p:commandButton value="Fechar" icon="pi pi-times"	id="btnSairTelefoneIndicacao" styleClass="ui-button-raised p-mr-3"		onclick="PF('dlgTelefoneIndicacao').hide();" global="false" process="@this"/>
+
+					</div>
+
+				</div>
+
+				</div>
+				
+			</div>
+
+		</h:form>
+
+	</p:dialog>
+
+</ui:fragment>

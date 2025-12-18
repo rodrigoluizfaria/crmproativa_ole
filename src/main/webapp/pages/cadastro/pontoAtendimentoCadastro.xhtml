@@ -1,0 +1,139 @@
+<ui:fragment xmlns="http://www.w3.org/1999/xhtml"
+             xmlns:h="http://java.sun.com/jsf/html"
+             xmlns:f="http://java.sun.com/jsf/core"
+             xmlns:ui="http://java.sun.com/jsf/facelets"
+             xmlns:p="http://primefaces.org/ui"
+             xmlns:comboempresa="http://java.sun.com/jsf/composite/componentes"
+             template="/WEB-INF/template.xhtml">
+
+    <p:growl id="grl" widgetVar="grl" globalOnly="true" escape="false" showSummary="false" life="8000" showDetail="true"
+             sticky="false">
+
+        <p:autoUpdate/>
+
+    </p:growl>
+
+    <h:form id="formCadastro" prependId="false">
+
+        <div class="card">
+
+            <div class="ui-fluid formgrid grid">
+
+                <comboempresa:selectEmpresa id="cmpEmpresa" managedBean="#{pontoAtendimentoBean}"
+                                            value="#{pontoAtendimentoBean.pontoAtendimento.empresa}"
+                                            ajax="true" update="selectOnePabx" filter="true" style="col-12 md:col-3"/>
+
+
+                <div class="field col-12 md:col-2">
+
+                    <p:outputLabel for="inputDesc" value="Descrição:"/>
+
+                    <p:inputText id="inputDesc" value="#{pontoAtendimentoBean.pontoAtendimento.descricao}"
+                                 required="true" requiredMessage="Requerido" onblur="value=value.toUpperCase()"
+                                 onkeypress="value=value.toUpperCase()"/>
+
+                    <p:message for="inputDesc"/>
+
+                </div>
+
+                <div class="field col-12 md:col-2">
+
+                    <p:outputLabel for="inputRamal" value="Ramal:"/>
+
+                    <p:inputText id="inputRamal" value="#{pontoAtendimentoBean.pontoAtendimento.ramal}" required="true"
+                                 requiredMessage="Requerido" onblur="value=value.toUpperCase()"
+                                 onkeypress="value=value.toUpperCase()"/>
+
+                    <p:message for="inputRamal"/>
+
+                </div>
+
+                <div class="field col-12 md:col-2">
+
+                    <p:outputLabel for="selectOnePabx" value="Tipo:"/>
+
+                    <p:selectOneMenu id="selectOnePabx" value="#{pontoAtendimentoBean.pontoAtendimento.pabx}"
+                                     converter="converterPabx" required="true" requiredMessage="Requerido">
+
+                        <f:selectItem itemLabel="Selecione" noSelectionOption="true"/>
+
+                        <f:selectItems value="#{pontoAtendimentoBean.listPabx}" var="pabx" itemLabel="#{pabx.descricao}"
+                                       itemValue="#{pabx}"/>
+
+                        <p:ajax process="@this" update="pnpToken"/>
+
+                    </p:selectOneMenu>
+
+                    <p:message for="selectOnePabx"/>
+
+                </div>
+
+                <div class="field col-12 md:col-2">
+
+                    <p:outputLabel for="selectOneAtivo" value="Acesso:"/>
+
+                    <p:selectOneMenu id="selectOneAtivo" value="#{pontoAtendimentoBean.pontoAtendimento.ativo}"
+                                     required="true" requiredMessage="Requerido">
+
+                        <f:selectItem itemLabel="Selecione" noSelectionOption="true"/>
+
+                        <f:selectItems value="#{pontoAtendimentoBean.tipoAcessoEnum}" var="acesso"
+                                       itemLabel="#{acesso.constante}" itemValue="#{acesso}"/>
+
+                    </p:selectOneMenu>
+
+                    <p:message for="selectOneAtivo"/>
+
+                </div>
+
+                <h:panelGroup id="pnpToken" styleClass="col-12 ui-fluid formgrid grid ">
+
+                    <h:panelGroup styleClass="field col-12 md:col-4"
+                                  rendered="#{pontoAtendimentoBean.pontoAtendimento.pabx.tipo eq  'TRES_CPLUS'}">
+
+                        <p:outputLabel for="txtToken" value="Token:"/>
+
+                        <p:inputText id="txtToken" value="#{pontoAtendimentoBean.pontoAtendimento.apiToken}"
+                                     required="true" requiredMessage="Requerido"/>
+
+                        <p:message for="txtToken"/>
+
+                        <p:commandLink value="Buscar token" process="@this txtSenha inputRamal selectOnePabx selectOneAtivo inputDesc" update="@form"   action="#{pontoAtendimentoBean.onBuscarToken3c()}"/>
+
+
+                    </h:panelGroup>
+
+                    <h:panelGroup styleClass="field col-12 md:col-4"
+                                  rendered="#{pontoAtendimentoBean.pontoAtendimento.pabx.tipo eq  'TRES_CPLUS'}">
+
+                        <p:outputLabel for="txtSenha" value="Senha:"/>
+
+                        <p:password id="txtSenha" value="#{pontoAtendimentoBean.pontoAtendimento.senha}"
+                                     required="true" toggleMask="true" redisplay="true"
+                                     requiredMessage="Requerido" style="width: 100%"/>
+
+                        <p:message for="txtSenha"/>
+
+                    </h:panelGroup>
+
+                </h:panelGroup>
+
+            </div>
+
+            <div class="mt-5">
+
+                <p:commandButton value="Salvar" styleClass="mr-3 ui-button-raised" id="btnPesquisar"
+                                 action="#{pontoAtendimentoBean.salvar()}" update="@form grl" icon="pi pi-save"/>
+
+                <p:commandButton value="Voltar" id="btnNovo" actionListener="#{pontoAtendimentoBean.voltar()}"
+                                 icon="pi pi-plus-circle" immediate="true" ajax="false"
+                                 styleClass="ui-button-raised ui-button-outlined"/>
+
+            </div>
+
+        </div>
+
+    </h:form>
+
+
+</ui:fragment>

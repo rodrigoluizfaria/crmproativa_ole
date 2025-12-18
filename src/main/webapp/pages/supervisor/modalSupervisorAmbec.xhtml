@@ -1,0 +1,64 @@
+<ui:fragment xmlns="http://www.w3.org/1999/xhtml"
+             xmlns:ui="http://java.sun.com/jsf/facelets"
+             xmlns:p="http://primefaces.org/ui">
+
+
+    <p:dialog id="dlgSupAmbec" widgetVar="dlgSupAmbec" modal="true"
+              draggable="false" resizable="false"
+              header="Benefício: #{supervisorBackofficeBean.atendimentoVisualizar.beneficioPrincipal}" closable="false" width="20%"
+              appendTo="@(body)">
+
+        <style>
+
+            .alert-danger {
+                color: #721c24;
+                background-color: #f8d7da;
+                border-color: #f5c6cb;
+            }
+
+            .alert {
+                position: relative;
+                padding: 0.75rem 1.25rem;
+                margin-bottom: 1rem;
+                border: 1px solid transparent;
+                border-radius: 0.25rem;
+            }
+
+            .alert-success {
+                color: #155724;
+                background-color: #d4edda;
+                border-color: #c3e6cb;
+            }
+        </style>
+
+        <div class="col-12">
+
+            <div class="ui-fluid formgrid grid" style="text-align: center;">
+
+                <div class="field col-12 ">
+
+                    <div class="  ">
+                        <h3 class="#{supervisorBackofficeBean.retornoAmbec eq 'Ja possui'?'card alert alert-danger ':'card alert alert-success'}">#{supervisorBackofficeBean.retornoAmbec} </h3>
+
+                    </div>
+
+                </div>
+
+            </div>
+
+        </div>
+
+        <div class="col-12 mt-3">
+
+            <div class="p-grid p-justify-center">
+
+                <p:commandButton type="button" icon="pi pi-times" styleClass="ui-button-raised"
+                                 onclick="PF('dlgSupAmbec').hide();" value="Fechar"/>
+
+            </div>
+
+        </div>
+
+    </p:dialog>
+
+</ui:fragment>

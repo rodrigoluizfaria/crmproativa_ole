@@ -1,0 +1,523 @@
+<ui:composition xmlns="http://www.w3.org/1999/xhtml"
+                xmlns:h="http://java.sun.com/jsf/html"
+                xmlns:f="http://java.sun.com/jsf/core"
+                xmlns:ui="http://java.sun.com/jsf/facelets"
+                xmlns:pro="http://proativaservicos.com/functions"
+                xmlns:p="http://primefaces.org/ui" template="/WEB-INF/template.xhtml">
+
+
+    <ui:define name="viewname">
+        <div class="bcca-breadcrumb">
+            <div class="bcca-breadcrumb-item bg-primary-500 hover:bg-primary-700">
+                <p:link outcome="/pages/coordenador/monitorMailing"
+                        style="text-decoration: none">MONITOR MAILING</p:link>
+            </div>
+            <div class="bcca-breadcrumb-item ">COORDENADOR</div>
+        </div>
+
+    </ui:define>
+
+    <ui:define name="content">
+
+        <h:form id="formMonitor" prependId="false">
+
+            <style>
+
+                .sizeReload {
+                    font-size: 2rem;
+
+                }
+
+                .cheap {
+                    background-color: #D8000C !important;
+                    background-image: none !important;
+                    color: #ffffff !important;
+                }
+
+            </style>
+
+            <script>
+
+                function onInit() {
+
+
+                    $("#reload").removeClass("pi pi-table mr-3").addClass("pi pi-spin pi-spinner mr-3 sizeReload");
+                    $("#importa").removeClass("pi pi-database ").addClass("pi pi-spin pi-spinner mr-3 sizeReload");
+
+
+                }
+
+                function onRemove() {
+
+                    $("#reload").removeClass("pi pi-spin pi-spinner mr-3 sizeReload").addClass("pi pi-table mr-3");
+                    $("#importa").removeClass("pi pi-spin pi-spinner mr-3 sizeReload").addClass("pi pi-database ");
+
+
+                }
+
+            </script>
+
+            <!--
+                 <p:poll interval="5" listener="#{monitorCargaMailing.atualizar()}"	update="@form" global="false" onstart="onInit();" oncomplete="onRemove();" />
+            -->
+
+            <p:poll interval="5" listener="#{monitorCargaMailing.pesquisarMongoImportacao()}" update="panelMonitorLog painelLogMong"
+                    global="false" onstart="onInit();" oncomplete="onRemove();"/>
+
+            <p:growl globalOnly="true" id="grl"/>
+
+            <h:panelGroup id="panelMonitor" layout="block" rendered="#{not empty monitorCargaMailing.listImportacao}"
+                          styleClass="card">
+
+                <div class="grid ">
+
+                    <div class="col-4" style="    padding: 15px">
+
+                        <div class="card" style="display: inline-flex;padding:0px">
+
+                            <div style="border-right: 1px solid #dee2e6;padding: 15px;">
+
+                                <i class="pi pi-database " aria-hidden="true" id="importa" style="font-size: 2rem"/>
+                            </div>
+
+                            <div style="padding: 19px 10px 0px 10px;">
+                                <h4>Monitor Importação Mailing</h4>
+                            </div>
+                        </div>
+
+                    </div>
+
+
+                </div>
+
+                <div style="margin-bottom: 0;padding: 0px;border: 0 none;background: #ffffff;box-shadow: 0 2px 1px -1px rgb(0 0 0 / 20%), 0 1px 1px 0 rgb(0 0 0 / 14%), 0 1px 3px 0 rgb(0 0 0 / 12%);  border-radius: 4px;"
+                     class="mt-5">
+
+
+                    <p:dataTable value="#{monitorCargaMailing.listImportacao}"
+                                 paginator="false" paginatorPosition="bottom" styleClass="default"
+                                 emptyMessage="Nenhum Importação em andamento."
+                                 widgetVar="tableImport"
+                                 currentPageReportTemplate="[#{msg.totalDeRegistros}: {totalRecords}]"
+                                 var="importacao" id="tableCam">
+
+                        <p:column headerText="Campanha">
+                            <h:outputLabel value="#{importacao.campanha.descricao}"/>
+                        </p:column>
+
+                        <p:column headerText="Arquivo">
+                            <h:outputLabel value="#{importacao.nomeArquivo}"/>
+                        </p:column>
+
+                        <p:column headerText="Status da Importação">
+                            <h:outputLabel value="#{importacao.statusImportacao.constante}"/>
+                        </p:column>
+
+                        <p:column headerText="Quantidade Importado">
+                            <h:outputLabel value="#{importacao.qtidadeImportado}"/>
+                        </p:column>
+
+                        <p:column headerText="Quantidade Linhas">
+                            <h:outputLabel value="#{importacao.qtidadeLinhas}"/>
+                        </p:column>
+
+                        <p:column headerText="Progresso">
+
+                            <p:progressBar
+                                    value="#{pro:retornarStringPorcentagem(importacao.qtidadeLinhas,importacao.qtidadeImportado)}"
+                                    mode="#{importacao.statusImportacao eq 'IMPORTANDO' ? 'determinate': 'indeterminate'}"
+                                    displayOnly="true"/>
+
+                        </p:column>
+
+                        <p:column headerText="">
+
+                            <p:commandButton styleClass="rounded-button ui-button-flat ui-button-danger "
+                                             actionListener="#{monitorCargaMailing.interromper(importacao)}"
+                                             id="btnStop" title="Interromper Carga Campanha" icon="pi pi-stop"/>
+
+                        </p:column>
+
+                    </p:dataTable>
+
+                    <!-- <table>
+
+                        <thead>
+
+                            <tr
+                                style="background-color: white; font-weight bold; border-bottom: 1px solid #ddd;">
+                                <th style="padding: 15px">Campanha</th>
+                                <th>Arquivo</th>
+                                <th>Status</th>
+                                <th>Quantidade Importado</th>
+                                <th>Quantidade Linhas</th>
+                                <th></th>
+                            </tr>
+
+                        </thead>
+
+                        <tbody>
+
+                            <ui:repeat var="importacao"	value="#{monitorCargaMailing.listImportacao}">
+
+                                <tr style="text-align: center; font-weight: normal;">
+
+                                    <td>#{importacao.campanha.descricao}</td>
+
+                                    <td>#{importacao.nomeArquivo}</td>
+
+                                    <td>
+                                        <div class="contact-actions">
+
+                                            <span class="connection-status online">#{importacao.statusImportacao.constante}</span>
+
+                                        </div>
+
+                                    </td>
+
+                                    <td>
+
+                                        <div class="contact-actions">
+
+                                            #{importacao.qtidadeImportado}</div>
+
+                                        <div class="statsbar">
+
+                                            <div class="statsbar-value"
+                                                style="width: #{pro:retornarStringPorcentagem(importacao.qtidadeLinhas,importacao.qtidadeImportado)}%"></div>
+                                        </div>
+
+                                    </td>
+
+                                    <td>#{importacao.qtidadeLinhas}</td>
+
+
+                                    <td>
+
+                                        <p:commandButton styleClass="rounded-button text-button p-mr-2"
+                                                actionListener="#{monitorCargaMailing.interromper()}"
+                                                id="btnStop" title="Interromper Carga Campanha" icon="fa fa-fw fa-stop"/>
+
+                                        <i class="fa fa-arrow-up" />
+
+                                    </td>
+
+                                </tr>
+
+                            </ui:repeat>
+
+                        </tbody>
+
+                    </table>
+-->
+
+
+                </div>
+
+
+            </h:panelGroup>
+
+
+            <h:panelGroup id="panelMonitorSemImporta" layout="block"
+                          rendered="#{empty monitorCargaMailing.listImportacao and !monitorCargaMailing.processando and empty monitorCargaMailing.listDocImportacao}">
+
+                <div class="grid ">
+
+                    <div class="col-4">
+
+                        <div class="card" style="display: inline-flex;padding:0px">
+
+                            <div style="border-right: 1px solid #dee2e6;padding: 15px;">
+                                <i class="pi pi-table mr-3" style="font-size: 2rem" id="reload"></i>
+                            </div>
+
+                            <div style="padding: 19px 10px 0px 10px;">
+                                <h4>Nenhuma importação em andamento.</h4>
+                            </div>
+                        </div>
+
+                    </div>
+
+                </div>
+
+
+            </h:panelGroup>
+
+            <h:panelGroup layout="block" rendered="#{monitorCargaMailing.processando}">
+
+                <div class="grid ">
+
+                    <div class="col-4">
+
+                        <div class="card" style="display: inline-flex;padding:0px">
+
+                            <div style="border-right: 1px solid #dee2e6;padding: 15px;">
+                                <i class="pi pi-spin pi-spinner mr-3" style="font-size: 2rem"/>
+                            </div>
+
+                            <div style="padding: 19px 10px 0px 10px;">
+                                <h4>Processando... aguarde</h4>
+                            </div>
+                        </div>
+
+                    </div>
+
+                </div>
+
+
+            </h:panelGroup>
+
+            <h:panelGroup id="painelLogMong" layout="block" styleClass="mt-5 ">
+
+                <h:panelGroup layout="block" rendered="#{not empty monitorCargaMailing.listDocImportacao}">
+
+                    <ui:repeat value="#{monitorCargaMailing.listDocImportacao}" var="imp">
+
+                        <div class=" bg-white shadow-5 mb-5 border-round-lg   ">
+
+                            <div class="border-bottom-1 border-400 p-4 ">
+
+                                <div class="flex justify-content-between flex-wrap">
+                                    <div class="font-semibold justify-content-center text-600 mt-2">
+                                        Arquivo:  #{imp.arquivo}
+                                    </div>
+
+                                    <div style="display: flex">
+                                        <h:panelGroup layout="block" styleClass=" text-2xl text-500 mt-2 mr-3"
+                                                      rendered="#{imp.importacaoConsulta}">
+                                            Atendimentos: #{imp.totalAtendimentos}
+                                        </h:panelGroup>
+                                        <h:panelGroup layout="block" styleClass=" text-2xl text-500 mt-2 mr-3"
+                                                      rendered="#{imp.importacaoDisco}">
+                                            Total de linhas: #{imp.totalLinhas}
+                                        </h:panelGroup>
+
+                                        <p:commandButton value="Parar importação" icon="pi pi-stop"
+                                                         styleClass="ui-button-outlined mr-3"/>
+                                        <div class="border-1 border-600 bg-primary  p-2"> #{imp.status}</div>
+                                    </div>
+
+                                </div>
+
+
+                            </div>
+
+                            <div class="grid p-5">
+
+                                <div class="col-4">
+                                    <div class="pb-3"> Campanha: <span class=""> #{imp.campanha} </span>
+                                    </div>
+
+
+                                    <div class="pb-3">Erros: <span class="font-semibold"> #{imp.erro}</span></div>
+                                    <div class="pb-3">Data Inicio: <span
+                                            class=""> #{imp.dataInicioFormatada} </span></div>
+                                    <h:panelGroup layout="block" styleClass="pb-3"
+                                                  rendered="#{not empty imp.tipoConsulta}">Tipos de consulta: <span
+                                            class="font-semibold">#{imp.tipoConsulta} </span></h:panelGroup>
+
+                                </div>
+
+                                <div class="col-8">
+
+                                    <h:panelGroup styleClass="grid mt-4" layout="block"
+                                                  rendered="#{imp.importacaoConsulta}">
+
+                                        <div class="col-2">
+                                            <div class="text-3xl">
+                                                #{empty imp.processando? '0' :imp.processando }
+                                            </div>
+
+                                            <div class="text-600">
+                                                Processando
+                                            </div>
+                                        </div>
+
+                                        <div class="col-2">
+                                            <div class="text-3xl">
+                                                #{empty imp.lote? '0' :imp.lote }
+                                            </div>
+
+                                            <div class="text-600">
+                                                Lote
+                                            </div>
+
+                                        </div>
+
+                                        <div class="col-2">
+                                            <div class="text-3xl">
+                                                #{empty imp.quantidadeConsultado? '0': imp.quantidadeConsultado}
+                                            </div>
+
+                                            <div class="text-600">
+                                                Consultado
+                                            </div>
+
+                                        </div>
+
+                                        <div class="col-2">
+                                            <div class="text-3xl">
+                                                #{empty imp.quantidadeReconsulta? '0' : imp.quantidadeReconsulta}
+                                            </div>
+
+                                            <div class="text-600">
+                                                Reconsulta
+                                            </div>
+
+                                        </div>
+
+                                        <div class="col-3">
+                                            <div class="text-3xl">
+                                                #{empty imp.atendimentosErro?'0':imp.atendimentosErro.size()}
+                                            </div>
+
+                                            <div class="text-600">
+                                                Erros
+                                            </div>
+
+                                        </div>
+
+                                    </h:panelGroup>
+
+                                    <h:panelGroup styleClass="grid" layout="block" rendered="#{imp.importacaoDisco}">
+
+                                        <div class="col-3">
+                                            <div class="text-3xl">
+                                                #{imp.totalAtendimentos}
+                                            </div>
+
+                                            <div class="text-600">
+                                                Importando
+                                            </div>
+                                        </div>
+
+                                        <div class="col-3">
+                                            <div class="text-3xl">
+                                                #{empty imp.clientesBlackList? '0' : imp.clientesBlackList.size()}
+                                            </div>
+
+                                            <div class="text-600">
+                                                Black list
+                                            </div>
+
+                                        </div>
+
+                                    </h:panelGroup>
+
+
+                                </div>
+
+
+                            </div>
+                            <div class="col-12 text-center border-top-1 border-300 p-3">
+                                <span class=" text-600">     #{imp.observacao} </span>
+
+                            </div>
+
+
+                        </div>
+
+
+                    </ui:repeat>
+
+
+                </h:panelGroup>
+
+
+            </h:panelGroup>
+
+            <h:panelGroup id="panelMonitorLog" layout="block" styleClass="mt-5 ">
+
+                <hr style="margin: 50px 0; "/>
+
+                <h:panelGroup layout="block" rendered="#{not empty monitorCargaMailing.listDocImportacaoDiscador}"
+                              styleClass="card">
+
+                    <div class="grid mb-5">
+
+                        <div class="col-4" style="padding: 15px">
+
+                            <div class="card" style="display: inline-flex;padding:0px">
+
+                                <div style="border-right: 1px solid #dee2e6;padding: 15px;">
+
+
+                                    <i class="fa fa-address-card-o fa-2x" aria-hidden="true"/>
+
+                                </div>
+
+                                <div style="padding: 19px 10px 0px 10px;">
+                                    <h4>Monitor Importação Discador</h4>
+                                </div>
+                            </div>
+
+                        </div>
+
+
+                    </div>
+
+                    <div style="margin-bottom: 0;padding: 0px;border: 0 none;background: #ffffff;box-shadow: 0 2px 1px -1px rgb(0 0 0 / 20%), 0 1px 1px 0 rgb(0 0 0 / 14%), 0 1px 3px 0 rgb(0 0 0 / 12%);  border-radius: 4px;"
+                         class="mt-5">
+
+                        <p:dataTable value="#{monitorCargaMailing.listDocImportacaoDiscador}"
+                                     paginator="false" paginatorPosition="bottom" styleClass="default"
+                                     emptyMessage="Nenhum Importação em andamento."
+                                     widgetVar="tableImportLog"
+                                     currentPageReportTemplate="[#{msg.totalDeRegistros}: {totalRecords}]"
+                                     var="log" id="tableLog" rowStyleClass="#{log.erro ? 'cheap' : null}">
+
+                            <p:column headerText="Campanha" width="20%">
+                                <h:outputLabel value="#{log.campanha}"/>
+                            </p:column>
+
+                            <!-- 	<p:column headerText="Total de Lotes" width="10%">
+                                        <h:outputLabel value="#{log.quantidadeTotalLote}" />
+                                    </p:column> -->
+
+                            <p:column headerText="Total atendimentos" width="10%">
+                                <h:outputLabel value="#{log.totalAtendimento}"/>
+                            </p:column>
+
+                            <p:column headerText="enviados" width="10%">
+                                <h:outputLabel value="#{log.enviado}"/>
+                            </p:column>
+
+                            <p:column headerText="Enviando p/ discador" width="10%">
+                                <h:outputLabel value="#{log.totalAtendimentoLoteAtual}"/>
+                            </p:column>
+
+                            <p:column headerText="não enviados" width="10%">
+                                <h:outputLabel value="#{log.naoEnviado}"/>
+                            </p:column>
+
+                            <p:column headerText="Enviando Lote" width="10%">
+                                <i class="fa fa-arrow-up p-mr-3" aria-hidden="true" style="color: green"></i>
+                                <h:outputLabel value="#{log.loteAtual} de #{log.quantidadeTotalLote} "/>
+                            </p:column>
+
+                            <p:column headerText="Observação" width="10%">
+                                <h:outputLabel value="#{log.observacao}"/>
+                            </p:column>
+
+                            <p:column headerText="Tempo" width="10%">
+                                <h:outputLabel value="#{log.tempo}"/>
+                            </p:column>
+
+
+                            <p:column headerText="Abortar envio* " width="10%">
+
+                            </p:column>
+
+                        </p:dataTable>
+
+                    </div>
+
+                </h:panelGroup>
+
+            </h:panelGroup>
+
+        </h:form>
+
+    </ui:define>
+
+</ui:composition>

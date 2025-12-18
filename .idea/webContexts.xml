@@ -1,0 +1,26 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project version="4">
+  <component name="WebContextManager">
+    <option name="state">
+      <map>
+        <entry key="file://$PROJECT_DIR$/src/main/webapp/WEB-INF/topbar.xhtml" value="file://$PROJECT_DIR$/src/main/webapp/WEB-INF" />
+        <entry key="file://$PROJECT_DIR$/src/main/webapp/pages/atendimento/associarPontoAtendimento.xhtml" value="file://$PROJECT_DIR$/src/main/webapp/pages/atendimento" />
+        <entry key="file://$PROJECT_DIR$/src/main/webapp/pages/atendimento/fichaAtendimento2.xhtml" value="file://$PROJECT_DIR$/src/main/webapp/pages/atendimento" />
+        <entry key="file://$PROJECT_DIR$/src/main/webapp/pages/atendimento/fichaAtendimentoPreditivo.xhtml" value="file://$PROJECT_DIR$/src/main/webapp/pages/atendimento" />
+        <entry key="file://$PROJECT_DIR$/src/main/webapp/pages/atendimento/modalSaque.xhtml" value="file://$PROJECT_DIR$/src/main/webapp/pages/atendimento" />
+        <entry key="file://$PROJECT_DIR$/src/main/webapp/pages/backoffice/acompanhamentoConsistenciasVisualizar.xhtml" value="file://$PROJECT_DIR$/src/main/webapp/pages/backoffice" />
+        <entry key="file://$PROJECT_DIR$/src/main/webapp/pages/backoffice/acompanhamentoMinhasConsistenciasVisualizar.xhtml" value="file://$PROJECT_DIR$/src/main/webapp/pages/backoffice" />
+        <entry key="file://$PROJECT_DIR$/src/main/webapp/pages/backoffice/fichaAtendimentoBackofficeProspect.xhtml" value="file://$PROJECT_DIR$/src/main/webapp/pages/backoffice" />
+        <entry key="file://$PROJECT_DIR$/src/main/webapp/pages/backoffice/monitorMailingBackoffice.xhtml" value="file://$PROJECT_DIR$/src/main/webapp/pages/backoffice" />
+        <entry key="file://$PROJECT_DIR$/src/main/webapp/pages/cadastro/campanhaCadastro.xhtml" value="file://$PROJECT_DIR$/src/main/webapp/pages/cadastro" />
+        <entry key="file://$PROJECT_DIR$/src/main/webapp/pages/cadastro/campanhaDialogImportacao.xhtml" value="file://$PROJECT_DIR$/src/main/webapp/pages/cadastro" />
+        <entry key="file://$PROJECT_DIR$/src/main/webapp/pages/cadastro/usuarioPesquisa.xhtml" value="file://$PROJECT_DIR$/src/main/webapp/pages/cadastro" />
+        <entry key="file://$PROJECT_DIR$/src/main/webapp/pages/home/sistemaPausa.xhtml" value="file://$PROJECT_DIR$/src/main/webapp/pages/home" />
+        <entry key="file://$PROJECT_DIR$/src/main/webapp/pages/supervisor/backofficePesquisa.xhtml" value="file://$PROJECT_DIR$/src/main/webapp/pages/supervisor" />
+        <entry key="file://$PROJECT_DIR$/src/main/webapp/pages/supervisor/monitorCampanha.xhtml" value="file://$PROJECT_DIR$/src/main/webapp/pages/supervisor" />
+        <entry key="file://$PROJECT_DIR$/src/main/webapp/resources/componentes/editarFichaAtendimento.xhtml" value="file://$PROJECT_DIR$/src/main/webapp/resources/componentes" />
+        <entry key="file://$PROJECT_DIR$/src/main/webapp/resources/componentes/emprestimo.xhtml" value="file://$PROJECT_DIR$/src/main/webapp/resources/componentes" />
+      </map>
+    </option>
+  </component>
+</project>

@@ -1,0 +1,172 @@
+<ui:fragment xmlns="http://www.w3.org/1999/xhtml"
+             xmlns:h="http://java.sun.com/jsf/html"
+             xmlns:f="http://java.sun.com/jsf/core"
+             xmlns:o="http://omnifaces.org/ui"
+             xmlns:pe="http://primefaces.org/ui/extensions"
+             xmlns:ui="http://java.sun.com/jsf/facelets"
+             xmlns:p="http://primefaces.org/ui">
+
+    <!-- DLG MODAL -->
+    <p:dialog id="dlgSftp" widgetVar="dlgSftp" modal="true" draggable="false" resizable="false" closable="false"
+              visible="false" width="70%" styleClass="dialog-formulario" responsive="true" header="SFTP"
+              appendTo="@(body)">
+
+        <h:form id="formAudioEnvio" prependId="false">
+
+
+            <h:panelGroup styleClass="card " layout="block" rendered="#{not empty conciliarAudioBean.listAnexosEnviar}">
+
+
+                <div class=" ui-fluid formgrid grid">
+
+                    <div class="field col-12 md:col-4">
+
+                        <p:outputLabel for="selectOneSftp" value="SFTP"/>
+
+                        <p:selectOneMenu id="selectOneSftp" value="#{conciliarAudioBean.conciliarSftp}"
+                                         converter="omnifaces.SelectItemsConverter" required="true"
+                                         requiredMessage="Obrigatório">
+
+                            <f:selectItem itemLabel="Selecione" itemValue=""/>
+
+                            <f:selectItems value="#{conciliarAudioBean.listConciliarSftp}" var="sftp"
+                                           itemLabel="#{sftp.descricao}" itemValue="#{sftp}"/>
+
+                        </p:selectOneMenu>
+                        <p:message for="selectOneSftp"/>
+                    </div>
+
+                    <div class="field col-12 md:col-4">
+
+
+                        <p:outputLabel value="Nome do arquivo (.rar ou .zip)" for="txtArquivoRar">
+
+                        </p:outputLabel>
+
+                        <p:inputText value="#{conciliarAudioBean.nomeArquivoRar}" required="true"
+                                     requiredMessage="Obrigatório" id="txtArquivoRar"
+                                     validatorMessage="Valor mínimo de 8 caracteres.">
+
+                            <f:validateLength minimum="8" />
+
+                        </p:inputText>
+
+                        <p:message for="txtArquivoRar"/>
+
+                    </div>
+
+                    <div class="field col-12 md:col-4">
+
+                        <p:outputLabel value=""/>
+
+                        <div>
+                            <i class="fa fa-info-circle mr-2"
+                               aria-hidden="true"/>Propostas selecionadas: #{conciliarAudioBean.listConciliarSelecionados.size()} | Total de áudios: #{conciliarAudioBean.listAnexosEnviar.size()}
+                        </div>
+
+                    </div>
+
+                    <div class="field col-12 " style="padding-top: 0;margin-top: 0">
+
+                        <p:outputLabel value=""/>
+
+                        <div>
+                            <p:commandButton value="Listar arquivos"
+                                             styleClass="ui-button-secondary ui-button-raised mr-3" icon="pi pi-eye"
+                                             actionListener="#{conciliarAudioBean.listarFilesSftp()}"
+                                             update="@form grl pnpTableList" process="@this selectOneSftp"/>
+
+                            <p:commandButton value="Enviar" styleClass="ui-button-raised ui-button-outlined"
+                                             icon="pi pi-cloud-upload"
+                                             actionListener="#{conciliarAudioBean.onEnviarSftp()}"
+                                             update="@form grl pnpTableList"
+                                             process="@this selectOneSftp txtArquivoRar"/>
+                        </div>
+
+                    </div>
+
+                </div>
+
+
+            </h:panelGroup>
+
+            <h:panelGroup class="mt-4 " layout="block" id="pnpTableList" style="padding: 0;">
+
+                <h:panelGroup class="card" layout="block">
+
+                    <p:dataTable id="tableSftpEnviar" widgetVar="tableSftpEnviar"
+                                 value="#{conciliarAudioBean.listFilesSftp}" var="sftp" editable="true" editMode="cell"
+                                 styleClass="default"
+                                 emptyMessage="#{conciliarAudioBean.listFilesSftp eq null ? '' : 'Nenhum arquivo encontrado.' }"
+                                 selection="#{conciliarAudioBean.lsSelect}" selectionMode="single" rowKey="#{sftp.id}">
+
+                        <p:ajax event="cellEdit" listener="#{conciliarAudioBean.onCellEdit}" update="tableSftpEnviar"
+                                process="@this selectOneSftp tableSftpEnviar"/>
+
+                        <f:facet name="header">
+                            <h:panelGroup rendered="#{conciliarAudioBean.conciliarSftp ne null}">
+                                SFTP: <span
+                                    style="font-weight: normal; margin-left: 5px;  "> #{conciliarAudioBean.conciliarSftp.descricao}</span> | HOST:
+                                <span style="font-weight: normal;  margin-left: 5px; ">#{conciliarAudioBean.conciliarSftp.url}</span> | USUÁRIO:
+                                <span style="font-weight: normal; margin-left: 5px; "> #{conciliarAudioBean.conciliarSftp.usr}</span> | DIRETÓRIO:
+                                <span style="font-weight: normal; margin-left: 5px; ">#{conciliarAudioBean.conciliarSftp.diretorio}</span>
+                            </h:panelGroup>
+
+                        </f:facet>
+
+                        <p:column headerText="Nome" width="60%">
+
+                            <p:cellEditor>
+                                <f:facet name="output"><h:outputText value="#{sftp.fileName}"/></f:facet>
+                                <f:facet name="input"><p:inputText id="modelInput" value="#{sftp.fileName}"
+                                                                   style="width:100%"/></f:facet>
+
+                            </p:cellEditor>
+
+
+                        </p:column>
+
+                        <p:column headerText="Modificado">
+                            <p:outputLabel value="#{sftp.dataModificadao}">
+                                <f:convertDateTime pattern="dd/MM/yyyy HH:mm:ss"/>
+                            </p:outputLabel>
+                        </p:column>
+
+                        <p:column headerText="Permissão">
+                            <p:outputLabel value="#{sftp.permicao}"/>
+                        </p:column>
+
+
+                    </p:dataTable>
+
+
+                </h:panelGroup>
+
+                <p:contextMenu for="tableSftpEnviar">
+
+                    <p:menuitem value="Deletar" icon="pi pi-times"
+                                actionListener="#{conciliarAudioBean.deletarFileSftp()}" update="tableSftpEnviar"
+                                process="@this tableSftpEnviar selectOneSftp" styleClass="ui-button-raised"/>
+
+                </p:contextMenu>
+
+            </h:panelGroup>
+
+
+        </h:form>
+
+        <f:facet name="footer">
+
+
+        <div style="text-align: center;" class="pt-4"  >
+
+            <p:commandButton type="button" value="Sair" styleClass="ui-button-raised ui-button-secondary"
+                             icon="pi pi-times" onclick="PF('dlgSftp').hide();" style="width: auto;"/>
+
+        </div>
+        </f:facet>
+
+    </p:dialog>
+
+
+</ui:fragment>

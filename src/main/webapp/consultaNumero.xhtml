@@ -1,0 +1,131 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:h="http://java.sun.com/jsf/html"
+      xmlns:f="http://java.sun.com/jsf/core"
+      xmlns:pe="http://primefaces.org/ui/extensions"
+      xmlns:ui="http://java.sun.com/jsf/facelets"
+      xmlns:p="http://primefaces.org/ui">
+
+    <h:head>
+    
+        <f:facet name="first">
+        
+            <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+            <meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
+            <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=0"/>
+            <meta name="apple-mobile-web-app-capable" content="yes" />
+            <link rel="shortcut icon" href="#{request.contextPath}/resources/img/favicon.ico" type="image/x-icon"></link>
+            <link rel="icon" href="#{request.contextPath}/resources/img/favicon.ico" type="image/x-icon"></link>
+      ´	
+        </f:facet>
+    	  <h:outputScript name="js/script.js?v6"/>
+        <title>Proatend -</title>
+  
+    </h:head>
+
+	<script >
+
+	function  goZap(numero){
+
+		if(numero)
+			window.open("https://web.whatsapp.com/send?phone=+55"+numero , '_blank');
+
+
+		}
+
+</script>
+	 <h:body styleClass="login-body ">
+	 <div class="layout-content" style="padding: 1rem 2rem;" >
+	
+	<p:growl id="grl" widgetVar="grl" globalOnly="true" escape="false" showSummary="false" life="8000" showDetail="true" sticky="false">
+
+		<p:autoUpdate />
+
+	</p:growl>
+		
+		<h:form id="formConteudo" prependId="false">
+           
+            <div class="p-grid p-justify-center">
+            
+                <div class="p-col-5">
+                
+                    <div class="card grid-item" style="border-left: 4px solid #34af23; ">
+                    
+                    	<div class="p-field p-col-12 " style="padding: 0px;">
+                    	
+                    	<p:graphicImage name="img/zap.png" style="float: right;" />
+                    	
+                    	<h4>
+							Consulta Número WhatsApp</h4>
+						
+
+					</div>
+                    
+                    </div>
+                </div>
+             
+
+            </div>
+            
+            <div class="p-grid p-justify-center">
+            
+                <div class="p-col-5">
+                
+                    <div class="card grid-item" style="border-left: 4px solid #34af23; ">
+                    
+                    <div class="ui-fluid p-formgrid p-grid">
+                    
+                    	<div class="field p-col-12 md:col-10">
+
+						<p:outputLabel for="inputPabxDesc" value="Número" />
+
+						<p:inputText  id="inputPabxDesc"	value="#{consultaWhatsapp.numero}"  maxlength="11" validatorMessage="O número informado não é valido." onkeypress="return somenteNumeros(event)"	required="true"  requiredMessage="#{msg.requerido}" >
+							<f:validator validatorId="converter.ValidarTelefone"  />
+						</p:inputText>
+					
+						<small>Entre com o número do telefone. DDD + nº telefone.</small>
+												
+						</div>
+						
+					</div>
+					<p:messages id="msg" />
+					<p:commandButton value="Consultar" actionListener="#{consultaWhatsapp.consultar()}" update="@form" global="false"/>
+                    
+                    </div>
+                    
+                </div>
+             
+
+            </div>
+                  
+            <h:panelGroup styleClass="p-grid p-justify-center" layout="block" rendered="#{not empty consultaWhatsapp.retorno}" >
+            
+                <div class="p-col-5">
+                
+                    <div class="card grid-item" style="border-left: 4px solid #34af23; ">
+                    
+                    	<div class="field p-col-12 " style="#{consultaWhatsapp.valido ? 'background: #dff0d8;color: #121212;border: solid 1px #d6e9c6;' : 'background: #d9edf7;color: #121212;border: solid 1px #bce8f1;'}">
+                    	
+                    	<p:outputLabel value="#{consultaWhatsapp.retorno}" />
+                    	<p:outputLabel value="#{consultaWhatsapp.bussnes.booleanValue() ? 'Sim' : 'Não'}" rendered="#{consultaWhatsapp.bussnes != null}" />
+
+					</div>
+					
+					<p:commandLink value="Iniciar Conversa." onclick="goZap(#{consultaWhatsapp.numero});" rendered="#{consultaWhatsapp.valido}" />
+                    
+                    </div>
+                    
+                </div>
+             
+            </h:panelGroup>
+			
+		</h:form>
+
+</div>
+
+  <h:outputStylesheet name="css/primeicons.css" library="diamond-layout" />
+	<h:outputStylesheet name="css/primeflex.min.css" library="diamond-layout" />
+	<h:outputStylesheet id="layout-scheme" name="css/layout-light.css" library="diamond-layout" />
+	
+	</h:body>
+</html>

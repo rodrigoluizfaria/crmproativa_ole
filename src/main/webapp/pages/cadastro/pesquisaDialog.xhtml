@@ -1,0 +1,254 @@
+<ui:fragment xmlns="http://www.w3.org/1999/xhtml"
+	xmlns:ui="http://java.sun.com/jsf/facelets"
+	xmlns:f="http://java.sun.com/jsf/core"
+	xmlns:h="http://java.sun.com/jsf/html"
+	xmlns:p="http://primefaces.org/ui"
+	xmlns:of="http://omnifaces.org/functions">
+
+	<p:dialog id="dlgPesquisa" widgetVar="dlgPesquisa" modal="true"  height="540"  style="max-height:900px;overflow:auto"   width="60%"  draggable="false" header="Cadastro pergunta | Formulário:  #{pesquisaSatisfacaoBean.questionario.descricao} "  appendTo="@(body)" resizable="false"  >
+			
+			
+		<h:form id="formDialogPesquisa" prependId="false">
+
+			<div class="justify-content-center pl-3 pr-3" >
+				
+				<div class=" ui-fluid formgrid grid">
+				
+					<h:panelGroup styleClass="col-12 " layout="block" id="perguntaRelacao" >
+
+						<h:panelGroup styleClass="card ui-fluid formgrid grid" layout="block" style="display: #{empty pesquisaSatisfacaoBean.listPergunta ? 'none' : 'block'};">
+
+							<p:fieldset	styleClass="fild-set-default-sem-borda p-5">
+
+								<f:facet name="legend">
+
+									<p:outputLabel value="Pergunta vinculada a outra?" />
+
+									<p:selectBooleanButton onLabel="sim" offLabel="não"	title="Caso sim esta pegunta será associada a resposta de outra pergunta" onchange="onChangeRequisito()" styleClass="ml-3" id="selectButtonRequisito" value="#{pesquisaSatisfacaoBean.perguntaPossuiRequisitos}">
+
+									</p:selectBooleanButton>
+
+								</f:facet>
+							
+								<div class="ui-fluid formgrid grid" id="panelRequisitos" style="display: #{pesquisaSatisfacaoBean.pergunta.requisito eq null  ? 'none' : 'flex'}"    >
+
+									<div class="field col-12 md:col-6">
+
+										<p:outputLabel value="Qual pergunta será vinculada?" />
+
+										<p:selectOneMenu id="selectPerguntaRequisito" value="#{pesquisaSatisfacaoBean.perguntaRequisitoSelecionada}" converter="omnifaces.SelectItemsConverter" filter="true" filterMatchMode="contains">
+
+											<f:selectItem itemLabel="Selecione" noSelectionOption="true" />
+
+											<f:selectItems value="#{pesquisaSatisfacaoBean.listPergunta}" var="pergunta" itemLabel="#{pergunta.descricao}" itemValue="#{pergunta}" />
+											
+											<p:ajax listener="#{pesquisaSatisfacaoBean.onChangePerguntaSelecionada()}" process="@this" partialSubmit="true" global="false" update="subPanelRequisito" />
+
+										</p:selectOneMenu>
+
+									</div>
+
+									<h:panelGroup style="display: #{pesquisaSatisfacaoBean.opcaoRequisitos eq null ? 'none' : 'block'}" styleClass="field col-12 md:col-6 id" layout="block" id="subPanelRequisito">
+
+										<p:outputLabel value="A qual resposta?" />
+
+										<p:selectOneMenu id="selectRequisito" value="#{pesquisaSatisfacaoBean.pergunta.requisito}" converter="omnifaces.SelectItemsConverter" filter="true" filterMatchMode="contains">
+
+											<f:selectItem itemLabel="Selecione" noSelectionOption="true" />
+
+											<f:selectItems value="#{pesquisaSatisfacaoBean.opcaoRequisitos}" var="opcap" itemLabel="#{opcap.descricao}" itemValue="#{opcap}" />
+
+										</p:selectOneMenu>
+										
+
+									</h:panelGroup>
+
+								</div>
+								
+							
+							
+							</p:fieldset>
+
+						</h:panelGroup>
+
+					</h:panelGroup>
+
+					<h:panelGroup styleClass="col-12  card  mt-4 p-5" layout="block" id="panelPergunta">
+
+						<div class="ui-fluid formgrid grid">
+
+							<div class="field col-12 md:col-8">
+
+								<p:outputLabel value="Pergunta" for="txtPergunta" />
+
+								<p:inputText id="txtPergunta" required="true" value="#{pesquisaSatisfacaoBean.pergunta.descricao}" requiredMessage="Informe o nome da pergunta."/>
+
+							</div>
+
+							<div class="field col-12 md:col-4">
+
+								<p:outputLabel for="selectOneAtivoPergunta" value="Acesso:" />
+
+								<p:selectOneMenu id="selectOneAtivoPergunta" value="#{pesquisaSatisfacaoBean.pergunta.ativo}" required="true"	requiredMessage="Requerido">
+									
+									<f:selectItems value="#{pesquisaSatisfacaoBean.tipoAcessoEnum}"	var="acesso" itemLabel="#{acesso.constante}"	itemValue="#{acesso}" />
+
+								</p:selectOneMenu>
+							
+							</div>
+
+							<div class="field col-12 ">
+							
+								<p:outputLabel value="Tipo da pergunra" for="txtPergunta" />
+								
+								<p:selectOneRadio id="selectRadioTipoResposta" value="#{pesquisaSatisfacaoBean.pergunta.tipoResposta}" disabled="#{pesquisaSatisfacaoBean.perguntaErequisito}">
+
+									<f:selectItems value="#{pesquisaSatisfacaoBean.tipoResposta}" var="tipoResposta" itemLabel="#{tipoResposta.constante}" itemValue="#{tipoResposta}" />
+
+									<p:ajax process="@this" update="@this panelEscolhas pnpTableOp" global="false" />
+
+								</p:selectOneRadio>
+
+							</div>
+							
+							<div class="field col-12 ">
+							
+								<p:message for="txtPergunta" id="msgPergunta" />
+								
+							</div>
+
+						</div>
+
+					</h:panelGroup>
+					
+				</div>
+				
+				<h:panelGroup id="panelEscolhas" styleClass="ui-fluid formgrid grid mt-3 " layout="block">
+
+					<h:panelGroup styleClass="col-12  card mr-4 p-5 " layout="block"  rendered="#{pesquisaSatisfacaoBean.pergunta.tipoResposta != 'TEXTO' and pesquisaSatisfacaoBean.pergunta.tipoResposta != null }">
+
+						<h:panelGroup class="ui-fluid formgrid grid " layout="block">
+
+							<div class="field col-12 md:col-10">
+
+								<p:outputLabel value="Opção:" for="txtOpcao" />
+
+								<p:inputText id="txtOpcao" required="true" value="#{pesquisaSatisfacaoBean.opcao.descricao}" requiredMessage="O campo opção não pode está vazio." />
+								
+
+							</div>
+							
+
+							<div class="field col-12 md:col-2">
+
+								<p:outputLabel value="" />
+
+								<div>
+
+									<p:commandButton process="@this txtOpcao" icon="pi pi-plus" update="txtOpcao tableOpcoes msgOp" global="false" styleClass="rounded-button secondary-button raised-button outlined-button" actionListener="#{pesquisaSatisfacaoBean.adcionarOpcaoResposta()}" />
+							
+								</div>
+								
+
+							</div>
+
+							<div class="field col-12 ">
+								<p:message for="txtOpcao" id="msgOp" />
+							</div>
+
+						</h:panelGroup>
+
+					</h:panelGroup>
+
+				</h:panelGroup>
+
+
+
+				<h:panelGroup id="pnpTableOp" layout="block" styleClass="mt-3">
+
+					<h:panelGroup class=" card ui-fluid formgrid grid  p-3 " rendered="#{pesquisaSatisfacaoBean.pergunta.tipoResposta != 'TEXTO' and pesquisaSatisfacaoBean.pergunta.tipoResposta != null }"
+								  layout="block">
+
+						<div class="field col-12">
+
+							<p:dataTable id="tableOpcoes" widgetVar="tableOpcoes" value="#{pesquisaSatisfacaoBean.pergunta.listOpcoes}" var="op" editMode="cell" emptyMessage="Nenhuma opção cadastrada" 
+								editable="true" rowIndexVar="rowIndex"  styleClass="default ui-datatable-striped ui-datatable-gridlines ui-datatable-sm">
+
+								<p:ajax event="rowEdit" listener="#{pesquisaSatisfacaoBean.editarRowOpcao(op)}" update="tableOpcoes" global="false" />
+
+								<p:ajax event="rowEditCancel" global="false" />
+
+								<f:facet name="header">
+
+									<div style="justify-content: flex-end; display: flex !important;">
+
+										<span class="ui-input-icon-left ui-input-icon-right"> #{pesquisaSatisfacaoBean.buscarQuantidadeOpcao()}  </span>
+
+									</div>
+
+								</f:facet>
+
+								<f:facet name="footer">
+
+								</f:facet>
+
+								<p:column headerText="Opção de resposta" style="text-align:center;">
+
+									<p:cellEditor>
+
+										<f:facet name="output">
+
+											<h:outputText value="#{op.descricao}" />
+
+										</f:facet>
+
+										<f:facet name="input">
+
+											<p:inputText id="modelInput" value="#{op.descricao}" style="width:100%" />
+
+										</f:facet>
+
+									</p:cellEditor>
+
+								</p:column>
+
+						
+
+								<p:column style="width:10%">
+
+									<p:commandButton icon="pi pi-trash" styleClass="rounded-button ui-button-flat" process="@this" global="false" update="tableOpcoes" actionListener="#{pesquisaSatisfacaoBean.removerRowOpcao(op)}" />
+
+								</p:column>
+
+							</p:dataTable>
+
+						</div>
+
+					</h:panelGroup>
+					
+				<p:messages id="msg" closable="true" forIgnores="txtOpcao txtPergunta" >
+				
+					<p:autoUpdate />
+					
+				</p:messages>
+
+
+				</h:panelGroup>
+
+				<h:panelGroup styleClass="col-12 ui-toolbar ui-widget ui-widget-header ui-corner-all justify-content-center" style="display: flex;" layout="block">
+
+					<p:commandButton icon="pi pi-save" value="Salvar" id="btnSalvarDialog" styleClass="ui-button-raised mr-3" actionListener="#{pesquisaSatisfacaoBean.salvarPergunta()}" process="@this tableOpcoes panelPergunta perguntaRelacao "
+						partialSubmit="true" update="@form tablePergunta pngInfo" />
+					
+					<p:commandButton icon="pi pi-times" value="Sair" styleClass="ui-button-raised ui-button-outlined" type="button" onclick="PF('dlgPesquisa').hide();" />
+
+
+				</h:panelGroup>
+
+			</div>
+
+		</h:form>
+
+	</p:dialog>
+
+</ui:fragment>

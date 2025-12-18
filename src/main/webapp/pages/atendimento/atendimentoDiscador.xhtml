@@ -1,0 +1,41 @@
+<ui:composition xmlns="http://www.w3.org/1999/xhtml"
+                xmlns:c="http://java.sun.com/jsp/jstl/core"
+                xmlns:ui="http://java.sun.com/jsf/facelets"
+                xmlns:f="http://java.sun.com/jsf/core"
+                xmlns:p="http://primefaces.org/ui" template="/WEB-INF/template.xhtml">
+
+    <ui:define name="viewname">
+
+        <div class="bcca-breadcrumb">
+            <div class="bcca-breadcrumb-item bg-primary-500 hover:bg-primary-700">
+                <p:link outcome="/pages/atendimento/atendimentoConsulta" styleClass="uppercase"
+                        style="text-decoration: none">CONSULTA</p:link>
+            </div>
+            <div class="bcca-breadcrumb-item uppercase">ATENDIMENTO DISCADOR</div>
+        </div>
+
+    </ui:define>
+
+    <ui:define name="metadata">
+        <f:metadata>
+
+            <f:viewParam name="ramal" value="#{discadorParam.ramal}" />
+            <f:viewParam name="codCliente" value="#{discadorParam.codCliente}" />
+            <f:viewParam name="telefone" value="#{discadorParam.telefone}" />
+
+        </f:metadata>
+    </ui:define>
+
+
+    <ui:define name="content">
+
+        <div class="grid justify-center ">
+
+            TESTE
+
+        </div>
+
+    </ui:define>
+
+
+</ui:composition>

@@ -1,0 +1,125 @@
+<ui:composition xmlns="http://www.w3.org/1999/xhtml"
+                xmlns:h="http://java.sun.com/jsf/html"
+                xmlns:f="http://java.sun.com/jsf/core"
+                xmlns:ui="http://java.sun.com/jsf/facelets"
+                xmlns:p="http://primefaces.org/ui" template="/WEB-INF/template.xhtml"
+                xmlns:c="http://java.sun.com/jsp/jstl/core">
+
+    <ui:define name="viewname">
+        <div class="bcca-breadcrumb">
+            <div class="bcca-breadcrumb-item bg-primary-500 hover:bg-primary-700">
+                <p:link outcome="/pages/administrativo/conciliarAutomatico"
+                        style="text-decoration: none">CONSULTA CONECTADA</p:link>
+                <i class="fa fa-search  fa-2xs text-white "/></div>
+            <div class="bcca-breadcrumb-item ">HOME</div>
+        </div>
+
+    </ui:define>
+
+    <ui:define name="content">
+
+        <p:growl id="grl" widgetVar="grl" globalOnly="true" escape="false" showSummary="false" life="8000"
+                 showDetail="true" sticky="false">
+
+            <p:autoUpdate/>
+
+        </p:growl>
+
+        <div class="p-grid justify-center ">
+
+            <h:form id="formPrincipal" prependId="false">
+
+                <div class="card">
+
+                    <div class="grid formgrid ui-fluid">
+
+                        <div class="field col-12 md:col-3">
+
+                            <p:outputLabel value="CPF" for="txtCpf"/>
+
+                            <p:inputText value="#{consultaIntegracaoBean.cpf}" id="txtCpf" required="true"
+                                         requiredMessage="Requerido"/>
+
+                            <p:message for="txtCpf"/>
+
+                        </div>
+                        <div class="field col-12 md:col-3">
+
+                            <p:outputLabel value=""/>
+                            <div class="mt-2">
+                                <p:commandButton value="Consultar" styleClass="ui-button-raised" icon="pi pi-search"
+                                                 actionListener="#{consultaIntegracaoBean.onConsultarCartaoMaster()}"
+                                                 update="@form"/>
+                            </div>
+                        </div>
+
+                        <div class="field col-12 md:col-9">
+
+                            <h:panelGroup styleClass="card mt-5  border-left" layout="block" rendered="#{not empty consultaIntegracaoBean.cartaoMasterResponse.codigo}">Retorno da API:  <span class="text-red font-semibold"> #{consultaIntegracaoBean.cartaoMasterResponse.descricao} </span></h:panelGroup>
+
+                            <p:dataTable   rendered="#{not empty consultaIntegracaoBean.cartaoMasterResponse.listaConsultaLimite}"
+                                         value="#{consultaIntegracaoBean.cartaoMasterResponse.listaConsultaLimite}"
+                                         paginatorPosition="bottom"
+                                         emptyMessage="#{msg.emptyMessage}"
+                                         currentPageReportTemplate="[ #{msg.totalDeRegistros}: {totalRecords} ]"
+                                         paginatorTemplate="{CurrentPageReport}  {FirstPageLink} {PreviousPageLink} {PageLinks} {NextPageLink} {LastPageLink}"
+                                         var="master" id="tableBancoMaster"
+                                         styleClass="ui-datatable-striped  "
+                                         style="zoom: 90%;">
+
+                                <p:ajax event="page" global="false"/>
+
+                                <p:ajax event="sort" global="false"/>
+
+                                <p:column headerText="CPF" style="text-align:center">
+
+                                    <span>#{master.cpf}</span>
+
+                                </p:column>
+
+                                <p:column headerText="Produto" style="text-align:center">
+
+                                    <span>#{master.produto }</span>
+
+                                </p:column>
+
+                                <p:column headerText="últimos 4 dígitos" style="text-align:center">
+
+                                    <span>#{master.ultimos4Digitos}</span>
+
+                                </p:column>
+
+                                <p:column headerText="Status do cartão" style="text-align:center">
+
+                                    <span>#{master.statusCartao}</span>
+
+                                </p:column>
+
+                                <p:column headerText="Limite do cartão" style="text-align:center">
+
+                                    <span>#{master.limiteDisponivelFormatado}</span>
+
+                                </p:column>
+
+                                <p:column headerText="Limite disponível" style="text-align:center">
+
+                                    <span>#{master.limitePercentualDisponivelFormatado}</span>
+
+                                </p:column>
+
+                            </p:dataTable>
+
+
+                        </div>
+
+                    </div>
+                </div>
+
+            </h:form>
+
+
+        </div>
+
+    </ui:define>
+
+</ui:composition>

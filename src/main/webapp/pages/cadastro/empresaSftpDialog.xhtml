@@ -1,0 +1,201 @@
+<ui:fragment xmlns="http://www.w3.org/1999/xhtml"
+             xmlns:h="http://java.sun.com/jsf/html"
+             xmlns:f="http://java.sun.com/jsf/core"
+             xmlns:o="http://omnifaces.org/ui"
+             xmlns:ui="http://java.sun.com/jsf/facelets"
+             xmlns:p="http://primefaces.org/ui">
+
+    <p:dialog id="dlgEmpresaSftp"
+              widgetVar="dlgEmpresaSftp" modal="true" draggable="false"
+              resizable="false" closable="true" visible="false" width="900px"
+              header="Adicionar Servidor Sftp" appendTo="@(body)">
+
+        <h:form id="formSftp">
+
+            <h:panelGroup id="pngSftp" styleClass="formgrid ui-fluid" layout="block">
+
+
+                <div class="field grid ">
+
+                    <label for="txtDescricao" class="col-12 mb-2 md:col-2 md:mb-0">#{msg.descricao}</label>
+
+
+                    <div class="col-12 md:col-10">
+                        <p:inputText id="txtDescricao" value="#{empresaBean.conciliar.descricao}"
+                                     required="true" maxlength="50" requiredMessage="#{msg.requerido}"/>
+
+                        <p:message for="txtDescricao"/>
+                    </div>
+                </div>
+
+
+                <div class="field grid ">
+
+                    <p:outputLabel for="txtHost" styleClass="col-12 mb-2 md:col-2 md:mb-0" id="lblHost"
+                                   value="#{msg.url}"/>
+                    <div class="col-12 md:col-7">
+                        <p:inputText id="txtHost" value="#{empresaBean.conciliar.url}" required="true"
+                                     maxlength="150" requiredMessage="#{msg.requerido}"/>
+
+                        <p:message for="txtHost"/>
+
+
+                    </div>
+
+                    <p:outputLabel for="txtPorta" styleClass="col-12 mb-2 md:col-1 md:mb-0" id="lblPorta"
+                                   value="#{msg.porta}"/>
+
+                    <div class="col-12 md:col-2">
+
+                        <p:inputText id="txtPorta" value="#{empresaBean.conciliar.porta}"
+                                     required="true" maxlength="5"
+                                     onkeypress="return somenteNumeros(event)"
+                                     requiredMessage="#{msg.requerido}"/>
+
+                        <p:message for="txtPorta"/>
+                    </div>
+
+                </div>
+
+                <div class="field grid ">
+
+                    <p:outputLabel for="txtDiretorio" styleClass="col-12 mb-2 md:col-2 md:mb-0" id="lblDiretorio" value="#{msg.diretorio}"/>
+                <div class="col-12 md:col-10">
+                    <p:inputText id="txtDiretorio" value="#{empresaBean.conciliar.diretorio}"
+                                 required="true" maxlength="50" requiredMessage="#{msg.requerido}"/>
+
+                    <p:message for="txtDiretorio"/>
+                </div>
+
+                </div>
+
+
+
+                <p:divider />
+
+                <div class="field grid ">
+
+                    <label for="selectOneTipoLogin" class="col-12 mb-2 md:col-2 md:mb-0">Tipo Login</label>
+
+                    <div class="col-12 md:col-4">
+
+                        <p:selectOneMenu value="#{empresaBean.conciliar.tipoLoginSftp}" id="selectOneTipoLogin">
+
+                            <f:selectItems value="#{empresaBean.tipoLoginSftp}" var="tipo"
+                                           itemLabel="#{tipo.descricao}" itemValue="#{tipo}"/>
+
+                            <p:ajax process="@this" update="pngSftp"/>
+
+                        </p:selectOneMenu>
+
+                    </div>
+
+                </div>
+
+
+                <div class="field grid ">
+
+                    <p:outputLabel for="txtUsuario" styleClass="col-12 mb-2 md:col-2 md:mb-0" id="lblUsr" value="#{msg.usuario}"/>
+
+                    <div class="col-12 md:col-10">
+                        <p:inputText id="txtUsuario" value="#{empresaBean.conciliar.usr}"
+                                     required="true" maxlength="50" requiredMessage="#{msg.requerido}"/>
+
+                        <p:message for="txtUsuario"/>
+                    </div>
+
+                </div>
+
+                <h:panelGroup styleClass="field grid" layout="block"
+                              rendered="#{empresaBean.conciliar.tipoLoginSftp eq 'NORMAL'}">
+
+                    <p:outputLabel for="psw"  id="lbSenha" styleClass="col-12 mb-2 md:col-2 md:mb-0" value="#{msg.senha}"/>
+                    <div class="col-12 md:col-10">
+                    <p:password id="psw" value="#{empresaBean.conciliar.psw}" required="true"
+                                maxlength="50" requiredMessage="#{msg.requerido}"/>
+
+                    <p:message for="psw"/>
+                    </div>
+
+                </h:panelGroup>
+
+                <h:panelGroup styleClass=" grid " layout="block"
+                              rendered="#{empresaBean.conciliar.tipoLoginSftp eq 'ARQUIVO'}">
+
+                    <p:outputLabel value="Arquivo com chave" styleClass="col-12 mb-2 md:col-2 md:mb-0"/>
+
+                    <div class="col-12 md:col-6">
+                        <p:inputText id="strChave" readonly="true" value="#{empresaBean.conciliar.fileArquivoChave}"/>
+                    </div>
+
+
+
+                        <p:fileUpload label="Selecione um arquivo" uploadLabel="Enviar"
+                                      styleClass="ui-button-raised ui-button-outlined "
+                                      multiple="false" process="@this" global="false"
+                                      listener="#{empresaBean.enviarArquivoChave}" skinSimple="true" auto="true"
+                                      mode="simple" allowTypes="/(\.pem|\.ppk)$/i"
+                                      invalidFileMessage="São permitidos somente arquivos .PEM e .PPK"
+                                      update="@this strChave">
+
+                        </p:fileUpload>
+
+
+
+
+
+                </h:panelGroup>
+
+                <div class=" col-12 flex justify-content-center flex-wrap">
+
+
+                    <p:commandButton value="Salvar"
+                                     icon="pi pi-save" styleClass="ui-button-raised mr-3"
+                                     actionListener="#{empresaBean.adicionarFtp()}"
+                                     update="@this pngSftp formCadastro" process="@this pngSftp "
+                                     partialSubmit="true"/>
+
+                    <p:commandButton value="Fechar"
+                                     icon="pi pi-times" styleClass="ui-button-raised" type="button" onclick="PF('dlgEmpresaSftp').hide();"
+                                   />
+
+
+                </div>
+
+
+                <!--
+
+
+
+
+
+
+
+
+
+
+
+                              <div class="field col-12 md:col-2">
+
+                                  <p:outputLabel for="selectOneAtivo" value="#{msg.acesso}"/>
+
+                                  <p:selectOneMenu value="#{empresaBean.conciliar.ativo}">
+
+                                      <f:selectItems value="#{empresaBean.tipoAcessoEnum}" var="acesso"
+                                                     itemLabel="#{acesso.constante}" itemValue="#{acesso}"/>
+
+                                  </p:selectOneMenu>
+
+                              </div>
+
+
+
+                              </div>-->
+
+            </h:panelGroup>
+
+        </h:form>
+
+    </p:dialog>
+
+</ui:fragment>

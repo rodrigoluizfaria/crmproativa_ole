@@ -1,0 +1,241 @@
+<ui:composition xmlns="http://www.w3.org/1999/xhtml"
+                xmlns:h="http://java.sun.com/jsf/html"
+                xmlns:f="http://java.sun.com/jsf/core"
+                xmlns:ui="http://java.sun.com/jsf/facelets"
+                xmlns:comboempresa="http://java.sun.com/jsf/composite/componentes"
+                xmlns:p="http://primefaces.org/ui" template="/WEB-INF/template.xhtml">
+
+
+    <ui:define name="viewname">
+
+        <div class="bcca-breadcrumb">
+            <div class="bcca-breadcrumb-item bg-primary-500 hover:bg-primary-700">
+                <p:link outcome="/pages/relatorios/motivoPausa" styleClass="uppercase"
+                        style="text-decoration: none">MOTIVOS PAUSA</p:link>
+            </div>
+            <div class="bcca-breadcrumb-item uppercase">RELATÓRIOS</div>
+        </div>
+
+    </ui:define>
+
+    <ui:define name="content">
+
+        <div class="p-grid justify-center ">
+
+            <p:growl id="grl" widgetVar="grl" globalOnly="true" escape="false" showSummary="false" life="8000"
+                     showDetail="true" sticky="false">
+
+                <p:autoUpdate/>
+
+            </p:growl>
+
+            <h:form id="formConteudo" prependId="false">
+
+
+                    <div class="card">
+
+                        <h:panelGroup id="pamelPausa" layout="block" styleClass="ui-fluid formgrid grid">
+
+                            <comboempresa:selectEmpresa id="cmpEmpresa" managedBean="#{relatoriosMotivosPausa}"
+                                                        value="#{relatoriosMotivosPausa.empresa}" ajax="true"
+                                                        update=":formConteudo:selectOneEquipe :formConteudo:selectOneUsuarios"
+                                                        filter="false"/>
+
+                            <div class="field col-12 md:col-2">
+
+                                <p:outputLabel value="Equipe " for="selectOneEquipe"/>
+
+                                <p:selectOneMenu id="selectOneEquipe" value="#{relatoriosMotivosPausa.idEquipe}"
+                                                 converter="omnifaces.SelectItemsConverter" filter="true"
+                                                 filterMatchMode="contains" autoWidth="false">
+
+                                    <f:selectItem itemLabel="Selecione" noSelectionOption="true" itemValue="#{null}"/>
+
+                                    <f:selectItems value="#{relatoriosMotivosPausa.listEquipes}" var="equipe"
+                                                   itemLabel="#{equipe.nome}" itemValue="#{equipe.id}"/>
+
+                                </p:selectOneMenu>
+
+                            </div>
+
+                            <div class="field col-12 md:col-2">
+
+                                <p:outputLabel value="Operadores " for="selectOneUsuarios"/>
+
+                                <p:selectOneMenu id="selectOneUsuarios" value="#{relatoriosMotivosPausa.idOperador}"
+                                                 converter="omnifaces.SelectItemsConverter" filter="true"
+                                                 filterMatchMode="contains" autoWidth="false">
+
+                                    <f:selectItem noSelectionOption="true" itemLabel="Selecione"/>
+
+                                    <f:selectItems value="#{relatoriosMotivosPausa.listOperadores}" var="operador"
+                                                   itemLabel="#{operador.nome}" itemValue="#{operador.id}"/>
+
+                                </p:selectOneMenu>
+
+                            </div>
+
+
+                            <div class="field col-12 md:col-2">
+
+                                <p:outputLabel value="Pausas " for="selectOnePausas"/>
+
+                                <p:selectOneMenu id="selectOnePausas" value="#{relatoriosMotivosPausa.idPausa}"
+                                                 label="Pausas" converter="omnifaces.SelectItemsConverter" filter="true"
+                                                 filterMatchMode="contains" autoWidth="false">
+
+                                    <f:selectItem noSelectionOption="true" itemLabel="Selecione"/>
+
+                                    <f:selectItems value="#{relatoriosMotivosPausa.listPausas}" var="pausa"
+                                                   itemLabel="#{pausa.descricao}" itemValue="#{pausa.id}"/>
+
+                                </p:selectOneMenu>
+
+                            </div>
+
+                            <div class="field col-12 md:col-2">
+
+                                <p:outputLabel value="Data inicio"/>
+
+                                <p:datePicker id="calendarDataInicioPesquisa"
+                                              value="#{relatoriosMotivosPausa.dataInicio}" showButtonBar="true"
+                                              showIcon="true" readonlyInput="true" pattern="dd/MM/yyyy" locale="pt_BR"/>
+
+                            </div>
+
+                            <div class="field col-12 md:col-2">
+
+                                <p:outputLabel value="Data fim"/>
+
+                                <p:datePicker id="calendarDataFimPesquisa" value="#{relatoriosMotivosPausa.dataFinal}"
+                                              showButtonBar="true" showIcon="true" readonlyInput="true"
+                                              pattern="dd/MM/yyyy" locale="pt_BR"/>
+
+                            </div>
+
+                            <div class="field col-12 md-12 mt-3">
+
+                                <p:commandButton styleClass="mr-3 ui-button-raised"
+                                                 actionListener="#{relatoriosMotivosPausa.pesquisar()}"
+                                                 value="Pesquisar" id="btnPesquisar" icon="pi pi-search"
+                                                 update="@form"/>
+
+                                <p:commandButton id="btnExportarPesquisa" icon="pi pi-upload"
+                                                 styleClass="ui-button-outlined ui-button-raised"
+                                                 value="#{msg.exportar}" ajax="false"
+                                                 disabled="#{empty relatoriosMotivosPausa.listRelatorioPausa}"
+                                                 immediate="true"
+                                                 rendered="#{sessionScope['usuario'].permissaoExportar}">
+
+                                    <p:dataExporter target="tablePausas" type="xls" fileName="relatorioPausa"/>
+
+                                </p:commandButton>
+
+                            </div>
+
+                        </h:panelGroup>
+
+                    </div>
+
+
+
+                <div class="">
+
+                    <div class="card">
+
+                        <div class="field col-12 ">
+
+                            <p:dataTable id="tablePausas" var="pausa" rows="20"
+                                         paginator="true" paginatorPosition="bottom"
+                                         value="#{relatoriosMotivosPausa.listRelatorioPausa }"
+                                         emptyMessage="#{relatoriosMotivosPausa.listRelatorioPausa eq null? '' : msg.emptyMessage}"
+                                         currentPageReportTemplate="[#{msg.totalDeRegistros}: {totalRecords}]"
+                                         paginatorTemplate="{CurrentPageReport}  {FirstPageLink} {PreviousPageLink} {PageLinks} {NextPageLink} {LastPageLink} {Exporters}"
+                                         styleClass="ui-datatable-striped ui-datatable-sm">
+
+                                <p:ajax event="page" global="false"/>
+
+                                <p:ajax event="sort" global="false"/>
+
+                                <p:column headerText="Operador" sortBy="#{pausa[0]}" width="15%">
+
+                                    <h:outputLabel value="#{pausa[0]}"/>
+
+                                </p:column>
+
+                                <p:column headerText="Pausa" sortBy="#{pausa[1]}" width="15%">
+
+                                    <h:outputLabel value="#{pausa[1]}"/>
+
+                                </p:column>
+
+                                <p:column headerText="Data Pausa" sortBy="#{pausa[2]}" width="10%">
+
+                                    <h:outputLabel value="#{pausa[2]}">
+
+                                        <f:convertDateTime pattern="dd/MM/yyyy HH:mm:ss" timeZone="GMT-3"/>
+
+                                    </h:outputLabel>
+
+                                </p:column>
+
+                                <p:column headerText="Data Retorno" sortBy="#{pausa[3]}" width="10%">
+
+                                    <h:outputLabel value="#{pausa[3]}">
+
+                                        <f:convertDateTime pattern="dd/MM/yyyy HH:mm:ss" timeZone="GMT-3"/>
+
+                                    </h:outputLabel>
+
+                                </p:column>
+
+
+                                <p:column headerText="Tempo Decorrido" sortBy="#{pausa[5]}" width="8%">
+
+                                    <h:outputLabel value="#{pausa[5]}">
+
+                                        <f:convertDateTime pattern="HH:mm:ss" timeZone="GMT-3"/>
+
+                                    </h:outputLabel>
+
+                                </p:column>
+
+
+                                <p:column headerText="Supervisor" sortBy="#{pausa[6]}" width="10%">
+
+                                    <h:outputLabel value="#{pausa[6]}"/>
+
+                                </p:column>
+
+                                <p:column headerText="Data Desbloqueio" sortBy="#{pausa[7]}" width="10%">
+
+                                    <h:outputLabel value="#{pausa[7]}">
+
+                                        <f:convertDateTime pattern="dd/MM/yyyy HH:mm:ss" timeZone="GMT-3"/>
+
+                                    </h:outputLabel>
+
+                                </p:column>
+
+                                <p:column headerText="Justificativa" sortBy="#{pausa[8]}" width="20%">
+
+                                    <h:outputLabel value="#{pausa[8]}"/>
+
+                                </p:column>
+
+                            </p:dataTable>
+
+                        </div>
+
+                    </div>
+
+                </div>
+
+            </h:form>
+
+        </div>
+
+
+    </ui:define>
+
+</ui:composition>

@@ -1,0 +1,64 @@
+<ui:composition xmlns="http://www.w3.org/1999/xhtml"
+                xmlns:h="http://java.sun.com/jsf/html"
+                xmlns:f="http://java.sun.com/jsf/core"
+                xmlns:ui="http://java.sun.com/jsf/facelets"
+                xmlns:p="http://primefaces.org/ui" template="/WEB-INF/template.xhtml"
+                xmlns:c="http://java.sun.com/jsp/jstl/core">
+
+    <ui:define name="viewname">
+        <div class="bcca-breadcrumb">
+            <div class="bcca-breadcrumb-item bg-primary-500 hover:bg-primary-700">
+                <p:link outcome="/pages/cadastro/pesquisaSatisfacao"
+                        style="text-decoration: none">FORMULÁRIOS</p:link>
+            </div>
+            <div class="bcca-breadcrumb-item ">CADASTRO</div>
+        </div>
+
+    </ui:define>
+
+    <ui:define name="content">
+
+        <script>
+
+            function onChangeRequisito() {
+
+
+                var requisito = document.getElementById('selectButtonRequisito_input').checked;
+
+                $("#panelRequisitos").css("display", requisito ? "flex" : "none");
+
+                console.log(requisito);
+
+                if (!requisito) {
+
+                    console.log(document.getElementById('selectPerguntaRequisito').value);
+                    document.getElementById('selectPerguntaRequisito').value = '';
+                    document.getElementById('selectRequisito').value = '';
+                }
+
+            }
+
+
+        </script>
+
+
+        <div class="p-grid justify-center">
+
+            <c:if test="#{pesquisaSatisfacaoBean.tipoPagina eq 'PESQUISA'}">
+
+                <ui:include src="/pages/cadastro/pesquisaSatisfacaoPesquisa.xhtml"/>
+
+            </c:if>
+
+            <c:if test="#{pesquisaSatisfacaoBean.tipoPagina eq 'CADASTRO'}">
+
+                <ui:include src="/pages/cadastro/pesquisaSatisfacaoCadastro.xhtml"/>
+                <ui:include src="/pages/cadastro/pesquisaDialog.xhtml"/>
+
+            </c:if>
+
+        </div>
+
+    </ui:define>
+
+</ui:composition>

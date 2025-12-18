@@ -1,0 +1,190 @@
+<ui:composition xmlns="http://www.w3.org/1999/xhtml"
+                xmlns:h="http://java.sun.com/jsf/html"
+                xmlns:f="http://java.sun.com/jsf/core"
+                xmlns:ui="http://java.sun.com/jsf/facelets"
+                xmlns:comboempresa="http://java.sun.com/jsf/composite/componentes"
+                xmlns:p="http://primefaces.org/ui" template="/WEB-INF/template.xhtml">
+
+
+    <ui:define name="viewname">
+
+        <div class="bcca-breadcrumb">
+            <div class="bcca-breadcrumb-item bg-primary-500 hover:bg-primary-700">
+                <p:link outcome="/pages/relatorios/motivoPausaConsolidado" styleClass="uppercase"
+                        style="text-decoration: none">MOTIVOS PAUSA CONSOLIDADO</p:link>
+            </div>
+            <div class="bcca-breadcrumb-item uppercase">RELATÓRIOS</div>
+        </div>
+
+    </ui:define>
+
+    <ui:define name="content">
+
+        <h:form id="formConteudo" prependId="false">
+
+            <div class="p-grid p-justify-center ">
+
+
+                <p:growl id="grl" widgetVar="grl" globalOnly="true" escape="false" showSummary="false" life="8000"
+                         showDetail="true" sticky="false">
+
+                    <p:autoUpdate/>
+
+                </p:growl>
+
+
+                <div class="card">
+
+                    <div id="pamelPausa" class="ui-fluid formgrid grid">
+
+                        <comboempresa:selectEmpresa id="cmpEmpresa"
+                                                    managedBean="#{relatoriosMotivosPausaConsolidado}"
+                                                    value="#{relatoriosMotivosPausaConsolidado.empresa}" ajax="true"
+                                                    update=":formConteudo:selectOneEquipe :formConteudo:selectOneUsuarios"
+                                                    filter="false" style="md:col-3"/>
+
+                        <div class="field col-12 md:col-3">
+
+                            <p:outputLabel value="Equipe " for="selectOneEquipe"/>
+
+                            <p:selectOneMenu id="selectOneEquipe"
+                                             value="#{relatoriosMotivosPausaConsolidado.idEquipe}"
+                                             converter="omnifaces.SelectItemsConverter" filter="true"
+                                             filterMatchMode="contains" autoWidth="false">
+
+                                <f:selectItem itemLabel="Selecione" noSelectionOption="true" itemValue="#{null}"/>
+
+                                <f:selectItems value="#{relatoriosMotivosPausaConsolidado.listEquipes}" var="equipe"
+                                               itemLabel="#{equipe.nome}" itemValue="#{equipe.id}"/>
+
+                            </p:selectOneMenu>
+
+                        </div>
+
+                        <div class="field col-12 md:col-3">
+
+                            <p:outputLabel value="Operadores " for="selectOneUsuarios"/>
+
+                            <p:selectCheckboxMenu id="selectOneUsuarios" multiple="true" label="Selecione"
+                                                  value="#{relatoriosMotivosPausaConsolidado.listIdsOperadores}"
+                                                  filter="true" filterMatchMode="contains" autoWidth="false">
+
+
+                                <f:selectItems value="#{relatoriosMotivosPausaConsolidado.listOperadores}"
+                                               var="operador" itemLabel="#{operador.nome}"
+                                               itemValue="#{operador.id}"/>
+
+                            </p:selectCheckboxMenu>
+
+                        </div>
+
+
+                        <div class="field col-12 md:col-3">
+
+                            <p:outputLabel value="Data inicio"/>
+
+                            <p:datePicker id="calendarDataInicioPesquisa"
+                                          value="#{relatoriosMotivosPausaConsolidado.dataInicio}"
+                                          showButtonBar="true" showIcon="true" readonlyInput="true"
+                                          pattern="dd/MM/yyyy" locale="pt_BR"/>
+
+                        </div>
+
+                        <div class="field col-12 md:col-3">
+
+                            <p:outputLabel value="Data fim"/>
+
+                            <p:datePicker id="calendarDataFimPesquisa"
+                                          value="#{relatoriosMotivosPausaConsolidado.dataFinal}"
+                                          showButtonBar="true" showIcon="true" readonlyInput="true"
+                                          pattern="dd/MM/yyyy" locale="pt_BR"/>
+
+                        </div>
+                    </div>
+                    <div class="  mt-5">
+
+                        <p:commandButton styleClass="mr-3 ui-button-raised"
+                                         actionListener="#{relatoriosMotivosPausaConsolidado.pesquisar()}"
+                                         value="Pesquisar" id="btnPesquisar" icon="pi pi-search"
+                                         update="@form"/>
+
+                        <p:commandButton id="btnExportarPesquisa" icon="pi pi-upload"
+                                         styleClass="ui-button-outlined" value="#{msg.exportar}" ajax="false"
+                                         disabled="#{empty relatoriosMotivosPausaConsolidado.listTablePausaColunas}"
+                                         immediate="true"
+                                         rendered="#{sessionScope['usuario'].permissaoExportar}">
+
+                            <p:dataExporter target="tablePausas" type="xls" fileName="relatorioPausa"/>
+
+                        </p:commandButton>
+
+                    </div>
+
+
+                </div>
+
+                <div class="mt-3">
+
+                    <h:panelGroup class="card" layout="block">
+
+                        <h:outputText
+                                value="#{relatoriosMotivosPausaConsolidado.listTablePausaColunas eq null or not empty relatoriosMotivosPausaConsolidado.mapPausaTotal ? '' : msg.emptyMessage}"
+                                style="padding: 20px;"/>
+
+                        <p:dataTable id="tablePausas" var="relatorio" rows="50"
+                                     rendered="#{not empty relatoriosMotivosPausaConsolidado.mapPausaTotal}"
+                                     paginator="true" paginatorPosition="bottom" rowIndexVar="indice"
+                                     value="#{relatoriosMotivosPausaConsolidado.listTablePausaColunas}"
+                                     emptyMessage="#{relatoriosMotivosPausaConsolidado.listTablePausaColunas eq null? '' : msg.emptyMessage}"
+                                     currentPageReportTemplate="[#{msg.totalDeRegistros}: {totalRecords}]"
+                                     paginatorTemplate="{CurrentPageReport}  {FirstPageLink} {PreviousPageLink} {PageLinks} {NextPageLink} {LastPageLink} {Exporters}"
+                                     styleClass="default">
+
+                            <p:ajax event="page" global="false"/>
+
+                            <p:ajax event="sort" global="false"/>
+
+                            <p:columns var="su"
+                                       footerText="#{relatoriosMotivosPausaConsolidado.retornoFooter(su.header)}"
+                                       value="#{relatoriosMotivosPausaConsolidado.titleColuns}"
+                                       sortBy="#{relatorio[su.indice]}" headerText="#{su.header}" width="#{su.percent}">
+
+                                <p:commandLink value="#{relatorio[su.indice]}" id="btnChartLabel" rendered="#{su.name}"
+                                               global="false"
+                                               actionListener="#{relatoriosMotivosPausaConsolidado.onModalCharts(indice)}"
+                                               update="chart"/>
+
+                                <p:overlayPanel id="panelChart" for="btnChartLabel" hideEffect="fade"
+                                                showCloseIcon="true">
+
+                                    <p:pieChart model="#{relatoriosMotivosPausaConsolidado.pieModel}"
+                                                style="width: 100%; height: 400px;" id="chart"/>
+
+
+                                </p:overlayPanel>
+
+                                <p:outputLabel value="#{relatorio[su.indice]}" rendered="#{su.name eq false}"/>
+
+
+                            </p:columns>
+
+
+                        </p:dataTable>
+
+                        <div class="col-12">
+                            <p:barChart model="#{relatoriosMotivosPausaConsolidado.stackedBarModel}"
+                                        style="width: 100%; height: 500px;margin-top:60px"
+                                        rendered="#{not empty relatoriosMotivosPausaConsolidado.mapPausaTotal}"/>
+                        </div>
+                    </h:panelGroup>
+
+                </div>
+
+
+            </div>
+        </h:form>
+
+
+    </ui:define>
+
+</ui:composition>

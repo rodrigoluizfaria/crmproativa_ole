@@ -1,0 +1,138 @@
+<ui:fragment xmlns="http://www.w3.org/1999/xhtml"
+             xmlns:h="http://java.sun.com/jsf/html"
+             xmlns:f="http://java.sun.com/jsf/core"
+             xmlns:ui="http://java.sun.com/jsf/facelets"
+             xmlns:p="http://primefaces.org/ui" template="/WEB-INF/template.xhtml">
+
+    <p:growl id="grl" widgetVar="grl" globalOnly="true" escape="false" showSummary="false" life="8000" showDetail="true"
+             sticky="false">
+
+        <p:autoUpdate/>
+
+    </p:growl>
+
+
+    <h:form id="pesqForma" prependId="false">
+
+        <div class="card">
+
+            <div class="ui-fluid formgrid grid">
+
+                <div class="field col-12 md:col-3">
+
+                    <p:outputLabel for="inputPesqNome" value="Descrição:"/>
+
+                    <p:inputText id="inputPesqNome"
+                                 value="#{formaPagamentoBean.formaPagamento.descricao}"/>
+
+                </div>
+
+                <div class="field col-12 md:col-3">
+
+                    <p:outputLabel for="selectOnePesqParam" value="Parametro:"/>
+
+                    <p:selectOneMenu id="selectOnePesqParam"
+                                     value="#{formaPagamentoBean.formaPagamento.parametro}">
+
+                        <f:selectItem itemLabel="Selecione" noSelectionOption="true"/>
+
+                        <f:selectItems value="#{formaPagamentoBean.enumFormaPagamento}"
+                                       var="forma" itemLabel="#{forma.constante}" itemValue="#{forma}"/>
+
+                    </p:selectOneMenu>
+
+                </div>
+
+                <div class="field col-12 md:col-3">
+
+                    <p:outputLabel for="selectOneCadastAtivo" value="Acesso:"/>
+
+                    <p:selectOneMenu id="selectOneCadastAtivo"
+                                     value="#{formaPagamentoBean.formaPagamento.ativo}">
+
+                        <f:selectItem itemLabel="Selecione" noSelectionOption="true"/>
+
+                        <f:selectItems value="#{formaPagamentoBean.tipoAcessoEnum}"
+                                       var="acesso" itemLabel="#{acesso.constante}"
+                                       itemValue="#{acesso}"/>
+
+                    </p:selectOneMenu>
+
+                </div>
+
+            </div>
+
+            <div class="mt-5">
+
+                <p:commandButton value="Pesquisar" styleClass="mr-3 ui-button-raised"
+                                 id="btnPesquisar" update="@form" icon="pi pi-search"
+                                 action="#{formaPagamentoBean.pesquisar()}"/>
+
+                <p:commandButton id="btnExportar" icon="pi pi-file-excel"
+                                 value="#{msg.exportar}" ajax="false"
+                                 disabled="#{empty formaPagamentoBean.listFormaPagamento}"
+                                 immediate="true" styleClass="mr-3 ui-button-raised ui-button-outlined">
+
+                    <p:dataExporter target="tableStatus" type="xls"
+                                    fileName="formaPagamento"/>
+
+                </p:commandButton>
+
+                <p:commandButton value="Novo" id="btnNovo" ajax="false"
+                                 styleClass="ui-button-raised ui-button-outlined" icon="pi pi-plus-circle"
+                                 action="#{formaPagamentoBean.novo()}"/>
+
+            </div>
+
+        </div>
+
+        <div class=" mt-4">
+
+            <div class="card">
+
+                <p:dataTable value="#{formaPagamentoBean.listFormaPagamento}"
+                             paginator="true" paginatorPosition="bottom"
+                             styleClass="ui-datatable-striped ui-datatable-gridlines ui-datatable-sm"
+                             emptyMessage="#{msg.emptyMessage}"
+                             currentPageReportTemplate="[#{msg.totalDeRegistros}: {totalRecords}]"
+                             paginatorTemplate="{CurrentPageReport}  {FirstPageLink} {PreviousPageLink} {PageLinks} {NextPageLink} {LastPageLink}"
+                             var="forma" id="tableStatus" rows="10">
+
+                    <p:column headerText="Descricao">
+
+                        <h:outputText value="#{forma.descricao}"/>
+
+                    </p:column>
+
+                    <p:column headerText="Parametro">
+
+                        <h:outputText value="#{forma.parametro}"/>
+
+                    </p:column>
+
+                    <p:column headerText="Acesso">
+
+                        <h:outputText value="#{forma.ativo.constante}"/>
+
+                    </p:column>
+
+                    <p:column style="text-align:center;width:50px" exportable="false">
+
+                        <p:commandButton icon="fa fw fa-edit"
+                                         styleClass="rounded-button ui-button-flat"
+                                         action="#{formaPagamentoBean.editar(forma)}" ajax="false">
+
+
+                        </p:commandButton>
+
+                    </p:column>
+
+                </p:dataTable>
+
+            </div>
+
+        </div>
+
+    </h:form>
+
+</ui:fragment>

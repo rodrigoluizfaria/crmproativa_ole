@@ -1,0 +1,51 @@
+<ui:fragment xmlns="http://www.w3.org/1999/xhtml"
+             xmlns:h="http://java.sun.com/jsf/html"
+             xmlns:ui="http://java.sun.com/jsf/facelets"
+             xmlns:p="http://primefaces.org/ui">
+
+    <p:dialog id="dlgDesbloqueioUsuario" widgetVar="dlgDesbloqueioUsuario" width="600" header="Desloqueio de Usuario"
+              modal="true" resizable="false" draggable="false" appendTo="@(body)">
+
+        <h:form id="formDialofControlePausa" prependId="false">
+
+            <div class="ui-fluid formgrid grid col-12">
+
+                <div class="field col-12 md:col-12">
+
+                    <p:outputLabel value="Motivo" for="txtMotivo" id="lblMotivo"/>
+
+                    <p:inputTextarea id="txtMotivo" value="#{supervisorBackofficeBean.justificativa}" required="true"
+                                     requiredMessage="#{msg.requerido}"/>
+
+                    <p:message for="txtMotivo"/>
+
+                </div>
+
+
+                <div class="field col-12 md:col-12">
+
+                    <p:commandButton value="Salvar" icon="pi pi-check"
+                                     actionListener="#{supervisorBackofficeBean.desbloquearPausa()}"
+                                     update="@form tabView:formBackofficeControlePausa"
+                                     id="btnDesbloqueioControleUsuario" styleClass="ui-button-raised mr-3"
+                                     rendered="#{supervisorBackofficeBean.dialogModal eq 'CONTROLE_PAUSA'}"/>
+
+                    <p:commandButton value="Salvar" icon="pi pi-check"
+                                     action="#{supervisorBackofficeBean.desbloquearUsuario()}"
+                                     update="@form tabView:formBackofficeUsuarioBloqueado"
+                                     id="btnDesbloqueioControlePausa" styleClass="ui-button-raised mr-3"
+                                     rendered="#{supervisorBackofficeBean.dialogModal eq 'CONTROLE_USUARIO'}"/>
+
+                    <p:commandButton value="Sair" icon="pi pi-times" onclick="PF('dlgDesbloqueioUsuario').hide();"
+                                     immediate="true" global="false"
+                                     process="@this" styleClass="ui-button-raised"/>
+
+                </div>
+
+            </div>
+
+        </h:form>
+
+    </p:dialog>
+
+</ui:fragment>

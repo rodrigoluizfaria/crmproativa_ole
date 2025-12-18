@@ -1,0 +1,173 @@
+<ui:fragment xmlns="http://www.w3.org/1999/xhtml"
+             xmlns:ui="http://java.sun.com/jsf/facelets"
+             xmlns:f="http://java.sun.com/jsf/core"
+             xmlns:h="http://java.sun.com/jsf/html"
+             xmlns:p="http://primefaces.org/ui"
+             xmlns:of="http://omnifaces.org/functions">
+
+    <h:form id="formTableLog" prependId="false">
+
+        <p:dialog id="dlgPergunta" widgetVar="dlgPergunta" modal="true" width="50%" draggable="false" resizable="false"
+                  header="Cadastro Pergunta"  appendTo="@(body)" height="540">
+
+            <h:panelGroup id="panelDialog">
+
+                <p:fieldset legend="Pergunta" styleClass="fild-set-default-sem-borda" style="padding: 0px 20px;">
+
+                    <div class="col-12  " style="padding-bottom: 0;">
+
+                        <div class="ui-fluid formgrid grid">
+
+                            <div class="col-12 md:col-2">
+
+                                <p:outputLabel for="txtOrdem" value="Ordem"/>
+
+                                <p:inputText id="txtOrdem" value="#{faqChatBean.faqPergunta.ordem}" readonly="true"
+                                             disabled="true"/>
+
+                            </div>
+
+                            <div class="col-12 md:col-10">
+
+                                <p:outputLabel for="txtPergunta" value="Pergunta"/>
+
+                                <p:inputText id="txtPergunta" value="#{faqChatBean.faqPergunta.pergunta}"
+                                             maxlength="200" required="true" requiredMessage="#{msg.requerido}"/>
+
+                                <p:message for="txtPergunta"/>
+
+                            </div>
+
+                            <div class="col-12 ">
+
+                                <p:outputLabel for="txtResposta" value="Resposta"/>
+
+                                <p:inputTextarea id="txtResposta" value="#{faqChatBean.faqPergunta.resposta}"
+                                                 required="true" requiredMessage="#{msg.requerido}"/>
+
+                                <p:message for="txtResposta"/>
+
+                            </div>
+
+                        </div>
+
+                    </div>
+
+                    <div class=" mb-5 text-center">
+
+                        <p:commandButton value="Salvar" id="btnAdd" process="@this txtPergunta txtResposta "
+                                         icon="pi pi-save" partialSubmit="true"
+                                         styleClass="ui-button-raised ui-button-secondary"
+                                         actionListener="#{faqChatBean.adicionarPergunta()}"
+                                         update="panelDialog panelPerguntas" style="width: auto"/>
+
+                    </div>
+
+                </p:fieldset>
+
+                <p:fieldset legend="Lista de Perguntas" styleClass="fild-set-default-sem-borda mt-3"
+                            style="padding: 0px 20px;" id="fieldListPergunta">
+
+                    <div class="col-12 mb:col-3 ">
+
+                        <p:dataTable id="tablePerguntas" var="pergunta" rows="10"
+                                     paginator="true" paginatorPosition="bottom"
+                                     value="#{faqChatBean.grupoFaq.listFaqPergunta}"
+                                     emptyMessage="#{faqChatBean.grupoFaq.listFaqPergunta eq null? '' : msg.emptyMessage}"
+                                     currentPageReportTemplate="[#{msg.totalDeRegistros}: {totalRecords}]"
+                                     paginatorTemplate="{CurrentPageReport}  {FirstPageLink} {PreviousPageLink} {PageLinks} {NextPageLink} {LastPageLink} {Exporters}"
+                                     styleClass="ui-datatable-gridlines ui-datatable-striped ui-datatable-sm"
+                                     editable="true" draggableRows="true">
+
+                            <p:ajax event="page" global="false"/>
+
+                            <p:ajax event="sort" global="false"/>
+
+                            <p:ajax event="rowReorder" listener="#{faqChatBean.onRowReorder}"
+                                    process="@this tablePerguntas" partialSubmit="true" global="false"
+                                    update="tablePerguntas pgCadastroFaq"/>
+
+                            <p:ajax event="rowEdit" listener="#{faqChatBean.onRowEdit}" process="@this tablePerguntas"
+                                    partialSubmit="true" update="tablePerguntas pgCadastroFaq"/>
+                            <p:ajax event="rowEditCancel" listener="#{faqChatBean.onRowCancel}"
+                                    process="@this tablePerguntas" partialSubmit="true"
+                                    update="tablePerguntas pgCadastroFaq"/>
+
+                            <p:column headerText="Ordem" sortBy="#{pergunta.ordem}" width="5%">
+
+                                <h:outputText value="#{pergunta.ordem}"/>
+
+                            </p:column>
+
+                            <p:column headerText="Pergunta" sortBy="#{pergunta.pergunta}">
+
+                                <p:cellEditor>
+
+                                    <f:facet name="output">
+                                        <h:outputText value="#{pergunta.pergunta}"/>
+                                    </f:facet>
+
+                                    <f:facet name="input">
+
+                                        <p:inputText id="modelInput" value="#{pergunta.pergunta}" style="width:100%"/>
+
+                                    </f:facet>
+
+                                </p:cellEditor>
+
+                            </p:column>
+
+                            <p:column headerText="Resposta" sortBy="#{pergunta.resposta}">
+
+                                <p:cellEditor>
+
+                                    <f:facet name="output">
+                                        <h:outputLabel value="#{pergunta.resposta}"/>
+                                    </f:facet>
+
+                                    <f:facet name="input">
+                                        <p:inputText id="modelInputResposta" value="#{pergunta.resposta}"
+                                                     style="width:100%"/>
+                                    </f:facet>
+
+                                </p:cellEditor>
+
+                            </p:column>
+
+                            <p:column width="10%" headerText="Ação">
+
+                                <p:commandButton id="btnREdit" icon="fa fw fa-edit" title="deletar"
+                                                 styleClass=" rounded-button ui-button-flat"
+                                                 process="@this tablePerguntas" partialSubmit="true"
+                                                 update="panelDialog" actionListener="#{faqChatBean.onEdit(pergunta)}"/>
+                                <p:commandButton id="btnRemover" icon="pi pi-trash" title="deletar"
+                                                 styleClass=" rounded-button  ui-button-flat"
+                                                 process="@this tablePerguntas" partialSubmit="true"
+                                                 update="tablePerguntas pgCadastroFaq"
+                                                 actionListener="#{faqChatBean.onRemove(pergunta)}"/>
+
+                            </p:column>
+
+                        </p:dataTable>
+
+                    </div>
+
+                </p:fieldset>
+
+            </h:panelGroup>
+
+            <f:facet name="footer">
+
+                <div class="text-center">
+
+                    <p:commandButton value="Sair" id="btnSair" icon="pi pi-times" styleClass="ui-button-raised"
+                                     update="tab:tablePerguntasPrincipal" onclick="PF('dlgPergunta').hide();"
+                                     style="width: auto"/>
+                </div>
+
+            </f:facet>
+        </p:dialog>
+
+    </h:form>
+
+</ui:fragment>

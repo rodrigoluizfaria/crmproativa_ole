@@ -1,0 +1,48 @@
+<ui:fragment xmlns="http://www.w3.org/1999/xhtml"
+	xmlns:h="http://java.sun.com/jsf/html"
+	xmlns:f="http://java.sun.com/jsf/core"
+	xmlns:o="http://omnifaces.org/ui"
+	xmlns:ui="http://java.sun.com/jsf/facelets"
+	xmlns:p="http://primefaces.org/ui">
+
+	<!--  -->
+	<p:dialog id="dlgConsistenciasLista" widgetVar="dlgConsistenciasLista"	modal="false" minimizable="true" draggable="true" resizable="true"	closable="true" visible="false" width="60%" 	header="Consistencias">
+
+		<h:form id="formListaConsistencias" prependId="false">
+
+			<div class="p-col-12">
+
+				<div >
+
+					<p:dataTable id="listasConsistenciasTable" rows="10" paginator="true"
+						value="#{sistemaBean.listConsistencias}" var="c"
+						currentPageReportTemplate="[#{msg.totalDeRegistros}: {totalRecords}]"
+						paginatorPosition="bottom" emptyMessage="#{msg.emptyMessage}"
+						paginatorTemplate="{CurrentPageReport}  {FirstPageLink} {PreviousPageLink} {PageLinks} {NextPageLink} {LastPageLink}"
+						styleClass="ui-datatable-striped ui-datatable-sm " >
+
+							<p:ajax event="page" global="false" />
+							<p:ajax event="sort" global="false" />
+							<p:ajax event="filter" global="false" />
+
+							<p:column width="10%" headerText="Codigo" sortBy="#{c.codigoConcistencia}"	filterBy="#{c.codigoConcistencia}" filterMatchMode="startsWith">
+								<h:outputText value="#{c.codigoConcistencia}" />
+							</p:column>
+	
+							<p:column headerText="Legenda" sortBy="#{c.descricao}"	filterBy="#{c.descricao}" filterMatchMode="contains" width="90%">
+	
+								<p:outputLabel value="#{c.descricao}" />
+	
+							</p:column>
+
+					</p:dataTable>
+					
+				</div>
+				
+			</div>
+
+		</h:form>
+
+	</p:dialog>
+
+</ui:fragment>

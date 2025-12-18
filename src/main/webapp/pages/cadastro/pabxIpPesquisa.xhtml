@@ -1,0 +1,145 @@
+<ui:fragment xmlns="http://www.w3.org/1999/xhtml"
+             xmlns:h="http://java.sun.com/jsf/html"
+             xmlns:f="http://java.sun.com/jsf/core"
+             xmlns:ui="http://java.sun.com/jsf/facelets"
+             xmlns:matriz="http://java.sun.com/jsf/composite/componentes"
+             xmlns:p="http://primefaces.org/ui" template="/WEB-INF/template.xhtml">
+
+    <p:growl id="grl" widgetVar="grl" globalOnly="true" escape="false"
+             showSummary="false" life="8000" showDetail="true" sticky="false">
+
+        <p:autoUpdate/>
+
+    </p:growl>
+
+
+    <h:form id="pesqPabx" prependId="false">
+
+        <div class="card">
+
+            <div class="ui-fluid formgrid grid">
+
+                <matriz:selectEmpresa id="cmbEmpresa" managedBean="#{pabxIpBean}" value="#{pabxIpBean.pabx.empresa}"
+                                      style="col-12 md:col-3"
+                                      filter="true" exibirSelecione="false"/>
+
+
+                <div class="field col-12 md:col-3">
+
+                    <p:outputLabel for="inputPabxDesc" value="#{msg.descricao}"/>
+
+                    <p:inputText id="inputPabxDesc"
+                                 value="#{pabxIpBean.pabx.descricao}"/>
+
+                </div>
+
+                <div class="field col-12 md:col-3">
+
+                    <p:outputLabel for="selectOneTipo" value="#{msg.tipo}"/>
+
+                    <p:selectOneMenu id="selectOneTipo" value="#{pabxIpBean.pabx.tipo}">
+
+                        <f:selectItem itemLabel="Selecione" noSelectionOption="true"/>
+
+                        <f:selectItems value="#{pabxIpBean.tipoPabx}" var="tipo" itemLabel="#{tipo.constante}"
+                                       itemValue="#{tipo}"/>
+
+                    </p:selectOneMenu>
+
+                </div>
+
+                <div class="field col-12 md:col-3">
+
+                    <p:outputLabel for="selectOneAtivo" value="#{msg.acesso}"/>
+
+                    <p:selectOneMenu id="selectOneAtivo" value="#{pabxIpBean.pabx.ativo}">
+
+                        <f:selectItem itemLabel="Selecione" noSelectionOption="true"/>
+                        <f:selectItems value="#{pabxIpBean.tipoAcessoEnum}" var="acesso"
+                                       itemLabel="#{acesso.constante}" itemValue="#{acesso}"/>
+
+                    </p:selectOneMenu>
+
+                </div>
+
+            </div>
+            <div class="mt-5">
+
+                <p:commandButton value="Pesquisar" styleClass="mr-3 ui-button-raised" id="btnPesquisar"
+                                 action="#{pabxIpBean.pesquisar()}" update="@form" icon="pi pi-search"/>
+
+                <p:commandButton id="btnExportar" icon="pi pi-file-excel" value="#{msg.exportar}" ajax="false"
+                                 disabled="#{empty pabxIpBean.listPabx}" immediate="true"
+                                 styleClass="mr-3 ui-button-outlined ui-button-raised"
+                                 rendered="#{sessionScope['usuario'].permissaoExportar}">
+
+                    <p:dataExporter target="tablePabx" type="xls" fileName="pabx"/>
+
+                </p:commandButton>
+
+                <p:commandButton value="Novo" id="btnNovo" actionListener="#{pabxIpBean.novo}" ajax="false"
+                                 immediate="true" icon="pi pi-plus-circle"
+                                 styleClass="ui-button-outlined ui-button-raised"/>
+
+            </div>
+
+
+        </div>
+
+
+        <div class=" mt-4">
+
+            <div class="card">
+
+                <p:dataTable id="tablePabx" value="#{pabxIpBean.listPabx}"
+                             var="pabx" rows="15" paginator="true" paginatorPosition="bottom"
+                             emptyMessage="#{msg.emptyMessage}"
+                             styleClass="ui-datatable-striped ui-datatable-gridlines ui-datatable-sm"
+                             currentPageReportTemplate="[#{msg.totalDeRegistros}: {totalRecords}]"
+                             paginatorTemplate="{CurrentPageReport}  {FirstPageLink} {PreviousPageLink} {PageLinks} {NextPageLink} {LastPageLink} {Exporters}">
+
+
+                    <p:column headerText="Empresa" sortBy="#{pabx.empresa.nome}">
+
+                        <h:outputText value="#{pabx.empresa.nome}"/>
+
+                    </p:column>
+                    <p:column headerText="#{msg.descricao}" sortBy="#{pabx.descricao}">
+
+                        <h:outputText value="#{pabx.descricao}"/>
+
+                    </p:column>
+
+                    <p:column headerText="#{msg.tipo}" sortBy="#{pabx.tipo.constante}">
+
+                        <h:outputText value="#{pabx.tipo.constante}"/>
+
+                    </p:column>
+
+                    <p:column headerText="#{msg.acesso}" sortBy="#{pabx.ativo.constante}">
+
+                        <h:outputText value="#{pabx.ativo.constante}"/>
+
+                    </p:column>
+
+                    <p:column headerText="#{msg.acao}"  exportable="false" styleClass="text-center" width="7%">
+
+                        <p:commandButton icon="fa fw fa-edit" styleClass="rounded-button ui-button-flat"
+                                         action="#{pabxIpBean.editar(pabx)}" ajax="false">
+
+                            <f:setPropertyActionListener value="#{pabx}" target="#{pabxIpBean.pabx}"/>
+
+                        </p:commandButton>
+
+                    </p:column>
+
+                </p:dataTable>
+
+            </div>
+        </div>
+
+
+    </h:form>
+
+
+</ui:fragment>

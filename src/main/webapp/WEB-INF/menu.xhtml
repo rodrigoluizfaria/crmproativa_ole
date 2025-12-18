@@ -1,0 +1,72 @@
+<ui:composition xmlns="http://www.w3.org/1999/xhtml"
+                xmlns:h="http://xmlns.jcp.org/jsf/html"
+                xmlns:o="http://omnifaces.org/ui"
+                xmlns:ui="http://xmlns.jcp.org/jsf/facelets"
+                xmlns:p="http://primefaces.org/ui"
+                xmlns:pr="http://primefaces.org/rain">
+
+    <div class="menu-wrapper" >
+
+        <div class="layout-menu-container">
+
+            <ui:fragment rendered="false">
+
+                <div class="layout-profile">
+
+                    <a class="layout-profile-button" href="#">
+
+                    <span class="image-name">
+
+                        <o:graphicImage id="txtFotoMenu"
+                                        value="#{sistemaBean.retornarFoto(sessionScope['usuario'].foto, sessionScope['usuario'].sexo)}"
+                                        dataURI="true" styleClass="profile-image"/>
+
+                        <span class="layout-profile-userinfo">
+                            <span class="layout-profile-name">#{sessionScope['usuario'].nomeSobrenome}</span>
+                            <!-- <span class="layout-profile-mail">rodrigo.lu@gmail.com</span> -->
+                        </span>
+                    </span>
+                        <i class="layout-profile-icon pi pi-chevron-down"/>
+                    </a>
+                    <ul class="layout-profile-menu">
+                        <li>
+                            <a href="/proativise/paginas/sistema/perfil.jsf">
+                                <i class="pi pi-user"/>
+                                <span style="width: 100%">Perfil</span>
+                            </a>
+                        </li>
+
+                        <li>
+                            <a href="#">
+                                <i class="pi pi-bell"/>
+                                <span>Notificações</span>
+                            </a>
+                        </li>
+
+                        <li>
+
+                            <p:commandLink action="#{sistemaBean.deslogar()}">
+                                <i class="pi pi-sign-out"/>
+                                <span>Sair</span>
+                            </p:commandLink>
+                        </li>
+
+                    </ul>
+
+                </div>
+
+            </ui:fragment>
+
+            <h:form id="menuform" prependId="false">
+
+                <pr:menu widgetVar="RainMenuWidget" model="#{sessionScope['menuModel']}">
+
+                </pr:menu>
+
+            </h:form>
+
+        </div>
+
+    </div>
+
+</ui:composition>

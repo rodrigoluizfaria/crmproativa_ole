@@ -1,0 +1,24 @@
+/**
+ * CartaoBeneficioWebService.java
+ *
+ * This file was auto-generated from WSDL
+ * by the Apache Axis 1.4 Apr 22, 2006 (06:55:48 PDT) WSDL2Java emitter.
+ */
+
+package com.proativaservicos.service.asynchronous.bmg.cartaoBeneficio;
+
+public interface CartaoBeneficioWebService extends java.rmi.Remote {
+    public java.lang.String gravarPropostaCartao(com.proativaservicos.service.asynchronous.bmg.cartaoBeneficio.CartaoParameter proposta) throws java.rmi.RemoteException, com.proativaservicos.service.asynchronous.bmg.cartaoBeneficio.ServiceException, com.proativaservicos.service.asynchronous.bmg.cartaoBeneficio.PropostaConsignacaoListException, com.proativaservicos.service.asynchronous.bmg.cartaoBeneficio.MatriculaFormatacaoInvalidaException;
+    public com.proativaservicos.service.asynchronous.bmg.cartaoBeneficio.LimiteSaqueRetorno buscarLimiteSaque(com.proativaservicos.service.asynchronous.bmg.cartaoBeneficio.LimiteSaqueParameter param) throws java.rmi.RemoteException, com.proativaservicos.service.asynchronous.bmg.cartaoBeneficio.ServiceException;
+    public java.lang.Object[] buscarSimulacao(com.proativaservicos.service.asynchronous.bmg.cartaoBeneficio.SimulacaoCartaoParameter param) throws java.rmi.RemoteException, com.proativaservicos.service.asynchronous.bmg.cartaoBeneficio.ServiceException;
+    public java.lang.String geraScript(com.proativaservicos.service.asynchronous.bmg.cartaoBeneficio.CartaoParameter proposta) throws java.rmi.RemoteException, com.proativaservicos.service.asynchronous.bmg.cartaoBeneficio.ServiceException, com.proativaservicos.service.asynchronous.bmg.cartaoBeneficio.PropostaConsignacaoListException, com.proativaservicos.service.asynchronous.bmg.cartaoBeneficio.MatriculaFormatacaoInvalidaException;
+    public java.lang.String geraScriptIdentificacao(com.proativaservicos.service.asynchronous.bmg.cartaoBeneficio.ScriptIdentificacaoParameter param) throws java.rmi.RemoteException, com.proativaservicos.service.asynchronous.bmg.cartaoBeneficio.ServiceException, com.proativaservicos.service.asynchronous.bmg.cartaoBeneficio.PropostaConsignacaoListException, com.proativaservicos.service.asynchronous.bmg.cartaoBeneficio.MatriculaFormatacaoInvalidaException;
+    public com.proativaservicos.service.asynchronous.bmg.cartaoBeneficio.ValidaSeJaPossuiContaCartaoRetorno validaSeJaPossuiContaCartao(com.proativaservicos.service.asynchronous.bmg.cartaoBeneficio.ValidaSeJaPossuiContaCartaoParameter param) throws java.rmi.RemoteException, com.proativaservicos.service.asynchronous.bmg.cartaoBeneficio.ServiceException;
+    public com.proativaservicos.service.asynchronous.bmg.cartaoBeneficio.ConsultaUnidadePagadoraRetorno consultaUnidadePagadora(com.proativaservicos.service.asynchronous.bmg.cartaoBeneficio.ConsultaUnidadePagadoraParameter parametro) throws java.rmi.RemoteException, com.proativaservicos.service.asynchronous.bmg.cartaoBeneficio.ServiceException;
+    public com.proativaservicos.service.asynchronous.bmg.cartaoBeneficio.ConsultaProfissaoRetorno consultaProfissoes(com.proativaservicos.service.asynchronous.bmg.cartaoBeneficio.WebServiceParameter parametro) throws java.rmi.RemoteException, com.proativaservicos.service.asynchronous.bmg.cartaoBeneficio.ServiceException;
+    public com.proativaservicos.service.asynchronous.bmg.cartaoBeneficio.ObtemProdutosDeSeguroRetorno obtemProdutosDeSeguro(com.proativaservicos.service.asynchronous.bmg.cartaoBeneficio.ObtemProdutosDeSeguroParameter param) throws java.rmi.RemoteException, com.proativaservicos.service.asynchronous.bmg.cartaoBeneficio.ServiceException;
+    public com.proativaservicos.service.asynchronous.bmg.cartaoBeneficio.SituacaoFuncionalReturn obtemSituacoesFuncionaisParaOOrgao(com.proativaservicos.service.asynchronous.bmg.cartaoBeneficio.SituacaoFuncionalParameter param) throws java.rmi.RemoteException, com.proativaservicos.service.asynchronous.bmg.cartaoBeneficio.ServiceException;
+    public com.proativaservicos.service.asynchronous.bmg.cartaoBeneficio.ObtemFormaEnvioReturn obtemFormasDeEnvio(com.proativaservicos.service.asynchronous.bmg.cartaoBeneficio.ObtemFormaEnvioParameter param) throws java.rmi.RemoteException, com.proativaservicos.service.asynchronous.bmg.cartaoBeneficio.ServiceException;
+    public com.proativaservicos.service.asynchronous.bmg.cartaoBeneficio.GeracaoPropostaRetorno gravaPropostaCartao(com.proativaservicos.service.asynchronous.bmg.cartaoBeneficio.CartaoParameter proposta) throws java.rmi.RemoteException, com.proativaservicos.service.asynchronous.bmg.cartaoBeneficio.ServiceException;
+    public com.proativaservicos.service.asynchronous.bmg.cartaoBeneficio.ValidacaoPropostaRetorno validaPropostaCartao(com.proativaservicos.service.asynchronous.bmg.cartaoBeneficio.CartaoParameter proposta) throws java.rmi.RemoteException, com.proativaservicos.service.asynchronous.bmg.cartaoBeneficio.ServiceException;
+}

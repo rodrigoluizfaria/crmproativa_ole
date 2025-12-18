@@ -1,0 +1,120 @@
+<ui:fragment xmlns="http://www.w3.org/1999/xhtml"
+             xmlns:ui="http://java.sun.com/jsf/facelets"
+             xmlns:h="http://java.sun.com/jsf/html"
+             xmlns:f="http://java.sun.com/jsf/core"
+             xmlns:p="http://primefaces.org/ui">
+
+
+    <p:dialog id="dlgBancoMaster" widgetVar="dlgBancoMaster" modal="true"
+              draggable="false" resizable="false"
+              header="Consulta limite cartão" closable="false" width="60%"
+              appendTo="@(body)">
+
+        <style>
+
+            .alert-danger {
+                color: #721c24;
+                background-color: #f8d7da;
+                border-color: #f5c6cb;
+            }
+
+            .alert {
+                position: relative;
+                padding: 0.75rem 1.25rem;
+                margin-bottom: 1rem;
+                border: 1px solid transparent;
+                border-radius: 0.25rem;
+            }
+
+            .alert-success {
+                color: #155724;
+                background-color: #d4edda;
+                border-color: #c3e6cb;
+            }
+        </style>
+
+        <div class="col-12">
+
+            <div class="ui-fluid formgrid grid" style="text-align: center;">
+
+                <h:panelGroup styleClass="flex col-12  p-5" rendered="#{not empty fichaAtendimentoBean.cartaoResponseBancoMaster.message}">
+
+                    <span class="text-xl"> <b>  #{fichaAtendimentoBean.cartaoResponseBancoMaster.message}</b></span>
+
+                </h:panelGroup>
+
+                <h:panelGroup styleClass=" col-12 "
+                              rendered="#{not empty fichaAtendimentoBean.cartaoResponseBancoMaster.listaConsultaLimite}">
+
+                    <p:dataTable rows="5" paginator="true"
+                                 value="#{fichaAtendimentoBean.cartaoResponseBancoMaster.listaConsultaLimite}"
+                                 paginatorPosition="bottom"
+                                 emptyMessage="#{msg.emptyMessage}"
+                                 currentPageReportTemplate="[ #{msg.totalDeRegistros}: {totalRecords} ]"
+                                 paginatorTemplate="{CurrentPageReport}  {FirstPageLink} {PreviousPageLink} {PageLinks} {NextPageLink} {LastPageLink}"
+                                 var="c" id="tableConsultaBancoMaster"
+                                 styleClass="ui-datatable-striped  "
+                                 style="zoom: 90%;">
+
+                        <f:facet name="header">
+                         CPF:   #{fichaAtendimentoBean.atendimento.cpf}
+                        </f:facet>
+
+                        <p:column headerText="CPF" style="text-align:center">
+
+                            <span>#{c.cpf}</span>
+
+                        </p:column>
+
+                        <p:column headerText="Produto" style="text-align:center">
+
+                            <span>#{c.produto}</span>
+
+                        </p:column>
+
+                        <p:column headerText="Últimos 4 dígitos" style="text-align:center">
+
+                            <span>#{c.ultimos4Digitos}</span>
+
+                        </p:column>
+
+                        <p:column headerText="Status do cartão" style="text-align:center">
+
+                            <span>#{c.statusCartao }</span>
+
+                        </p:column>
+
+                        <p:column headerText="Limite do cartão" style="text-align:center">
+
+                            <span>#{c.limiteDisponivelFormatado}</span>
+
+                        </p:column>
+
+                        <p:column headerText="Limite disponível" style="text-align:center">
+
+                            <span>#{c.limitePercentualDisponivelFormatado}</span>
+
+                        </p:column>
+
+                    </p:dataTable>
+
+                </h:panelGroup>
+
+            </div>
+
+        </div>
+
+        <div class="col-12 mt-3 text-center">
+
+            <div class="p-grid p-justify-center">
+
+                <p:commandButton type="button" icon="pi pi-times" styleClass="ui-button-raised"
+                                 onclick="PF('dlgBancoMaster').hide();" value="Fechar"/>
+
+            </div>
+
+        </div>
+
+    </p:dialog>
+
+</ui:fragment>

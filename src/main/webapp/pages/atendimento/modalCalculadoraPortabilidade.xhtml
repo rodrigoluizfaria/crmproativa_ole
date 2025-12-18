@@ -1,0 +1,267 @@
+<ui:fragment xmlns="http://www.w3.org/1999/xhtml"
+             xmlns:ui="http://java.sun.com/jsf/facelets"
+             xmlns:h="http://java.sun.com/jsf/html"
+             xmlns:f="http://java.sun.com/jsf/core"
+             xmlns:p="http://primefaces.org/ui">
+
+
+    <p:dialog id="dlgPortabilidade" widgetVar="dlgPortabilidade" modal="true" responsive="true"
+              draggable="true" resizable="false" position="top"
+              header="CLIENTE: #{fichaAtendimentoBean.atendimento.nome}" closable="true" width="80%"
+              appendTo="@(body)">
+
+        <style>
+
+            .alert-danger {
+                color: #721c24;
+                background-color: #f8d7da;
+                border-color: #f5c6cb;
+            }
+
+            .alert {
+                position: relative;
+                padding: 0.75rem 1.25rem;
+                margin-bottom: 1rem;
+                border: 1px solid transparent;
+                border-radius: 0.25rem;
+            }
+
+            .alert-success {
+                color: #155724;
+                background-color: #d4edda;
+                border-color: #c3e6cb;
+            }
+        </style>
+
+        <h:form id="formPortabilidade" prependId="false">
+
+            <p:remoteCommand name="consultar" update="@form" process="@this" global="false"
+                             actionListener="#{fichaAtendimentoBean.consultarPortabilidades()}"/>
+
+            <div class="col-12">
+
+                <div class="ui-fluid formgrid grid" style="text-align: center;">
+
+                    <ui:repeat value="#{fichaAtendimentoBean.listPortabilidades}" var="port">
+
+                        <div class=" mr-3 field col-12 md:col-2 shadow-2 border-2 border-round-xl hover:surface-50 cursor-pointer  #{port.selecionado? 'border-primary-500':'border-transparent'}  " onclick="runRemoteCommand('#{port.especie}');">
+
+                           <div class="col-12"  style="display: inline-flex; padding: 0px; width: 100%"
+                                 >
+
+                                <div class="col-12" style="padding: 0">
+
+                                    <div class="p-2 col-12   border-300 ">
+                                        <span class="font-semibold col-12 pb-2 text-xl font-semibold ">Espécie:  #{port.especie}</span>
+                                        <h6>Beneficio: #{port.beneficio}</h6>
+                                    </div>
+
+                                </div>
+
+
+                            </div>
+
+                        </div>
+
+                    </ui:repeat>
+
+                </div>
+
+            </div>
+
+            <div class="ui-fluid formgrid grid" style="text-align: center;">
+
+            <h:panelGroup styleClass="col-8 " layout="block"
+                          rendered="#{not empty fichaAtendimentoBean.listPortabilidadesView}">
+
+                <p:dataTable id="tablePortabilidade"
+                             value="#{fichaAtendimentoBean.listPortabilidadesView}"
+                             var="postabilidade" rows="15" paginator="true"
+                             selection="#{fichaAtendimentoBean.listSelectPortabilidade}"
+                             rowKey="#{postabilidade.id}" selectionMode="none"
+                             selectionPageOnly="false" sortMode="single"
+                             paginatorPosition="bottom" emptyMessage="#{msg.emptyMessage}"
+                             currentPageReportTemplate="[#{msg.totalDeRegistros}: {totalRecords}]"
+                             paginatorTemplate="{CurrentPageReport}  {FirstPageLink} {PreviousPageLink} {PageLinks} {NextPageLink} {LastPageLink} {Exporters}">
+
+
+                    <p:ajax event="rowSelectCheckbox" global="false" process="@this"
+                            update="@form"
+                            listener="#{fichaAtendimentoBean.onSelectCheckBoxPortabilidade()}"/>
+
+                    <p:ajax event="rowSelect" global="false" process="@this"
+                            update="@form"
+                            listener="#{fichaAtendimentoBean.onSelectCheckBoxPortabilidade()}"/>
+
+                    <p:ajax event="rowUnselect" global="false" process="@this"
+                            update="@form"
+                            listener="#{fichaAtendimentoBean.onSelectCheckBoxPortabilidade()}"/>
+
+                    <p:ajax event="rowUnselectCheckbox" global="false" process="@this"
+                            update="@form"
+                            listener="#{fichaAtendimentoBean.onUnSelectCheckBoxPortabilidade()}"/>
+
+
+                    <p:ajax event="toggleSelect" global="false" process="@this"
+                            update="@form"
+                            listener="#{fichaAtendimentoBean.onUnSelectCheckBoxPortabilidade()}"/>
+
+                    <p:ajax event="sort" global="false"
+
+                    />
+
+                    <p:column selectionMode="multiple"
+                              style="width:16px;text-align:center"/>
+
+                    <p:column headerText="Data averbação" selectRow="false"
+                              sortBy="#{postabilidade.dataAverbacao}">
+
+                        <p:outputLabel value="#{postabilidade.dataAverbacao}">
+                            <f:convertDateTime pattern="dd/MM/yyyy"/>
+                        </p:outputLabel>
+
+                    </p:column>
+
+                    <p:column headerText="Banco origem" selectRow="false"
+                              sortBy="#{postabilidade.bancoOrigem.constante}">
+
+                        <p:outputLabel value="#{postabilidade.bancoOrigem.constante}">
+
+                        </p:outputLabel>
+
+                    </p:column>
+
+                    <p:column headerText="Prazo total" selectRow="false" sortBy="#{postabilidade.prazoTotal}">
+
+                        <p:outputLabel value="#{postabilidade.prazoTotal}">
+
+                        </p:outputLabel>
+
+                    </p:column>
+
+                    <p:column headerText="Prazo restante" selectRow="false"
+                              sortBy="#{postabilidade.prazoRestante}">
+
+                        <p:outputLabel value="#{postabilidade.prazoRestante}">
+
+                        </p:outputLabel>
+
+                    </p:column>
+
+
+                    <p:column headerText="Taxa juros" selectRow="false" sortBy="#{postabilidade.taxaJuros}">
+
+                        <h:outputText value="#{postabilidade.taxaJuros}">
+                            <!--  <f:convertNumber minFractionDigits="2"/>-->
+                        </h:outputText>
+
+                    </p:column>
+
+                    <p:column headerText="Valor parcela" selectRow="false"
+                              sortBy="#{postabilidade.valorParcela}">
+
+                        <h:outputText value="#{postabilidade.valorParcela}">
+                            <f:convertNumber type="currency" locale="pt-br"
+                                             currencySymbol="R$"/>
+                        </h:outputText>
+
+                    </p:column>
+
+                    <p:column headerText="Saldo devedor" selectRow="false"
+                              sortBy="#{postabilidade.saldoDevedor}">
+
+                        <h:outputText value="#{postabilidade.saldoDevedor}">
+
+                            <f:convertNumber type="currency" locale="pt-br"
+                                             currencySymbol="R$"/>
+
+                        </h:outputText>
+
+                    </p:column>
+
+                </p:dataTable>
+
+
+            </h:panelGroup>
+
+                <h:panelGroup styleClass="field col-12 md:col-2 " layout="block"  rendered="#{not empty fichaAtendimentoBean.listPortabilidadesView}">
+                    <div class="grid " style="margin-top: 1px">
+
+                        <div class="col">
+
+                            <div class="text-center p-2 border-round-sm bg-primary-50 font-medium text-4xl border-2 border-primary-100">
+
+                                <h:outputText value="#{fichaAtendimentoBean.totalSaldoDevedor}">
+
+                                    <f:convertNumber type="currency" locale="pt-br" currencySymbol="R$"/>
+
+                                </h:outputText>
+
+                                <div class="text-center p-2 border-round-sm bg-primary-50 font-semibold text-base "> TOTAL SALDO DEVEDOR</div>
+
+                            </div>
+
+
+
+                        </div>
+
+                    </div>
+
+
+
+                </h:panelGroup>
+
+            <h:panelGroup styleClass="field col-12 md:col-2 " layout="block"  rendered="#{not empty fichaAtendimentoBean.listPortabilidadesView}">
+
+                <h:panelGroup styleClass="card" layout="block" style="padding: 0px;">
+
+                    <div class="grid " style="margin-top: 1px">
+
+                        <div class="col">
+
+                            <div class="text-center p-2 border-round-sm bg-primary-50 font-medium text-4xl border-2 border-primary-100">
+
+                                <h:outputText value="#{fichaAtendimentoBean.totalParcelas}">
+
+                                    <f:convertNumber type="currency" locale="pt-br" currencySymbol="R$"/>
+
+                                </h:outputText>
+
+                                <div class="text-center p-2 border-round-sm bg-primary-50 font-semibold text-base "> TOTAL PARCELAS</div>
+
+                            </div>
+
+
+
+                        </div>
+
+                    </div>
+
+                </h:panelGroup>
+
+            </h:panelGroup>
+            </div>
+
+            <div class="col-12 mt-3 text-center">
+
+                <div class="p-grid p-justify-center">
+
+                    <p:commandButton type="button" icon="pi pi-times" styleClass="ui-button-raised"
+                                     onclick="PF('dlgPortabilidade').hide();" value="Fechar"/>
+
+                </div>
+
+            </div>
+            <script>
+                function runRemoteCommand(atendimento) {
+
+                    console.log(atendimento);
+                    consultar([{name: 'id', value: atendimento}]);
+
+                }
+            </script>
+
+        </h:form>
+    </p:dialog>
+
+</ui:fragment>

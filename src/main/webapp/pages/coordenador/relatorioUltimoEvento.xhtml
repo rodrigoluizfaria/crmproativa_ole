@@ -1,0 +1,162 @@
+<ui:composition xmlns="http://www.w3.org/1999/xhtml"
+                xmlns:h="http://java.sun.com/jsf/html"
+                xmlns:f="http://java.sun.com/jsf/core"
+                xmlns:ui="http://java.sun.com/jsf/facelets"
+                xmlns:pro="http://proativaservicos.com/functions"
+                xmlns:matriz="http://java.sun.com/jsf/composite/componentes"
+                xmlns:p="http://primefaces.org/ui" template="/WEB-INF/template.xhtml">
+
+
+    <ui:define name="viewname">
+        <div class="bcca-breadcrumb">
+            <div class="bcca-breadcrumb-item bg-primary-500 hover:bg-primary-700">
+                <p:link outcome="/pages/coordenador/relatorioUltimoEvento"
+                        style="text-decoration: none">RELATÓRIO ÚLTIMO EVENTO</p:link>
+            </div>
+            <div class="bcca-breadcrumb-item ">COORDENADOR</div>
+        </div>
+
+    </ui:define>
+
+    <ui:define name="content">
+
+        <p:growl id="grl" widgetVar="grl" globalOnly="true" escape="false"
+                 showSummary="false" life="8000" showDetail="true" sticky="false">
+
+            <p:autoUpdate/>
+
+        </p:growl>
+
+        <div class="p-grid p-justify-center ">
+
+            <h:form id="formUltimaAcao" prependId="false">
+
+                <div class="card">
+
+                    <div class="ui-fluid formgrid grid">
+
+                        <matriz:selectEmpresa id="cmpEmpresa" style="col-12 md:col-2"
+                                              managedBean="#{coordenadorUltimaAcaoBean}"
+                                              value="#{coordenadorUltimaAcaoBean.empresa}" ajax="true"
+                                              update=":formUltimaAcao:checkEquipe" filter="true"/>
+
+                        <div class="field col-12 md:col-2">
+
+                            <p:outputLabel value="Data inicio"/>
+
+                            <p:datePicker id="calendarDataInicioPesquisa"
+                                          value="#{coordenadorUltimaAcaoBean.dataInicio}"
+                                          showButtonBar="true" showIcon="true" readonlyInput="true"
+                                          pattern="dd/MM/yyyy" locale="pt_BR" required="true"
+                                          requiredMessage="#{msg.requerido}"/>
+
+                            <p:message for="calendarDataInicioPesquisa"/>
+
+                        </div>
+
+                        <div class="field col-12 md:col-2">
+
+                            <p:outputLabel value="Data fim"/>
+
+                            <p:datePicker id="calendarDataFimPesquisa"
+                                          value="#{coordenadorUltimaAcaoBean.dataFim}"
+                                          showButtonBar="true" showIcon="true" required="true"
+                                          requiredMessage="#{msg.requerido}" readonlyInput="true"
+                                          pattern="dd/MM/yyyy" locale="pt_BR"/>
+
+                            <p:message for="calendarDataFimPesquisa"/>
+
+                        </div>
+
+                        <div class="field col-12 md:col-2">
+
+                            <p:outputLabel value="Equipe"/>
+
+                            <p:selectCheckboxMenu id="checkEquipe"
+                                                  value="#{coordenadorUltimaAcaoBean.listIdEquipes}"
+                                                  filter="true" multiple="true" label="#{msg.selecione}"
+                                                  converter="omnifaces.SelectItemsConverter">
+
+                                <f:selectItems value="#{coordenadorUltimaAcaoBean.listEquipes}"
+                                               var="equipe" itemLabel="#{equipe.nome}"
+                                               itemValue="#{equipe.id}"/>
+
+
+                            </p:selectCheckboxMenu>
+
+                        </div>
+
+                        <div class="field col-12 md:col-3">
+
+                            <p:outputLabel value="&#160;&#160;" id="txtPesquisaEspaco"/>
+
+                            <div>
+
+                                <p:commandButton value="Pesquisar" id="btnPesquisar"
+                                                 action="#{coordenadorUltimaAcaoBean.pesquisar()}" update="@form"
+                                                 icon="pi pi-search" styleClass="ui-button-raised mr-3"/>
+
+                                <p:commandButton id="btnExportarPesquisa" icon="pi pi-upload"
+                                                 styleClass="ui-button-raised ui-button-outlined"
+                                                 value="#{msg.exportar}" ajax="false"
+                                                 disabled="#{empty coordenadorUltimaAcaoBean.listAcessos}"
+                                                 immediate="true"
+                                                 rendered="#{sessionScope['usuario'].permissaoExportar}">
+
+                                    <p:dataExporter target="tableAcessos" type="xls"
+                                                    fileName="relatorioUltimaAcao"/>
+
+                                </p:commandButton>
+
+                            </div>
+
+                        </div>
+
+                    </div>
+
+                </div>
+
+                <div>
+
+                    <div class="card">
+
+                        <p:dataTable id="tableAcessos" var="acessos" rows="15"
+                                     paginator="true" paginatorPosition="bottom"
+                                     value="#{coordenadorUltimaAcaoBean.listAcessos}"
+                                     emptyMessage="#{coordenadorUltimaAcaoBean.listAcessos eq null? '' : msg.emptyMessage}"
+                                     currentPageReportTemplate="[#{msg.totalDeRegistros}: {totalRecords}]"
+                                     paginatorTemplate="{CurrentPageReport}  {FirstPageLink} {PreviousPageLink} {PageLinks} {NextPageLink} {LastPageLink} "
+                                     styleClass="ui-datatable-striped ui-datatable-gridlines">
+
+                            <p:ajax event="page" global="false"/>
+                            <p:ajax event="sort" global="false"/>
+
+                            <p:column headerText="Agente" sortBy="#{acessos[0]}">
+                                <h:outputText value="#{acessos[0]}"/>
+                            </p:column>
+
+                            <p:column headerText="Data primeiro login" sortBy="#{acessos[2]}">
+                                <h:outputText value="#{acessos[2]}"/>
+                            </p:column>
+
+                            <p:column headerText="Data último evento" sortBy="#{acessos[3]}">
+                                <h:outputText value="#{acessos[3]}"/>
+                            </p:column>
+
+                            <p:column headerText="Total horas trabalhadas"
+                                      sortBy="#{acessos[4]}">
+                                <h:outputText value="#{acessos[4]}"/>
+                            </p:column>
+
+                        </p:dataTable>
+                    </div>
+
+                </div>
+
+            </h:form>
+
+        </div>
+
+    </ui:define>
+
+</ui:composition>

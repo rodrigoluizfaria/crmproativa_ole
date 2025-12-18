@@ -1,0 +1,128 @@
+<?xml version="1.0" encoding="UTF-8" standalone="yes" ?>
+<persistence version="3.0"
+	xmlns="https://jakarta.ee/xml/ns/persistence"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xsi:schemaLocation="https://jakarta.ee/xml/ns/persistence https://jakarta.ee/xml/ns/persistence/persistence_3_0.xsd">
+
+	<persistence-unit name="projeto-crm">
+
+		<provider>org.hibernate.jpa.HibernatePersistenceProvider</provider>
+
+		<jta-data-source>java:jboss/datasources/crmproativa</jta-data-source>
+
+		<class>com.proativaservicos.model.Anotacoes</class>
+		<class>com.proativaservicos.model.Atendimento</class>
+		<class>com.proativaservicos.model.AtendimentoAudios</class>
+		<class>com.proativaservicos.model.AtendimentoBackoffice</class>
+		<class>com.proativaservicos.model.AtendimentoBackofficeConsistanciaId</class>
+		<class>com.proativaservicos.model.AtendimentoBackofficeConsistencia</class>
+		<class>com.proativaservicos.model.BlackListCpf</class>
+		<class>com.proativaservicos.model.Campanha</class>
+		<class>com.proativaservicos.model.CampanhaOrdenacao</class>
+		<class>com.proativaservicos.model.CartaoCredito</class>
+		<class>com.proativaservicos.model.ChamadasAtendimento</class>
+		<class>com.proativaservicos.model.ConciliarAudio</class>
+		<class>com.proativaservicos.model.ConciliarAudioAnexo</class>
+		<class>com.proativaservicos.model.ConciliarSftp</class>
+		<class>com.proativaservicos.model.Consistencia</class>
+		<class>com.proativaservicos.model.Contrato</class>
+		<class>com.proativaservicos.model.ContratoEfetivado</class>
+		<class>com.proativaservicos.model.ContratoPendencia</class>
+		<class>com.proativaservicos.model.ControlePausa</class>
+		<class>com.proativaservicos.model.ControleUsuarioBloqueado</class>
+		<class>com.proativaservicos.model.DadosBancarios</class>
+		<class>com.proativaservicos.model.DescontosJuros</class>
+		<class>com.proativaservicos.model.Documento</class>
+		<class>com.proativaservicos.model.Email</class>
+		<class>com.proativaservicos.model.Empresa</class>
+		<class>com.proativaservicos.model.Endereco</class>
+		<class>com.proativaservicos.model.Entidade</class>
+		<class>com.proativaservicos.model.Entidades</class>
+		<class>com.proativaservicos.model.EntidadesVetadas</class>
+		<class>com.proativaservicos.model.Equipe</class>
+		<class>com.proativaservicos.model.Expediente</class>
+		<class>com.proativaservicos.model.ExpedienteDiaSemana</class>
+		<class>com.proativaservicos.model.ExpedienteDiaSemanaPk</class>
+		<class>com.proativaservicos.model.ExtratorImportacao</class>
+		<class>com.proativaservicos.model.FaqPergunta</class>
+		<class>com.proativaservicos.model.FaqResposta</class>
+		<class>com.proativaservicos.model.Fila</class>
+		<class>com.proativaservicos.model.FormaPagamento</class>
+		<class>com.proativaservicos.model.Generic</class>
+		<class>com.proativaservicos.model.GenericAtendimento</class>
+		<class>com.proativaservicos.model.GenericAtendimentoFluxoEsteira</class>
+		<class>com.proativaservicos.model.GenericCartaoCredito</class>
+		<class>com.proativaservicos.model.GenericContratoEfetivado</class>
+		<class>com.proativaservicos.model.GenericControle</class>
+		<class>com.proativaservicos.model.GenericDadosBancarios</class>
+		<class>com.proativaservicos.model.GenericEmail</class>
+		<class>com.proativaservicos.model.GenericEndereco</class>
+		<class>com.proativaservicos.model.GenericHistoricoAtendimento</class>
+		<class>com.proativaservicos.model.GenericMotivo</class>
+		<class>com.proativaservicos.model.GenericTelefone</class>
+		<class>com.proativaservicos.model.GrupoFaqPergunta</class>
+		<class>com.proativaservicos.model.GrupoPrincipalFaq</class>
+		<class>com.proativaservicos.model.HistoricoAtendimento</class>
+		<class>com.proativaservicos.model.HistoricoAtendimentoBackoffice</class>
+		<class>com.proativaservicos.model.HistoricoContrato</class>
+		<class>com.proativaservicos.model.Importacao</class>
+		<class>com.proativaservicos.model.IndicacaoModel</class>
+		<class>com.proativaservicos.model.IntegracaoWs</class>
+		<class>com.proativaservicos.model.LogAtendimento</class>
+		<class>com.proativaservicos.model.LogConciliarAudio</class>
+		<class>com.proativaservicos.model.LogImportacao</class>
+		<class>com.proativaservicos.model.LogImportacaoDiscador</class>
+		<class>com.proativaservicos.model.LogImportacaoExtracao</class>
+		<class>com.proativaservicos.model.Loja</class>
+		<class>com.proativaservicos.model.ManifestoStatusAtendimento</class>
+		<class>com.proativaservicos.model.Meta</class>
+		<class>com.proativaservicos.model.MonitorAtividade</class>
+		<class>com.proativaservicos.model.Motivo</class>
+		<class>com.proativaservicos.model.Orgao</class>
+		<class>com.proativaservicos.model.Pabx</class>
+		<class>com.proativaservicos.model.PacoteArquivos</class>
+		<class>com.proativaservicos.model.Pausa</class>
+		<class>com.proativaservicos.model.PontoAtendimento</class>
+		<class>com.proativaservicos.model.Produto</class>
+		<class>com.proativaservicos.model.PropostasEfetivadas</class>
+		<class>com.proativaservicos.model.RegistroImportacao</class>
+		<class>com.proativaservicos.model.RegistroSistema</class>
+		<class>com.proativaservicos.model.RegistroSistemaDiario</class>
+		<class>com.proativaservicos.model.RelatorioBi</class>
+		<class>com.proativaservicos.model.ResultadoPabx</class>
+		<class>com.proativaservicos.model.StatusAtendimento</class>
+		<class>com.proativaservicos.model.StatusCampanha</class>
+		<class>com.proativaservicos.model.StatusContrato</class>
+		<class>com.proativaservicos.model.StatusTelefone</class>
+		<class>com.proativaservicos.model.SubMotivo</class>
+		<class>com.proativaservicos.model.Telefone</class>
+		<class>com.proativaservicos.model.TelefoneBackoffice</class>
+		<class>com.proativaservicos.model.TelefoneBlackList</class>
+		<class>com.proativaservicos.model.TelefoneIndicacao</class>
+		<class>com.proativaservicos.model.Upload</class>
+		<class>com.proativaservicos.model.Usuario</class>
+		<class>com.proativaservicos.model.UsuarioLogado</class>
+		<class>com.proativaservicos.model.UsuarioLogadoId</class>
+		<class>com.proativaservicos.model.pesquisa.GenericResposta</class>
+		<class>com.proativaservicos.model.pesquisa.Opcao</class>
+		<class>com.proativaservicos.model.pesquisa.Pergunta</class>
+		<class>com.proativaservicos.model.pesquisa.Questionario</class>
+		<class>com.proativaservicos.model.pesquisa.Resposta</class>
+	
+		<properties>
+		
+			<property name="hibernate.dialect"	value="org.hibernate.dialect.PostgreSQLDialect" />
+			
+			<property name="hibernate.format_sql" value="false" />
+			
+			<property name="hibernate.show_sql" value="false" />
+			
+			<property name="hibernate.temp.use_jdbc_metadata_defaults" value="false" />
+			
+			<!-- <property name="hibernate.hbm2ddl.auto" value="validate" /> -->
+
+		</properties>
+
+	</persistence-unit>
+
+</persistence>

@@ -1,0 +1,75 @@
+<ui:fragment xmlns="http://www.w3.org/1999/xhtml"
+	xmlns:h="http://java.sun.com/jsf/html"
+	xmlns:f="http://java.sun.com/jsf/core"
+	xmlns:o="http://omnifaces.org/ui"
+	xmlns:ui="http://java.sun.com/jsf/facelets"
+	xmlns:p="http://primefaces.org/ui">
+
+	<!--  -->
+	<p:dialog id="dlgAtnTel" widgetVar="dlgAtnTel" modal="true"	draggable="false" resizable="false" closable="false" visible="#{not empty fichaAtendimentoBean.listClientesProspect and fichaAtendimentoBean.listClientesProspect.size() > 1}"	width="80%" header="Cliente com telefones iguais."   appendTo="@(body)">
+
+		<h:form id="formClientesTel" prependId="false" >
+
+		 <div class="col-12">
+			    
+              <p:dataTable id="tableClientesTel" var="atendimento" rows="10"
+					paginator="true" paginatorPosition="bottom"
+					value="#{fichaAtendimentoBean.listClientesProspect}"
+					emptyMessage="#{msg.emptyMessage}"
+					paginatorTemplate="{CurrentPageReport}  {FirstPageLink} {PreviousPageLink} {PageLinks} {NextPageLink} {LastPageLink} {Exporters}"
+					>
+
+					<f:facet name="header">
+					
+				 Total de atendimentos:	#{fichaAtendimentoBean.listClientesProspect.size()}
+				
+						
+					</f:facet>
+					
+					<p:ajax event="page" global="false" />
+
+					<p:column headerText="Cliente" width="40%">
+
+						<h:outputText value="#{atendimento[0]}"/>
+					
+
+					</p:column>
+			
+					<p:column headerText="CPF" width="20%">
+
+						<h:outputLabel value="#{atendimento[1]}" />
+
+					</p:column>
+
+					<p:column headerText="Telefone" width="20%">
+
+						<h:outputLabel value="#{atendimento[2]}" />
+
+					</p:column>
+
+					<p:column width="10%" style="text-align: center;">
+					
+					<p:commandButton icon="pi pi-chevron-circle-right"	title="Iniciar Atendimento."	action="#{fichaAtendimentoBean.buscarAtendimentoProspect(atendimento[3])}" styleClass="rounded-button text-button"	update="formConteudo"	oncomplete="PF('dlgAtnTel').hide();"					 />
+
+				</p:column>
+
+				</p:dataTable>
+				
+			</div>
+			
+				<div class="col-12 mt-3">
+					
+						<div class="grid justify-center">
+						
+							<p:commandButton type="button" icon="pi pi-times" onclick="PF('dlgAtnTel').hide();" value="Fechar"/>
+							
+						</div>
+								
+					</div>
+
+
+		</h:form>
+
+	</p:dialog>
+
+</ui:fragment>

@@ -1,0 +1,111 @@
+<ui:fragment xmlns="http://www.w3.org/1999/xhtml"
+             xmlns:h="http://java.sun.com/jsf/html"
+             xmlns:f="http://java.sun.com/jsf/core"
+             xmlns:ui="http://java.sun.com/jsf/facelets"
+             xmlns:p="http://primefaces.org/ui" template="/WEB-INF/template.xhtml">
+
+    <p:growl id="grl" widgetVar="grl" globalOnly="true" escape="false"
+             showSummary="false" life="8000" showDetail="true" sticky="false">
+
+        <p:autoUpdate/>
+
+    </p:growl>
+
+
+    <h:form id="formCadastro" prependId="false">
+
+        <div class="card">
+
+            <div class="ui-fluid formgrid grid">
+
+
+                <div class="col-12 col-12 md:col-3">
+
+                    <p:outputLabel for="inputCadastpausaDesc" value="#{msg.descricao}"/>
+
+
+                    <p:inputText id="inputCadastpausaDesc"
+                                 value="#{pausaBean.pausa.descricao}" required="true"
+                                 requiredMessage="Requerido" maxlength="30"/>
+
+                    <p:message for="inputCadastpausaDesc"/>
+
+                </div>
+
+                <div class="col-12 col-12 md:col-3">
+
+                    <p:outputLabel for="inputTempo" value="#{msg.tempo}" id="lblTempo"/>
+
+
+                    <p:inputText id="inputTempo" value="#{pausaBean.pausa.tempo}"
+                                 maxlength="3" onkeypress="return somenteNumeros(event)" placeholder="em minutos"/>
+
+                    <p:message for="inputTempo"/>
+
+
+                </div>
+
+                <div class="col-12 col-12 md:col-3">
+
+                    <p:outputLabel for="inputMaximoTempo" value="#{msg.tempoMaximo}"
+                                   id="lblMaximoTempo"/>
+
+                    <p:inputText id="inputMaximoTempo"
+                                 value="#{pausaBean.pausa.maximoPausa}" maxlength="3"
+                                 onkeypress="return somenteNumeros(event)"/>
+
+                    <p:message for="inputMaximoTempo"/>
+
+                </div>
+
+                <div class="col-12 col-12 md:col-3">
+
+
+                    <p:outputLabel for="inputCodIterno" value="#{msg.codInterno}"
+                                   id="lblCodInterno"/>
+
+                    <p:inputText id="inputCodIterno"
+                                 value="#{pausaBean.pausa.codigoInterno}"
+                                 onkeypress="return somenteNumeros(event)"/>
+
+                    <p:message for="inputCodIterno"/>
+
+                </div>
+
+
+                <div class="col-12 col-12 md:col-3">
+
+                    <p:outputLabel for="selectOneAtivo" value="Acesso:"/>
+
+                    <p:selectOneMenu id="selectOneAtivo"
+                                     value="#{pausaBean.pausa.ativo}">
+
+                        <f:selectItem itemLabel="Selecione" noSelectionOption="true"/>
+                        <f:selectItems value="#{pausaBean.tipoAcessoEnum}" var="acesso"
+                                       itemLabel="#{acesso.constante}" itemValue="#{acesso}"/>
+
+                    </p:selectOneMenu>
+
+                </div>
+
+            </div>
+
+            <div class="mt-5 ">
+
+                <p:commandButton value="Salvar"
+                                 styleClass="mr-3 ui-button-raised" id="btnSalvar"
+                                 action="#{pausaBean.salvar()}" update="@form grl"
+                                 icon="pi pi-save"/>
+
+                <p:commandButton value="Voltar" id="btnVoltar" styleClass="ui-button-outlined ui-button-raised"
+                                 ajax="false" action="#{pausaBean.voltar()}"
+                                 icon="pi pi-arrow-circle-left" immediate="true"/>
+
+            </div>
+
+        </div>
+
+    </h:form>
+
+
+</ui:fragment>

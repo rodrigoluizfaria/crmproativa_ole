@@ -1,0 +1,193 @@
+.login-body-c {
+   /* background: #f8f9fa;*/
+     background: #ffffff;
+    color: #495057;
+}
+
+
+
+.login-body-c .login-wrapper {
+    display: -ms-flexbox;
+    display: flex;
+    height: 100vh;
+}
+
+
+.login-body-c .login-wrapper .login-panel {
+    width: 30%;
+    height: 100%;
+    text-align: center;
+    padding: 40px 20px;
+    display: -ms-flexbox;
+    display: flex;
+    -ms-flex-align: center;
+    align-items: center;
+    -ms-flex-pack: justify;
+   /* justify-content: space-between;*/
+    justify-content: space-evenly;
+    -ms-flex-direction: column;
+    flex-direction: column;
+}
+
+.login-body-c .login-wrapper .login-image {
+    width: 70%;
+    height: 100%;
+    display: -ms-flexbox;
+    display: flex;
+    -ms-flex-align: center;
+    align-items: center;
+    -ms-flex-pack: justify;
+    justify-content: space-between;
+    -ms-flex-direction: column;
+    flex-direction: column;
+    padding: 40px 20px;
+}
+
+.login-body-c .login-wrapper .login-panel .login-form {
+    display: -ms-flexbox;
+    display: flex;
+    -ms-flex-align: center;
+    align-items: center;
+    -ms-flex-direction: column;
+    flex-direction: column;
+    width: 100%;
+
+}
+
+
+.login-body-c .login-wrapper .login-panel .login-form > input {
+    width: 85%;
+    max-width: 310px;
+    margin-bottom: 20px;
+}
+
+.login-body-c .login-wrapper .login-panel p {
+    font-weight: 600;
+    margin: 0;
+    color: #6c757d;
+}
+.login-body-c .login-wrapper .login-panel .login-form > button {
+    width: 85%;
+    max-width: 310px;
+}
+
+.login-body-c .login-wrapper .login-panel .logo-l {
+    height: 260px;
+}
+
+.login-body-c .login-wrapper .login-panel .login-form > p {
+    font-weight: 600;
+    margin: 0;
+    color: #6c757d;
+    margin-bottom: 32px;
+}
+
+
+@media (max-width: 992px) {
+    .login-body-c .login-wrapper .login-panel {
+        width: 100%;
+        z-index: 2;
+    }
+}
+
+
+
+@media (min-width: 993px) {
+    .login-body-c .login-wrapper .login-image {
+        width: 70%;
+        height: 100%;
+        display: -ms-flexbox;
+        display: flex;
+        -ms-flex-align: center;
+        align-items: center;
+        -ms-flex-pack: justify;
+        justify-content: space-between;
+        -ms-flex-direction: column;
+        flex-direction: column;
+        padding: 40px 20px;
+    }
+}
+@media (min-width: 993px) {
+    .login-body-c .login-wrapper .login-image {
+        background-size: cover;
+        background-repeat: no-repeat;
+        background-image: url("#{resource['imagens:back.jpeg']}");
+    }
+}
+
+
+.login-body-c .login-wrapper .login-image .login-image-content > h1 {
+    /*font-size: 60px;*/
+    margin: 0;
+    color: #ffffff;
+}
+
+.login-body-c .login-wrapper .login-image .image-footer {
+    display: -ms-flexbox;
+    display: flex;
+    -ms-flex-align: center;
+    align-items: center;
+}
+
+.login-body-c .login-wrapper .login-image .image-footer .icons {
+    display: -ms-flexbox;
+    display: flex;
+    -ms-flex-align: center;
+    align-items: center;
+}
+
+
+@media (max-width: 992px) {
+    .login-body-c .login-wrapper .login-image {
+        display: none;
+    }
+    .login-body-c .login-wrapper .login-image {
+        display: none;
+    }
+    .login-body-c .login-wrapper .login-image .image-footer{
+        display: none;
+    }
+}
+.login-body-c .login-wrapper .login-image .image-footer .icons {
+    display: -ms-flexbox;
+    display: flex;
+    -ms-flex-align: center;
+    align-items: center;
+}
+
+.login-body .login-wrapper .login-image .image-footer .icons {
+    display: -ms-flexbox;
+    display: flex;
+    -ms-flex-align: center;
+    align-items: center;
+}
+
+
+
+.login-body-c .login-wrapper .login-image .image-footer .icons i:hover {
+    opacity: 1;
+}
+
+.login-body-c .login-wrapper .login-image .image-footer .icons i {
+    font-size: 22px;
+    /*color: #2196F3;*/
+    margin-right: 20px;
+    cursor: pointer;
+    height: 32px;
+    width: 32px;
+    border-radius: 50%;
+    display: -ms-flexbox;
+    display: flex;
+    -ms-flex-align: center;
+    align-items: center;
+    -ms-flex-pack: center;
+    justify-content: center;
+    transition: opacity 0.2s;
+    background: #ffffff;
+    opacity: 0.7;
+}
+
+
+.icon-site{
+    cursor: pointer;
+}

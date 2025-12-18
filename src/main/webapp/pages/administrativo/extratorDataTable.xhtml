@@ -1,0 +1,78 @@
+<ui:fragment xmlns="http://www.w3.org/1999/xhtml" 
+			xmlns:ui="http://java.sun.com/jsf/facelets"
+ 			xmlns:f="http://java.sun.com/jsf/core" 
+ 			xmlns:h="http://java.sun.com/jsf/html"
+			xmlns:p="http://primefaces.org/ui">
+			
+<h:form id="formTable">
+
+	<p:dialog id="dlg" widgetVar="dlgLayout" modal="true" width="1200px" draggable="false" styleClass="dialog-formulario" header="Dados Importação" positionType="fixed" appendTo="@(body)" resizable="false">
+	
+				<h:inputHidden id="scriptIndice" value="#{extratorBean.indice}" />
+
+				<h:inputHidden id="tipoImportacaoEnvio" value="#{extratorBean.dadosDabseImportacaoEnum}" />
+
+				<p:remoteCommand name="atualizarComboRemoto" actionListener="#{extratorBean.atualizarComboImportacaoPersonalizada}" update="pnpLogStatus" process="@this formTable grl " immediate="true" global="false" />
+			
+			<div class="card ">	
+			<div class="grid ">
+			
+				<div class="col-12" style="padding-left: 0">
+					
+					<p:dataTable binding="#{extratorBean.dataTablePersonalizada}" id="tableImportacao" value="#{extratorBean.dataModel}" scrollWidth="1150px" scrollable="true" reflow="true" />
+				
+				</div>
+				
+				<h:panelGroup styleClass="col-6" style="padding-left: 0;padding-top: 0;" layout="block" rendered="#{extratorBean.validarStatus}">
+				
+				<p:fieldset styleClass=" fild-set-default-sem-borda" style="padding: 1px;height: 100%;padding-left: 27px;" legend="Identifique a coluna status (cancelamento) ">
+				
+				<div class="ui-fluid formgrid grid">
+				
+						<div class="field col-12 md:col-6 mr-3">
+
+
+							<p:outputLabel id="lblTipoConsulta" for="selectTipoConsulta" value=" Status" />
+
+								<p:selectOneMenu id="selectTipoConsulta" value="#{extratorBean.nomeColunaStatus}"	 filter="true" tabindex="row"  >
+
+									<f:selectItem itemLabel="Selecione" noSelectionOption="true" />
+
+									<f:selectItems itemLabel="#{v}" var="v" itemValue="#{v}" value="#{extratorBean.listCabecalho}" />
+
+									<p:ajax event="change" listener="#{extratorBean.onCheckColunaCabecalho()}" process="@this"	global="false"  partialSubmit="true" />
+
+								</p:selectOneMenu>
+
+							
+
+					</div>
+					
+
+					</div>
+</p:fieldset>				
+				</h:panelGroup>
+					<h:panelGroup styleClass="field col-12 md:col-3 mr-3" layout="block" id="pnpLogStatus" style="margin-top: 20px;">
+					
+					<h:panelGroup  rendered="#{not empty extratorBean.logIndiceStatus}">
+							<span class="  span-error">#{extratorBean.logIndiceStatus}</span>
+					
+					</h:panelGroup>
+					
+					</h:panelGroup>
+				
+</div>
+				<div style="text-align: center;margin-top:5px">
+				
+					<p:commandButton value="Salvar"  id="btnImporta" styleClass="mr-3 ui-button-raised" update="@form :formConteudo" icon="pi pi-save" action="#{extratorBean.processarArquivo()}" immediate="true" oncomplete="PF('dlgLayout').hide();" />
+					
+					<p:commandButton value="Sair"  id="btnSair" icon="pi pi-times ui-bu" onclick="PF('dlgLayout').hide();" />
+					
+				</div>
+				</div>
+	</p:dialog>
+	
+	</h:form>
+
+
+</ui:fragment>

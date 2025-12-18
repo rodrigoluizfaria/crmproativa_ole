@@ -1,0 +1,20 @@
+<ui:fragment xmlns="http://www.w3.org/1999/xhtml"
+
+             xmlns:ui="http://java.sun.com/jsf/facelets"
+             xmlns:cc="http://java.sun.com/jsf/composite/componentes"
+             xmlns:p="http://primefaces.org/ui">
+
+    <!-- DLG MODAL -->
+    <p:dialog id="dlgVisualizarEditar" widgetVar="dlgVisualizarEditar" modal="true" draggable="true" resizable="true"
+              closable="false" header="Editar Atendimento" appendTo="@(body)" fitViewport="true" position="50,50"
+              responsive="false" width="95%" height="80%">
+
+        <cc:editarFichaAtendimento id="editarAtendimento"
+                                   atendimento="#{supervisorBackofficeBean.atendimentoVisualizar}"
+                                   historico="#{supervisorBackofficeBean.historicoAtendimento}"
+                                   managedBean="#{supervisorBackofficeBean}" tipo="SUPERVISOR"
+                                   idTable=":tabView:formBackofficePesquisa:tableAtendimentos"/>
+
+    </p:dialog>
+
+</ui:fragment>

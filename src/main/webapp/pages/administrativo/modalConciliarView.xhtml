@@ -1,0 +1,82 @@
+<ui:fragment xmlns="http://www.w3.org/1999/xhtml"
+             xmlns:h="http://java.sun.com/jsf/html"
+             xmlns:f="http://java.sun.com/jsf/core"
+             xmlns:o="http://omnifaces.org/ui"
+             xmlns:pe="http://primefaces.org/ui/extensions"
+             xmlns:ui="http://java.sun.com/jsf/facelets"
+             xmlns:p="http://primefaces.org/ui">
+
+    <!-- DLG MODAL -->
+    <p:dialog id="dlgConciliarView" widgetVar="dlgConciliarView" style="background: #fff" modal="true" draggable="true"
+              resizable="false" closable="true" visible="false" width="80%" styleClass="dialog-formulario"
+              responsive="true" header="" appendTo="@(body)">
+
+        <h:form id="formConciliarView" prependId="false">
+
+
+            <h:panelGroup styleClass="grid card" layout="block">
+
+                <div class="col-12  ">
+
+                    <p:dataTable  var="audioAnexoView" rows="5"	paginator="true" paginatorPosition="bottom"	value="#{conciliarAudioBean.listAtendimentosAudios}"
+                                 emptyMessage="#{conciliarAudioBean.listAtendimentosAudios eq null? '' : msg.emptyMessage}"
+                                 currentPageReportTemplate="[#{msg.totalDeRegistros}: {totalRecords}]"
+                                 paginatorTemplate="{CurrentPageReport}  {FirstPageLink} {PreviousPageLink} {PageLinks} {NextPageLink} {LastPageLink} {Exporters}"
+                                 styleClass="ui-datatable-striped ui-datatable-sm">
+
+                        <p:column headerText="Data Anexo" sortBy="#{audioAnexoView.dataAnexo}" width="10%" >
+
+                            <h:outputLabel value="#{audioAnexoView.dataAnexo}">
+
+                                <f:convertDateTime pattern="dd/MM/yyyy HH:mm:ss" />
+
+                            </h:outputLabel>
+
+
+                        </p:column>
+
+                        <p:column headerText="Arquivo" sortBy="#{audioAnexoView.nomeArquivo}"	 >
+
+                            <p:commandLink id="nonAjax" action="#{conciliarAudioBean.baixarArquivoWav(audioAnexoView)}" class="mr-4" ajax="false"
+                                           value="#{audioAnexoView.nomeArquivo}">
+
+                                <p:fileDownload value="#{conciliarAudioBean.fileWav}"/>
+
+                            </p:commandLink>
+
+
+                        </p:column>
+
+
+                        <p:column headerText="Transcrição" sortBy="#{audioAnexoView.transcricao}" width="60%"	 >
+
+                            <h:outputText value="#{audioAnexoView.transcricao}" style="line-height: 24px; display: block;width: 100%;height: 350px;overflow: auto;">
+
+                            </h:outputText>
+
+                        </p:column>
+
+
+                    </p:dataTable>
+
+
+                </div>
+
+                <div class="text-center col-12">
+
+                   <p:commandButton value="Fechar" styleClass="ui-button-outlined mt-3" type="button" onclick="PF('dlgConciliarView').hide();" icon="pi pi-times"/>
+
+
+                </div>
+
+
+
+            </h:panelGroup>
+
+        </h:form>
+
+
+    </p:dialog>
+
+
+</ui:fragment>

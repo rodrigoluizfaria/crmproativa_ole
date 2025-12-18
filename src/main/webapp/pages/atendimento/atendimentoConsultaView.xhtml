@@ -1,0 +1,463 @@
+<ui:fragment xmlns="http://www.w3.org/1999/xhtml"
+             xmlns:h="http://java.sun.com/jsf/html"
+             xmlns:f="http://java.sun.com/jsf/core"
+             xmlns:ui="http://java.sun.com/jsf/facelets"
+             xmlns:p="http://primefaces.org/ui" template="/WEB-INF/template.xhtml">
+
+
+    <p:growl id="grl" widgetVar="grl" globalOnly="true" escape="false"
+             showSummary="false" life="8000" showDetail="true" sticky="false">
+
+        <p:autoUpdate/>
+
+    </p:growl>
+
+    <h:form id="formConsultaPesquisa" prependId="false">
+
+        <h:panelGroup id="pnpAtn" layout="block">
+
+            <h:panelGroup layout="block" rendered="#{fichaAtendimentoConsultaBean.atendimentoView.id ne null}">
+
+                <h:panelGroup layout="block" styleClass="pb-3  col-1">
+
+                    <p:commandButton value="Voltar" actionListener="#{fichaAtendimentoConsultaBean.voltar()}" style="width: 100%"
+                                     global="false"
+                                     update="@form" icon="pi pi-chevron-circle-left"
+                                     styleClass="ui-button-outlined ui-button-raised "/>
+
+                </h:panelGroup>
+
+                <div class="formgrid ui-fluid grid">
+
+                    <div class=" field col-12 md:col-8">
+
+                        <h:panelGroup styleClass="card" layout="block" style="padding: 0px;">
+
+                            <div class="flex align-items-center justify-content-start  border-bottom-1 border-bluegray-200">
+
+                                <div class="border-round w-4rem h-4rem m-2 font-bold flex align-items-center justify-content-center bg-primary-50">
+                                    <i class="fa fa-regular fa-user " style="font-size: 1.5rem !important;"/>
+                                </div>
+
+                                <div class="font-semibold">
+                                     #{fichaAtendimentoConsultaBean.atendimentoView.nome}
+                                </div>
+
+                            </div>
+
+                            <div class="p-3 mt-3 pl-5">
+
+                                <div class="field grid">
+
+                                    <label for="txtCpf" class="col-12 mb-2 md:col-2 font-semibold">CPF: </label>
+
+                                    <div class="col-12 md:col-6">
+
+                                        <label id="txtCpf"> #{fichaAtendimentoConsultaBean.atendimentoView.cpf}</label>
+                                    </div>
+
+                                </div>
+
+                                <div class="field grid">
+
+                                    <label for="txtEspecie" class="col-12 mb-2 md:col-2 font-semibold">Espécie: </label>
+
+                                    <div class="col-12 md:col-6">
+                                        <label id="txtEspecie"> #{fichaAtendimentoConsultaBean.especie}</label>
+                                    </div>
+
+                                </div>
+
+                                <div class="field grid">
+
+                                    <label for="txtBeneficio" class="col-12 mb-2 md:col-2 font-semibold">Beneficio: </label>
+
+                                    <div class="col-12 md:col-6">
+                                        <label id="txtBeneficio"> #{fichaAtendimentoConsultaBean.atendimentoView.beneficioPrincipal}</label>
+                                    </div>
+
+                                </div>
+
+                                <div class="field grid">
+
+                                    <label for="txtDataNascimento"
+                                           class="col-12 mb-2 md:col-2 font-semibold">Data Nascimento: </label>
+
+                                    <div class="col-12 md:col-6">
+
+                                        <h:outputLabel
+                                                value="#{fichaAtendimentoConsultaBean.atendimentoView.dataNascimento}"
+                                                id="txtDataNascimento">
+
+                                            <f:convertDateTime pattern="dd/MM/yyyy"/>
+
+                                        </h:outputLabel>
+
+                                        <h:outputLabel value=" Idade: #{fichaAtendimentoConsultaBean.idade} anos"
+                                                       styleClass="ml-3"
+                                                       rendered="#{not empty fichaAtendimentoConsultaBean.idade}">
+
+                                        </h:outputLabel>
+
+                                    </div>
+
+
+                                </div>
+
+                                <div class="field grid">
+
+                                    <label for="txtxTel" class="col-12 mb-2 md:col-2 font-semibold">Telefone: </label>
+
+                                    <div class="col-12 md:col-6">
+                                        <label id="txtxTel"> #{fichaAtendimentoConsultaBean.atendimentoView.retornarTelefonesConcatenados()}</label>
+                                    </div>
+
+                                </div>
+
+
+                            </div>
+                            <p:tabView id="tabAtendimento" style="padding: 5px 0px">
+
+                                <p:tab title="PORTABILIDADE">
+
+                                    <div class="ui-fluid  formgrid grid mt-5 ">
+
+                                        <div class="col-12">
+
+                                            <p:dataTable id="tablePortabilidade"
+                                                         value="#{fichaAtendimentoConsultaBean.listPortabilidades}"
+                                                         var="postabilidade" rows="15" paginator="true"
+                                                         selection="#{fichaAtendimentoConsultaBean.selectPortabilidades}"
+                                                         rowKey="#{postabilidade.id}" selectionMode="none"
+                                                         selectionPageOnly="false" sortMode="single"
+                                                         paginatorPosition="bottom" emptyMessage="#{msg.emptyMessage}"
+                                                         currentPageReportTemplate="[#{msg.totalDeRegistros}: {totalRecords}]"
+                                                         paginatorTemplate="{CurrentPageReport}  {FirstPageLink} {PreviousPageLink} {PageLinks} {NextPageLink} {LastPageLink} {Exporters}">
+
+
+                                                <p:ajax event="rowSelectCheckbox" global="false" process="@this"
+                                                        update="@form"
+                                                        listener="#{fichaAtendimentoConsultaBean.onSelectCheckBoxPortabilidade()}"/>
+
+                                                <p:ajax event="rowSelect" global="false" process="@this"
+                                                        update="@form"
+                                                        listener="#{fichaAtendimentoConsultaBean.onSelectCheckBoxPortabilidade()}"/>
+
+                                                <p:ajax event="rowUnselect" global="false" process="@this"
+                                                        update="@form"
+                                                        listener="#{fichaAtendimentoConsultaBean.onSelectCheckBoxPortabilidade()}"/>
+
+                                                <p:ajax event="rowUnselectCheckbox" global="false" process="@this"
+                                                        update="@form"
+                                                        listener="#{fichaAtendimentoConsultaBean.onUnSelectCheckBoxPortabilidade()}"/>
+
+
+                                                <p:ajax event="toggleSelect" global="false" process="@this"
+                                                        update="@form"
+                                                        listener="#{fichaAtendimentoConsultaBean.onUnSelectCheckBoxPortabilidade()}"/>
+
+                                                <p:ajax event="sort" global="false"
+
+                                                        />
+
+                                                <p:column selectionMode="multiple"
+                                                          style="width:16px;text-align:center"/>
+
+                                                <p:column headerText="Data averbação" selectRow="false" sortBy="#{postabilidade.dataAverbacao}">
+
+                                                    <p:outputLabel value="#{postabilidade.dataAverbacao}">
+                                                        <f:convertDateTime pattern="dd/MM/yyyy"/>
+                                                    </p:outputLabel>
+
+                                                </p:column>
+
+                                                <p:column headerText="Banco origem" selectRow="false" sortBy="#{postabilidade.bancoOrigem.constante}">
+
+                                                    <p:outputLabel value="#{postabilidade.bancoOrigem.constante}">
+
+                                                    </p:outputLabel>
+
+                                                </p:column>
+
+                                                <p:column headerText="Prazo total" selectRow="false" sortBy="#{postabilidade.prazoTotal}">
+
+                                                    <p:outputLabel value="#{postabilidade.prazoTotal}">
+
+                                                    </p:outputLabel>
+
+                                                </p:column>
+
+                                                <p:column headerText="Prazo restante" selectRow="false" sortBy="#{postabilidade.prazoRestante}">
+
+                                                    <p:outputLabel value="#{postabilidade.prazoRestante}">
+
+                                                    </p:outputLabel>
+
+                                                </p:column>
+
+
+                                                <p:column headerText="Taxa juros" selectRow="false" sortBy="#{postabilidade.taxaJuros}">
+
+                                                    <h:outputText value="#{postabilidade.taxaJuros}">
+                                                      <!--  <f:convertNumber minFractionDigits="2"/>-->
+                                                    </h:outputText>
+
+                                                </p:column>
+
+                                                <p:column headerText="Valor parcela" selectRow="false" sortBy="#{postabilidade.valorParcela}">
+
+                                                    <h:outputText value="#{postabilidade.valorParcela}">
+                                                        <f:convertNumber type="currency" locale="pt-br"
+                                                                         currencySymbol="R$"/>
+                                                    </h:outputText>
+
+                                                </p:column>
+
+                                                <p:column headerText="Saldo devedor" selectRow="false" sortBy="#{postabilidade.saldoDevedor}">
+
+                                                    <h:outputText value="#{postabilidade.saldoDevedor}">
+
+                                                        <f:convertNumber type="currency" locale="pt-br"
+                                                                         currencySymbol="R$"/>
+
+                                                    </h:outputText>
+
+                                                </p:column>
+
+                                            </p:dataTable>
+
+                                        </div>
+
+                                    </div>
+
+                                </p:tab>
+
+                                <p:tab title="ENDEREÇO">
+
+                                    <div class="div-table" style="width: 100%">
+
+                                        <p:dataTable id="tableEndereco"
+                                                     value="#{fichaAtendimentoConsultaBean.atendimentoView.listaEnderecos}"
+                                                     var="endereco" rows="15" paginator="true"
+                                                     paginatorPosition="bottom" emptyMessage="#{msg.emptyMessage}"
+                                                     currentPageReportTemplate="[#{msg.totalDeRegistros}: {totalRecords}]"
+                                                     paginatorTemplate="{CurrentPageReport}  {FirstPageLink} {PreviousPageLink} {PageLinks} {NextPageLink} {LastPageLink} {Exporters}">
+
+                                            <p:column headerText="Logradouro" width="30%">
+
+                                                <p:outputLabel value="#{endereco.logradouro}"/>
+
+                                            </p:column>
+
+                                            <p:column headerText="Numero" width="5%">
+
+                                                <p:outputLabel value="#{endereco.numero}"/>
+
+                                            </p:column>
+
+                                            <p:column headerText="Bairro" width="20%">
+
+                                                <p:outputLabel value="#{endereco.bairro}"/>
+
+                                            </p:column>
+                                            <p:column headerText="Cidade" width="20%">
+
+                                                <p:outputLabel value="#{endereco.cidade}"/>
+
+                                            </p:column>
+
+                                            <p:column headerText="Estado" width="10%">
+
+                                                <p:outputLabel value="#{endereco.uf}"/>
+
+                                            </p:column>
+
+                                            <p:column headerText="Cep" width="10%">
+
+                                                <p:outputLabel value="#{endereco.cep}"/>
+
+                                            </p:column>
+
+                                        </p:dataTable>
+
+                                    </div>
+
+                                </p:tab>
+
+                                <p:tab title="DADOS BANCÁRIOS">
+
+                                    <div class="div-table" style="width: 100%">
+
+                                        <p:dataTable id="tableDadosBancarios"
+                                                     value="#{fichaAtendimentoConsultaBean.atendimentoView.listaDadosBancarios}"
+                                                     var="banco" rows="15" paginator="true"
+                                                     paginatorPosition="bottom" emptyMessage="#{msg.emptyMessage}"
+                                                     currentPageReportTemplate="[#{msg.totalDeRegistros}: {totalRecords}]"
+                                                     paginatorTemplate="{CurrentPageReport}  {FirstPageLink} {PreviousPageLink} {PageLinks} {NextPageLink} {LastPageLink} {Exporters}">
+
+                                            <p:column headerText="Banco">
+
+                                                <p:outputLabel value="#{banco.banco.constante}"/>
+
+                                            </p:column>
+
+                                            <p:column headerText="Agencia">
+
+                                                <p:outputLabel value="#{banco.agencia}"/>
+
+                                            </p:column>
+
+                                            <p:column headerText="Conta">
+
+                                                <p:outputLabel value="#{banco.conta}"/>
+
+                                            </p:column>
+
+                                            <p:column headerText="Digito Conta">
+
+                                                <p:outputLabel value="#{banco.digitoConta}"/>
+
+                                            </p:column>
+
+
+                                        </p:dataTable>
+
+                                    </div>
+
+                                </p:tab>
+
+                                <p:tab title="EMAILS">
+
+                                    <div class="div-table" style="width: 50%">
+
+                                        <p:dataTable id="tableEmails"
+                                                     value="#{fichaAtendimentoConsultaBean.atendimentoView.listaEmails}"
+                                                     var="email" rows="15" paginator="true"
+                                                     paginatorPosition="bottom" emptyMessage="#{msg.emptyMessage}"
+                                                     currentPageReportTemplate="[#{msg.totalDeRegistros}: {totalRecords}]"
+                                                     paginatorTemplate="{CurrentPageReport}  {FirstPageLink} {PreviousPageLink} {PageLinks} {NextPageLink} {LastPageLink} {Exporters}">
+
+                                            <p:column headerText="Descrição">
+
+                                                <p:outputLabel value="#{email.descricao}"/>
+
+                                            </p:column>
+
+                                            <p:column headerText="Email">
+
+                                                <p:outputLabel value="#{email.email}"/>
+
+                                            </p:column>
+
+                                        </p:dataTable>
+
+                                    </div>
+
+                                </p:tab>
+
+                                <p:tab title="OUTRAS INFORMAÇÕES">
+
+                                    <div class="ui-fluid  formgrid grid p-3 pl-5">
+
+                                        <ui:repeat var="înformacoes"
+                                                   value="#{fichaAtendimentoConsultaBean.atendimentoView.listInformacoesComplementaresChaves}">
+
+                                            <div class="field col-12 md:col-3 ">
+
+                                                <div class="border-100 border-1 border-400 border-left-2 col-12 p-2"
+                                                     style="padding: 5px 10px;border-left-color: var(--primary-600) !important;">
+
+                                                    <p:outputLabel value="#{înformacoes}" styleClass="lbl-bold"/>
+
+                                                    <div style="margin-top: 5px">
+
+                                                        <h:outputText
+                                                                value="#{empty fichaAtendimentoConsultaBean.atendimentoView.listInformacoesComplementares[înformacoes] ? '&#160;&#160;' :fichaAtendimentoConsultaBean.atendimentoView.listInformacoesComplementares[înformacoes]}"/>
+
+                                                    </div>
+
+                                                </div>
+
+                                            </div>
+
+                                        </ui:repeat>
+
+                                    </div>
+
+
+                                </p:tab>
+
+                            </p:tabView>
+
+                        </h:panelGroup>
+
+                    </div>
+
+                    <div class=" field col-12 md:col-2">
+
+                        <h:panelGroup styleClass="card" layout="block" style="padding: 0px;">
+
+                            <div class="grid " style="margin-top: 1px">
+
+                                <div class="col">
+
+                                    <div class="text-center p-5 border-round-sm bg-primary-100 font-medium text-4xl border-2 border-primary-200">
+
+                                        <h:outputText value="#{fichaAtendimentoConsultaBean.totalSaldoDevedor}">
+
+                                            <f:convertNumber type="currency" locale="pt-br" currencySymbol="R$"/>
+
+                                        </h:outputText>
+
+                                        <div class="text-center p-3 border-round-sm bg-primary-100 font-semibold text-base "> TOTAL SALDO DEVEDOR</div>
+
+                                    </div>
+
+                                </div>
+
+                            </div>
+
+                        </h:panelGroup>
+
+                    </div>
+
+                    <div class=" field col-12 md:col-2">
+
+                        <h:panelGroup styleClass="card" layout="block" style="padding: 0px;">
+
+                            <div class="grid " style="margin-top: 1px">
+
+                                <div class="col">
+
+                                    <div class="text-center p-5 border-round-sm bg-primary-100 font-medium text-4xl border-2 border-primary-200">
+
+                                        <h:outputText value="#{fichaAtendimentoConsultaBean.totalParcelas}">
+
+                                            <f:convertNumber type="currency" locale="pt-br" currencySymbol="R$"/>
+
+                                        </h:outputText>
+
+                                        <div class="text-center p-3 border-round-sm bg-primary-100 font-semibold text-base "> TOTAL PARCELAS</div>
+
+                                    </div>
+
+
+
+                                </div>
+
+                            </div>
+
+                        </h:panelGroup>
+
+                    </div>
+
+
+
+                </div>
+
+            </h:panelGroup>
+
+        </h:panelGroup>
+
+    </h:form>
+</ui:fragment>

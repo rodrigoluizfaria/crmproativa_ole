@@ -1,0 +1,175 @@
+<ui:composition xmlns="http://www.w3.org/1999/xhtml"
+                xmlns:h="http://java.sun.com/jsf/html"
+                xmlns:f="http://java.sun.com/jsf/core"
+                xmlns:ui="http://java.sun.com/jsf/facelets"
+                xmlns:matriz="http://java.sun.com/jsf/composite/componentes"
+                xmlns:p="http://primefaces.org/ui" template="/WEB-INF/template.xhtml">
+
+
+    <ui:define name="viewname">
+
+        <div class="bcca-breadcrumb">
+            <div class="bcca-breadcrumb-item bg-primary-500 hover:bg-primary-700 ">
+                <p:link outcome="/pages/supervisor/monitorProducao" styleClass="uppercase"
+                        style="text-decoration: none"> MONITOR PRODUÇÃO</p:link>
+            </div>
+            <div class="bcca-breadcrumb-item uppercase">SUPERVISOR</div>
+        </div>
+
+    </ui:define>
+
+
+    <ui:define name="content">
+
+        <p:growl id="grl" widgetVar="grl" globalOnly="true" escape="false" showSummary="false" life="8000"
+                 showDetail="true" sticky="false">
+
+            <p:autoUpdate/>
+
+        </p:growl>
+
+        <p:growl id="grlNo" widgetVar="grl" escape="false" showSummary="false" life="8000" showDetail="true"
+                 sticky="false"/>
+
+        <h:form id="formMonitorProducao" prependId="false">
+
+            <p:poll listener="#{supervidorBackofficeProducao.pesquisar()}" update="tableProducao chartProducao"  interval="300"/>
+
+
+            <div class="card">
+
+                <div class="ui-fluid formgrid grid">
+
+                    <matriz:selectEmpresa id="cmpEmpresa" managedBean="#{supervidorBackofficeProducao}"
+                                          value="#{supervidorBackofficeProducao.empresa}" ajax="true"
+                                          update="@form" filter="true" exibirSelecione="false"/>
+
+                    <div class="field col-12 md:col-2">
+
+                        <p:outputLabel value="Périodo"/>
+
+                        <p:selectOneRadio id="selectRadioTempo" value="#{supervidorBackofficeProducao.periodo}">
+
+                            <f:selectItem itemLabel="Diário" itemValue="DIARIO"/>
+                            <f:selectItem itemLabel="Mensal" itemValue="MENSAL"/>
+
+                            <p:ajax listener="#{supervidorBackofficeProducao.pesquisar()}"
+                                    update="tableProducao chartProducao" global="false"/>
+
+                        </p:selectOneRadio>
+
+                    </div>
+
+
+                    <h:panelGroup layout="block" styleClass="field col-12 md:col-2"
+                                  rendered="#{sessionScope['usuario'].permissaoExportar}">
+
+                        <p:outputLabel value="&#160;&#160;" id="txtPesquisaEspaco"/>
+
+                        <div>
+
+                            <p:menuButton id="menuBtn" value="Exportar" icon="pi pi-upload"
+                                          disabled="#{empty supervidorBackofficeProducao.listItens}"
+                                          styleClass="raised-button outlined-button">
+
+                                <p:menuitem value="pdf" global="false" ajax="false" icon="fa fa-file-pdf-o">
+
+                                    <p:dataExporter type="pdf" target="tableProducao" fileName="monitor_producao"/>
+
+                                </p:menuitem>
+
+
+                                <p:menuitem value="XLS" global="false" ajax="false" icon="fa fa-file-excel-o">
+
+                                    <p:dataExporter type="xls" target="tableProducao" fileName="monitor_producao"/>
+
+                                </p:menuitem>
+
+                            </p:menuButton>
+                        </div>
+
+
+                    </h:panelGroup>
+
+
+                    <div class="col-12 md:col-8 mt-3">
+
+                        <p:dataTable id="tableProducao" var="producao" rows="20" paginator="true"
+                                     paginatorPosition="bottom" value="#{supervidorBackofficeProducao.listItens}"
+                                     emptyMessage="#{msg.emptyMessage}"
+                                     currentPageReportTemplate="[#{msg.totalDeRegistros}: {totalRecords}]"
+                                     styleClass="default"
+                                     reflow="true"
+                                     paginatorTemplate="{CurrentPageReport}  {FirstPageLink} {PreviousPageLink} {PageLinks} {NextPageLink} {LastPageLink} {Exporters}">
+
+                            <p:ajax event="page" global="false"/>
+
+                            <p:ajax event="sort" global="false"/>
+
+
+                            <p:column headerText="Operador" style="text-align: center;">
+
+                                <p:outputLabel value="#{producao[0]}"/>
+
+                                <f:facet name="footer">
+
+                                    <p:outputLabel value="Total"/>
+
+                                </f:facet>
+
+                            </p:column>
+
+                            <p:column headerText="Acionamentos" style="text-align: center;">
+
+                                <p:outputLabel value="#{producao[1]}"/>
+
+                                <f:facet name="footer">
+
+                                    <p:outputLabel value="#{supervidorBackofficeProducao.qtidadeTota}"/>
+
+                                </f:facet>
+
+                            </p:column>
+
+
+                            <p:column headerText="Valor Total" style="text-align: center;">
+
+                                <p:outputLabel value="#{producao[2]}" style="text-align: center;"/>
+
+                                <f:facet name="footer">
+
+                                    <p:outputLabel value="#{supervidorBackofficeProducao.valorTotal}">
+
+                                        <f:convertNumber type="currency" locale="pt-br"/>
+
+                                    </p:outputLabel>
+
+                                </f:facet>
+
+                            </p:column>
+
+                        </p:dataTable>
+
+                    </div>
+
+                    <h:panelGroup styleClass="col-12 " layout="block" id="chartProducao">
+
+                        <h:panelGroup styleClass="col-12 " layout="block"
+                                      rendered="#{not empty supervidorBackofficeProducao.modelChart}">
+
+                            <p:barChart model="#{supervidorBackofficeProducao.modelChart}"
+                                        style="width: 100%; height: 500px;"
+                                        rendered="#{not empty supervidorBackofficeProducao.modelChart}"/>
+
+                        </h:panelGroup>
+
+                    </h:panelGroup>
+
+                </div>
+
+            </div>
+        </h:form>
+
+    </ui:define>
+
+</ui:composition>

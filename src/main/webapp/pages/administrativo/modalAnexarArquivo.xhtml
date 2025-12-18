@@ -1,0 +1,155 @@
+<ui:fragment xmlns="http://www.w3.org/1999/xhtml"
+	xmlns:h="http://java.sun.com/jsf/html"
+	xmlns:f="http://java.sun.com/jsf/core"
+	xmlns:o="http://omnifaces.org/ui"
+	xmlns:ui="http://java.sun.com/jsf/facelets"
+	xmlns:p="http://primefaces.org/ui">
+	
+	  <p:overlayPanel widgetVar="arquivos" dismissable="false" showCloseIcon="true" dynamic="true">
+		  									
+           
+      </p:overlayPanel>
+
+	<!--
+	<p:dialog id="dlgAnexarAudio" widgetVar="dlgAnexarAudio" modal="true"	styleClass="dialog-formulario" draggable="true" resizable="false" closable="true"  width="50%" responsive="true" header="Conciliar Áudio" appendTo="@(body)">
+
+		<h:form id="formAnexarAudio" prependId="false">
+		
+			<div class="p-col-12" style="padding-bottom: 0px;">
+						
+					<div class="card no-gutter" >
+					
+						 <div class=" ui-fluid">
+						
+								<h:panelGroup layout="block" styleClass="p-field p-grid" id="groupLojasAudio" rendered="#{fichaAtendimentoBean.listLojas.size() > 1 }">
+				
+				 					<div class="p-col-12 p-mb-2 p-md-2 p-mb-md-0 div-vertical p-p-5" >
+				 					
+								 		<p:outputLabel value="#{msg.loja}:" />
+								 		
+									</div>
+									
+									<div class="p-col-12 p-md-6 p-p-5">
+									
+										<p:selectOneMenu id="selectOneLojasAudio" value="#{fichaAtendimentoBean.atendimento.loja}" converter="omnifaces.SelectItemsConverter" filter="true" filterMatchMode="contains" required="true" requiredMessage="#{msg.requerido}">
+															
+												<f:selectItem  itemLabel="Selecione" noSelectionOption="true" itemValue="" />
+												<f:selectItems value="#{fichaAtendimentoBean.listLojas}" var="loja" itemLabel="#{loja.codigoLoja}" itemValue="#{loja}" />
+												<p:ajax process="@this" update="@form" event="change"/>
+				
+										</p:selectOneMenu>
+										
+									</div>
+									
+										<p:message for="selectOneLojasAudio"/>
+										
+								</h:panelGroup>
+						
+						</div>
+					
+					</div>
+				
+			</div>
+		
+			<div class="p-col-12">
+						
+				<div class="card no-gutter" >
+				
+				<div class="card-header">
+				
+					<h4>Selecione os áudios</h4>
+				
+				</div>
+				
+					<p><i class="pi pi-info-circle"></i> Formato permitido: .wav</p>
+					
+					<h:panelGroup rendered="#{not empty fichaAtendimentoBean.audios}" id="pnpQuntidadeAnexo">
+					
+						<p> Arquivos anexados: #{fichaAtendimentoBean.audios.size()} </p>
+					
+					
+					</h:panelGroup>
+					
+					
+									
+					<p:fileUpload cancelLabel="Cancelar"   chooseIcon=" fa fa-file-audio-o" multiple="true"  update="@form selectOneLojas"  uploadLabel="Enviar" label="Selecionar" process="@this #{fichaAtendimentoBean.listLojas.size() > 1 ? 'selectOneLojasAudio' : '' }" listener="#{fichaAtendimentoBean.enviarAudios}"  /> 
+								
+
+				
+					<p:messages globalOnly="true" id="msgUpload" />
+				
+				</div>
+		
+			 
+			 </div>
+			 
+			 <h:panelGroup styleClass="p-col-12" rendered="#{not empty fichaAtendimentoBean.audios}" layout="block">
+						
+				<div class="card no-gutter widget-overview-box widget-overview-box-3 p-col-12" >
+				
+				<div class="card-header">
+				
+					<h3>Arquivos anexados</h3>
+				
+				</div>
+				
+				
+						 <p:dataTable var="audio" id="tableAnexo" reflow="true"  draggableRows="true"
+							value="#{fichaAtendimentoBean.audios}" paginator="true" rows="5" 
+							paginatorPosition="bottom" emptyMessage="#{msg.emptyMessage}" rowIndexVar="indice"
+							paginatorTemplate="{CurrentPageReport}  {FirstPageLink} {PreviousPageLink} {PageLinks} {NextPageLink} {LastPageLink} {Exporters}"
+							currentPageReportTemplate="[Total de áudios: {totalRecords}]">
+
+   							<p:ajax event="rowReorder" listener="#{fichaAtendimentoBean.onTrocarAudio}" update="tableAnexo" global="false"/>
+   							
+   							<p:column headerText="Posição" sortBy="#{indice}" width="10%">
+
+								<h:outputText value="#{indice}" />
+
+							</p:column>
+
+							<p:column headerText="Arquivo" sortBy="#{audio.nomeArquivoOriginal}">
+
+								<h:outputText value="#{audio.nomeArquivoOriginal}" />
+
+							</p:column>
+
+							<p:column headerText="Tamanho" sortBy="#{audio.tamanhoArquivo}">
+
+								<h:outputText value="#{audio.tamanhoArquivo / 1000} KB" >
+									<f:convertNumber pattern="#0.000" />
+								</h:outputText>
+
+							</p:column>
+
+							<p:column style="text-align:center;width:50px" exportable="false">
+
+								<p:commandButton icon="pi pi-times-circle" tabindex="Excluir" actionListener="#{fichaAtendimentoBean.excluirAnexoArquivo(audio.nomeArquivoOriginal)}" process="@this" global="false" update="@form" styleClass="rounded-button text-button  p-mr-2"  >
+
+								</p:commandButton>
+
+							</p:column>
+
+
+						</p:dataTable>
+			
+				</div>
+				
+				
+				</h:panelGroup>
+
+			<div class="ui-fluid p-formgrid p-grid p-col-12" style="text-align: center; padding: 0px;">
+
+				<div class="p-col-12" style="text-align: center; padding: 0px;">
+				
+					<p:commandButton value="Sair" icon="pi pi-times" onclick="PF('dlgAnexarAudio').hide();" />
+					
+				</div>
+				
+			</div>
+			
+		</h:form>
+
+	</p:dialog>
+ -->
+</ui:fragment>

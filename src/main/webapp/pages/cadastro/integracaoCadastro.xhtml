@@ -1,0 +1,226 @@
+<ui:fragment xmlns="http://www.w3.org/1999/xhtml"
+             xmlns:h="http://java.sun.com/jsf/html"
+             xmlns:f="http://java.sun.com/jsf/core"
+             xmlns:ui="http://java.sun.com/jsf/facelets"
+             xmlns:matriz="http://java.sun.com/jsf/composite/componentes"
+             xmlns:p="http://primefaces.org/ui" template="/WEB-INF/template.xhtml">
+
+
+    <p:growl id="grl" widgetVar="grl" globalOnly="true" escape="false" showSummary="false" life="8000" showDetail="true"
+             sticky="false">
+
+        <p:autoUpdate/>
+
+    </p:growl>
+
+    <h:form id="formCadastro" prependId="false">
+
+        <div class="card">
+
+            <div class="ui-fluid formgrid grid">
+
+                <matriz:selectEmpresa id="cmbEmpresa" managedBean="#{integracaoBean}"
+                                      value="#{integracaoBean.integracao.empresa}" filter="true"
+                                      style="col-12 md:col-2"/>
+
+                <div class="field col-12 md:col-4">
+
+                    <p:outputLabel for="inputDesc" value="Descrição"/>
+
+                    <p:inputText id="inputDesc" value="#{integracaoBean.integracao.descricao}" maxlength="50"
+                                 required="true" requiredMessage="#{msg.requerido}"/>
+
+                    <p:message for="inputDesc"/>
+
+                </div>
+
+
+                <div class="field col-12 md:col-4">
+
+                    <p:outputLabel for="selectOneTipo" value="Tipo:"/>
+
+                    <p:selectOneMenu id="selectOneTipo" value="#{integracaoBean.integracao.tipoIntegracao}"
+                                     required="true" requiredMessage="Requerido">
+
+                        <f:selectItem itemLabel="Selecione" noSelectionOption="true"/>
+
+                        <f:selectItems value="#{integracaoBean.tipoIntegracao}" var="tipo" itemLabel="#{tipo.constante}"
+                                       itemValue="#{tipo}"/>
+
+                        <p:ajax process="@this" update="pnpToken"/>
+
+                    </p:selectOneMenu>
+
+                    <p:message for="selectOneTipo"/>
+
+                </div>
+
+                <div class="field col-12 md:col-2">
+
+                    <p:outputLabel for="selectOneAtivo" value="Acesso:"/>
+
+                    <p:selectOneMenu id="selectOneAtivo" value="#{integracaoBean.integracao.ativo}" required="true"
+                                     requiredMessage="Requerido">
+
+                        <f:selectItem itemLabel="Selecione" noSelectionOption="true"/>
+
+                        <f:selectItems value="#{integracaoBean.tipoAcessoEnum}" var="acesso"
+                                       itemLabel="#{acesso.constante}" itemValue="#{acesso}"/>
+
+                    </p:selectOneMenu>
+
+                    <p:message for="selectOneAtivo"/>
+
+                </div>
+
+                <div class="field col-12 md:col-4">
+
+                    <p:outputLabel for="inputUrl" value="Url:"/>
+
+                    <p:inputText id="inputUrl" value="#{integracaoBean.integracao.url}" required="true"
+                                 requiredMessage="Requerido" maxlength="100"/>
+
+                    <p:message for="inputUrl"/>
+
+                </div>
+
+
+                <div class="field col-12 md:col-3">
+
+                    <p:outputLabel for="inputUsuario" value="Usuario:"/>
+
+
+                    <p:inputText id="inputUsuario" value="#{integracaoBean.integracao.usr}" required="true"
+                                 requiredMessage="Requerido"/>
+
+                    <p:message for="inputUsuario"/>
+
+                </div>
+
+                <div class="field col-12 md:col-3">
+
+                    <p:outputLabel for="inputSenha" value="Senha:"/>
+
+                    <p:password id="inputSenha" value="#{integracaoBean.integracao.psw}" required="true"
+                                toggleMask="true" redisplay="true"
+                                requiredMessage="Requerido" style="width: 100%"/>
+
+                    <p:message for="inputSenha"/>
+
+                </div>
+
+                <div class="field col-12 md:col-2">
+
+                    <p:outputLabel for="inputLoja" value="Codigo da Loja"/>
+
+
+                    <p:inputText id="inputLoja" value="#{integracaoBean.integracao.codLojaEmpresa}"/>
+
+                    <p:message for="inputLoja"/>
+
+                </div>
+
+                <h:panelGroup layout="block" id="pnpToken" styleClass="col-12">
+
+                    <h:panelGroup layout="block"
+                                  rendered="#{integracaoBean.integracao.tipoIntegracao.clientId and integracaoBean.integracao.tipoIntegracao ne 'TRES_CPLUS'}"
+                                  styleClass="ui-fluid formgrid grid">
+
+                        <div class="field col-12 md:col-4">
+
+                            <p:outputLabel for="inputClienteId" value="Client ID:"/>
+
+                            <p:inputText id="inputClienteId" value="#{integracaoBean.integracao.clientId}"
+                                         required="true" requiredMessage="Requerido"/>
+
+                            <p:message for="inputClienteId"/>
+
+                        </div>
+
+                        <div class="field col-12 md:col-4">
+
+                            <p:outputLabel for="inputClientSecret" value="Client Secret:"/>
+
+                            <p:inputText id="inputClientSecret" value="#{integracaoBean.integracao.clientSecret}"
+                                         required="true" requiredMessage="Requerido"/>
+
+                            <p:message for="inputClientSecret"/>
+
+                        </div>
+
+                    </h:panelGroup>
+
+                    <h:panelGroup layout="block"
+                                  rendered="#{integracaoBean.integracao.tipoIntegracao.token}"
+                                  styleClass="ui-fluid formgrid grid">
+
+                        <div class="field col-12 md:col-4">
+
+                            <p:outputLabel for="txtToken" value="Token:"/>
+
+                            <p:inputText id="txtToken" value="#{integracaoBean.integracao.token}" required="true"
+                                         requiredMessage="Requerido"/>
+
+                            <p:message for="txtToken"/>
+
+                        </div>
+
+                        <h:panelGroup styleClass="field col-12 md:col-3" rendered="#{integracaoBean.integracao.id ne null}">
+
+                            <p:outputLabel for="habilitarWeb" value="Websocket: "/>
+                            <div>
+                                <p:toggleSwitch id="habilitarWeb" value="#{integracaoBean.integracao.habilitarWebsocket }"/>
+                            </div>
+
+                        </h:panelGroup>
+
+                        <h:panelGroup id="pnp3c" styleClass="field col-12 md:col-1" rendered="#{integracaoBean.integracao.id ne null}">
+
+                            <p:outputLabel for="habilitarWeb" value="Websocket: "/>
+
+                            <div>
+                                <p:commandButton id="bntStop" styleClass="ui-button-flat" title="Parar socket"  icon="fa fa-stop"   update="pnp3c lblStatus" rendered="#{integracaoBean.socketAlive3c}" actionListener="#{integracaoBean.pararWebsocket()}"/>
+                                <p:commandButton id="bntPlay" styleClass="ui-button-flat" title="Iniciar socket" icon="fa fa-play"  update="pnp3c lblStatus" rendered="#{integracaoBean.socketAlive3c eq false}" actionListener="#{integracaoBean.iniciarWebsocket()}"/>
+
+                            </div>
+
+                        </h:panelGroup>
+
+                        <h:panelGroup  styleClass="field col-12 md:col-4" rendered="#{integracaoBean.integracao.id ne null}">
+
+                            <p:outputLabel  value="Status: "/>
+                            <p:commandButton styleClass="ui-button-flat" icon="fa fa-refresh" update="lblStatus" global="false"  actionListener="#{integracaoBean.onRetornarStatus()}"/>
+
+                            <div>
+                                <p:outputLabel id="lblStatus" value="#{integracaoBean.integracao.status}" />
+                            </div>
+
+                        </h:panelGroup>
+
+                    </h:panelGroup>
+
+
+                </h:panelGroup>
+
+
+            </div>
+
+            <div class="mt-5">
+
+                <p:commandButton value="Salvar" styleClass="mr-3 ui-button-raised" id="btnSalvar"
+                                 action="#{integracaoBean.salvar()}" update="@form grl" icon="pi pi-save"/>
+
+                <p:commandButton value="Voltar" id="btnVoltar" ajax="false"
+                                 styleClass="ui-button-raised ui-button-outlined" action="#{integracaoBean.voltar()}"
+                                 immediate="true"
+                                 icon="pi pi-arrow-circle-left"/>
+
+            </div>
+
+
+        </div>
+
+    </h:form>
+
+
+</ui:fragment>

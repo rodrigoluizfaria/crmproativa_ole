@@ -1,0 +1,144 @@
+<ui:fragment xmlns="http://www.w3.org/1999/xhtml"
+             xmlns:h="http://java.sun.com/jsf/html"
+             xmlns:f="http://java.sun.com/jsf/core"
+             xmlns:ui="http://java.sun.com/jsf/facelets"
+             xmlns:p="http://primefaces.org/ui" template="/WEB-INF/template.xhtml">
+
+    <!-- PESQUISA EMPRESA -->
+
+    <p:growl id="grl" widgetVar="grl" globalOnly="true" escape="false"
+             showSummary="false" life="8000" showDetail="true" sticky="false">
+
+        <p:autoUpdate/>
+
+    </p:growl>
+
+
+    <h:form id="pesqEmpresa">
+
+
+        <div class="card">
+
+            <div class="formgrid ui-fluid grid">
+
+                <div class="field col-12 md:col-3">
+
+                    <p:outputLabel id="lblNomeEmpresa" for="inputPesqEmpNome"
+                                   value="#{msg.nome}"></p:outputLabel>
+
+                    <p:inputText id="inputPesqEmpNome"
+                                 value="#{empresaBean.empresa.nome}"/>
+
+                </div>
+
+                <div class="field col-12 md:col-3">
+
+                    <p:outputLabel id="lblAcessoEmpresa" for="inputPesqEmpCnpj"
+                                   value="#{msg.cnpj}"></p:outputLabel>
+
+                    <p:inputText id="inputPesqEmpCnpj" value="#{empresaBean.empresa.cnpj}"/>
+
+                </div>
+
+                <div class="field col-12 md:col-3">
+
+                    <label>Acesso:</label>
+
+                    <p:selectOneMenu id="selectOneAtivo" value="#{empresaBean.empresa.ativo}">
+
+                        <f:selectItems value="#{empresaBean.tipoAcessoEnum}" var="acesso"
+                                       itemLabel="#{acesso.constante}" itemValue="#{acesso}"/>
+
+                    </p:selectOneMenu>
+
+                </div>
+
+            </div>
+
+            <div class="mt-5">
+
+                <p:commandButton value="#{msg.pesquisar}" id="btnPesquisar"
+                                 action="#{empresaBean.buscarEmpresa()}" update="@form"
+                                 icon="pi pi-search" styleClass="mr-3 ui-button-raised"/>
+
+                <p:commandButton id="btnExportar"
+                                 styleClass="mr-3  ui-button-raised" icon="pi pi-file-excel"
+                                 value="#{msg.exportar}" ajax="false"
+                                 disabled="#{empty empresaBean.listEmpresa}" immediate="true"
+                                 rendered="#{sessionScope['usuario'].permissaoExportar}">
+
+
+                    <p:dataExporter target="tableEmpresa" type="xls"
+                                    fileName="empresa"/>
+
+                </p:commandButton>
+
+                <p:commandButton value="Novo" id="btnNovo"
+                                 styleClass="ui-button-raised"
+                                 actionListener="#{empresaBean.novaEmpresa()}" ajax="false"
+                                 icon="pi pi-plus-circle "/>
+
+            </div>
+
+        </div>
+
+        <div class="col-12 card mt-4">
+
+            <div>
+
+                <p:dataTable id="tableEmpresa" value="#{empresaBean.listEmpresa}"
+                             reflow="true" var="emp" rows="15" paginator="true"
+                             styleClass="ui-datatable-striped ui-datatable-gridlines"
+                             paginatorPosition="bottom" emptyMessage="#{msg.emptyMessage}"
+                             currentPageReportTemplate="[#{msg.totalDeRegistros}: {totalRecords}]"
+                             paginatorTemplate="{CurrentPageReport}  {FirstPageLink} {PreviousPageLink} {PageLinks} {NextPageLink} {LastPageLink} {Exporters}">
+
+                    <p:ajax event="page" global="false"/>
+
+                    <p:ajax event="sort" global="false"/>
+
+                    <p:column headerText="#{msg.nome}">
+
+                        <h:outputText value="#{emp.nome}"/>
+
+                    </p:column>
+
+                    <p:column headerText="#{msg.cnpj}">
+
+                        <h:outputText value="#{emp.cnpj}"/>
+
+                    </p:column>
+
+                    <p:column headerText="#{msg.acesso}">
+
+                        <h:outputText value="#{emp.ativo.constante}"/>
+
+                    </p:column>
+
+                    <p:column styleClass="justify-content-center align-content-center text-center"
+                              exportable="false" width="5%">
+
+                        <p:commandButton icon="fa fa-fw fa-edit"
+                                         styleClass="ui-button-flat  rounded-button ui-button-secondary "
+                                         action="#{empresaBean.editar(emp)}" ajax="false">
+
+                            <f:setPropertyActionListener value="#{emp}" target="#{empresaBean.empresa}"/>
+
+                        </p:commandButton>
+
+                    </p:column>
+
+                </p:dataTable>
+
+            </div>
+
+        </div>
+
+
+    </h:form>
+
+
+    <!-- FIM PESQUISA EMPRESA -->
+
+
+</ui:fragment>

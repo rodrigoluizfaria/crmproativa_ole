@@ -1,0 +1,320 @@
+<ui:composition xmlns="http://www.w3.org/1999/xhtml"
+                xmlns:h="http://java.sun.com/jsf/html"
+                xmlns:f="http://java.sun.com/jsf/core"
+                xmlns:ui="http://java.sun.com/jsf/facelets"
+                xmlns:comboempresa="http://java.sun.com/jsf/composite/componentes"
+                xmlns:p="http://primefaces.org/ui" template="/WEB-INF/template.xhtml">
+
+
+    <ui:define name="viewname">
+
+        <div class="bcca-breadcrumb">
+            <div class="bcca-breadcrumb-item bg-primary-500 hover:bg-primary-700">
+                <p:link outcome="/pages/relatorios/agendamentosDiariosOperador" styleClass="uppercase"
+                        style="text-decoration: none">RELATÓRIOS AGENDAMENTOS</p:link>
+            </div>
+            <div class="bcca-breadcrumb-item uppercase">RELATÓRIOS</div>
+        </div>
+
+    </ui:define>
+
+    <ui:define name="content">
+
+        <div class="p-grid justify-center ">
+
+            <p:growl id="grl" widgetVar="grl" globalOnly="true" escape="false"
+                     showSummary="false" life="8000" showDetail="true" sticky="false">
+
+                <p:autoUpdate/>
+
+            </p:growl>
+
+            <h:form id="formConteudo" prependId="false">
+
+                <h:panelGroup id="pamelRelatoriosAgendamentos" layout="block" styleClass="card">
+
+                    <div class="ui-fluid formgrid grid">
+
+                        <comboempresa:selectEmpresa id="cmpEmpresa"
+                                                    managedBean="#{relatoriosAgendamentosDiarios}"
+                                                    value="#{relatoriosAgendamentosDiarios.empresa}"
+                                                    exibirSelecione="#{relatoriosAgendamentosDiarios.empresa eq null}"
+                                                    ajax="true" style="md:col-3"
+                                                    update="@this :formConteudo:selectOneCampanha :formConteudo:selectOneUsuario  :formConteudo:selectOneStatusCampanha :formConteudo:selectOneTipoCams"
+                                                    filter="false"/>
+
+                        <div class="field col-12 md:col-3">
+
+                            <p:outputLabel value="Status Campanha "
+                                           for="selectOneStatusCampanha"/>
+
+                            <p:selectOneMenu id="selectOneStatusCampanha"
+                                             disabled="#{relatoriosAgendamentosDiarios.empresa eq null}"
+                                             value="#{relatoriosAgendamentosDiarios.idStatusCampanha}"
+                                             converter="omnifaces.SelectItemsConverter" filter="true"
+                                             filterMatchMode="contains" autoWidth="false">
+
+                                <f:selectItem itemLabel="Selecione" noSelectionOption="true"
+                                              itemValue="#{null}"/>
+
+                                <f:selectItems
+                                        value="#{relatoriosAgendamentosDiarios.listStatusCampanha}"
+                                        var="statusCam" itemLabel="#{statusCam.descricao}"
+                                        itemValue="#{statusCam.id}"/>
+
+                                <p:ajax global="false" process="@this" update="selectOneCampanha" partialSubmit="true"
+                                        listener="#{relatoriosAgendamentosDiarios.onAtualizarSelectOneCampanha()}"/>
+
+                            </p:selectOneMenu>
+
+                        </div>
+
+                        <div class="field col-12 md:col-3">
+
+                            <p:outputLabel value="Tipo Campanha" for="selectOneTipoCams"/>
+
+                            <p:selectOneMenu id="selectOneTipoCams"
+                                             value="#{relatoriosAgendamentosDiarios.tipoCampanha}"
+                                             disabled="#{relatoriosAgendamentosDiarios.empresa eq null}"
+                                             converter="omnifaces.SelectItemsConverter" filter="true"
+                                             filterMatchMode="contains" autoWidth="false">
+
+                                <f:selectItem noSelectionOption="true" itemLabel="Selecione"/>
+
+                                <f:selectItems
+                                        value="#{relatoriosAgendamentosDiarios.tipoCampanhas}"
+                                        var="tipoCamp" itemLabel="#{tipoCamp.constante}"
+                                        itemValue="#{tipoCamp}"/>
+
+                                <p:ajax global="false" process="@this"
+                                        update="selectOneCampanha" partialSubmit="true"
+                                        listener="#{relatoriosAgendamentosDiarios.onAtualizarSelectOneCampanha()}"/>
+
+                            </p:selectOneMenu>
+
+                        </div>
+
+
+                        <div class="field col-12 md:col-3">
+
+                            <p:outputLabel value="Campanha " for="selectOneCampanha"/>
+
+                            <p:selectOneMenu id="selectOneCampanha"
+                                             value="#{relatoriosAgendamentosDiarios.idCampanha}"
+                                             label="Campanha" converter="omnifaces.SelectItemsConverter"
+                                             filter="true" filterMatchMode="contains" autoWidth="false">
+
+                                <f:selectItem noSelectionOption="true" itemLabel="Selecione"/>
+
+                                <f:selectItems
+                                        value="#{relatoriosAgendamentosDiarios.listCampanhas}"
+                                        var="camp" itemLabel="#{camp.descricao}" itemValue="#{camp.id}"/>
+
+                            </p:selectOneMenu>
+
+                        </div>
+
+                        <div class="field col-12 md:col-3">
+
+                            <p:outputLabel value="Usuario " for="selectOneUsuario"/>
+
+                            <p:selectOneMenu id="selectOneUsuario"
+                                             value="#{relatoriosAgendamentosDiarios.idIsuario}"
+                                             label="Usuario" converter="omnifaces.SelectItemsConverter"
+                                             filter="true" filterMatchMode="contains" autoWidth="false">
+
+                                <f:selectItem noSelectionOption="true" itemLabel="Selecione"/>
+
+                                <f:selectItems
+                                        value="#{relatoriosAgendamentosDiarios.listUsuarios}"
+                                        var="usr" itemLabel="#{usr.nome}" itemValue="#{usr.id}"/>
+
+                            </p:selectOneMenu>
+
+                        </div>
+
+                        <div class="field col-12 md:col-3">
+
+                            <p:outputLabel value="Status Atendimento "
+                                           for="selectOneStatusAtendimento"/>
+
+                            <p:selectOneMenu id="selectOneStatusAtendimento"
+                                             value="#{relatoriosAgendamentosDiarios.idStatusAtendimento}"
+                                             label="Status Atendimento"
+                                             converter="omnifaces.SelectItemsConverter" filter="true"
+                                             filterMatchMode="contains" autoWidth="false">
+
+                                <f:selectItem noSelectionOption="true" itemLabel="Selecione"/>
+
+                                <f:selectItems
+                                        value="#{relatoriosAgendamentosDiarios.listStatusAtendimentos}"
+                                        var="statusAtendimento"
+                                        itemLabel="#{statusAtendimento.descricao}"
+                                        itemValue="#{statusAtendimento.id}"/>
+
+                            </p:selectOneMenu>
+
+                        </div>
+
+                        <div class="field col-12 md:col-3">
+
+                            <p:outputLabel value="Data inicio"/>
+
+                            <p:datePicker id="calendarDataInicioPesquisa"
+                                          value="#{relatoriosAgendamentosDiarios.dataInicio}"
+                                          showButtonBar="true" showIcon="true" readonlyInput="true"
+                                          pattern="dd/MM/yyyy" locale="pt_BR"/>
+
+                        </div>
+
+                        <div class="field col-12 md:col-3">
+
+                            <p:outputLabel value="Data fim"/>
+
+                            <p:datePicker id="calendarDataFimPesquisa"
+                                          value="#{relatoriosAgendamentosDiarios.dataFim}"
+                                          showButtonBar="true" showIcon="true" readonlyInput="true"
+                                          pattern="dd/MM/yyyy" locale="pt_BR"/>
+
+                        </div>
+
+                    </div>
+
+                    <div class="mt-5">
+
+                        <p:commandButton styleClass="mr-3 raised-button"
+                                         actionListener="#{relatoriosAgendamentosDiarios.pesquisar()}"
+                                         value="Pesquisar" id="btnPesquisar" icon="pi pi-search"
+                                         update="@form"/>
+
+                        <p:commandButton id="btnExportarPesquisa" icon="pi pi-upload"
+                                         styleClass="outlined-button secondary-button "
+                                         value="#{msg.exportar}" ajax="false"
+                                         disabled="#{empty relatoriosAgendamentosDiarios.listInformacaoes}"
+                                         actionListener="#{relatoriosAgendamentosDiarios.onExportar()}"
+                                         immediate="true"
+                                         rendered="#{sessionScope['usuario'].permissaoExportar}">
+
+
+                        </p:commandButton>
+
+                    </div>
+
+
+                </h:panelGroup>
+
+                <div class="mt-4">
+
+                    <div class="card">
+
+
+
+                            <p:dataTable id="tableRelAgend" var="info" rows="20"
+                                         paginator="true" paginatorPosition="bottom"
+                                         value="#{relatoriosAgendamentosDiarios.listInformacaoes }"
+                                         emptyMessage="#{relatoriosAgendamentosDiarios.listInformacaoes eq null? '' : msg.emptyMessage}"
+                                         currentPageReportTemplate="[#{msg.totalDeRegistros}: {totalRecords}]"
+                                         paginatorTemplate="{CurrentPageReport}  {FirstPageLink} {PreviousPageLink} {PageLinks} {NextPageLink} {LastPageLink} {Exporters}"
+                                         styleClass="ui-datatable-striped ui-datatable-sm ">
+
+                                <p:ajax event="page" global="false"/>
+
+                                <p:ajax event="sort" global="false"/>
+
+                                <p:columnGroup type="header">
+
+                                    <p:row>
+
+                                        <p:column headerText="Data" width="10%"/>
+                                        <p:column headerText="Usuario" width="20%"/>
+                                        <p:column headerText="Tipo Campanha" width="10%"/>
+                                        <p:column headerText="Total Agendamentos" width="10%"/>
+                                        <p:column headerText="Status" width="20%"/>
+                                        <p:column headerText="Quantidade" width="20%"/>
+                                        <p:column headerText="Percentual" width="20%"/>
+
+                                    </p:row>
+
+                                </p:columnGroup>
+
+
+                                <p:column sortBy="#{info[0]}" width="10%" headerText="">
+
+                                    <h:outputLabel value="#{info[0]}"/>
+
+                                </p:column>
+
+                                <p:column sortBy="#{info[1]}" width="20%">
+
+                                    <h:outputLabel value="#{info[1]}"/>
+
+                                </p:column>
+
+                                <p:column sortBy="#{info[2]}" width="10%">
+
+                                    <h:outputLabel value="#{info[2]}">
+
+                                    </h:outputLabel>
+
+                                </p:column>
+
+                                <p:column sortBy="#{info[3]}" width="10%">
+
+                                    <h:outputLabel value="#{info[3]}"/>
+
+                                </p:column>
+
+                                <p:column colspan="3" width="60%">
+
+                                    <p:dataTable id="subTable" var="sub" value="#{info[4]}"
+                                                 styleClass="ui-datatable-striped ui-datatable-sm noHeader "
+                                                 emptyMessage="">
+
+                                        <p:ajax event="page" global="false"/>
+
+                                        <p:ajax event="sort" global="false"/>
+
+                                        <p:column sortBy="#{sub[0]}" width="60%">
+
+                                            <h:outputLabel value="#{sub[0]}"/>
+
+                                        </p:column>
+
+                                        <p:column sortBy="#{sub[1]}" width="20%">
+
+                                            <h:outputLabel value="#{sub[1]}"/>
+
+                                        </p:column>
+
+                                        <p:column sortBy="#{sub[2]}" width="20%">
+
+                                            <h:outputText value="#{sub[2]} %">
+
+                                                <f:convertNumber pattern="##0.00"/>
+
+                                            </h:outputText>
+
+                                        </p:column>
+
+                                    </p:dataTable>
+
+                                </p:column>
+
+
+                            </p:dataTable>
+
+
+
+
+                    </div>
+                </div>
+
+
+            </h:form>
+
+
+        </div>
+
+    </ui:define>
+
+</ui:composition>

@@ -1,0 +1,325 @@
+<ui:fragment xmlns="http://www.w3.org/1999/xhtml"
+	xmlns:h="http://java.sun.com/jsf/html"
+	xmlns:f="http://java.sun.com/jsf/core"
+	xmlns:o="http://omnifaces.org/ui"
+	xmlns:pe="http://primefaces.org/ui/extensions"
+	xmlns:ui="http://java.sun.com/jsf/facelets"
+	xmlns:p="http://primefaces.org/ui"
+	xmlns:c="http://java.sun.com/jsp/jstl/core">
+
+	<h:panelGroup id="panelIn100" layout="block">
+
+		<p:dialog widgetVar="dlgIn100" id="dlgIn100" width="65%" header="Consulta IN100" modal="false" styleClass="dialog-formulario" resizable="true" minimizable="true" maximizable="true" rendered="#{fichaAtendimentoBean.atendimento ne null}" appendTo="@(body)">
+
+			<h:form id="formIn100" prependId="false" rendered="#{fichaAtendimentoBean.atendimento ne null}">
+
+						<div class="ui-fluid p-formgrid p-grid">
+
+							<div class=" p-field p-col-11  ui-widget ui-widget-header ui-corner-all" style="display: inline-block; align-items: center; flex-wrap: wrap; padding: 0 1rem">
+
+
+								<h:panelGroup id="msgErro" layout="block" styleClass="isa_warning" rendered="#{fichaAtendimentoBean.dadosConsultaIn100 ne null and (fichaAtendimentoBean.dadosConsultaIn100.semResultado or fichaAtendimentoBean.dadosConsultaIn100.celularUsado)}" style="margin: 0px;  padding: 0px">
+
+									<i class="fa fa-warning"></i>	
+						
+												#{fichaAtendimentoBean.dadosConsultaIn100.menssagem}
+												#{fichaAtendimentoBean.dadosConsultaIn100.semResultado? 'Envie o token': ''}
+									
+								</h:panelGroup>
+
+							</div>
+
+							<div class="p-field p-col-1 ">
+
+								<p:commandButton icon="pi pi-refresh " styleClass="secondary-button rounded-button" value="Atualizar" update="@form" process="@this pnpEnvioToken" style="float: right;margin-top: 7px;" actionListener="#{fichaAtendimentoBean.consultarIn100('MODAL')}" />
+
+							</div>
+							
+						</div>
+						
+					<div class="p-col-12 card">
+					
+			
+						
+
+							<p:panel header="Solicitar Envio de Token" styleClass="p-mb-3" toggleable="true" closable="false" id="pnpEnvioToken" toggleableHeader="true">
+
+								<div class=" ui-fluid">
+
+									<div class="p-field p-grid">
+
+										<div class="p-col-12 p-mb-3 p-md-3 p-mb-md-0 div-vertical p-p-5">
+
+											<p:outputLabel value="CPF:" />
+
+										</div>
+
+										<div class="p-col-12 p-md-7 p-p-5">
+
+											<p:inputText value="#{fichaAtendimentoBean.atendimento.cpf}" />
+
+										</div>
+
+									</div>
+
+									<div class="p-field p-grid">
+
+										<div class="p-col-12 p-mb-3 p-md-3 p-mb-md-0 div-vertical p-p-5">
+
+											<p:outputLabel value="Nome:" />
+
+										</div>
+
+										<div class="p-col-12 p-md-7 p-p-5">
+
+											<p:inputText value="#{fichaAtendimentoBean.atendimento.nome}" />
+
+										</div>
+
+									</div>
+
+
+									<div class="p-field p-grid">
+
+										<div
+											class="p-col-12 p-mb-3 p-md-3 p-mb-md-0 div-vertical p-p-5">
+
+											<p:outputLabel value="Matricula:" for="matriculaIn100"/>
+
+										</div>
+
+										<div class="p-col-12 p-md-7 p-p-5">
+
+											<p:inputText value="#{fichaAtendimentoBean.atendimento.beneficioPrincipal}" required="true" requiredMessage="Obrigatório." id="matriculaIn100" />
+
+										</div>
+
+										<div class="p-col-12 p-md-2 p-p-5">
+											<p:message for="matriculaIn100" />
+										</div>
+
+									</div>
+
+									<div class="p-field p-grid">
+
+										<div
+											class="p-col-12 p-mb-3 p-md-3 p-mb-md-0 div-vertical p-p-5">
+
+											<p:outputLabel value="Data Nascimento:" for="dtNascIn100" />
+
+										</div>
+
+										<div class="p-col-12 p-md-7 p-p-5">
+
+											<p:inputMask value="#{fichaAtendimentoBean.atendimento.dataNascimento}" mask="99/99/9999" required="true" requiredMessage="Obrigatório" id="dtNascIn100">
+
+												<f:convertDateTime pattern="dd/MM/yyyy" />
+
+											</p:inputMask>
+
+
+										</div>
+										
+										<div class="p-col-12 p-md-2 p-p-5">
+											<p:message for="dtNascIn100" />
+										</div>
+
+
+									</div>
+
+									<div class="p-field p-grid">
+
+										<div class="p-col-12 p-mb-3 p-md-3 p-mb-md-0 div-vertical p-p-5">
+
+											<p:outputLabel value="Cidade / Estado: *" />
+
+										</div>
+
+										<div class="p-col-12 p-md-7 p-p-5 p-mt-1">
+
+											<p:dataTable id="tableEndin100"
+												widgetVar="tableEnderecoSeguro"
+												value="#{fichaAtendimentoBean.atendimento.listaEnderecos}"
+												var="endereco" rows="5" paginator="true"
+												selection="#{fichaAtendimentoBean.endereco}"
+												rowKey="#{endereco.id}" paginatorPosition="bottom"
+												emptyMessage="#{msg.emptyMessage}"
+												styleClass="ui-datatable-sm ui-datatable-striped "
+												currentPageReportTemplate="[#{msg.totalDeRegistros}: {totalRecords}]"
+												paginatorTemplate="{CurrentPageReport}  {FirstPageLink} {PreviousPageLink} {PageLinks} {NextPageLink} {LastPageLink} {Exporters}">
+
+												<p:ajax event="page" global="false" />
+
+												<p:column selectionMode="single" style="width: 5%" />
+
+												<p:column headerText="Cidade" width="20%">
+
+													<p:outputLabel value="#{endereco.cidade}" />
+
+												</p:column>
+
+												<p:column headerText="UF" width="10%">
+
+													<p:outputLabel value="#{endereco.uf}" />
+
+												</p:column>
+
+												<p:column headerText="Ação" width="5%" style="text-align:center">
+
+													<f:facet name="header">
+
+														<p:commandLink id="btnAddEndSeguro" icon="pi pi-plus"
+															title="Adicionar Endereço"
+															oncomplete="PF('dlgEndereco').show()"
+															update="tableEndin100" global="false"
+															actionListener="#{fichaAtendimentoBean.criarEntidade('ENDERECO')}"
+															ajax="true">
+
+															<i class="fa fa-plus-square" style="color: #ffff" />
+
+														</p:commandLink>
+
+													</f:facet>
+
+													<p:commandButton immediate="true" global="false" title="Alterar Endereço" oncomplete="PF('dlgEndereco').show()" update="dlgEndereco" icon="fa fa-fw fa-edit" styleClass="rounded-button text-button">
+
+														<f:setPropertyActionListener value="#{endereco}" target="#{fichaAtendimentoBean.endereco}" />
+
+														<f:setPropertyActionListener value="U" target="#{fichaAtendimentoBean.acao}" />
+
+													</p:commandButton>
+
+												</p:column>
+
+											</p:dataTable>
+
+										</div>
+
+									</div>
+
+									<div class="p-field p-grid">
+
+										<div class="p-col-12 p-mb-3 p-md-3 p-mb-md-0 div-vertical p-p-5">
+
+											<p:outputLabel value="Telefones: *" />
+
+										</div>
+
+										<div class="p-col-12 p-md-7 p-p-5 p-mt-1">
+
+											<p:dataTable rows="5" paginator="true" 
+												value="#{fichaAtendimentoBean.atendimento.listaTelefonesOrdenada}"
+												paginatorPosition="bottom"
+												emptyMessage="#{msg.emptyMessage}"
+												currentPageReportTemplate="[ #{msg.totalDeRegistros}: {totalRecords} ]"
+												paginatorTemplate="{CurrentPageReport}  {FirstPageLink} {PreviousPageLink} {PageLinks} {NextPageLink} {LastPageLink}"
+												var="tel" id="tableIn100"
+												selection="#{fichaAtendimentoBean.telefone}"
+												rowKey="#{tel.id}"
+												styleClass="ui-datatable-striped ui-datatable-sm ">
+
+												<p:ajax event="page" global="false" />
+
+												<p:column selectionMode="single" style="width: 5%"  />
+
+												<p:column headerText="#{msg.ddd}" style="text-align:center">
+
+													<div class="contact-actions">#{tel.ddd}</div>
+
+												</p:column>
+
+												<p:column headerText="Número" style="text-align:center">
+
+													<div class="contact-actions">#{tel.numero}</div>
+
+												</p:column>
+
+												<p:column width="5%">
+
+													<f:facet name="header">
+
+														<p:commandLink global="false" immediate="true" update=":dlgTelefone" oncomplete="PF('dlgTelefone').show();" styleClass="rounded-button p-mr-2"	title="Adicionar telefone"	action="#{fichaAtendimentoBean.criarEntidade('TELEFONE')}">
+
+															<i class="fa fa-plus-square" style="color: #ffff" />
+
+														</p:commandLink>
+
+													</f:facet>
+
+												</p:column>
+
+											</p:dataTable>
+										</div>
+
+									</div>
+
+									<div class="p-col-12  ui-widget ui-widget-header ui-corner-all" style="display: inline-block; align-items: center; flex-wrap: wrap">
+
+										<div class=" ui-toolbar-group-right">
+
+											<p:commandButton value="Enviar Token" actionListener="#{fichaAtendimentoBean.enviarTokenIn100()}" process="@this pnpEnvioToken" update="@form" />
+
+										</div>
+
+									</div>
+								</div>
+
+							</p:panel>
+
+							<p:panel header="Validor Token" styleClass="p-mb-3 p-col-4 " toggleable="true" closable="false">
+
+								<div class=" ui-fluid">
+
+									<div class="p-field p-grid">
+
+										<div
+											class="p-col-12 p-mb-3 p-md-3 p-mb-md-0 div-vertical p-p-5">
+
+											<p:outputLabel value="Token:" for="txtTokenIn100" />
+
+										</div>
+
+										<div class="p-col-12 p-md-8 p-p-5">
+
+											<p:inputText value="#{fichaAtendimentoBean.token}" id="txtTokenIn100" required="true" requiredMessage="Obrigatório" />
+
+										</div>
+										
+
+									</div>
+										
+										<div class="p-col-12 p-md-6 p-p-5">
+											<p:message for="txtTokenIn100" />
+										</div>
+
+									<div class="p-col-12  ui-widget ui-widget-header ui-corner-all" style="display: inline-block; align-items: center; flex-wrap: wrap">
+
+										<div class=" ui-toolbar-group-right">
+
+											<p:commandButton value="Validar Token" icon="pi pi-chevron-circle-up" update="@form" process="@this txtTokenIn100" actionListener="#{fichaAtendimentoBean.validarToken()}"/>
+
+										</div>
+
+									</div>
+
+								</div>
+
+							</p:panel>
+		
+				</div>
+
+				<p:messages globalOnly="true" />
+
+				<div style="text-align: center;" class="footer_div_btn p-mb-3 p-mb-3">
+
+					<p:commandButton value="Sair" type="button" icon="pi pi-times" onclick="PF('dlgIn100').hide();" style="width: auto;" />
+
+				</div>
+
+			</h:form>
+
+		</p:dialog>
+
+	</h:panelGroup>
+
+</ui:fragment>

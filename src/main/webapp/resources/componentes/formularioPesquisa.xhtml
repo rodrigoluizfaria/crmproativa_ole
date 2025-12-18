@@ -1,0 +1,114 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+<html xmlns="http://www.w3.org/1999/xhtml"
+	xmlns:h="http://java.sun.com/jsf/html"
+	xmlns:f="http://java.sun.com/jsf/core"
+	xmlns:ui="http://java.sun.com/jsf/facelets"
+	xmlns:p="http://primefaces.org/ui"
+	xmlns:pe="http://primefaces.org/ui/extensions"
+	xmlns:c="http://java.sun.com/jsp/jstl/core"
+	xmlns:composite="http://java.sun.com/jsf/composite">
+
+<composite:interface>
+
+	<composite:attribute name="managedBean"	type="com.proativaservicos.bean.GenericBean" />
+
+	<composite:attribute name="atendimento"	type="com.proativaservicos.model.GenericAtendimento" />
+
+	<composite:attribute name="visualizar" type="boolean" default="false" />
+
+	<composite:attribute name="id" required="true" />
+
+	<composite:attribute name="altura" type="java.lang.String"	default="inherit" />
+
+</composite:interface>
+
+<composite:implementation>
+
+	<h:panelGroup id="panelFormulario" layout="block" styleClass="conteudoFormulario ui-fluid p-formgrid p-grid p-col-5" style="height: #{cc.attrs.altura}" rendered="#{not empty cc.attrs.managedBean.formularioQuestionarioController.listRespostas}">
+		
+		<div class="p-field p-col-12 p-md-6 p-mt-3">
+			
+			<p:carousel value="#{cc.attrs.managedBean.formularioQuestionarioController.listRespostas}"	styleClass="p-col-12" firstVisible="0"  itemStyleClass="perg-#{resposta.id}" id="caroselFormulario"
+				widgetVar="caroselFormulario" style="width:550px" responsive="true" var="resposta" itemStyle="padding: 15px;"
+				numVisible="1">
+				
+					<f:facet name="header">
+					#{cc.attrs.managedBean.formularioQuestionarioController.questionario.descricao}
+				
+				</f:facet>
+
+				<div class="ui-fluid p-formgrid p-grid p-col-12 p-mt-2">
+
+					<div class="p-col-12">
+
+						<div class="p-formgrid p-grid">
+
+							<h:panelGroup id="panelResposta" styleClass="p-field p-col-12 p-md-12 p-mt-3" rendered="#{cc.attrs.managedBean.formularioQuestionarioController.exibirPergunta(resposta.pergunta)}" layout="block">
+
+								<p:outputLabel value="#{resposta.pergunta.descricao}" />
+
+								<c:if test="#{cc.attrs.visualizar eq true}">
+
+									<div>
+										<p:outputLabel value="#{resposta.texto}" />
+									</div>
+
+								</c:if>
+
+								<c:if test="#{cc.attrs.visualizar eq false}">
+
+									<h:panelGroup id="panelText" rendered="#{empty resposta.pergunta.listOpcoes}" layout="block">
+
+										<p:inputText id="respostaTexto" value="#{resposta.texto}">
+
+											<p:ajax global="false" onstart="setPageCarousel();" oncomplete="changeCarousel();" />
+
+										</p:inputText>
+
+									</h:panelGroup>
+
+								</c:if>
+
+								<h:panelGroup id="panelMultplaEscolha" rendered="#{not empty resposta.pergunta.listOpcoes and resposta.pergunta.tipoResposta eq 'SELECAO_UNICA'}">
+
+									<p:selectOneRadio id="comboOpcoes" columns="1"  layout="responsive" value="#{resposta.opcao}"	rendered="#{not empty resposta.pergunta.listOpcoes}" converter="omnifaces.SelectItemsConverter">
+
+										<f:selectItems value="#{resposta.pergunta.listOpcoes}" var="op" itemLabel="#{op.descricao}" itemValue="#{op}" />
+
+										<p:ajax global="false" process="@this panelText" onstart="setPageCarousel();" oncomplete="changeCarousel();handleTabChange(1);" partialSubmit="true" update="panelResposta caroselFormulario"
+											listener="#{cc.attrs.managedBean.formularioQuestionarioController.onSelect()}">
+
+										</p:ajax>
+
+									</p:selectOneRadio>
+
+								</h:panelGroup>
+
+							</h:panelGroup>
+
+						</div>
+
+					</div>
+
+				</div>
+
+				<f:facet name="footer">
+
+					<div style="text-align: right;">
+
+						<p:commandButton value="Salvar formulario" 	process="@this panelResposta caroselFormulario panelText" oncomplete="handleTabChange(1);" actionListener="#{cc.attrs.managedBean.formularioQuestionarioController.salvar()}"
+							update="@form" icon="pi pi-save"	styleClass="raised-button  p-mr-2 " />
+					</div>
+
+				</f:facet>
+
+			</p:carousel>
+			
+		</div>
+		
+	</h:panelGroup>
+
+</composite:implementation>
+
+</html>

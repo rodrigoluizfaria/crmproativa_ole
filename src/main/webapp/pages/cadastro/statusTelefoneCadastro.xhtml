@@ -1,0 +1,96 @@
+<ui:fragment xmlns="http://www.w3.org/1999/xhtml"
+             xmlns:h="http://java.sun.com/jsf/html"
+             xmlns:f="http://java.sun.com/jsf/core"
+             xmlns:ui="http://java.sun.com/jsf/facelets"
+             xmlns:p="http://primefaces.org/ui" template="/WEB-INF/template.xhtml">
+
+
+    <p:growl id="grl" widgetVar="grl" globalOnly="true" escape="false" showSummary="false" life="8000" showDetail="true"
+             sticky="false">
+
+        <p:autoUpdate/>
+
+    </p:growl>
+
+
+    <h:form id="formPesquisa" prependId="false">
+
+
+        <div class="card">
+
+            <div class="ui-fluid formgrid grid">
+
+                <div class="field col-12 md:col-3">
+
+                    <p:outputLabel for="inputPesqStatusDesc" value="Descrição:"/>
+
+                    <p:inputText id="inputPesqStatusDesc" value="#{statusTelefoneBean.statusTelefone.descricao}"
+                                 required="true" requiredMessage="Requerido"/>
+
+                    <p:message for="inputPesqStatusDesc"/>
+
+                </div>
+
+                <div class="field col-12 md:col-3">
+
+                    <p:outputLabel for="selectOneParam" value="Parametro:"/>
+
+                    <p:selectOneMenu id="selectOneParam" value="#{statusTelefoneBean.statusTelefone.parametro}"
+                                     required="true" requiredMessage="Requerido">
+
+                        <f:selectItem itemLabel="Selecione" noSelectionOption="true"/>
+
+                        <f:selectItems value="#{statusTelefoneBean.parametro}" var="p" itemLabel="#{p.constante}"
+                                       itemValue="#{p}"/>
+
+                        <p:message for="selectOneParam"/>
+
+                    </p:selectOneMenu>
+
+                    <p:message for="selectOneParam"/>
+
+                </div>
+
+                <div class="field col-12 md:col-3">
+
+                    <p:outputLabel for="inputCodInterno" value="Código interno:"/>
+
+
+                    <p:inputText id="inputCodInterno" value="#{statusTelefoneBean.statusTelefone.codigoInterno}"/>
+
+                </div>
+
+                <div class="field col-12 md:col-3">
+
+                    <p:outputLabel for="selectOneAtivo" value="Acesso:"/>
+
+                    <p:selectOneMenu id="selectOneAtivo" value="#{statusTelefoneBean.statusTelefone.ativo}">
+
+                        <f:selectItems value="#{statusTelefoneBean.tipoAcessoEnum}" var="a" itemLabel="#{a.constante}"
+                                       itemValue="#{a}"/>
+
+                    </p:selectOneMenu>
+
+                </div>
+
+            </div>
+
+            <div class="field col-12 mt-3 text-center">
+
+                <p:commandButton id="btnSalvar" value="#{msg.salvar}" styleClass="ui-button-raised mr-3" update="@form grl"
+                                 icon="pi pi-save" action="#{statusTelefoneBean.salvar()}"/>
+
+
+
+                <p:commandButton id="btnVoltar" value="#{msg.voltar}" actionListener="#{statusTelefoneBean.voltar()}"
+                                 immediate="true" ajax="false" icon="pi pi-arrow-circle-left" styleClass="ui-button-raised ui-button-outlined ui-button-secondary" />
+
+            </div>
+
+
+        </div>
+
+    </h:form>
+
+
+</ui:fragment>

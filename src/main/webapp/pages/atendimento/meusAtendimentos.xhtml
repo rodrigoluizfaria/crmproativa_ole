@@ -1,0 +1,111 @@
+<ui:composition xmlns="http://www.w3.org/1999/xhtml"
+                xmlns:ui="http://java.sun.com/jsf/facelets"
+                xmlns:p="http://primefaces.org/ui" template="/WEB-INF/template.xhtml">
+
+
+    <ui:define name="viewname">
+
+        <div class="bcca-breadcrumb">
+
+            <div class="bcca-breadcrumb-item bg-primary-500 hover:bg-primary-700">
+
+                <p:link outcome="/pages/atendimento/meusAtendimentos" style="text-decoration: none">MEUS ATENDIMENTOS</p:link>
+
+            </div>
+
+            <div class="bcca-breadcrumb-item ">ATENDIMENTO</div>
+
+        </div>
+
+    </ui:define>
+
+    <ui:define name="content">
+
+        <p:growl id="grl" widgetVar="grl" globalOnly="true" escape="false" showSummary="false" life="8000"  showDetail="true" sticky="false">
+
+            <p:autoUpdate/>
+
+        </p:growl>
+
+        <p:growl id="grlNo" widgetVar="grl" escape="false" showSummary="false" life="8000" showDetail="true" sticky="false"/>
+
+        <div class="card">
+
+            <div class="ui-fluid formgrid grid">
+
+                <p:tabView style="width:100%" id="tabView" widgetVar="tabView">
+
+                    <p:tab title="Agendamentos">
+
+                        <ui:include src="/pages/atendimento/meusAtendimentoAgendados.xhtml"/>
+
+                    </p:tab>
+
+                    <p:tab title="Pendentes" titleStyleClass="#{meusAtendimentosBean.listAtendimentosPendentes eq null ? '' : 'tab_pendente'}">
+
+                        <ui:include src="/pages/atendimento/meusAtendimentoPendentes.xhtml"/>
+
+                    </p:tab>
+
+                    <p:tab title="Pesquisa">
+
+                        <p:fieldset style="border-style: none;">
+
+                            <ui:include src="/pages/atendimento/meusAtendimentoPesquisa.xhtml"/>
+
+                        </p:fieldset>
+
+                    </p:tab>
+
+                    <p:tab title="Agenda" id="tabAgenda">
+
+                        <p:fieldset style="border-style: none;">
+
+                            <ui:include src="/pages/atendimento/meusAtendimentoAgenda.xhtml"/>
+
+                        </p:fieldset>
+
+                    </p:tab>
+
+                    <p:tab title="Selecionar Campanha" rendered="#{sessionScope['usuario'].empresa.parametroUsuarioCampanha}">
+
+                        <p:fieldset style="border-style: none;">
+
+                            <ui:include src="/pages/atendimento/meusAtendimentoCampanha.xhtml"/>
+
+                        </p:fieldset>
+
+                    </p:tab>
+
+                    <p:tab title="Adiantar Ficha de Atendimento" rendered="#{sessionScope['usuario'].empresa.parametroPermitirAntenciparAtendimento}">
+
+                        <p:fieldset style="border-style: none;">
+
+                            <ui:include src="/pages/atendimento/meusAtendimentosAdiantar.xhtml"/>
+
+                        </p:fieldset>
+
+                    </p:tab>
+
+                    <p:tab title="Histórico Ficha de Atendimento" rendered="#{sessionScope['usuario'].empresa.parametroHistoricoAtendimento}">
+
+                        <p:fieldset style="border-style: none;">
+
+                            <ui:include src="/pages/atendimento/meusAtendimentoHistorico.xhtml"/>
+
+                        </p:fieldset>
+
+                    </p:tab>
+
+                </p:tabView>
+
+                <ui:include src="/pages/atendimento/modalAgenda.xhtml"/>
+                <ui:include src="/pages/atendimento/atendimentoVisualizar.xhtml"/>
+
+            </div>
+
+        </div>
+
+    </ui:define>
+
+</ui:composition>

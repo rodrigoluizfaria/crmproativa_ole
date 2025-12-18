@@ -1,0 +1,51 @@
+<ui:fragment xmlns="http://www.w3.org/1999/xhtml"
+	xmlns:h="http://java.sun.com/jsf/html"
+	xmlns:f="http://java.sun.com/jsf/core"
+	xmlns:o="http://omnifaces.org/ui"
+	xmlns:ui="http://java.sun.com/jsf/facelets"
+	xmlns:p="http://primefaces.org/ui">
+
+	<!--  -->
+	<p:dialog id="modalEntidadesVetadas" widgetVar="modalEntidadesVetadas" modal="false" minimizable="true" draggable="true" resizable="true" closable="true" visible="false" width="60%"	header="Entidades Vetadas">
+
+		<h:form id="formEntidadesVetadas" prependId="false">
+
+			<div class="p-col-12">
+
+				<div >
+
+					<p:dataTable id="tableEntidadesVetadasModal" rows="10" paginator="true"
+						value="#{sistemaBean.listEntidadesVetadas}" var="e"
+						currentPageReportTemplate="[#{msg.totalDeRegistros}: {totalRecords}]"
+						paginatorPosition="bottom" emptyMessage="#{msg.emptyMessage}"
+						paginatorTemplate="{CurrentPageReport}  {FirstPageLink} {PreviousPageLink} {PageLinks} {NextPageLink} {LastPageLink}"
+						styleClass="ui-datatable-striped ui-datatable-sm " >
+
+						<p:ajax event="page" global="false" />
+						<p:ajax event="sort" global="false" />
+						<p:ajax event="filter" global="false" />
+						
+						<p:column width="10%" headerText="Logo" sortBy="#{e.logo}" filterBy="#{e.logo}" filterMatchMode="startsWith">
+							<h:outputText value="#{e.logo}" />
+						</p:column>
+						
+
+						<p:column width="10%" headerText="Entidade" sortBy="#{e.entidade}" filterBy="#{e.entidade}" filterMatchMode="contains">
+							<h:outputText value="#{e.entidade}" />
+						</p:column>
+
+						<p:column headerText="Nome Entidade" sortBy="#{e.descricaoEntidade}" filterBy="#{e.descricaoEntidade}" filterMatchMode="contains" width="80%">
+
+							<p:outputLabel value="#{e.descricaoEntidade}" />
+
+						</p:column>
+
+					</p:dataTable>
+				</div>
+			</div>
+
+		</h:form>
+
+	</p:dialog>
+
+</ui:fragment>

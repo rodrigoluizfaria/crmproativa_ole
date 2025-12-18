@@ -1,0 +1,235 @@
+<ui:fragment xmlns="http://www.w3.org/1999/xhtml"
+	xmlns:h="http://java.sun.com/jsf/html"
+	xmlns:f="http://java.sun.com/jsf/core"
+	xmlns:o="http://omnifaces.org/ui"
+	xmlns:pe="http://primefaces.org/ui/extensions"
+	xmlns:ui="http://java.sun.com/jsf/facelets"
+	xmlns:p="http://primefaces.org/ui">
+
+	<!-- DLG MODAL -->
+	<p:dialog id="dlgAudio" widgetVar="dlgAudio" modal="true"	draggable="false" resizable="false" closable="false" visible="false" width="70%" styleClass="dialog-formulario" responsive="true" header="ÁUDIOS ATENDIMENTO:  #{supervisorBackofficeBean.clienteAudio}" appendTo="@(body)">
+
+		<h:panelGroup rendered="#{(supervisorBackofficeBean.listAudiosAtendimentos eq null or empty supervisorBackofficeBean.listAudiosAtendimentos) and (supervisorBackofficeBean.listConciliar eq null or empty supervisorBackofficeBean.listConciliar) }">
+				
+		<div class="col-12p-mb-5 ">
+		
+						<div class="ui-g ui-fluid">
+
+							<div class="card ui-g-12 ui-md-12 ui-lg-12 ">
+
+								<p:outputLabel value="Nenhum áudio Disponivel...." />
+
+							</div>
+
+						</div>
+			</div>
+		
+		
+		</h:panelGroup>
+		
+		<h:form id="formAudio" prependId="false" >
+					
+		
+				<h:panelGroup styleClass="p-col-12 p-mb-5" rendered="#{supervisorBackofficeBean.listAudiosAtendimentos ne null and not empty supervisorBackofficeBean.listAudiosAtendimentos}" layout="block">
+					
+					<div class="ui-g ui-fluid card">
+				
+						<p:dataTable id="tableAtendimentos" var="atendimento" rows="5"	paginator="true" paginatorPosition="bottom"	value="#{supervisorBackofficeBean.listAudiosAtendimentos}"
+							emptyMessage="#{supervisorBackofficeBean.listAudiosAtendimentos eq null? '' : msg.emptyMessage}"	currentPageReportTemplate="[#{msg.totalDeRegistros}: {totalRecords}]"
+							paginatorTemplate="{CurrentPageReport}  {FirstPageLink} {PreviousPageLink} {PageLinks} {NextPageLink} {LastPageLink} {Exporters}" styleClass="ui-datatable-striped">
+		
+									<p:ajax event="page"  />
+				
+									<p:ajax event="sort" global="false" />
+				
+									<p:column headerText="Data" sortBy="#{atendimento.data}" width="20%">
+				
+										<h:outputLabel value="#{atendimento.data}">
+				
+											<f:convertDateTime pattern="dd/MM/yyyy HH:mm:ss" />
+				
+										</h:outputLabel>
+				
+									</p:column>
+									
+									<p:column headerText="Ramal" sortBy="#{atendimento.ramal}" width="10%">
+				
+										<h:outputLabel value="#{atendimento.ramal}">
+													
+				
+										</h:outputLabel>
+				
+									</p:column>
+									
+									<p:column headerText="Destino" sortBy="#{atendimento.destino}" width="20%">
+				
+											<h:outputLabel value="#{atendimento.destino}">
+													
+				
+										</h:outputLabel>
+				
+									</p:column>
+									
+									<p:column headerText="Fila" sortBy="#{atendimento.fila}" width="20%">
+				
+											<h:outputLabel value="#{atendimento.fila}">
+													
+				
+										</h:outputLabel>
+				
+									</p:column>
+									
+																
+									<p:column headerText="Tipo" sortBy="#{atendimento.descricao}" width="20%">
+				
+										<h:outputLabel value="#{atendimento.tipoIntegracao.constante}">
+													
+				
+										</h:outputLabel>
+				
+									</p:column>
+		
+								<p:column headerText="Audio" sortBy="#{atendimento.descricao}"	width="10%">
+		
+									<h:panelGroup rendered="#{atendimento.tipoIntegracao eq 'VONIX'}">
+									
+										<a href="http://#{atendimento.pabx.url}/recordings/#{atendimento.descricao}"	title="Baixar audio."> 
+										
+											<i class="fa fa-volume-up fa-lg">
+										
+											</i>
+										
+										</a>
+		
+									</h:panelGroup>
+									
+									<h:panelGroup rendered="#{atendimento.tipoIntegracao eq 'VSPHONE'}">
+									
+										<p:commandLink update="dlgBase"  actionListener="#{supervisorBackofficeBean.onPlayModal(atendimento)}" value="Baixar audio."  > 
+													<i class="fa fa-volume-up fa-lg"></i>
+										</p:commandLink>
+									
+		
+									</h:panelGroup>
+									
+								</p:column>
+		
+							</p:dataTable>
+					 </div>
+		
+				 </h:panelGroup>
+		
+					<h:panelGroup styleClass="p-col-12 p-mb-5"	rendered="#{supervisorBackofficeBean.listConciliar ne null and not empty supervisorBackofficeBean.listConciliar}" layout="block">
+		
+						<div class="ui-g ui-fluid card">
+		
+							<h4>Áudios Anexados</h4>
+		
+							<p:dataTable id="tableConciliar" var="audioAnexo" rows="5"	paginator="true" paginatorPosition="bottom"	value="#{supervisorBackofficeBean.listConciliar}" 
+							    emptyMessage="#{supervisorBackofficeBean.listConciliar eq null? '' : msg.emptyMessage}"
+								currentPageReportTemplate="[#{msg.totalDeRegistros}: {totalRecords}]"
+								paginatorTemplate="{CurrentPageReport}  {FirstPageLink} {PreviousPageLink} {PageLinks} {NextPageLink} {LastPageLink} {Exporters}"
+								styleClass="ui-datatable-striped">
+		
+								<p:ajax event="page" />
+		
+								<p:ajax event="sort" global="false" />
+								
+								<p:column headerText="Data Anexo" sortBy="#{audioAnexo.dataAnexo}" width="10%" >
+		
+									<h:outputLabel value="#{audioAnexo.dataAnexo}">
+			
+										<f:convertDateTime pattern="dd/MM/yyyy HH:mm:ss" />
+			
+									</h:outputLabel>
+								
+		
+								</p:column>
+		
+								<p:column headerText="Arquivo" sortBy="#{audioAnexo.nomeArquivo}"	width="70%" >
+		
+							
+									<h:outputLabel value="#{audioAnexo.nomeArquivo}" title="Nome original: #{audioAnexo.nomeArquivoOriginal}">
+		
+										<f:convertDateTime pattern="dd/MM/yyyy HH:mm:ss" />
+		
+									</h:outputLabel>
+		
+								</p:column>
+		
+								<p:column headerText="Tamanho" sortBy="#{audioAnexo.nomeArquivo}" width="10%">
+		
+									<h:outputLabel value="#{audioAnexo.tamanhoArquivo / 1000} KB">
+		
+										<f:convertNumber pattern="#0.000" />
+										
+									</h:outputLabel>
+		
+								</p:column>
+					
+				
+
+						<p:column headerText="Audio" width="10%">
+		
+									<p:commandLink styleClass="rounded-button text-button" update="msgAudio" onstart="PF('blockUIWidget2').block()" oncomplete="PF('blockUIWidgetAnexo').unblock()" title="baixar" ajax="false" actionListener="#{supervisorBackofficeBean.baixarArquivoWav(audioAnexo)}">
+										
+										<i class="pi pi-download" />
+										
+										<p:fileDownload value="#{supervisorBackofficeBean.fileWav}" />
+		
+									</p:commandLink>
+		
+		
+								</p:column>
+		
+							</p:dataTable>
+							
+							<pe:blockUI target="tableAtendimentos"	content="blockUIContentPanel" widgetVar="blockUIWidgetAnexo" />
+							<p:messages id="msgAudio"/>
+							
+						</div>
+		
+						<h:panelGrid id="blockUIContentPanel" columns="2"	style="display:none;table-layout:auto;background-color:#fff">
+		
+							<i class="pi pi-spin pi-spinner" style="font-size: 3rem"></i>
+							
+							<h:outputText value="Aguarde, processando....."	style="white-space: nowrap;" />
+							
+						</h:panelGrid>
+						
+					</h:panelGroup>
+
+		</h:form>
+
+			<div style="text-align: center;" class="footer_div_btn p-mb-3 p-mt-2">
+	
+				<p:commandButton type="button" value="Sair" id="btnSair" icon="pi pi-times"	onclick="PF('dlgAudio').hide();" style="width: auto;"/>
+
+			</div>
+			 
+	</p:dialog>
+	
+	
+	<p:dialog modal="true" id="dlgBase"	widgetVar="dlgBase" draggable="false" resizable="false" closable="false" visible="false" width="70%" responsive="true" appendTo="@(body)">
+
+		<div class="p-col-12">
+
+			<div class="ui-g ui-fluid">
+
+				<h:panelGroup id="pnpVsphone">
+						
+					<audio autoplay="autoplay" controls="controls">
+
+						<sources src="data:audio/wav;base64,#{supervisorBackofficeBean.base64Dialog}" />
+
+					</audio>
+
+				</h:panelGroup>
+				
+			</div>
+			
+		</div>
+
+	</p:dialog>
+
+</ui:fragment>

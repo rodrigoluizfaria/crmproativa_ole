@@ -1,0 +1,438 @@
+<ui:composition xmlns="http://www.w3.org/1999/xhtml"
+                xmlns:h="http://java.sun.com/jsf/html"
+                xmlns:f="http://java.sun.com/jsf/core"
+                xmlns:ui="http://java.sun.com/jsf/facelets"
+                xmlns:p="http://primefaces.org/ui" template="/WEB-INF/template.xhtml">
+
+
+    <ui:define name="viewname">
+        <div class="bcca-breadcrumb">
+            <div class="bcca-breadcrumb-item bg-primary-500 hover:bg-primary-700">
+                <p:link outcome="/pages/backoffice/acompanhamentoConsistencias"
+                        style="text-decoration: none">PAINEL BACKOFFICE</p:link>
+            </div>
+            <div class="bcca-breadcrumb-item ">BACKOFFICE</div>
+        </div>
+
+    </ui:define>
+
+    <ui:define name="content">
+
+        <p:growl id="grl" widgetVar="grl" globalOnly="true" escape="false" showSummary="false" life="8000"
+                 showDetail="true" sticky="false">
+
+            <p:autoUpdate/>
+
+        </p:growl>
+
+        <p:growl id="grlNo" widgetVar="grl" escape="false" showSummary="false" life="8000" showDetail="true"
+                 sticky="false"/>
+
+        <h:form prependId="false" id="principal">
+
+            <div class="card">
+
+                <div class="p-grid col-12 ">
+
+
+                    <div class="col-12">
+
+                        <div class="ui-toolbar ui-widget ui-widget-header ui-corner-all mb-4 "
+                             style="display: flex;align-items: center;justify-content: space-between;flex-wrap: wrap;   ">
+
+                            <div class=" ui-toolbar-group-left"
+                                 style="    align-items: center; display: flex; flex-wrap: wrap;">
+
+                                <div class="card mr-3">
+                                    Qtde. Atendimentos:
+                                    <h:outputText value="#{monitorBackofficeBean.totalAtendimento}"
+                                                  style="font-weight: bold" styleClass="p-ml-3">
+                                        <f:convertNumber type="number"/>
+
+                                    </h:outputText>
+                                </div>
+                                <div class="card mr-3" style="     margin-bottom: auto;">
+                                    Qtde. Propostas solucionadas:
+                                    <h:outputText value="#{monitorBackofficeBean.totalPropostas}"
+                                                  style="font-weight: bold" styleClass="p-ml-3">
+                                        <f:convertNumber type="number"/>
+
+                                    </h:outputText>
+                                </div>
+                                <div class="card mr-3 ">
+
+                                    Vlr. Realizado:
+                                    <h:outputText value="#{monitorBackofficeBean.totalVendido}"
+                                                  style="font-weight: bold" styleClass="p-ml-3">
+                                        <f:convertNumber type="currency" locale="pt-br" currencySymbol="R$"/>
+                                    </h:outputText>
+                                </div>
+
+                                <div class="card mr-3"
+                                     style="margin-bottom: auto;border-left: 3px solid #28a745!important">
+                                    Vlr Concluído: <h:outputText value="#{monitorBackofficeBean.totalPago}"
+                                                                 style="font-weight: bold" styleClass="p-ml-3">
+
+                                    <f:convertNumber type="currency" locale="pt-br" currencySymbol="R$"/>
+
+                                </h:outputText>
+                                </div>
+                            </div>
+
+
+                            <div class=" ui-toolbar-group-right"
+                                 style="    display: flex; align-items: center; flex-wrap: wrap;">
+
+                                <div class="grid col-12 ">
+
+                                    <div class="p-field col-12 md:col-2">
+                                        Périodo:
+
+                                        <p:selectOneMenu id="selectOneUsuario" value="#{monitorBackofficeBean.periodo}"
+                                                         label="FILTRO" styleClass="p-ml-3">
+
+                                            <f:selectItem itemLabel="Diário" itemValue="DIA"/>
+                                            <f:selectItem itemLabel="Mensal" itemValue="MES"/>
+                                            <f:selectItem itemLabel="Semanal" itemValue="SEMANA"/>
+                                            <p:ajax listener="#{monitorBackofficeBean.onAtualizarPanel}" update="@form"
+                                                    process="@this"/>
+
+                                        </p:selectOneMenu>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+
+                    <div class="col-12 mt-3">
+
+                        <div class="layout-dashboard">
+
+                            <div class="grid">
+
+                                <div class="col-4">
+
+                                    <div id="order-tabs-container col-4" class="grid order-tabs">
+
+                                        <div class=" col-12 " data-label="New Orders" data-index="0"
+                                             data-stroke="#BBDEFB" data-fill="rgba(100, 181, 246, 0.2)">
+
+                                            <span class="order-label">Status Atendimento</span>
+
+                                        </div>
+
+                                    </div>
+
+                                    <div class="col-12 md:col-6">
+
+                                        <div class="overview-chart">
+                                            <p:donutChart model="#{monitorBackofficeBean.donutModelStatusAtendimento}"
+                                                          style="width:1080px; height: 420px" zoom="true"/>
+                                        </div>
+                                    </div>
+
+                                    <p:dataTable id="tableBkoPendenciaStatus" var="status" rows="15"
+                                                 paginator="true" paginatorPosition="bottom"
+                                                 value="#{monitorBackofficeBean.listStatusPainel}"
+                                                 emptyMessage="#{monitorBackofficeBean.listStatusPainel eq null? '' : msg.emptyMessage}"
+                                                 currentPageReportTemplate="[#{msg.totalDeRegistros}: {totalRecords}]"
+                                                 styleClass="ui-datatable-sm ui-datatable-striped p-mt-5  "
+                                                 paginatorTemplate="{CurrentPageReport}  {FirstPageLink} {PreviousPageLink} {PageLinks} {NextPageLink} {LastPageLink} {Exporters}">
+
+
+                                        <p:column width="5%">
+
+                                            <div style="background-color: #{status[3]}; width: 40px;height: 14px;">
+                                            </div>
+
+                                        </p:column>
+
+                                        <p:column headerText="Status" sortBy="#{status[2]}" width="15%">
+
+                                            <h:outputLabel value="#{status[2]}">
+                                            </h:outputLabel>
+
+                                        </p:column>
+
+                                        <p:column headerText="Quantidade" sortBy="#{status[1]}" width="15%">
+
+                                            <h:outputLabel value="#{status[1]}"/>
+
+                                            <f:facet name="footer">
+
+                                                <!-- <h:outputLabel	value="#{monitorBackofficeBean.retornarQuantidadeTotalFooter(monitorBackofficeBean.listStatusPainel)}">
+
+                                                </h:outputLabel> -->
+
+                                            </f:facet>
+
+                                        </p:column>
+
+
+                                        <p:column headerText="Valor" sortBy="#{status[0]}" width="15%">
+
+                                            <h:outputLabel value="#{status[0]}">
+
+                                                <f:convertNumber type="currency" locale="pt-br" currencySymbol="R$"/>
+
+                                            </h:outputLabel>
+
+                                            <f:facet name="footer">
+
+                                                <!-- <h:outputLabel value="#{monitorBackofficeBean.retornarTotalFooter(monitorBackofficeBean.listStatusPainel)}">
+                                                    <f:convertNumber type="currency" locale="pt-br"	currencySymbol="R$" />
+                                                </h:outputLabel>
+         -->
+                                            </f:facet>
+
+                                        </p:column>
+
+                                    </p:dataTable>
+
+                                </div>
+
+                                <!-- 	 Motivo -->
+
+                                <div class="col-4 ">
+
+                                    <div id="order-tabs-container" class="p-grid order-tabs">
+
+                                        <div class=" col-12 " data-label="New Orders" data-index="0"
+                                             data-stroke="#BBDEFB" data-fill="rgba(100, 181, 246, 0.2)">
+
+                                            <span class="order-label">Motivo</span>
+
+                                        </div>
+
+                                    </div>
+
+                                    <div class="col-12 md:col-6">
+
+                                        <div class="overview-chart">
+
+                                            <p:donutChart model="#{monitorBackofficeBean.donutModelMotivo}"
+                                                          style="width:1080px; height: 420px" zoom="true"/>
+
+                                        </div>
+                                    </div>
+
+                                    <p:dataTable id="tableBkoPendenciaMotivo" var="motivo" rows="5"
+                                                 paginator="true" paginatorPosition="bottom"
+                                                 value="#{monitorBackofficeBean.listMotioPainel}"
+                                                 emptyMessage="#{monitorBackofficeBean.listMotioPainel eq null? '' : msg.emptyMessage}"
+                                                 currentPageReportTemplate="[#{msg.totalDeRegistros}: {totalRecords}]"
+                                                 styleClass="ui-datatable-sm ui-datatable-striped   p-mt-5 centeralizarColum"
+                                                 paginatorTemplate="{CurrentPageReport}  {FirstPageLink} {PreviousPageLink} {PageLinks} {NextPageLink} {LastPageLink} {Exporters}">
+
+                                        <p:column width="5%">
+
+                                            <div
+                                                    style="background-color: #{motivo[3]}; width: 40px;height: 14px;">
+                                            </div>
+
+                                        </p:column>
+
+                                        <p:column headerText="Motivo" sortBy="#{motivo[2]}" width="15%">
+
+                                            <h:outputLabel value="#{motivo[2]}">
+                                            </h:outputLabel>
+
+                                        </p:column>
+
+                                        <p:column headerText="Quantidade" sortBy="#{motivo[1]}" width="15%">
+
+                                            <h:outputLabel value="#{motivo[1]}"/>
+
+                                            <f:facet name="footer">
+
+                                                <!-- 	<h:outputLabel value="#{monitorBackofficeBean.retornarQuantidadeTotalFooter(monitorBackofficeBean.listMotioPainel)}">
+
+                                                    </h:outputLabel>-->
+                                            </f:facet>
+
+
+                                        </p:column>
+
+
+                                        <p:column headerText="Valor" sortBy="#{motivo[0]}" width="15%">
+
+                                            <h:outputLabel value="#{motivo[0]}">
+
+                                                <f:convertNumber type="currency" locale="pt-br" currencySymbol="R$"/>
+
+                                            </h:outputLabel>
+
+                                            <f:facet name="footer">
+
+                                                <!-- 	<h:outputLabel
+                                                        value="#{monitorBackofficeBean.retornarTotalFooter(monitorBackofficeBean.listMotioPainel)}">
+                                                        <f:convertNumber type="currency" locale="pt-br"
+                                                            currencySymbol="R$" />
+                                                    </h:outputLabel>
+                                                     -->
+                                            </f:facet>
+                                        </p:column>
+
+                                    </p:dataTable>
+                                </div>
+
+                                <!-- 	 SUBMOTIVO -->
+
+                                <div class="col-4">
+
+                                    <div id="order-tabs-container" class="p-grid order-tabs">
+
+                                        <div class=" p-col-12 " data-label="New Orders" data-index="0"
+                                             data-stroke="#BBDEFB" data-fill="rgba(100, 181, 246, 0.2)">
+
+                                            <span class="order-label">Submotivo</span>
+
+                                        </div>
+
+                                    </div>
+
+                                    <div class="col-12 md:col-6">
+
+                                        <div class="overview-chart">
+
+                                            <p:donutChart model="#{monitorBackofficeBean.donutSubmodelMotivo}"
+                                                          style="width:1080px; height: 420px" zoom="true"/>
+
+                                        </div>
+
+                                    </div>
+
+                                    <p:dataTable id="tableBkoPendenciaSubMotivo" var="motivo"
+                                                 rows="5" paginator="true" paginatorPosition="bottom"
+                                                 value="#{monitorBackofficeBean.listSubmotioPainel}"
+                                                 emptyMessage="#{monitorBackofficeBean.listSubmotioPainel eq null? '' : msg.emptyMessage}"
+                                                 currentPageReportTemplate="[#{msg.totalDeRegistros}: {totalRecords}]"
+                                                 styleClass="ui-datatable-sm ui-datatable-striped  p-mt-5 centeralizarColum"
+                                                 paginatorTemplate="{CurrentPageReport}  {FirstPageLink} {PreviousPageLink} {PageLinks} {NextPageLink} {LastPageLink} {Exporters}">
+
+                                        <p:column headerText="" width="5%">
+
+                                            <div
+                                                    style="background-color: #{motivo[3]}; width: 40px;height: 14px;">
+                                            </div>
+
+                                        </p:column>
+
+                                        <p:column headerText="Submotivo" width="15%">
+
+                                            <h:outputLabel value="#{motivo[2]}">
+                                            </h:outputLabel>
+
+                                        </p:column>
+
+                                        <p:column headerText="Quantidade" sortBy="#{motivo[1]}" width="15%">
+
+                                            <h:outputLabel value="#{motivo[1]}"/>
+
+                                            <f:facet name="footer">
+
+                                                <!-- 		<h:outputLabel	value="#{monitorBackofficeBean.retornarQuantidadeTotalFooter(monitorBackofficeBean.listSubmotioPainel)}">
+
+                                                        </h:outputLabel> -->
+                                            </f:facet>
+
+                                        </p:column>
+
+                                        <p:column headerText="Valor" sortBy="#{motivo[0]}" width="15%">
+
+                                            <h:outputLabel value="#{motivo[0]}">
+                                                <f:convertNumber type="currency" locale="pt-br" currencySymbol="R$"/>
+                                            </h:outputLabel>
+
+                                            <f:facet name="footer">
+
+                                                <!-- 			<h:outputLabel	value="#{monitorBackofficeBean.retornarTotalFooter(monitorBackofficeBean.listSubmotioPainel)}">
+
+                                                                <f:convertNumber type="currency" locale="pt-br"	currencySymbol="R$" />
+
+                                                            </h:outputLabel> -->
+
+                                            </f:facet>
+
+                                        </p:column>
+
+                                    </p:dataTable>
+                                </div>
+
+                                <div class="col-6 mt-5">
+
+                                    <div class="overview-chart">
+                                        <p:barChart model="#{monitorBackofficeBean.stackedBarModelConsistencia}"
+                                                    style="width:1080px; height: 420px" zoom="true"/>
+                                    </div>
+                                </div>
+
+                                <div class="col-6 mt-5">
+
+
+                                    <p:dataTable id="tableBkoPendenciaConsistencia" var="consistencia"
+                                                 rows="5" paginator="true" paginatorPosition="bottom"
+                                                 value="#{monitorBackofficeBean.listQuantidadeConsistencia}"
+                                                 emptyMessage="#{monitorBackofficeBean.listQuantidadeConsistencia eq null? '' : msg.emptyMessage}"
+                                                 currentPageReportTemplate="[#{msg.totalDeRegistros}: {totalRecords}]"
+                                                 styleClass="ui-datatable-sm ui-datatable-striped  p-mt-5 centeralizarColum"
+                                                 paginatorTemplate="{CurrentPageReport}  {FirstPageLink} {PreviousPageLink} {PageLinks} {NextPageLink} {LastPageLink} {Exporters}">
+
+
+                                        <p:column headerText="Código" sortBy="#{consistencia[0]}" width="8%">
+
+                                            <h:outputLabel value="#{consistencia[0]}">
+                                            </h:outputLabel>
+
+                                        </p:column>
+
+                                        <p:column headerText="Descrição" sortBy="#{consistencia[1]}" width="30%">
+
+                                            <h:outputLabel value="#{consistencia[1]}">
+                                            </h:outputLabel>
+
+                                        </p:column>
+
+
+                                        <p:column headerText="Valor. tratadas" sortBy="#{consistencia[3]}" width="15%">
+
+                                            <h:outputLabel value="#{consistencia[3]}">
+                                                <f:convertNumber type="currency" locale="pt-br" currencySymbol="R$"/>
+                                            </h:outputLabel>
+
+                                        </p:column>
+
+                                        <p:column headerText="Qtd. Tratadas" sortBy="#{consistencia[4]}" width="10%">
+
+                                            <h:outputLabel value="#{consistencia[4]}">
+                                            </h:outputLabel>
+
+                                        </p:column>
+
+                                        <p:column headerText="Qtd. Não Tratadas" sortBy="#{consistencia[5]}"
+                                                  width="10%">
+
+                                            <h:outputLabel value="#{consistencia[5]}">
+                                            </h:outputLabel>
+
+                                        </p:column>
+
+                                    </p:dataTable>
+
+                                </div>
+
+                            </div>
+
+                        </div>
+
+                    </div>
+
+                </div>
+
+            </div>
+        </h:form>
+
+    </ui:define>
+
+</ui:composition>

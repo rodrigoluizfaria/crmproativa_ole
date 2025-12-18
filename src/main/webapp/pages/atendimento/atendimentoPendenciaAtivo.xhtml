@@ -1,0 +1,137 @@
+<ui:fragment xmlns="http://www.w3.org/1999/xhtml"
+	xmlns:h="http://java.sun.com/jsf/html"
+	xmlns:f="http://java.sun.com/jsf/core"
+	xmlns:ui="http://java.sun.com/jsf/facelets"
+	xmlns:p="http://primefaces.org/ui">
+	<!--  -->
+	<p:dialog id="dlgPendencias" widgetVar="dlgPendencias" modal="true"	draggable="false" resizable="false" closable="false" visible="true"	width="80%" header="Pendências / Agendamentos"
+		rendered="#{not empty fichaAtendimentoBean.listAtendimentosAgendados or fichaAtendimentoBean.listAtendimentosPendentes.size() > 1}">
+		
+		<p:dataTable paginator="true" value="#{fichaAtendimentoBean.listAtendimentosAgendados}" paginatorPosition="bottom" emptyMessage="#{msg.emptyMessage}"
+			paginatorTemplate="{CurrentPageReport}  {FirstPageLink} {PreviousPageLink} {PageLinks} {NextPageLink} {LastPageLink}" currentPageReportTemplate="[#{msg.totalDeRegistros}: {totalRecords}]"
+			var="agendamento" id="tableAgendamento" rows="5" rendered="#{not empty fichaAtendimentoBean.listAtendimentosAgendados}">
+
+			<p:ajax event="page" global="false" />
+
+			<f:facet name="header" >
+
+				<h:outputText value="Atendimentos Agendados" style="font-size:14px"/>
+
+			</f:facet>
+
+
+			<p:column headerText="#{msg.campanha}" width="20%">
+
+				<p:outputLabel value="#{agendamento[1]}" />
+
+			</p:column>
+
+			<p:column headerText="#{msg.nome}" width="20%">
+
+				<p:outputLabel value="#{agendamento[3]}" />
+
+			</p:column>
+
+			<p:column headerText="#{msg.cpf}" width="20%">
+
+				<p:outputLabel value="#{agendamento[2]}" />
+
+
+			</p:column>
+
+			<p:column headerText="#{msg.statusAtendimento}" width="15%">
+
+				<p:outputLabel value="#{agendamento[4]}" />
+
+			</p:column>
+
+			<p:column headerText="#{msg.dataCadastro}" width="15%">
+
+				<p:outputLabel value="#{agendamento[6]}" />
+
+			</p:column>
+			
+			<p:column headerText="Agendamento" width="15%">
+
+				<p:outputLabel value="#{agendamento[5]}" />
+
+			</p:column>
+
+			<p:column headerText="Manifesto" width="30%">
+
+				<p:outputLabel value="#{agendamento[7]}" />
+
+			</p:column>
+			
+			<p:column headerText="#{msg.acao}" width="10%" style="text-align:center">
+
+				<p:commandButton icon="pi pi-chevron-right" styleClass="rounded-button text-button"	title="Atender"
+					actionListener="#{fichaAtendimentoBean.buscarAtendimento(agendamento[0])}"	update="formConteudo" oncomplete="PF('dlgPendencias').hide();" />
+
+			</p:column>
+
+		</p:dataTable>
+
+
+		<h:panelGroup style="margin-top: 30px;margin-bottom: 30px;" rendered="#{not empty fichaAtendimentoBean.listAtendimentosPendentes and not empty fichaAtendimentoBean.listAtendimentosAgendados }" >
+
+			<p:separator rendered="#{not empty fichaAtendimentoBean.listAtendimentosPendentes and not empty fichaAtendimentoBean.listAtendimentosAgendados }"/>
+
+		</h:panelGroup>
+
+
+		<p:dataTable value="#{fichaAtendimentoBean.listAtendimentosPendentes}"
+			paginator="true" id="tablePendentes" paginatorPosition="bottom"
+			emptyMessage="#{msg.emptyMessage}"
+			paginatorTemplate="{CurrentPageReport}  {FirstPageLink} {PreviousPageLink} {PageLinks} {NextPageLink} {LastPageLink}"
+			currentPageReportTemplate="[#{msg.totalDeRegistros}: {totalRecords}]"
+			var="pendencia" rows="5"
+			rendered="#{not empty fichaAtendimentoBean.listAtendimentosPendentes}">
+
+			<p:ajax event="page" global="false" />
+
+			<f:facet name="header">
+
+				<h:outputText value="Atendimentos Pendentes" style="font-size:14px" />
+
+			</f:facet>
+
+			<p:column headerText="#{msg.campanha}" width="30%">
+
+				<h:outputText value="#{pendencia[1]}" />
+
+			</p:column>
+
+			<p:column headerText="#{msg.nome}" width="30%">
+
+				<h:outputText value="#{pendencia[2]}" />
+
+			</p:column>
+
+			<p:column headerText="#{msg.cpf}" width="15%">
+
+				<h:outputText value="#{pendencia[3]}" />
+
+			</p:column>
+
+			<p:column headerText="Ultimo Acesso" width="15%">
+
+				<h:outputText value="#{pendencia[4]}" />
+
+			</p:column>
+
+			<p:column headerText="#{msg.acao}" width="10%"
+				style="text-align:center">
+
+				<p:commandButton icon="pi pi-chevron-right"  styleClass="rounded-button text-button" title="Atender"	actionListener="#{fichaAtendimentoBean.buscarAtendimento(pendencia[0])}"
+					update="formConteudo" oncomplete="PF('dlgPendencias').hide();" />
+
+			</p:column>
+
+		</p:dataTable>
+
+
+	</p:dialog>
+
+
+</ui:fragment>

@@ -1,0 +1,27 @@
+<ui:composition xmlns="http://www.w3.org/1999/xhtml"
+                xmlns:h="http://java.sun.com/jsf/html"
+                xmlns:ui="http://java.sun.com/jsf/facelets"
+                xmlns:p="http://primefaces.org/ui"
+                xmlns:d="http://primefaces.org/diamond">
+
+    <div class="layout-sidebar">
+       
+        <h:link class="logo" >
+        
+            <p:graphicImage id="app-logo" styleClass="logo-image" name="#{sessionScope['usuario'].empresa.menuTheme.name() eq 'WHITE' ? 'img/favicon.ico':'img/favicon_login.ico' }"  />
+            <span class="app-name"></span>
+
+        </h:link>
+
+        <div class="layout-menu-container">
+          
+            <h:form id="sidebar-form">
+            
+                <d:menu widgetVar="diamondMenuWidget" model="#{sessionScope['menuModel']}" >
+
+                </d:menu>
+                
+            </h:form>
+        </div>        
+    </div>
+</ui:composition>

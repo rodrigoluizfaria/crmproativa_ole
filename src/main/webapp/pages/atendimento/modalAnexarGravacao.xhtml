@@ -1,0 +1,151 @@
+<ui:fragment xmlns="http://www.w3.org/1999/xhtml"
+             xmlns:h="http://java.sun.com/jsf/html"
+             xmlns:f="http://java.sun.com/jsf/core"
+             xmlns:o="http://omnifaces.org/ui"
+             xmlns:ui="http://java.sun.com/jsf/facelets"
+             xmlns:p="http://primefaces.org/ui">
+
+    <!-- DLG MODAL -->
+    <p:dialog id="dlgAnexarAudio" widgetVar="dlgAnexarAudio" modal="true" styleClass="dialog-formulario"
+              draggable="true" resizable="false" closable="true" width="50%" responsive="true" header="Conciliar Áudio"
+              appendTo="@(body)">
+
+        <h:form id="formAnexarAudio" prependId="false">
+
+
+
+            <div class="card mb-4 ">
+
+                    <div class=" ui-fluid mb-3">
+
+                        <h:panelGroup layout="block" styleClass="field grid" id="groupLojasAudio"  rendered="#{fichaAtendimentoBean.listLojas.size() > 1 }">
+
+
+                            <div class="col-12 ">
+
+                                <p:fieldset legend="Informe a loja" styleClass="fild-set-default-sem-borda" style="padding: 15px 15px">
+
+                                <p:selectOneMenu id="selectOneLojasAudio"
+                                                 value="#{fichaAtendimentoBean.atendimento.loja}"
+                                                 converter="omnifaces.SelectItemsConverter" filter="true"
+                                                 filterMatchMode="contains"
+
+                                >
+
+                                    <f:selectItem itemLabel="Selecione" noSelectionOption="true" itemValue=""/>
+                                    <f:selectItems value="#{fichaAtendimentoBean.listLojas}" var="loja"
+                                                   itemLabel="#{loja.codigoLoja}" itemValue="#{loja}"/>
+
+                                    <p:ajax process="@this"  event="change"/>
+
+                                </p:selectOneMenu>
+                                </p:fieldset>
+                            </div>
+
+                            <p:message for="selectOneLojasAudio"/>
+
+                        </h:panelGroup>
+
+                    </div>
+
+
+                <div class="ui-fluid grid formgrid mt-3">
+
+                <div class="field col-12">
+
+
+                    <p:fieldset legend="Selecione os áudios" styleClass="fild-set-default-sem-borda" style="padding: 15px">
+
+                        <f:facet name="legend">
+                            Selecione os áudios | Formato permitido: .wav e .mp3
+                        </f:facet>
+
+
+                    <h:panelGroup rendered="#{not empty fichaAtendimentoBean.audios}" id="pnpQuntidadeAnexo">
+
+                        <p> Arquivos anexados: #{fichaAtendimentoBean.audios.size()} </p>
+
+
+                    </h:panelGroup>
+
+
+                    <p:fileUpload cancelLabel="Cancelar" id="fileUplodAudio" chooseIcon=" fa fa-file-audio-o" multiple="true" skinSimple="true" auto="true"
+                                  update=" selectOneLojas tableAnexo" label="Selecionar"  process="@this" listener="#{fichaAtendimentoBean.uploadArquivosAudio}"
+                                  allowTypes="/(\.|\/)(WAV|wav|MP3|mp3)$/"
+                                  invalidFileMessage="São permitidas somente .wav e .mp3 "  />
+
+                    <p:messages globalOnly="true" id="msgUpload"/>
+
+<!--
+                        <p:commandButton actionListener="#{fichaAtendimentoBean.uploadArquivosAudio}" value="Enviar" styleClass="ui-button-outlined" update="@form"   process="@this fileUplodAudio #{fichaAtendimentoBean.listLojas.size() > 1 ? 'selectOneLojasAudio' : '' }" />
+-->
+
+                    </p:fieldset>
+
+                </div>
+
+                <div class=" field col-9">
+
+                    <p:dataTable var="audio" id="tableAnexo" reflow="true" draggableRows="true"
+                                 value="#{fichaAtendimentoBean.audios}" paginator="true" rows="5"
+                                 paginatorPosition="bottom" emptyMessage="Nenhum áudio anexado." rowIndexVar="indice"
+                                 paginatorTemplate="{CurrentPageReport}  {FirstPageLink} {PreviousPageLink} {PageLinks} {NextPageLink} {LastPageLink} {Exporters}"
+                                 currentPageReportTemplate="[Total de áudios: {totalRecords}]">
+
+                        <p:ajax event="rowReorder" listener="#{fichaAtendimentoBean.onTrocarAudio}" update="tableAnexo"
+                                global="false"/>
+
+                        <p:column headerText="Posição" sortBy="#{indice}" width="10%">
+
+                            <h:outputText value="#{indice}"/>
+
+                        </p:column>
+
+                        <p:column headerText="Arquivo" sortBy="#{audio.nomeArquivoOriginal}">
+
+                            <h:outputText value="#{audio.nomeArquivoOriginal}"/>
+
+                        </p:column>
+
+                        <p:column headerText="Tamanho" sortBy="#{audio.tamanhoArquivo}">
+
+                            <h:outputText value="#{audio.tamanhoArquivo / 1000} KB">
+                                <f:convertNumber pattern="#0.000"/>
+                            </h:outputText>
+
+                        </p:column>
+
+                        <p:column style="text-align:center;width:50px" exportable="false">
+
+                            <p:commandButton icon="pi pi-times-circle" tabindex="Excluir"
+                                             actionListener="#{fichaAtendimentoBean.excluirAnexoArquivo(audio.nomeArquivoOriginal)}"
+                                             process="@this" global="false" update="@form"
+                                             styleClass="rounded-button text-button  mr-2">
+
+                            </p:commandButton>
+
+                        </p:column>
+
+
+                    </p:dataTable>
+                </div>
+            </div>
+            </div>
+
+
+            <div class="ui-fluid formgrid grid col-12" style="text-align: center; padding: 0px;">
+
+                <div class="col-12" style="text-align: center; padding: 0px;">
+
+                    <p:commandButton value="Salvar" icon="pi pi-save" styleClass="mr-3" actionListener="#{fichaAtendimentoBean.salvarAudios()}" update="tableAnexo"/>
+                    <p:commandButton value="Sair" icon="pi pi-times" styleClass="mr-3 ui-button-raised" onclick="PF('dlgAnexarAudio').hide();"/>
+
+                </div>
+
+            </div>
+
+        </h:form>
+
+    </p:dialog>
+
+</ui:fragment>

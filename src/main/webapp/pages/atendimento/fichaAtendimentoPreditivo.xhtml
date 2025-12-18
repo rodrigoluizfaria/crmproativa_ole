@@ -1,0 +1,341 @@
+<ui:composition xmlns="http://www.w3.org/1999/xhtml"
+                xmlns:h="http://java.sun.com/jsf/html"
+                xmlns:f="http://java.sun.com/jsf/core"
+                xmlns:ui="http://java.sun.com/jsf/facelets"
+                xmlns:p="http://primefaces.org/ui" template="/WEB-INF/template.xhtml"
+                xmlns:c="http://java.sun.com/jsp/jstl/core"
+                xmlns:pe="http://primefaces.org/ui/extensions">
+
+
+    <ui:define name="viewname">
+        <div class="bcca-breadcrumb">
+            <div class="bcca-breadcrumb-item bg-primary-500 hover:bg-primary-700">
+                <p:link outcome="/pages/atendimento/fichaAtendimentoPreditivo"
+                        style="text-decoration: none">PREDITIVO</p:link>
+            </div>
+            <div class="bcca-breadcrumb-item ">ATENDIMENTO</div>
+        </div>
+
+    </ui:define>
+
+    <ui:define name="metadata">
+        <f:metadata>
+
+            <f:viewParam name="ramal" value="#{fichaAtendimentoPreditivoBean.ramal}" />
+            <f:viewParam name="codCliente" value="#{fichaAtendimentoPreditivoBean.codCliente}" />
+            <f:viewParam name="nomeCliente" value="#{fichaAtendimentoPreditivoBean.nomeCliente}" />
+            <f:viewParam name="telefone" value="#{fichaAtendimentoPreditivoBean.telefone}" />
+
+        </f:metadata>
+    </ui:define>
+
+    <ui:define name="content">
+
+        <div class="">
+
+            <p:growl id="grl2" widgetVar="grl2" globalOnly="true" escape="false" showSummary="false" life="4000"
+                     showDetail="true" sticky="false"/>
+
+            <h:panelGroup styleClass="ui-fluid" layout="block"
+                          rendered="#{sessionScope['usuario'].perfil.name() eq 'OPERADOR'}">
+
+                <h:form id="form" prependId="false">
+
+
+                    <p:remoteCommand name="onEnviarAtendimento"
+                                     actionListener="#{fichaAtendimentoPreditivoBean.onEnviarAtendimento}"
+                                     update="@form grl2"/>
+
+                    <p:remoteCommand name="onEnviarAtendimento3c"
+                                     actionListener="#{fichaAtendimentoPreditivoBean.onEnviarAtendimento3c()}"
+                                     update="@form grl2"/>
+
+                    <p:remoteCommand name="onEnviarRamal"
+                                     actionListener="#{fichaAtendimentoPreditivoBean.onEnviarRamal}"
+                                     update="@form grl2"/>
+
+                    <p:remoteCommand name="onDisponivelDiscador"
+                                     actionListener="#{fichaAtendimentoPreditivoBean.onDisponivelDiscador}"
+                                     update="@form grl2"/>
+
+                    <p:remoteCommand name="onErroDiscador"
+                                     actionListener="#{fichaAtendimentoPreditivoBean.onErroDiscador}"
+                                     update="@form grl2" global="false"/>
+
+                    <p:remoteCommand name="onFicarDisponivelArgus"
+                                     actionListener="#{fichaAtendimentoPreditivoBean.onFicarDisponivelArgus()}"
+                                     update="@form grl2" global="false"/>
+
+                    <div class="">
+
+                        <div class="card card-w-title ui-g"
+                             style="text-align: center; align-items: center; justify-content: center; display: flex; flex-direction: row;">
+
+                            <div class="p-grid justify-center">
+
+
+                                <div class="col-12 mt-5 " style="text-align: center">
+
+                                    <h5 style="text-align: center; font-size: 23px">
+
+                                        <i class="fa fa-phone-square fa-1x iconStatus" onclick="PF('dlgVonix').show();"
+                                           title="Informa Status do Agent" style="text-align: center"/>
+                                        &#160;&#160; <span
+                                            id="spanAguarde"> Aguarde	a ligação para iniciar o atendimento.</span>
+
+                                    </h5>
+
+                                    <p id="nomeCliente" style="font-size: 18px"></p>
+
+                                    <p id="numeroCliente" style="font-size: 18px"></p>
+
+                                    <p:graphicImage name="img/ampulheta.gif" width="235"/>
+
+
+                                    <br/>
+                                    <p:outputLabel value="Ramal:"/>
+
+                                    <div class="col-12 ui-md-12" style="text-align: center">
+
+                                        <h:panelGroup id="panelCronometro" layout="block" styleClass="isa_none"
+                                                      rendered="#{fichaAtendimentoPreditivoBean.mostrarCronometro}">
+
+                                            <pe:timer formatFunction="return formatMe(value);" forward="true"
+                                                      global="false"
+                                                      timeout="100000" style="font-size:20px" id="timer"/>
+
+                                        </h:panelGroup>
+
+                                        <h:panelGroup id="msgErro" layout="block" styleClass="isa_warning"
+                                                      rendered="#{fichaAtendimentoPreditivoBean.mostrarCronometro eq false}">
+
+                                            <i class="fa fa-warning"></i>
+                                            #{fichaAtendimentoPreditivoBean.menssagemDiscador}
+
+                                        </h:panelGroup>
+
+                                    </div>
+
+                                    <br/>
+
+                                    <div class="col-12 " style="margin-top: 10px">
+
+
+                                        <p:commandButton value="Entrar em Pausa" global="false"
+                                                         styleClass="ui-button-secondary ui-button-raised ui-button-outlined mr-2 "
+                                                         icon="pi pi-pause"
+                                                         actionListener="#{sistemaBean.abrirDlgPausa()}"/>
+
+                                        <p:commandButton value="Painel Agente" global="false" update="grl2"
+                                                         styleClass="ui-button-secondary ui-button-outlined ui-button-raised  mr-2"
+                                                         icon="fa fa-phone-square" onclick="PF('dlgPwd').show();"
+                                                         rendered="#{fichaAtendimentoPreditivoBean.pabx.tipo eq 'VSPHONE' and fichaAtendimentoPreditivoBean.usuario.respostaLoginPowerDialer ne null}"/>
+
+                                        <p:commandButton value="Painel agente" global="false"
+                                                         styleClass="ui-button-outlined ui-button-secondary ui-button-raised  mr-4 "
+                                                         icon="fa fa-phone-square" onclick="openPanelDiscador();"
+                                                        rendered="#{fichaAtendimentoPreditivoBean.pabx.tipo eq 'VONIX'}"/>
+
+                                    </div>
+
+                                </div>
+
+
+                            </div>
+
+                            <div class="p-grid justify-center">
+
+                                <div class="col-12  cardStatus card" style="margin-top: 10px;color:#fff">
+
+                                    <p:outputLabel id="lblStatusPreditivo" styleClass="font-semibold"/>
+
+
+                                </div>
+
+                                <div class="col-12  card" style="margin-top: 10px;">
+
+                                    <p:outputLabel id="lblRamalPreditivo"/> Agente: #{fichaAtendimentoPreditivoBean.pontoAtendimento.ramal}
+
+                                </div>
+
+                            </div>
+
+                        </div>
+
+                    </div>
+
+                    <c:if test="#{fichaAtendimentoPreditivoBean.mostrarTransferirAtendimento}">
+
+                        <p:remoteCommand name="transferirAtendimento"
+                                         action="#{fichaAtendimentoPreditivoBean.transferirAtendimento()}"
+                                         update="@form"
+                                         global="false"/>
+
+                        <script>
+
+                            var nome = "#{fichaAtendimentoPreditivoBean.nomeCliente}"
+                            var tel = "#{fichaAtendimentoPreditivoBean.numeroTelefone}"
+                            console.log("TRANSFERIR ATENDIMENTO:  ");
+                            $('#spanAguarde').html('Aguarde, transferindo atendimento.');
+                            $('#nomeCliente').html('Cliente: ' + nome);
+                            $('#numeroCliente').html('Telefone: ' + tel);
+
+                            transferirAtendimento();
+
+                        </script>
+
+                    </c:if>
+
+                    <ui:include src="/pages/atendimento/modalPainelVonix.xhtml"/>
+                    <ui:include src="/pages/atendimento/modalPainelPowerDialer.xhtml"/>
+
+                </h:form>
+
+
+                <p:dialog modal="true" height="60%" widgetVar="modalCampanha3c" id="modalCampanha3c" header="Selecione uma capanha 3C+" draggable="false" closable="false" maximizable="false" visible="true" rendered="#{not empty fichaAtendimentoPreditivoBean.listCampanha3c and sessionScope['usuario'].idCampanha3c eq null}">
+
+                    <h:form prependId="true" id="formModal3c">
+
+                        <div class="ui-fluid formgrid grid ">
+
+                            <div class="field col-12 ">
+
+                                <p:selectOneMenu id="selectCampanha" value="#{fichaAtendimentoPreditivoBean.idCampanha3c}"  widgetVar="selectCampanha">
+
+                                    <f:selectItem itemLabel="#{msg.selecione}" noSelectionOption="true"/>
+
+                                    <f:selectItems value="#{fichaAtendimentoPreditivoBean.listCampanha3c}" var="cam"
+                                                   itemLabel="#{cam.name}" itemValue="#{cam.id}"/>
+
+                                </p:selectOneMenu>
+
+                            </div>
+
+                        <div class="field col-12 mt-3 align-content-center text-center">
+
+                            <p:commandButton value="Salvar" process="@this selectCampanha" update="@form grl2" oncomplete="PF('modalCampanha3c').hide();" action="#{fichaAtendimentoPreditivoBean.salvarCampanha3c}" styleClass="ui-button-raised mr-3" />
+                            <p:commandButton value="Sair" styleClass="ui-button-raised ui-button-outlined" onclick="PF('modalCampanha3c').close();" />
+
+                        </div>
+
+                        </div>
+
+                    </h:form>
+
+
+                </p:dialog>
+
+                <c:if test="#{fichaAtendimentoPreditivoBean.carregarConteudo}">
+
+                    <h:form id="formEnvioChamada" prependId="false">
+
+                        <h:inputHidden id="servidor"
+                                       value="#{fichaAtendimentoPreditivoBean.pontoAtendimento.pabx.url}"/>
+                        <h:inputHidden id="login" value="#{fichaAtendimentoPreditivoBean.pontoAtendimento.ramal}"/>
+
+                    </h:form>
+
+                    <c:if test="#{fichaAtendimentoPreditivoBean.pabx.tipo eq 'VONIX'}">
+
+                        <h:outputScript name="js/vonix-1.8.min.js"/>
+                        <h:outputScript name="js/vonix-integra.js?v31"/>
+
+                        <h:form id="formVonix" prependId="false">
+
+                            <script>
+
+                                var servidor = "#{fichaAtendimentoPreditivoBean.pontoAtendimento.pabx.url}";
+                                var login = "#{fichaAtendimentoPreditivoBean.pontoAtendimento.ramal}";
+                                var ramalAux = "#{fichaAtendimentoPreditivoBean.pontoAtendimento.ramalAux}";
+
+                                iniciarIntegraVonix(servidor, login, ramalAux);
+
+                            </script>
+
+                        </h:form>
+
+                    </c:if>
+
+                    <c:if test="#{fichaAtendimentoPreditivoBean.pabx.tipo eq 'TRES_CPLUS'}">
+
+                        <script src="https://cdn.socket.io/4.7.4/socket.io.min.js"
+                                integrity="sha384-Gr6Lu2Ajx28mzwyVR8CFkULdCU7kMlZ9UthllibdOSo6qAiN+yXNHqtgdTvFXMT4"
+                                crossorigin="anonymous"/>
+
+                        <h:outputScript name="js/3cplus-integra.js"/>
+
+                        <h:form id="form3c" prependId="false">
+
+                            <script>
+
+                                var token = "#{fichaAtendimentoPreditivoBean.pontoAtendimento.apiToken}";
+
+                                iniciar3c(token);
+
+                            </script>
+
+                        </h:form>
+
+                    </c:if>
+
+                    <c:if test="#{fichaAtendimentoPreditivoBean.pabx.tipo eq 'ARGUS'}">
+
+
+                        <h:outputScript name="js/argus-integra.js"/>
+
+                        <h:form id="formArgus" prependId="false">
+
+                            <script>
+
+                                console.log("Logar.....")
+                                var token = "#{fichaAtendimentoPreditivoBean.pontoAtendimento.pabx.apiToken}";
+                                var ramal = "#{fichaAtendimentoPreditivoBean.pontoAtendimento.ramal}";
+                                var url = "#{fichaAtendimentoPreditivoBean.pontoAtendimento.pabx.url}";
+
+                                iniciarArgus(token,ramal,url);
+
+                            </script>
+
+                        </h:form>
+
+                    </c:if>
+
+                    <c:if test="#{fichaAtendimentoPreditivoBean.pabx.tipo eq 'VSPHONE'}">
+
+                        <h:outputScript name="js/powerdialer-integra.js?v5"/>
+
+                        <h:form id="formPwd" prependId="false">
+
+                            <script>
+
+                                var servidor = "#{fichaAtendimentoPreditivoBean.urlPwd}";
+                                var login = "#{fichaAtendimentoPreditivoBean.pontoAtendimento.ramal}";
+                                iniciarIntegraPowerDialer(servidor, login);
+
+                            </script>
+
+                        </h:form>
+
+                    </c:if>
+
+                </c:if>
+
+                <script>
+
+                    window.formatMe = function (value) {
+
+                        if (Math.floor(value / 50) >= 1) {
+
+                            $("#timer").addClass("text-red");
+                        }
+
+                        return Math.floor(value / 60) + " minuto(s) e " + value
+                            % 60 + " segundos";
+                    }
+                </script>
+
+            </h:panelGroup>
+        </div>
+    </ui:define>
+
+</ui:composition>
