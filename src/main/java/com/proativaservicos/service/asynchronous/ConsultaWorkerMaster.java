@@ -26,12 +26,12 @@ public class ConsultaWorkerMaster {
     public void executarConsulta(Atendimento atendimento, Campanha campanha, Usuario usuario, Empresa empresa, Importacao importacao) {
         try {
 
-            // Execução da consulta simulada (pode ser substituída pela chamada real à API)
+
             ConsultaAssincronaMasterSaqueExecutor.ConsultaMasterSaque tarefa = new ConsultaAssincronaMasterSaqueExecutor().new ConsultaMasterSaque(atendimento, campanha, usuario, empresa);
 
             tarefa.call();
 
-            // Atualiza banco em transação independente
+
             atendimentoTransactionalService.atualizarAtendimento(atendimento, null);
 
         } catch (Exception e) {

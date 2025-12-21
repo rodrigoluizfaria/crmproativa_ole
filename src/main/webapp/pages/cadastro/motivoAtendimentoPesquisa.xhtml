@@ -1,0 +1,153 @@
+<ui:fragment xmlns="http://www.w3.org/1999/xhtml"
+             xmlns:h="http://java.sun.com/jsf/html"
+             xmlns:f="http://java.sun.com/jsf/core"
+             xmlns:ui="http://java.sun.com/jsf/facelets"
+             xmlns:p="http://primefaces.org/ui"
+             xmlns:c="http://java.sun.com/jsp/jstl/core">
+
+    <p:growl id="grl" globalOnly="true" showDetail="true" life="5000">
+        <p:autoUpdate/>
+    </p:growl>
+
+    <h:form id="formPesquisa" prependId="false">
+        <div class="flex align-items-center mb-3 justify-content-end">
+            <i class="pi pi-sitemap text-primary text-2xl mr-2"></i>
+            <h1 class="text-2xl font-medium m-0">Consulta de Motivos</h1>
+        </div>
+
+        <div class="card p-4 mb-4">
+
+            <div class="ui-fluid formgrid grid">
+                <div class="field col-12 md:col-6 lg:col-4">
+                    <p:outputLabel for="inputPesqStatusCamDesc" value="#{msg.descricao}" styleClass="font-bold"/>
+                    <div class="ui-inputgroup">
+                        <span class="ui-inputgroup-addon"><i class="pi pi-filter"></i></span>
+                        <p:inputText id="inputPesqStatusCamDesc" value="#{cadastroMotivoBean.nomeMotivo}"
+                                     placeholder="Digite parte da descrição..."/>
+                    </div>
+                </div>
+
+                <div class="field col-12 md:col-6 lg:col-3">
+                    <p:outputLabel for="selectOneAtivo" value="#{msg.acesso}" styleClass="font-bold"/>
+                    <p:selectOneMenu id="selectOneAtivo" value="#{cadastroMotivoBean.motivoAtivoEnum}" styleClass="w-full border-round-lg shadow-1">
+                        <f:selectItem itemLabel="Todos" noSelectionOption="true"/>
+                        <f:selectItems value="#{cadastroMotivoBean.acessoEnum}" var="acesso"
+                                       itemLabel="#{acesso.constante}" itemValue="#{acesso}"/>
+                    </p:selectOneMenu>
+                </div>
+            </div>
+
+            <div class="flex flex-wrap justify-content-between gap-3 mt-3">
+                <div class="flex gap-2">
+                    <p:commandButton id="btnPesquisa" value="#{msg.pesquisar}"
+                                     action="#{cadastroMotivoBean.pesquisar()}"
+                                     update="tableMotivos grl"
+                                     icon="pi pi-search"
+                                     styleClass="p-px-4 shadow-1"/>
+
+                    <p:commandButton id="btnExportar" icon="pi pi-file-excel"
+                                     value="#{msg.exportar}" ajax="false"
+                                     onclick="disableModalLoading()"
+                                     styleClass="ui-button-warning ui-button-outlined"
+                                     rendered="#{sessionScope['usuario'].permissaoExportar}"
+                                     disabled="#{empty cadastroMotivoBean.listMotivos}">
+                        <p:dataExporter target="tableMotivos" type="xls" fileName="motivos"/>
+                    </p:commandButton>
+                </div>
+
+                <p:commandButton id="btnNovo" value="#{msg.novo}"
+                                 styleClass="ui-button-success shadow-1"
+                                 actionListener="#{cadastroMotivoBean.novo()}"
+                                 ajax="false"
+                                 icon="pi pi-plus"/>
+            </div>
+        </div>
+
+        <div class="card shadow-1">
+            <p:dataTable value="#{cadastroMotivoBean.listMotivos}" var="sub" id="tableMotivos"
+                         paginator="true" rows="10"
+                         responsiveLayout="stack" breakpoint="960"
+                         styleClass="ui-datatable-striped"
+                         paginatorPosition="bottom"
+                         emptyMessage="Nenhum motivo encontrado com os filtros informados."
+                         paginatorTemplate="{CurrentPageReport} {FirstPageLink} {PreviousPageLink} {PageLinks} {NextPageLink} {LastPageLink} {RowsPerPageDropdown}"
+                         currentPageReportTemplate="Exibindo {startRecord}-{endRecord} de {totalRecords} registros">
+
+                <p:column headerText="#{msg.descricao}" sortBy="#{sub.descricao}">.
+
+                    <div class="flex  gap-2">
+                        <div class="border-circle shadow-1"
+                             style="width: 1.5rem; height: 1.5rem; background-color: #{sub.cor}; border: 1px solid rgba(0,0,0,0.1)"
+                        >
+                        </div>
+                        <h:outputText value="#{sub.descricao}" styleClass="font-medium"/>
+
+                    </div>
+
+
+                </p:column>
+
+                <p:column headerText="#{msg.acao}" class="text-center">
+
+                    <span class="p-tag ui-state-default p-2">#{sub.acao}</span>
+                </p:column>
+
+                <p:column headerText="#{msg.acesso}" class="text-center">
+                    <h:outputText value="#{sub.acesso.constante}"
+                                  styleClass="status-badge status-#{sub.acesso.constante.toLowerCase()}"/>
+                </p:column>
+
+
+                <p:column headerText="Cor" styleClass="text-center" width="60px" exportable="false">
+
+                </p:column>
+
+
+                <p:column headerText="Ações" styleClass="text-center" exportable="false" width="120px">
+                    <p:commandButton icon="pi pi-pencil" title="Alterar"
+                                     styleClass="ui-button-rounded ui-button-info ui-button-flat mr-2"
+                                     action="#{cadastroMotivoBean.editar(sub.id)}" ajax="false"/>
+
+                    <p:commandButton icon="pi pi-list" title="Ver submotivos"
+                                     styleClass="ui-button-rounded ui-button-secondary ui-button-flat"
+                                     update="dlgSubmotivos"
+                                     action="#{cadastroMotivoBean.onListarSubMotivos(sub)}"
+                                     oncomplete="PF('dlgSubmotivos').show();"/>
+                </p:column>
+            </p:dataTable>
+        </div>
+
+        <p:dialog modal="true" id="dlgSubmotivos" widgetVar="dlgSubmotivos"
+                  header="Submotivos de: #{cadastroMotivoBean.motivo.descricao}"
+                  width="80vw" responsive="true" draggable="false" resizable="false"
+                  appendTo="@(body)" showEffect="fade" hideEffect="fade">
+
+            <div class="p-2">
+                <p:dataTable value="#{cadastroMotivoBean.motivo.listSubMotivos}" var="sub"
+                             id="tableSubMotivos" rows="5" paginator="true"
+                             styleClass="ui-datatable-sm ui-datatable-striped"
+                             paginatorPosition="bottom"
+                             emptyMessage="Não existem submotivos vinculados.">
+
+                    <p:column headerText="#{msg.descricao}">
+                        <h:outputText value="#{sub.descricao}"/>
+                    </p:column>
+
+                    <p:column headerText="#{msg.acao}" width="25%">
+                        <h:outputText value="#{sub.acao}"/>
+                    </p:column>
+
+                    <p:column headerText="#{msg.acesso}" width="15%" class="text-center">
+                        <h:outputText value="#{sub.acesso.constante}"/>
+                    </p:column>
+                </p:dataTable>
+            </div>
+
+            <f:facet name="footer">
+                <p:commandButton value="Fechar" icon="pi pi-times"
+                                 onclick="PF('dlgSubmotivos').hide()"
+                                 styleClass="ui-button-flat"/>
+            </f:facet>
+        </p:dialog>
+    </h:form>
+</ui:fragment>

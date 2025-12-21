@@ -1,0 +1,76 @@
+<ui:fragment xmlns="http://www.w3.org/1999/xhtml"
+             xmlns:h="http://java.sun.com/jsf/html"
+             xmlns:f="http://java.sun.com/jsf/core"
+             xmlns:ui="http://java.sun.com/jsf/facelets"
+             xmlns:p="http://primefaces.org/ui">
+
+    <p:dialog widgetVar="dlgPonto" id="dlgPonto"
+              header="Configuração de Terminal (Ponto de Atendimento)"
+              modal="true"
+              width="500"
+              responsive="true"
+              draggable="false"
+              resizable="false"
+              styleClass="shadow-3 border-round-xl">
+
+        <h:panelGroup id="pgCadastro" layout="block" styleClass="p-2"
+                      rendered="#{not empty fichaAtendimentoSacBean.listPontoAtendimento}">
+
+            <div class="flex flex-column align-items-center mb-4 text-center">
+                <div class="bg-blue-100 border-circle p-3 mb-3">
+                    <i class="pi pi-phone text-blue-600 text-3xl"></i>
+                </div>
+                <h3 class="m-0 text-900">Associar Ramal</h3>
+                <p class="text-600 mt-1">Selecione o ponto de atendimento para iniciar as chamadas</p>
+            </div>
+
+            <div class="ui-fluid p-formgrid grid">
+                <div class="field col-12">
+                    <p:outputLabel value="Selecione o Ramal Disponível" for="selectPontoAtendimento" styleClass="font-bold mb-2 block"/>
+
+                    <div class="ui-inputgroup">
+                        <span class="ui-inputgroup-addon">
+                            <i class="pi pi-phone"></i>
+                        </span>
+                        <p:selectOneMenu id="selectPontoAtendimento"
+                                         value="#{fichaAtendimentoSacBean.usuario.pontoAtendimento}"
+                                         converter="omnifaces.SelectItemsConverter"
+                                         autoWidth="false"
+                                         filter="true"
+                                         filterMatchMode="contains">
+                            <f:selectItem itemLabel="Selecione um terminal..." itemValue="" noSelectionOption="true"/>
+                            <f:selectItems value="#{fichaAtendimentoSacBean.listPontoAtendimento}"
+                                           var="ponto"
+                                           itemLabel="#{ponto.descricao} (#{ponto.pabx.tipo.constante})"
+                                           itemValue="#{ponto}"/>
+                        </p:selectOneMenu>
+                    </div>
+                </div>
+
+                <div class="col-12 mt-3">
+                    <p:commandButton value="Confirmar Associação"
+                                     icon="pi pi-check-circle"
+                                     actionListener="#{fichaAtendimentoSacBean.onAssociarRamal()}"
+                                     styleClass="ui-button-raised ui-button-primary w-full p-3 font-bold"
+                                     oncomplete="PF('dlgPonto').hide()"
+                                     update="grl"/>
+                </div>
+            </div>
+        </h:panelGroup>
+
+        <h:panelGroup layout="block" styleClass="p-4 text-center"
+                      rendered="#{empty fichaAtendimentoSacBean.listPontoAtendimento}">
+
+            <i class="pi pi-exclamation-triangle text-orange-500 text-5xl mb-3"></i>
+            <div class="text-900 font-bold text-xl mb-2">Atenção</div>
+            <p class="text-600 m-0">Nenhum ponto de atendimento foi encontrado para o seu perfil.</p>
+            <p class="text-600">Por favor, entre em contato com o suporte técnico.</p>
+
+            <p:commandButton value="Fechar" type="button"
+                             onclick="PF('dlgPonto').hide()"
+                             styleClass="ui-button-flat mt-3" />
+        </h:panelGroup>
+
+    </p:dialog>
+
+</ui:fragment>

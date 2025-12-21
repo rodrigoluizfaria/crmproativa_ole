@@ -57,7 +57,7 @@
 
                         <f:selectItem itemLabel="Selecione" noSelectionOption="true"/>
 
-                        <f:selectItems value="#{statusAtendimentoBean.tipoAcessoEnum}" var="acesso"
+                        <f:selectItems value="#{statusAtendimentoBean.acessoEnum}" var="acesso"
                                        itemLabel="#{acesso.constante}" itemValue="#{acesso}"/>
 
                     </p:selectOneMenu>
@@ -191,34 +191,34 @@
                                          styleClass="ui-datatable-striped ui-datatable-sm " rowKey="#{motivo.id}"
                                          paginatorTemplate="{CurrentPageReport}  {FirstPageLink} {PreviousPageLink} {PageLinks} {NextPageLink} {LastPageLink}"
                                          currentPageReportTemplate="[#{msg.totalDeRegistros}: {totalRecords}]"
-                                         var="motivo" id="tableMotivos" rows="5">
+                                         var="sub" id="tableMotivos" rows="5">
 
                                 <p:column style="width:16px">
                                     <p:rowToggler/>
                                 </p:column>
 
                                 <p:column headerText="Motivo">
-                                    <p:outputLabel value="#{motivo.descricao}"/>
+                                    <p:outputLabel value="#{sub.descricao}"/>
                                 </p:column>
 
                                 <p:column headerText="Motivo">
-                                    <p:outputLabel value="#{motivo.acesso.constante}"/>
+                                    <p:outputLabel value="#{sub.acesso.constante}"/>
                                 </p:column>
 
                                 <p:column headerText="Submotivos" width="5%">
                                     <p:outputLabel
-                                            value="#{empty motivo.listSubMotivos ? '' : motivo.listSubMotivos.size()}"/>
+                                            value="#{empty sub.listSubMotivos ? '' : sub.listSubMotivos.size()}"/>
                                 </p:column>
 
                                 <p:column width="15%" style="text-align:center">
 
                                     <p:commandButton
-                                            icon="#{motivo.selecionado ? 'pi pi-check-circle' : 'pi pi-circle-off'} "
+                                            icon="#{sub.selecionado ? 'pi pi-check-circle' : 'pi pi-circle-off'} "
                                             styleClass="rounded-button ui-button-secondary ui-button-outlined   p-mr-2 "
                                             process="@this" update="pgMotivo pgSubMotivo" global="false"
-                                            actionListener="#{statusAtendimentoBean.selecionarSubMotivos(motivo)}">
+                                            actionListener="#{statusAtendimentoBean.selecionarSubMotivos(sub)}">
 
-                                        <f:setPropertyActionListener value="#{motivo}"
+                                        <f:setPropertyActionListener value="#{sub}"
                                                                      target="#{statusAtendimentoBean.motivoSelecionado}"/>
 
                                     </p:commandButton>
@@ -233,12 +233,12 @@
                                         <tr class="ui-widget-header" role="row">
                                             <td colspan="1" role="columnheader"
                                                 class="ui-panelgrid-cell ui-widget-header">#{empty
-                                                    motivo.listSubMotivos ?'Não possui
+                                                    sub.listSubMotivos ?'Não possui
                                                     submotivos':'Submotivos'}</td>
                                         </tr>
                                         </thead>
                                         <tbody>
-                                        <ui:repeat var="sub" value="#{motivo.listSubMotivos}">
+                                        <ui:repeat var="sub" value="#{sub.listSubMotivos}">
                                             <tr class="ui-widget-content" role="row">
 
                                                 <td role="gridcell" class="ui-panelgrid-cell">#{sub.descricao}
@@ -395,7 +395,7 @@
 
                                 <f:selectItem itemLabel="Selecione" noSelectionOption="true"/>
 
-                                <f:selectItems value="#{statusAtendimentoBean.tipoAcessoEnum}" var="acesso"
+                                <f:selectItems value="#{statusAtendimentoBean.acessoEnum}" var="acesso"
                                                itemLabel="#{acesso.constante}" itemValue="#{acesso}"/>
 
                             </p:selectOneMenu>
@@ -530,7 +530,7 @@
 
                                 <f:selectItem itemLabel="Selecione" noSelectionOption="true"/>
 
-                                <f:selectItems value="#{statusAtendimentoBean.tipoAcessoEnum}" var="acesso"
+                                <f:selectItems value="#{statusAtendimentoBean.acessoEnum}" var="acesso"
                                                itemLabel="#{acesso.constante}" itemValue="#{acesso}"/>
 
                             </p:selectOneMenu>

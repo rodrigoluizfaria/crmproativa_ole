@@ -1,11 +1,18 @@
 import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.google.gson.Gson;
 import com.proativaservicos.model.IntegracaoWs;
+import com.proativaservicos.model.SubMotivo;
 import com.proativaservicos.model.bancoMaster.ConvenioResponse;
 import com.proativaservicos.util.JsonUtil;
+import com.proativaservicos.util.Utils;
+import com.proativaservicos.util.constantes.TipoMetodosMotivoEnum;
 import localhost.TestePassando;
 
 import java.text.SimpleDateFormat;
+import java.util.Arrays;
+import java.util.Collections;
 import java.util.Date;
 import java.util.List;
 
@@ -46,7 +53,7 @@ public class TestesJson {
 
         ab.setUrl("http://localhost:8080/integracao-ws/integracao-ws");
         TestePassando testePassando = new TestePassando();
-testePassando.teste(ab);
+        testePassando.teste(ab);
         System.out.println("TOKEN: " + ab.getToken());
         System.out.println("URL: " + ab.getUrl());
         ab.setToken("ALTEROU::::");
@@ -85,12 +92,38 @@ testePassando.teste(ab);
                 "</HTML>";
 
 
-   //     System.out.println("CONTEM: "+ht.contains("403 ERROR"));
+        //     System.out.println("CONTEM: "+ht.contains("403 ERROR"));
 
-        String  teste  ="✅ - Operador não está logado. ";
+        String teste = "✅ - Operador não está logado. ";
         System.out.println(teste.contains("✅ "));
 
+        List<TipoMetodosMotivoEnum> tipoMetodosMotivoEnum = Arrays.asList(TipoMetodosMotivoEnum.values());
+        ObjectMapper mapper = new ObjectMapper();
+        Gson gson = new Gson();
+        String jso = gson.toJson(tipoMetodosMotivoEnum);
+        System.out.println(jso);
+
+        ObjectMapper mapper2 = new ObjectMapper();
+
+        // Converter para List<String>
+        List<TipoMetodosMotivoEnum> lista = mapper2.readValue(jso, new TypeReference<List<TipoMetodosMotivoEnum>>() {
+        });
+        System.out.println("LIST...");
+        //lista.forEach(System.out::println);
+        SubMotivo subMotivo = new SubMotivo();
+
+        subMotivo.adicionarListMetodo(lista);
+
+
+        System.out.println("LIST... SUB");
+        for (TipoMetodosMotivoEnum listTipoMetodosMotivo : subMotivo.getListTipoMetodosMotivos()) {
+            System.out.print(listTipoMetodosMotivo+" - ");
+        }
+        System.out.println("-----");
+        System.out.println("-----");
+        System.out.println(subMotivo.getTipoMetodosMotivo());
     }
+
     public static String getHorarioAtual() {
         long agora = System.currentTimeMillis();
         SimpleDateFormat sdf = new SimpleDateFormat("HH:mm:ss");

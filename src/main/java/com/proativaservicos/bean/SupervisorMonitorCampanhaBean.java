@@ -21,7 +21,6 @@ import org.primefaces.model.charts.polar.PolarAreaChartDataSet;
 import org.primefaces.model.charts.polar.PolarAreaChartModel;
 import org.primefaces.model.charts.polar.PolarAreaChartOptions;
 
-import javax.persistence.criteria.CriteriaBuilder;
 import java.io.Serializable;
 import java.math.BigDecimal;
 import java.math.BigInteger;

@@ -424,6 +424,7 @@ public class MongoDB {
         logger.setLevel(Level.SEVERE);
 
         try {
+
             MongoClient mongoClient = MongoClientProvider.getMongoClient();
             CodecRegistry pojoCodecRegistry = org.bson.codecs.configuration.CodecRegistries.fromRegistries(MongoClientSettings.getDefaultCodecRegistry(), org.bson.codecs.configuration.CodecRegistries.fromProviders(PojoCodecProvider.builder().automatic(true).build()));
 
@@ -448,7 +449,8 @@ public class MongoDB {
             return list;
 
         } catch (Exception e) {
-            e.printStackTrace();
+            System.out.println("Erro ao processar lista de doc 3C: ");
+           // e.printStackTrace();
         }
         return null;
 

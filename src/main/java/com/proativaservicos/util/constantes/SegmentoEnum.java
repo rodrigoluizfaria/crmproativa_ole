@@ -4,6 +4,7 @@ public enum SegmentoEnum {
 
 	EMPRESTIMO("Emprestimo"),
 	ASSOCIACAO("Associação"),
+	SAC("SAC"),
 	PORTABILIDADE("Portabilidade"),
 	AGENDAMENTOS("Agendamentos Help") ;
 

@@ -38,6 +38,11 @@ public class SubMotivoService extends GenericProService<SubMotivo> implements Se
 	}
 
 
+    public List<SubMotivo> pesquisarSubMotivos(String subMotivoDescricao, Long idMotivo, TipoAcessoEnum tipoAcessoSubmotivo) {
+    	return this.dao.pesquisarSubMotivos(subMotivoDescricao,idMotivo,tipoAcessoSubmotivo);
+	}
 
-	
+	public SubMotivo pesquisarSubMotivosPorId(Long id) {
+	return this.dao.pesquisarSubMotivosPorId(id);
+	}
 }

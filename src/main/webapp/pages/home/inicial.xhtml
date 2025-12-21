@@ -1,143 +1,194 @@
 <ui:composition xmlns="http://www.w3.org/1999/xhtml"
-	xmlns:h="http://java.sun.com/jsf/html"
-	xmlns:f="http://java.sun.com/jsf/core"
-	xmlns:ui="http://java.sun.com/jsf/facelets"
-	xmlns:of="http://omnifaces.org/functions"
-	xmlns:pe="http://primefaces.org/ui/extensions"
-	xmlns:p="http://primefaces.org/ui" template="/WEB-INF/template.xhtml"
-	xmlns:c="http://java.sun.com/jsp/jstl/core">
+                xmlns:h="http://java.sun.com/jsf/html"
+                xmlns:f="http://java.sun.com/jsf/core"
+                xmlns:ui="http://java.sun.com/jsf/facelets"
+                xmlns:p="http://primefaces.org/ui"
+                template="/WEB-INF/template.xhtml">
 
-	<ui:param name="viewname" value="HOME" />
+    <ui:define name="content">
 
-	<ui:define name="content">
+        <style type="text/css">
+            /* Adiciona ícone ao botão Diário */
+            #periodoSelector .ui-button:nth-child(1) .ui-button-text:before {
+                content: "\e94a"; /* pi-clock */
+                font-family: 'primeicons';
+                margin-right: 0.5rem;
+            }
 
-		<div class="ui-fluid">
+            /* Adiciona ícone ao botão Semanal */
+            #periodoSelector .ui-button:nth-child(2) .ui-button-text:before {
+                content: "\e93a"; /* pi-calendar-plus */
+                font-family: 'primeicons';
+                margin-right: 0.5rem;
+            }
 
-			<p:growl id="grl" widgetVar="grl" globalOnly="true" escape="false"	showSummary="false" life="8000" showDetail="true" sticky="false">
+            /* Adiciona ícone ao botão Mensal */
+            #periodoSelector .ui-button:nth-child(3) .ui-button-text:before {
+                content: "\e939"; /* pi-calendar */
+                font-family: 'primeicons';
+                margin-right: 0.5rem;
+            }
 
-				<p:autoUpdate />
+            /* Estilo para o botão selecionado ganhar mais destaque */
+            #periodoSelector .ui-button.ui-state-active {
+                background: var(--primary-color) !important;
+                border-color: var(--primary-color) !important;
+                color: var(--primary-color-text) !important;
+            }
+        </style>
+        <div class="p-1">
 
-			</p:growl>
+            <div class="card p-3 mb-5 shadow-1 border-round bg-surface-0">
+                <div class="flex flex-column md:flex-row justify-content-between align-items-center gap-3">
+                    <div>
+                        <h2 class="text-900 font-bold m-0 text-xl flex align-items-center">
+                            <i class="pi pi-chart-bar text-primary mr-2"></i>
+                            Análise de Performance
+                        </h2>
+                        <p class="text-600 m-0 text-sm">Filtre os indicadores por período ou data específica</p>
 
-			<c:if test="#{sistemaBean.scriptVonix}">
+                    </div>
 
-				<h:outputScript name="js/vonix-1.6.min.js" />
-				<h:outputScript target="head" library="js"	name="vonix-integra.js?v23" />
+                    <div class="flex flex-wrap align-items-center gap-3">
 
-				<h:form id="formVonix" prependId="false">
+                        <p:selectOneButton id="periodoSelector" value="#{dashboardBean.periodoSelecionado}" >
 
-						<script>
-								
-								var servidor = "#{sistemaBean.usuario.pontoAtendimento.pabx.url}";
-								var login = "#{sistemaBean.usuario.pontoAtendimento.ramal}";
-								var pausa = "#{sessionScope['usuario'].pausaVonix}"
-								iniciarIntegraVonixPausa(servidor,login,pausa);
-										
-						</script>
+                            <f:selectItem itemLabel="DIÁRIO" itemValue="DIARIO"/>
+                            <f:selectItem itemLabel="SEMANAL" itemValue="SEMANAL"/>
+                            <f:selectItem itemLabel="MENSAL" itemValue="MENSAL"/>
+                            <f:selectItem itemLabel="PERSONALIZADO" itemValue="CUSTOM"/>
 
-				</h:form>
-				
-			</c:if>
+                            <p:ajax update="@this panelCustomDates donutChart barChart" process="@this" partialSubmit="true" listener="#{dashboardBean.atualizarDados()}"/>
 
-			<h:form id="conteudo" prependId="false">
+                        </p:selectOneButton>
 
-				<p:remoteCommand id="remoteVonix" name="remoteVonix" actionListener="#{sistemaBean.iniciarPausaVonix()}">
+                        <h:panelGroup id="panelCustomDates">
 
-				</p:remoteCommand>
+                            <h:panelGroup styleClass="flex align-items-center gap-2"
+                                          rendered="#{dashboardBean.periodoSelecionado eq 'CUSTOM'}" layout="block">
+                                <p:calendar id="dataInicio" value="#{dashboardBean.dataInicio}"
+                                            placeholder="Início" pattern="dd/MM/yyyy" size="10"
+                                            showOn="button"/>
 
-				<h:panelGroup layout="block" rendered="#{inicialBean.controlePausa eq null and inicialBean.usuario.perfil ne 'USUARIO_CONSULTA'}">
+                                <span class="text-500">até</span>
 
-					<ui:include src="/pages/dashboard/dashProjecaoFragmento.xhtml" />
-
-				</h:panelGroup>
-
-
-				<h:panelGroup id="painelPausa" layout="block"	rendered="#{empty requestScope['javax.servlet.error.message'] and inicialBean.controlePausa ne null}"	styleClass="flex justify-content-center flex-wrap">
-
-					<p:poll interval="5" listener="#{inicialBean.onRefreshPausa()}"	update="panelP" global="false" />
-
-					<div class="col-6" style="padding: 0px">
-
-						<div class="div-pausa-content" style="">
-
-							<div class=" card border-left-3 border-primary-300 " style="display: flex; align-items: center; padding: 15px">
-
-								<!-- 			<i class="fa fa-pause-circle-o" style="font-size: 7rem" /> -->
-								<p:graphicImage styleClass="mr-5 ml-2" name="img/pausa.png"	style="float: right;opacity: 0.4;filter: alpha(opacity=40);width: 64px; " />
-
-								<h1>PAUSA #{inicialBean.controlePausa.pausa.descricao}</h1>
-								
-							</div>
-							
-							<div style="padding: 20px; " class="font-p mt-1 mb-3 card border-left-3 border-primary-300">
-
-								<div style="position: relative; margin-left: auto; margin-right: auto;" class="col-12">
-								
-									<p style="margin-bottom: 5px;" class="font-p">
-
-										<strong>Entrada:</strong>
-										#{of:formatDate(inicialBean.controlePausa.dataCadastro,'dd/MM/yyyy
-										HH:mm:ss')}
-
-									</p>
-
-									<p style="margin-bottom: 5px;" class="font-p">
-
-										<strong> Retorno:</strong>
-										#{inicialBean.controlePausa.pausa.tempo eq null? 'tempo de
-										retorno não definido.' :
-										of:formatDate(of:addMinutes(inicialBean.controlePausa.dataCadastro,inicialBean.controlePausa.pausa.tempo),'dd/MM/yyyy
-										HH:mm:ss')}
-
-									</p>
-
-									<h:panelGroup style="font-weight: bold;" id="panelP" styleClass="font-p"> Entrou em pausa:  #{inicialBean.tempoPausa}</h:panelGroup>
-
-									<!-- <pe:timeAgo value="#{inicialBean.controlePausa.dataCadastro}" titlePattern="dd MMMM yyyy HH:mm:ss" style="font-weight:bold;font-size:16px" locale="pt" /> -->
-								</div>
-
-								<div class="col-12 div-pausa-footer mt-6" style="padding: 15px; text-align: center">
-
-									<p:commandButton styleClass="ui-button-raised " value="Retornar" actionListener="#{inicialBean.removerPausa()}" style="width: 200px" ajax="false" update="@form" />
-
-								</div>
+                                <p:calendar id="dataFim" value="#{dashboardBean.dataFim}"
+                                            placeholder="Fim" pattern="dd/MM/yyyy" size="10"
+                                            showOn="button">
+                                    <p:ajax event="dateSelect" listener="#{dashboardBean.atualizarDados()}"
+                                            update=" donutChart barChart"/>
+                                </p:calendar>
+                            </h:panelGroup>
+                        </h:panelGroup>
+                    </div>
+                </div>
+            </div>
 
 
-							</div>
+            <div class="grid">
+                <div class="col-12 md:col-6 lg:col-3">
+                    <div class="card p-3 shadow-2 border-round border-left-3 border-blue-500">
+                        <div class="flex justify-content-between mb-3">
+                            <div>
+                                <span class="block text-500 font-medium mb-3">Total de Atendimentos</span>
+                                <div class="text-900 font-bold text-xl">#{dashboardBean.totalMotivos}</div>
+                            </div>
+                            <div class="flex align-items-center justify-content-center bg-blue-100 border-round"
+                                 style="width:2.5rem;height:2.5rem">
+                                <i class="pi pi-tag text-blue-500 text-xl"></i>
+                            </div>
+                        </div>
+                        <span class="text-green-500 font-medium">#{dashboardBean.motivosAtivos} </span>
+                        <span class="text-500 text-sm ml-1 italic">ativos no momento</span>
+                    </div>
+                </div>
 
+                <div class="col-12 md:col-6 lg:col-3">
+                    <div class="card p-3 shadow-2 border-round border-left-3 border-orange-500">
+                        <div class="flex justify-content-between mb-3">
+                            <div>
+                                <span class="block text-500 font-medium mb-3">Atendimentos encerrados</span>
+                                <div class="text-900 font-bold text-xl">#{dashboardBean.totalSubMotivos}</div>
+                            </div>
+                            <div class="flex align-items-center justify-content-center bg-orange-100 border-round"
+                                 style="width:2.5rem;height:2.5rem">
+                                <i class="pi pi-sitemap text-orange-500 text-xl"></i>
+                            </div>
+                        </div>
+                        <span class="text-500 text-sm font-medium">Categorias associadas</span>
+                    </div>
+                </div>
 
-						</div>
+                <div class="col-12 md:col-6 lg:col-3">
+                    <div class="card p-3 shadow-2 border-round border-left-3 border-cyan-500">
+                        <div class="flex justify-content-between mb-3">
+                            <div>
+                                <span class="block text-500 font-medium mb-3">Envio para N2</span>
+                                <div class="text-900 font-bold text-xl">#{dashboardBean.percentualN2}%</div>
+                            </div>
+                            <div class="flex align-items-center justify-content-center bg-cyan-100 border-round"
+                                 style="width:2.5rem;height:2.5rem">
+                                <i class="pi pi-arrow-up-right text-cyan-500 text-xl"></i>
+                            </div>
+                        </div>
+                        <span class="text-500 text-sm">Motivos com regra de escala</span>
+                    </div>
+                </div>
 
-					</div>
+                <div class="col-12 md:col-6 lg:col-3">
+                    <div class="card p-3 shadow-2 border-round border-left-3 border-green-500">
+                        <div class="flex justify-content-between mb-3">
+                            <div>
+                                <span class="block text-500 font-medium mb-3">Agentes Online</span>
+                                <div class="text-900 font-bold text-xl">#{dashboardBean.agentesOnline}</div>
+                            </div>
+                            <div class="flex align-items-center justify-content-center bg-green-100 border-round"
+                                 style="width:2.5rem;height:2.5rem">
+                                <i class="pi pi-users text-green-500 text-xl"></i>
+                            </div>
+                        </div>
+                        <span class="p-badge p-badge-success">Operacional</span>
+                    </div>
+                </div>
+            </div>
 
-				</h:panelGroup>
+            <div class="grid mt-4">
+                <div class="col-12 lg:col-6">
+                    <div class="card shadow-2 p-4 border-round h-full">
+                        <h5 class="text-xl font-bold mb-4">Status de Acesso</h5>
+                        <p:donutChart model="#{dashboardBean.donutModel}" style="width: 100%; height: 300px;"
+                                      id="donutChart"/>
+                    </div>
+                </div>
+                <div class="col-12 lg:col-6">
+                    <div class="card shadow-2 p-4 border-round h-full">
+                        <h5 class="text-xl font-bold mb-4">Distribuição por Ação</h5>
+                        <p:barChart model="#{dashboardBean.barModel}" style="width: 100%; height: 300px;"
+                                    id="barChart"/>
+                    </div>
+                </div>
+            </div>
 
-				<script>
-					
-						PrimeFacesExt.locales.TimeAgo['pt'] = {
-							prefixAgo : "há",
-							prefixFromNow : "em",
-							suffixAgo : null,
-							suffixFromNow : null,
-							seconds : "alguns segundos",
-							minute : "um minuto",
-							minutes : "%d minutos",
-							hour : "uma hora",
-							hours : "%d horas",
-							day : "um dia",
-							days : "%d dias",
-							month : "um mês",
-							months : "%d meses",
-							year : "um ano",
-							years : "%d anos"
-						}
-						
-					</script>
+            <div class="card mt-4 shadow-1 p-4 border-round bg-primary-reverse">
+                <h5 class="font-bold mb-3">Acesso Rápido</h5>
+                <div class="flex flex-wrap gap-3">
+                    <p:button value="Novo Motivo" icon="pi pi-tag" styleClass="ui-button-primary"
+                              outcome="/pages/cadastro/motivo"/>
+                    <p:button value="Novo Submotivo" icon="pi pi-sitemap" styleClass="ui-button-secondary"
+                              outcome="/pages/cadastro/submotivo"/>
+                    <p:button value="Relatórios" icon="pi pi-print" styleClass="ui-button-help ui-button-outlined"/>
+                </div>
+            </div>
+        </div>
 
-			</h:form>
+        <style type="text/css">
+            .card {
+                background-color: var(--surface-card);
+            }
 
-		</div>
-
-	</ui:define>
-
+            .border-left-3 {
+                border-left-width: 6px !important;
+            }
+        </style>
+    </ui:define>
 </ui:composition>

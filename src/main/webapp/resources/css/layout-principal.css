@@ -469,3 +469,69 @@ body .ui-galleria .ui-galleria-indicators .ui-galleria-indicator.ui-state-highli
 .layout-topbar-colored .layout-topbar .layout-topbar-wrapper .layout-topbar-right .layout-topbar-actions > li > a > .ui-overlay-badge {
     color: #ffffff;
 }
+
+
+/* Badge de Status Base */
+.status-badge {
+    border-radius: 4px;
+    padding: .25rem .5rem;
+    text-transform: uppercase;
+    font-weight: 700;
+    font-size: 11px;
+    letter-spacing: .3px;
+    display: inline-block;
+    min-width: 80px;
+    text-align: center;
+}
+
+/* Estilo para status ATIVO (Verde) */
+.status-ativo {
+    background: #C8E6C9;
+    color: #256029;
+}
+
+/* Estilo para status INATIVO (Vermelho) */
+.status-inativo {
+    background: #FFCDD2;
+    color: #C63737;
+}
+
+/* Ajuste para o Divider não ficar colado */
+.p-divider {
+    margin: 1.5rem 0 !important;
+}
+
+/* Hover efeito para as linhas da tabela */
+.ui-datatable-striped .ui-datatable-data > tr:hover {
+    background: rgba(0, 122, 217, 0.05) !important;
+}
+
+
+.layout-footer {
+    /* 1. Fixação no Rodapé */
+    position: fixed;
+    bottom: 0;
+    left: 0;
+    width: 100%;
+    z-index: 999; /* Garante que fique sobre outros elementos se necessário */
+
+    /* 2. Estilização Visual (Unificado) */
+    background: #ffffff;
+    height: 4rem;
+    border-top: 1px solid #dee2e6;
+
+    /* 3. Alinhamento Interno (Flexbox) */
+    display: flex;
+    align-items: center;
+    justify-content: space-between; /* Separa o conteúdo nas extremidades */
+
+    /* 4. Espaçamento */
+    padding: 0 2rem; /* Sugestão: 2rem é mais responsivo que 120px */
+    box-sizing: border-box; /* Garante que o padding não estoure a largura */
+}
+
+/* IMPORTANTE: Adicione isso ao container principal do seu site ou ao body
+   para que o rodapé não cubra o final do conteúdo */
+body, .layout-content {
+    padding-bottom: 4rem; /* Mesma altura do rodapé */
+}

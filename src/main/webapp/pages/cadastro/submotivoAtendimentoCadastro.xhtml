@@ -1,0 +1,173 @@
+<ui:fragment xmlns="http://www.w3.org/1999/xhtml"
+             xmlns:h="http://java.sun.com/jsf/html"
+             xmlns:f="http://java.sun.com/jsf/core"
+             xmlns:ui="http://java.sun.com/jsf/facelets"
+             xmlns:p="http://primefaces.org/ui"
+             xmlns:c="http://java.sun.com/jsp/jstl/core">
+
+    <p:growl id="grl" globalOnly="true" showDetail="true" life="5000">
+        <p:autoUpdate/>
+    </p:growl>
+
+    <style>
+        .grid-checkbox td {
+            padding: 0.5rem;
+        }
+        .grid-checkbox label {
+            margin-left: 0.5rem;
+            color: #495057;
+        }
+    </style>
+
+    <h:form id="formCadastro" prependId="false">
+        <div class="card shadow-1 p-4">
+            <div class="flex align-items-center mb-4">
+                <i class="pi pi-sitemap text-primary text-2xl mr-2"></i>
+                <h1 class="text-2xl font-medium m-0">Cadastro de SubMotivo</h1>
+            </div>
+
+            <p:divider styleClass="mb-4"/>
+
+            <div class="ui-fluid formgrid grid">
+
+                <div class="field col-12 md:col-6 lg:col-4">
+                    <p:outputLabel for="imputMotico" value="Descrição do SubMotivo" styleClass="font-bold"/>
+                    <div class="ui-inputgroup">
+                        <span class="ui-inputgroup-addon"><i class="pi pi-align-left"/></span>
+                        <p:inputText id="imputMotico"
+                                     value="#{cadastroSubMotivoBean.subMotivo.descricao}"
+                                     required="true"
+                                     requiredMessage="A descrição é obrigatória"
+                                     placeholder="Ex: Reclamação de atraso"/>
+                    </div>
+                    <p:message for="imputMotico"/>
+                </div>
+
+                <div class="field col-12 md:col-6 lg:col-4">
+                    <p:outputLabel for="selectOneMotivo" value="Motivo Principal (Pai)" styleClass="font-bold"/>
+                    <div class="ui-inputgroup">
+                        <span class="ui-inputgroup-addon"><i class="pi pi-folder-open"/></span>
+                        <p:selectOneMenu id="selectOneMotivo"
+                                         value="#{cadastroSubMotivoBean.subMotivo.motivo}"
+                                         required="true"
+                                         requiredMessage="Vincular a um motivo é obrigatório"
+                                         converter="omnifaces.SelectItemsConverter">
+                            <f:selectItem itemLabel="Selecione o Motivo" noSelectionOption="true"/>
+                            <f:selectItems value="#{cadastroSubMotivoBean.listMotivos}" var="m"
+                                           itemLabel="#{m.descricao}" itemValue="#{m}"/>
+                        </p:selectOneMenu>
+                    </div>
+                    <p:message for="selectOneMotivo"/>
+                </div>
+
+                <div class="field col-12 md:col-6 lg:col-4">
+                    <p:outputLabel for="selectCadastOneAcao" value="Ação Vinculada" styleClass="font-bold"/>
+                    <p:selectOneMenu id="selectCadastOneAcao"
+                                     value="#{cadastroSubMotivoBean.subMotivo.acao}"
+                                     required="true"
+                                     requiredMessage="Selecione uma ação">
+                        <f:selectItem itemLabel="Selecione uma ação" itemValue="" noSelectionOption="true"/>
+                        <f:selectItems value="#{cadastroSubMotivoBean.listAcaoStatusAtendimentoEnum}"
+                                       var="a" itemLabel="#{a}" itemValue="#{a}"/>
+                    </p:selectOneMenu>
+                    <p:message for="selectCadastOneAcao"/>
+                </div>
+
+                <div class="field col-12 md:col-6 lg:col-3">
+                    <p:outputLabel for="selectCadastOneAtivo" value="Status" styleClass="font-bold block mb-2"/>
+                    <p:selectOneButton id="selectCadastOneAtivo" value="#{cadastroSubMotivoBean.subMotivo.acesso}"
+                                       required="true" requiredMessage="Status é obrigatório">
+                        <f:selectItem itemLabel="ATIVO" itemValue="ATIVO"/>
+                        <f:selectItem itemLabel="INATIVO" itemValue="INATIVO"/>
+                    </p:selectOneButton>
+                    <p:message for="selectCadastOneAtivo"/>
+                </div>
+
+                <div class="field col-12 md:col-6 lg:col-3">
+                    <p:outputLabel for="corInput" value="Cor de Exibição" styleClass="font-bold"/>
+                    <p:colorPicker id="corInput" value="#{cadastroSubMotivoBean.subMotivo.cor}"
+                                   styleClass="w-full" clearButton="true" closeButton="true"/>
+                </div>
+            </div>
+
+            <div class="grid mt-2">
+
+                <div class="col-12">
+
+                    <div class="surface-card p-4 border-round-xl shadow-1 border-1 border-200">
+
+                        <div class="flex align-items-center mb-4 pb-3 border-bottom-1 border-200">
+                            <div class="bg-blue-100 border-circle w-2rem h-2rem flex align-items-center justify-content-center mr-2">
+                                <i class="pi pi-cog text-blue-600 text-lg"></i>
+                            </div>
+                            <div>
+                                <span class="text-900 font-bold block">Configurações de Fluxo</span>
+                                <span class="text-500 text-sm">Defina o comportamento deste submotivo no sistema.</span>
+                            </div>
+                        </div>
+
+                        <div class="grid ui-fluid">
+
+                            <div class="col-12 mb-3">
+                                <div class="surface-50 border-round p-3 border-1 border-300 flex align-items-start">
+                                    <p:selectBooleanCheckbox id="ckbEnviaGravao"
+                                                             value="#{cadastroSubMotivoBean.subMotivo.envarN2}"
+                                                             styleClass="mr-3 mt-1"/>
+
+                                    <div>
+                                        <p:outputLabel for="ckbEnviaGravao"
+                                                       value="Exigir Escalonamento para N2"
+                                                       styleClass="text-900 font-bold cursor-pointer block mb-1"/>
+                                        <span class="text-600 text-sm line-height-3">
+                                                 Se habilitado, o atendimento não poderá ser finalizado no N1 e abrirá automaticamente o fluxo de derivação para a equipe de Nível 2.
+                    </span>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <div class="col-12">
+                                   <p:outputLabel for="chekBoxMetodos" value="Métodos / Ações Disponíveis" styleClass="text-700 font-bold mb-3 block"/>
+
+                                <p:selectManyCheckbox id="chekBoxMetodos"
+                                                      value="#{cadastroSubMotivoBean.listTipoMetodosMotivoSelecionados}"
+                                                      layout="lineDirection"
+
+                                                      styleClass="grid-checkbox">
+
+                                    <f:selectItems value="#{cadastroSubMotivoBean.listTipoMetodosMotivoEnum}" var="mt"
+                                                   itemValue="#{mt}" itemLabel="#{mt.descricao}"/>
+
+                                </p:selectManyCheckbox>
+
+                                <small class="text-500 block mt-2">Selecione quais ações o operador pode executar ao selecionar este submotivo.</small>
+                            </div>
+
+                        </div>
+
+                    </div>
+
+                </div>
+
+            </div>
+
+            <p:divider styleClass="my-4"/>
+
+            <div class="flex justify-content-center lg:justify-content-end gap-3">
+                <p:commandButton id="btnVoltar"
+                                 value="Cancelar"
+                                 styleClass="ui-button-flat ui-button-secondary"
+                                 actionListener="#{cadastroSubMotivoBean.voltar()}"
+                                 immediate="true"
+                                 ajax="false"
+                                 icon="pi pi-times"/>
+
+                <p:commandButton id="btnSalvar"
+                                 value="Salvar SubMotivo"
+                                 styleClass="ui-button-success p-px-4 shadow-2"
+                                 action="#{cadastroSubMotivoBean.salvar()}"
+                                 update="@form grl"
+                                 icon="pi pi-check"/>
+            </div>
+        </div>
+    </h:form>
+</ui:fragment>

@@ -920,7 +920,7 @@ public class GenericBean implements Serializable {
 
 	}
 
-	public TipoAcessoEnum[] getTipoAcessoEnum() {
+	public TipoAcessoEnum[] getAcessoEnum() {
 		return TipoAcessoEnum.values();
 	}
 

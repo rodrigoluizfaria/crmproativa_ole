@@ -1,0 +1,117 @@
+<ui:fragment xmlns="http://www.w3.org/1999/xhtml"
+             xmlns:h="http://java.sun.com/jsf/html"
+             xmlns:f="http://java.sun.com/jsf/core"
+             xmlns:ui="http://java.sun.com/jsf/facelets"
+             xmlns:p="http://primefaces.org/ui"
+             xmlns:c="http://java.sun.com/jsp/jstl/core">
+
+    <p:growl id="grl" globalOnly="true" showDetail="true" life="5000">
+        <p:autoUpdate/>
+    </p:growl>
+
+    <h:form id="formPesquisa" prependId="false">
+        <div class="flex align-items-center mb-3 justify-content-end">
+            <i class="pi pi-sitemap text-primary text-2xl mr-2"></i>
+            <h1 class="text-2xl font-medium m-0">Consulta de SubMotivos</h1>
+        </div>
+
+        <div class="card p-4 mb-4 shadow-1">
+            <div class="ui-fluid formgrid grid">
+                <div class="field col-12 md:col-6 lg:col-4">
+                    <p:outputLabel for="txtDesc" value="#{msg.descricao}" styleClass="font-bold"/>
+                    <div class="ui-inputgroup">
+                        <span class="ui-inputgroup-addon"><i class="pi pi-filter"></i></span>
+                        <p:inputText id="txtDesc" value="#{cadastroSubMotivoBean.subMotivoDescricao}"
+                                     placeholder="Filtrar por nome..."/>
+                    </div>
+                </div>
+
+                <div class="field col-12 md:col-6 lg:col-4">
+                    <p:outputLabel for="selectOneMotivo" value="Motivo Principal" styleClass="font-bold"/>
+                    <p:selectOneMenu id="selectOneMotivo" value="#{cadastroSubMotivoBean.idMotivo}"
+                                     styleClass="w-full shadow-1" filter="true" filterMatchMode="contains">
+                        <f:selectItem itemLabel="Todos os Motivos" itemValue="#{null}" noSelectionOption="true"/>
+                        <f:selectItems value="#{cadastroSubMotivoBean.listMotivos}" var="m"
+                                       itemLabel="#{m.descricao}" itemValue="#{m.id}"/>
+                    </p:selectOneMenu>
+                </div>
+
+                <div class="field col-12 md:col-6 lg:col-4">
+                    <p:outputLabel for="selectOneAtivo" value="Status (Acesso)" styleClass="font-bold"/>
+                    <p:selectOneMenu id="selectOneAtivo" value="#{cadastroSubMotivoBean.tipoAcessoSubmotivo}"
+                                     styleClass="w-full shadow-1">
+                        <f:selectItem itemLabel="Todos" itemValue="#{null}" noSelectionOption="true"/>
+                        <f:selectItems value="#{cadastroSubMotivoBean.acessoEnum}" var="acesso"
+                                       itemLabel="#{acesso.constante}" itemValue="#{acesso}"/>
+                    </p:selectOneMenu>
+                </div>
+            </div>
+
+            <div class="flex flex-wrap justify-content-between gap-3 mt-3">
+                <div class="flex gap-2">
+                    <p:commandButton id="btnPesquisa" value="#{msg.pesquisar}"
+                                     action="#{cadastroSubMotivoBean.pesquisar()}"
+                                     update="tableMotivos grl"
+                                     icon="pi pi-search"
+                                     styleClass="p-px-4 shadow-1"/>
+
+                    <p:commandButton id="btnExportar" icon="pi pi-file-excel"
+                                     value="#{msg.exportar}" ajax="false"
+                                     onclick="disableModalLoading()"
+                                     styleClass="ui-button-warning ui-button-outlined"
+                                     rendered="#{sessionScope['usuario'].permissaoExportar}"
+                                     disabled="#{empty cadastroSubMotivoBean.listSubMotivos}">
+                        <p:dataExporter target="tableMotivos" type="xls" fileName="submotivos"/>
+                    </p:commandButton>
+                </div>
+
+                <p:commandButton id="btnNovo" value="#{msg.novo}"
+                                 styleClass="ui-button-success shadow-1"
+                                 actionListener="#{cadastroSubMotivoBean.novo()}"
+                                 ajax="false"
+                                 icon="pi pi-plus"/>
+            </div>
+        </div>
+
+        <div class="card shadow-1">
+            <p:dataTable value="#{cadastroSubMotivoBean.listSubMotivos}" var="sub" id="tableMotivos"
+                         paginator="true" rows="10"
+                         responsiveLayout="stack" breakpoint="960"
+                         styleClass="ui-datatable-striped"
+                         paginatorPosition="bottom"
+                         emptyMessage="Nenhum submotivo encontrado."
+                         paginatorTemplate="{CurrentPageReport} {FirstPageLink} {PreviousPageLink} {PageLinks} {NextPageLink} {LastPageLink} {RowsPerPageDropdown}"
+                         currentPageReportTemplate="Exibindo {startRecord}-{endRecord} de {totalRecords}">
+
+                <p:column headerText="Motivo Principal" sortBy="#{sub.motivo.descricao}">
+                    <h:outputText value="#{sub.motivo.descricao}" styleClass="font-bold text-primary" />
+                </p:column>
+
+                <p:column headerText="SubMotivo" sortBy="#{sub.descricao}">
+                    <div class="flex align-items-center gap-2">
+                        <div class="border-circle shadow-1"
+                             style="width: 1.2rem; height: 1.2rem; background-color: #{sub.cor}; border: 1px solid rgba(0,0,0,0.1)"
+                             title="Cor vinculada">
+                        </div>
+                        <h:outputText value="#{sub.descricao}" styleClass="font-medium"/>
+                    </div>
+                </p:column>
+
+                <p:column headerText="#{msg.acao}" class="text-center" width="15%">
+                    <span class="p-tag ui-state-default p-2 shadow-1">#{sub.acao}</span>
+                </p:column>
+
+                <p:column headerText="#{msg.acesso}" class="text-center" width="12%">
+                    <h:outputText value="#{sub.acesso.constante}"
+                                  styleClass="status-badge status-#{sub.acesso.constante.toLowerCase()} font-bold"/>
+                </p:column>
+
+                <p:column headerText="Ações" styleClass="text-center" exportable="false" width="100px">
+                    <p:commandButton icon="pi pi-pencil" title="Editar SubMotivo"
+                                     styleClass="ui-button-rounded ui-button-info ui-button-flat"
+                                     actionListener="#{cadastroSubMotivoBean.editar(sub.id)}" ajax="false"/>
+                </p:column>
+            </p:dataTable>
+        </div>
+    </h:form>
+</ui:fragment>

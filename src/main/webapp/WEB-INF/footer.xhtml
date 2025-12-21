@@ -1,26 +1,28 @@
-<ui:composition xmlns="http://www.w3.org/1999/xhtml" xmlns:h="http://java.sun.com/jsf/html" xmlns:f="http://java.sun.com/jsf/core"
-    xmlns:ui="http://java.sun.com/jsf/facelets" xmlns:p="http://primefaces.org/ui">
+<ui:composition xmlns="http://www.w3.org/1999/xhtml"
+                xmlns:h="http://java.sun.com/jsf/html"
+                xmlns:ui="http://java.sun.com/jsf/facelets"
+                xmlns:p="http://primefaces.org/ui">
 
     <div class="layout-footer">
-       
-       <div class="footer-logo-container">
-       
-           <!--   <p:graphicImage id="app-logo-footer" styleClass="logo-image" name="img/favicon.ico"  />-->
-              
-<!--            <span class="app-name">Proatend</span>-->
 
-        </div> 
-                 
-       <!--    Ponto Atendimento: #{sessionScope['usuario'].pontoAtendimento.ramal}" -->
-        <!--   Proativa Contact Center- 2021 -->
+        <div class="footer-start">
+            <span class="font-bold">Proatend</span>
+        </div>
 
-          <h:outputText styleClass="" escape="false" value="&lt;b&gt;Empresa:&lt;/b&gt; #{sessionScope['usuario'].empresa.nome} | &lt;b&gt;Perfil:&lt;/b&gt;  #{sessionScope['usuario'].perfil.constante} "  rendered="#{sessionScope['usuario'].perfil ne 'OPERADOR'}" />
-           
-        
-         <h:outputText styleClass="" escape="false" value="#{empty sessionScope['usuario'] ? '' : '&lt;b&gt;Equipe:&lt;/b&gt; '} #{empty sessionScope['usuario'].equipe ? '' :	 sessionScope['usuario'].equipe.nome }   #{empty sessionScope['usuario'] ? '' : ' | '}&lt;b&gt;Empresa:&lt;/b&gt; #{sessionScope['usuario'].empresa.nome} | Nenhum ramal associado"  rendered="#{sessionScope['usuario'].perfil eq 'OPERADOR' and sessionScope['usuario'].pontoAtendimento eq null}" />
-         <h:outputText styleClass="" escape="false" value="#{empty sessionScope['usuario'] ? '' : '&lt;b&gt;Equipe:&lt;/b&gt; '} #{empty sessionScope['usuario'].equipe ? '' :	 sessionScope['usuario'].equipe.nome }   #{empty sessionScope['usuario'] ? '' : ' | '} &lt;b&gt;Empresa:&lt;/b&gt; #{sessionScope['usuario'].empresa.nome} | &lt;b&gt;Ponto Atendimento&lt;/b&gt; #{sessionScope['usuario'].pontoAtendimento.ramal}"  rendered="#{sessionScope['usuario'].perfil eq 'OPERADOR' and sessionScope['usuario'].pontoAtendimento ne null}" />
+        <div class="footer-end text-right">
+            <h:outputText escape="false"
+                          value="&lt;b&gt;Empresa:&lt;/b&gt; #{sessionScope['usuario'].empresa.nome} | &lt;b&gt;Perfil:&lt;/b&gt; #{sessionScope['usuario'].perfil.constante}"
+                          rendered="#{sessionScope['usuario'].perfil ne 'OPERADOR'}" />
 
-         
+            <h:outputText escape="false"
+                          value="#{empty sessionScope['usuario'] ? '' : '&lt;b&gt;Equipe:&lt;/b&gt; '} #{sessionScope['usuario'].equipe.nome} | &lt;b&gt;Empresa:&lt;/b&gt; #{sessionScope['usuario'].empresa.nome} | &lt;span style='color:red'&gt;Nenhum ramal associado&lt;/span&gt;"
+                          rendered="#{sessionScope['usuario'].perfil eq 'OPERADOR' and sessionScope['usuario'].pontoAtendimento eq null}" />
+
+            <h:outputText escape="false"
+                          value="#{empty sessionScope['usuario'] ? '' : '&lt;b&gt;Equipe:&lt;/b&gt; '} #{sessionScope['usuario'].equipe.nome} | &lt;b&gt;Empresa:&lt;/b&gt; #{sessionScope['usuario'].empresa.nome} | &lt;b&gt;Ramal:&lt;/b&gt; #{sessionScope['usuario'].pontoAtendimento.ramal}"
+                          rendered="#{sessionScope['usuario'].perfil eq 'OPERADOR' and sessionScope['usuario'].pontoAtendimento ne null}" />
+        </div>
+
     </div>
-    
+
 </ui:composition>

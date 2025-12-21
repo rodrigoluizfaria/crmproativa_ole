@@ -313,6 +313,26 @@ public class Atendimento extends GenericAtendimento implements Serializable {
 
     }
 
+    public void addCartao(CartaoCredito cartaoCredito) {
+        if (CollectionUtils.isEmpty(listCartoesCreditos))
+            this.setListaCartoesCredito(new ArrayList<>());
+
+        cartaoCredito.setAtendimento(this);
+        this.listCartoesCreditos.add(cartaoCredito);
+    }
+
+    public CartaoCredito getCartaoCreditoPrincipal() {
+
+        if (CollectionUtils.isEmpty(listCartoesCreditos))
+            return null;
+
+        return this.listCartoesCreditos.stream()
+                .findFirst()
+                .orElseGet(CartaoCredito::new);
+
+
+    }
+
     public boolean adicionarTelefone(Telefone telefone) {
 
         if (this.listTelefones == null) {
@@ -348,6 +368,25 @@ public class Atendimento extends GenericAtendimento implements Serializable {
 
         this.listPortabilidades.add(portabilidade);
 
+    }
+
+    public String getEnderecoResumido() {
+
+        if (CollectionUtils.isEmpty(listEnderecos))
+            return null;
+
+        Endereco endereco = listEnderecos.get(0);
+
+        StringBuilder builder = new StringBuilder();
+        builder.append(endereco.getLogradouro());
+        if (StringUtils.isNotBlank(endereco.getComplemento()))
+            builder.append(", ").append(endereco.getComplemento());
+
+        builder.append(endereco.getBairro()).append(" - ").append(endereco.getCidade()).append("/");
+        builder.append(endereco.getUf());
+
+        builder.append(endereco.getCep());
+        return builder.toString();
     }
 
     @Override

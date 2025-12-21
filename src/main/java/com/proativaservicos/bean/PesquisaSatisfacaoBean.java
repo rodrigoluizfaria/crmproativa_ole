@@ -662,9 +662,9 @@ public class PesquisaSatisfacaoBean extends GenericBean {
     }
 
     @Override
-    public TipoAcessoEnum[] getTipoAcessoEnum() {
+    public TipoAcessoEnum[] getAcessoEnum() {
         // TODO Auto-generated method stub
-        return super.getTipoAcessoEnum();
+        return super.getAcessoEnum();
     }
 
     public TipoRespostaEnum[] getTipoResposta() {

@@ -1,10 +1,8 @@
 package com.proativaservicos.model;
 
 import java.math.BigDecimal;
-import java.util.ArrayList;
-import java.util.Date;
-import java.util.List;
-import java.util.Map;
+import java.text.NumberFormat;
+import java.util.*;
 
 import jakarta.persistence.CascadeType;
 import jakarta.persistence.Column;
@@ -229,6 +227,9 @@ public abstract class GenericAtendimento extends GenericControle {
 	@Column(name = "limite", columnDefinition = "NUMERIC(19,2)")
 	private BigDecimal limite;
 
+	@Column(name = "limite_disponivel", columnDefinition = "NUMERIC(19,2)")
+	private BigDecimal limiteDisponivel;
+
 	@Column(name = "seguro", columnDefinition = "NUMERIC(19,2)")
 	private BigDecimal seguro;
 	
@@ -318,6 +319,39 @@ public abstract class GenericAtendimento extends GenericControle {
 	@Column(name = "target")
 	private boolean target;
 
+	@Column(name = "enviar_n2")
+	private Boolean enviarN2;
+
+	@Column(name = "posicao_fila")
+	private Integer posicaoFila;
+
+	@Column(name = "abertura_demanda")
+	private Date dataAberturaDemanda;
+
+	@Column(name = "prazo_demanda")
+	private Date prazoPrazoDemanda;
+
+	@Column(name = "fechamento_demanda")
+	private Date dataFechamentoDemanda;
+
+	@Column(name = "demanda_encerrada")
+	private Boolean demandaEncerrada;
+
+	@Column (name = "vip")
+	private Boolean clienteVip;
+
+
+	@Column(name = "anotacao")
+	private String anotacao;
+
+	@Column(name = "observacao_adicional")
+	private String observacaoAdicional;
+
+	@Column(name = "observacao_n2")
+	private String observacaoN2;
+
+
+
 	@Column(name = "fluxo_esteira")
 	@Enumerated(EnumType.STRING)
 	private TipoFluxoEsteira fluxoEsteira;
@@ -333,6 +367,14 @@ public abstract class GenericAtendimento extends GenericControle {
 	@JoinColumn(name = "status", foreignKey = @ForeignKey(name = "atendimento_status_fk"))
 	@ManyToOne(fetch = FetchType.LAZY)
 	private StatusAtendimento status;
+
+	@JoinColumn(name = "motivo")
+	@ManyToOne(fetch = FetchType.LAZY)
+	private Motivo motivo;
+
+	@JoinColumn(name = "submotivo")
+	@ManyToOne(fetch = FetchType.LAZY)
+	private SubMotivo subMotivo;
 
 	@JoinColumn(name = "produto", foreignKey = @ForeignKey(name = "atendimento_produto_fk"))
 	@ManyToOne(fetch = FetchType.LAZY)
@@ -382,6 +424,8 @@ public abstract class GenericAtendimento extends GenericControle {
 
 	@Column(name = "rating")
 	private Integer rating;
+
+
 	
 	@Transient
 	private Map<String, String> listInformacoesComplementares;
@@ -862,6 +906,46 @@ public abstract class GenericAtendimento extends GenericControle {
 		return limite;
 	}
 
+	public String getLimitFormatado() {
+		if (limite == null) {
+			return "R$ 0,00";
+		}
+		NumberFormat nf = NumberFormat.getCurrencyInstance(new Locale("pt", "BR"));
+		return nf.format(limite);
+	}
+	public String getLimitCreditoFormatado() {
+
+		if (valorCartaCredito == null) {
+			return "R$ 0,00";
+		}
+
+		NumberFormat nf = NumberFormat.getCurrencyInstance(new Locale("pt", "BR"));
+		return nf.format(valorCartaCredito);
+	}
+
+	public String getSaqueFormatado() {
+
+		if (valorSaque == null) {
+			return "R$ 0,00";
+		}
+
+		NumberFormat nf = NumberFormat.getCurrencyInstance(new Locale("pt", "BR"));
+		return nf.format(valorSaque);
+	}
+
+	public String getLimiteValorLiberadoFormatado() {
+
+		if (valorLiberado == null) {
+			return "R$ 0,00";
+		}
+
+		NumberFormat nf = NumberFormat.getCurrencyInstance(new Locale("pt", "BR"));
+		return nf.format(valorLiberado);
+	}
+
+
+
+
 	public void setLimite(BigDecimal limite) {
 		this.limite = limite;
 	}
@@ -1302,6 +1386,8 @@ public abstract class GenericAtendimento extends GenericControle {
 	public void setMargemSecundariaCinco(BigDecimal margemSecundariaCinco) {
 		this.margemSecundariaCinco = margemSecundariaCinco;
 	}
+
+
 	
 	public String getMailingId() {
 		return mailingId;
@@ -1525,6 +1611,110 @@ public abstract class GenericAtendimento extends GenericControle {
 				'}';
 	}
 
+
+	public Boolean getEnviarN2() {
+		return enviarN2;
+	}
+
+	public void setEnviarN2(Boolean enviarN2) {
+		this.enviarN2 = enviarN2;
+	}
+
+	public Integer getPosicaoFila() {
+		return posicaoFila;
+	}
+
+	public void setPosicaoFila(Integer posicaoFila) {
+		this.posicaoFila = posicaoFila;
+	}
+
+	public Date getDataAberturaDemanda() {
+		return dataAberturaDemanda;
+	}
+
+	public void setDataAberturaDemanda(Date dataAberturaDemanda) {
+		this.dataAberturaDemanda = dataAberturaDemanda;
+	}
+
+	public Date getPrazoPrazoDemanda() {
+		return prazoPrazoDemanda;
+	}
+
+	public void setPrazoPrazoDemanda(Date prazoPrazoDemanda) {
+		this.prazoPrazoDemanda = prazoPrazoDemanda;
+	}
+
+	public Date getDataFechamentoDemanda() {
+		return dataFechamentoDemanda;
+	}
+
+	public void setDataFechamentoDemanda(Date dataFechamentoDemanda) {
+		this.dataFechamentoDemanda = dataFechamentoDemanda;
+	}
+
+	public Boolean getDemandaEncerrada() {
+		return demandaEncerrada;
+	}
+
+	public void setDemandaEncerrada(Boolean demandaEncerrada) {
+		this.demandaEncerrada = demandaEncerrada;
+	}
+
+	public Motivo getMotivo() {
+		return motivo;
+	}
+
+	public void setMotivo(Motivo motivo) {
+		this.motivo = motivo;
+	}
+
+	public SubMotivo getSubMotivo() {
+		return subMotivo;
+	}
+
+	public void setSubMotivo(SubMotivo subMotivo) {
+		this.subMotivo = subMotivo;
+	}
+
+	public BigDecimal getLimiteDisponivel() {
+		return limiteDisponivel;
+	}
+
+	public void setLimiteDisponivel(BigDecimal limiteDisponivel) {
+		this.limiteDisponivel = limiteDisponivel;
+	}
+
+	public Boolean getClienteVip() {
+		return clienteVip;
+	}
+
+	public void setClienteVip(Boolean clienteVip) {
+		this.clienteVip = clienteVip;
+	}
+
+	public String getAnotacao() {
+		return anotacao;
+	}
+
+	public void setAnotacao(String anotacao) {
+		this.anotacao = anotacao;
+	}
+
+	public String getObservacaoAdicional() {
+		return observacaoAdicional;
+	}
+
+	public void setObservacaoAdicional(String observacaoAdicional) {
+		this.observacaoAdicional = observacaoAdicional;
+	}
+
+	public String getObservacaoN2() {
+		return observacaoN2;
+	}
+
+	public void setObservacaoN2(String observacaoN2) {
+		this.observacaoN2 = observacaoN2;
+	}
 
 	public void setRating(Integer rating) {
 		this.rating = rating;

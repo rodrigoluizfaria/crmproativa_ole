@@ -35,6 +35,8 @@ public enum SubMenuEnum {
 	CADASTRO_STATUS_CAMPANHA("statusCampanha","statusCampanha",MenuEnum.CADASTRO,null,new PerfilUsuarioEnum[0]),
 	CADASTRO_STATUS_ATENDIMENTO("statusAtendimento","statusAtendimento",MenuEnum.CADASTRO,null,new PerfilUsuarioEnum[0]),
 	CADASTRO_STATUS_TELEFONE("statusTelefone","statusTelefone",MenuEnum.CADASTRO,null,new PerfilUsuarioEnum[0]),
+	CADASTRO_MOTIVO("motivo","motivo",MenuEnum.CADASTRO,null,new PerfilUsuarioEnum[0]),
+	CADASTRO_SUBMOTIVO("submotivo","submotivo",MenuEnum.CADASTRO,null,new PerfilUsuarioEnum[0]),
 	CADASTRO_CONCISTENCIA("consistencia","consistencia",MenuEnum.CADASTRO,null,new PerfilUsuarioEnum[0]),
 	CADASTRO_PRODUTO("produto","produto",MenuEnum.CADASTRO,null,new PerfilUsuarioEnum[0]),
 	CADASTRO_EXPEDIENTE("expediente","expediente",MenuEnum.CADASTRO,null,new PerfilUsuarioEnum[0]),
@@ -51,7 +53,11 @@ public enum SubMenuEnum {
 	ATENDIMENTO_ATIVO("fichaAtendimento","fichaAtendimento2",MenuEnum.ATENDIMENTO,null,new PerfilUsuarioEnum[] { PerfilUsuarioEnum.USUARIO_CONSULTA }),
 	ATENDIMENTO_PREDITIVO("fichaAtendimentoPreditivo","fichaAtendimentoPreditivo",MenuEnum.ATENDIMENTO,null,new PerfilUsuarioEnum[] { PerfilUsuarioEnum.USUARIO_CONSULTA }),
 	ATENDIMENTO_PROSPECT("fichaAtendimentoProspect","fichaAtendimentoProspect",MenuEnum.ATENDIMENTO,null,new PerfilUsuarioEnum[] { PerfilUsuarioEnum.USUARIO_CONSULTA }),
-/*
+
+	ATENDIMENTO_SAC("fichaAtendimentoSac","fichaAtendimentoSac",MenuEnum.ATENDIMENTO,null,new PerfilUsuarioEnum[] { PerfilUsuarioEnum.USUARIO_CONSULTA }),
+
+
+	/*
 	CONSULTA_ATENDIMENTO("atendimentoConsulta","atendimentoConsulta",MenuEnum.ATENDIMENTO,null,new PerfilUsuarioEnum[0]),
 */
 

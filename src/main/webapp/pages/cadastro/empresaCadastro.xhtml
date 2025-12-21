@@ -51,7 +51,7 @@
                         <p:selectOneMenu id="selectOneAtivo"
                                          value="#{empresaBean.empresa.ativo}">
 
-                            <f:selectItems value="#{empresaBean.tipoAcessoEnum}"
+                            <f:selectItems value="#{empresaBean.acessoEnum}"
                                            var="acesso" itemLabel="#{acesso.constante}"
                                            itemValue="#{acesso}"/>
 
@@ -225,7 +225,7 @@
 
                                     <p:selectOneMenu id="selectOneAcessoLoja" value="#{empresaBean.loja.ativo}">
 
-                                        <f:selectItems value="#{empresaBean.tipoAcessoEnum}"
+                                        <f:selectItems value="#{empresaBean.acessoEnum}"
                                                        var="acesso" itemLabel="#{acesso.constante}"
                                                        itemValue="#{acesso}"/>
 
@@ -395,7 +395,7 @@
                                                 <f:facet name="input">
                                                     <p:selectOneMenu value="#{empresaBean.conciliar.ativo}">
 
-                                                        <f:selectItems value="#{empresaBean.tipoAcessoEnum}"
+                                                        <f:selectItems value="#{empresaBean.acessoEnum}"
                                                                        var="acesso" itemLabel="#{acesso.constante}"
                                                                        itemValue="#{acesso}"/>
 

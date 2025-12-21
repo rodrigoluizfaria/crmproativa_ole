@@ -29,9 +29,9 @@ import java.util.*;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
-@TransactionManagement(TransactionManagementType.BEAN)
+/*@TransactionManagement(TransactionManagementType.BEAN)
 @Startup
-@Singleton
+@Singleton*/
 public class WebSocket3c implements Serializable {
 
 
@@ -79,7 +79,7 @@ public class WebSocket3c implements Serializable {
 
     @PostConstruct
     public void init() {
-
+/*
         atualizarIntegracao(null);
 
         if (this.integracaoWs != null && this.integracaoWs.getHabilitarWebsocket() != null && this.integracaoWs.getHabilitarWebsocket()) {
@@ -88,7 +88,7 @@ public class WebSocket3c implements Serializable {
             status = true;
             this.usuario = retornarUsuario();
             System.out.println("INICIANDO SOKET 3C: ID: " + this.socket.id() + " | Ativo: " + socket.isActive());
-        }
+        }*/
 
     }
 
@@ -266,7 +266,7 @@ public class WebSocket3c implements Serializable {
     @Schedule(hour = "*", minute = "*/20", persistent = false)
     private void processandoLigacao3c() {
 
-        Logger logger = Logger.getLogger("org.mongodb.driver");
+       /* Logger logger = Logger.getLogger("org.mongodb.driver");
         logger.setLevel(Level.SEVERE);
         System.out.println("Pesquisando dados do discador 3C+");
 
@@ -389,7 +389,7 @@ public class WebSocket3c implements Serializable {
         } else {
 
             System.out.println("Nenhum dado para processar. [Discador 3C+]");
-        }
+        }*/
 
     }
 

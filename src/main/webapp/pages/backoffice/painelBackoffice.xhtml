@@ -217,7 +217,7 @@
                                         </div>
                                     </div>
 
-                                    <p:dataTable id="tableBkoPendenciaMotivo" var="motivo" rows="5"
+                                    <p:dataTable id="tableBkoPendenciaMotivo" var="sub" rows="5"
                                                  paginator="true" paginatorPosition="bottom"
                                                  value="#{monitorBackofficeBean.listMotioPainel}"
                                                  emptyMessage="#{monitorBackofficeBean.listMotioPainel eq null? '' : msg.emptyMessage}"
@@ -228,21 +228,21 @@
                                         <p:column width="5%">
 
                                             <div
-                                                    style="background-color: #{motivo[3]}; width: 40px;height: 14px;">
+                                                    style="background-color: #{sub[3]}; width: 40px;height: 14px;">
                                             </div>
 
                                         </p:column>
 
-                                        <p:column headerText="Motivo" sortBy="#{motivo[2]}" width="15%">
+                                        <p:column headerText="Motivo" sortBy="#{sub[2]}" width="15%">
 
-                                            <h:outputLabel value="#{motivo[2]}">
+                                            <h:outputLabel value="#{sub[2]}">
                                             </h:outputLabel>
 
                                         </p:column>
 
-                                        <p:column headerText="Quantidade" sortBy="#{motivo[1]}" width="15%">
+                                        <p:column headerText="Quantidade" sortBy="#{sub[1]}" width="15%">
 
-                                            <h:outputLabel value="#{motivo[1]}"/>
+                                            <h:outputLabel value="#{sub[1]}"/>
 
                                             <f:facet name="footer">
 
@@ -255,9 +255,9 @@
                                         </p:column>
 
 
-                                        <p:column headerText="Valor" sortBy="#{motivo[0]}" width="15%">
+                                        <p:column headerText="Valor" sortBy="#{sub[0]}" width="15%">
 
-                                            <h:outputLabel value="#{motivo[0]}">
+                                            <h:outputLabel value="#{sub[0]}">
 
                                                 <f:convertNumber type="currency" locale="pt-br" currencySymbol="R$"/>
 
@@ -314,21 +314,21 @@
                                         <p:column headerText="" width="5%">
 
                                             <div
-                                                    style="background-color: #{motivo[3]}; width: 40px;height: 14px;">
+                                                    style="background-color: #{sub[3]}; width: 40px;height: 14px;">
                                             </div>
 
                                         </p:column>
 
                                         <p:column headerText="Submotivo" width="15%">
 
-                                            <h:outputLabel value="#{motivo[2]}">
+                                            <h:outputLabel value="#{sub[2]}">
                                             </h:outputLabel>
 
                                         </p:column>
 
-                                        <p:column headerText="Quantidade" sortBy="#{motivo[1]}" width="15%">
+                                        <p:column headerText="Quantidade" sortBy="#{sub[1]}" width="15%">
 
-                                            <h:outputLabel value="#{motivo[1]}"/>
+                                            <h:outputLabel value="#{sub[1]}"/>
 
                                             <f:facet name="footer">
 
@@ -339,9 +339,9 @@
 
                                         </p:column>
 
-                                        <p:column headerText="Valor" sortBy="#{motivo[0]}" width="15%">
+                                        <p:column headerText="Valor" sortBy="#{sub[0]}" width="15%">
 
-                                            <h:outputLabel value="#{motivo[0]}">
+                                            <h:outputLabel value="#{sub[0]}">
                                                 <f:convertNumber type="currency" locale="pt-br" currencySymbol="R$"/>
                                             </h:outputLabel>
 

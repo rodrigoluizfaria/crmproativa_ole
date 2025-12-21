@@ -67,7 +67,7 @@
 
 						<f:selectItem itemLabel="Selecione" noSelectionOption="true" />
 
-						<f:selectItems value="#{statusAtendimentoBean.tipoAcessoEnum}" var="acesso" itemLabel="#{acesso.constante}" itemValue="#{acesso}" />
+						<f:selectItems value="#{statusAtendimentoBean.acessoEnum}" var="acesso" itemLabel="#{acesso.constante}" itemValue="#{acesso}" />
 
 					</p:selectOneMenu>
 
@@ -200,16 +200,16 @@
 
 							<div class="field col-12 md:col-4 p-4">
 
-								<p:dataTable var="motivo" value="#{status.listMotivos}"
-											 styleClass="ui-datatable-sm ui-datatable-striped ui-datatable-gridlines"
-											 rowExpandMode="single" emptyMessage="#{msg.emptyMessage}">
+								<p:dataTable var="sub" value="#{status.listMotivos}"
+                                             styleClass="ui-datatable-sm ui-datatable-striped ui-datatable-gridlines"
+                                             rowExpandMode="single" emptyMessage="#{msg.emptyMessage}">
 
 									<f:facet name="header">
 										Lista Motivos
 									</f:facet>
 
 									<p:column headerText="Motivo" >
-										<h:outputText value=" #{motivo.descricao}" />
+										<h:outputText value=" #{sub.descricao}" />
 									</p:column>
 
 								</p:dataTable>

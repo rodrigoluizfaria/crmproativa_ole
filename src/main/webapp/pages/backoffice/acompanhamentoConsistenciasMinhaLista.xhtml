@@ -110,8 +110,8 @@
 
                     <f:selectItem itemLabel="Selecione" itemValue=""/>
 
-                    <f:selectItems value="#{acompanhamentoMinhasConsistencias.listMotivos}" var="motivo"
-                                   itemLabel="#{motivo.descricao}" itemValue="#{motivo}"/>
+                    <f:selectItems value="#{acompanhamentoMinhasConsistencias.listMotivos}" var="sub"
+                                   itemLabel="#{sub.descricao}" itemValue="#{sub}"/>
                     <p:ajax process="@this" listener="#{acompanhamentoMinhasConsistencias.onSelectMotivo}"
                             update="selectSubMotivo" global="false"/>
 
