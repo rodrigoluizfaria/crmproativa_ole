@@ -5,7 +5,8 @@ public enum TipoStatusAtividadesEnum {
     INICIO_ATENDIMENTO("Início do Atendimento"),
     ATENDIMENTO_CLASSIFICADO("Atendimento Classificado"),
     SOLICITACAO_AUMENTO_LINITE("Solicitação de Aumento de Limite"),
-    ATENDIMENTO_FINALIZADO("Atendimento");
+    SOLICITACAO_ABERTA("Solicitação de atendimento aberta"),
+    ATENDIMENTO_FINALIZADO("Atendimento finalizado");
 
     private final String descricao;
 

@@ -5,6 +5,10 @@ import jakarta.persistence.MappedSuperclass;
 import org.apache.commons.lang3.StringUtils;
 
 import java.math.BigDecimal;
+import java.math.RoundingMode;
+import java.text.DecimalFormat;
+import java.text.DecimalFormatSymbols;
+import java.util.Locale;
 
 @MappedSuperclass
 public abstract class GenericCartaoCredito extends Generic {
@@ -18,7 +22,7 @@ public abstract class GenericCartaoCredito extends Generic {
     @Column(name = "numero_cartao")
     private String numeroCartao;
 
-     @Column(name = "codigo_seguranca")
+    @Column(name = "codigo_seguranca")
     private Integer codigoSeguranca;
 
     @Column(name = "nome_cliente")
@@ -162,4 +166,51 @@ public abstract class GenericCartaoCredito extends Generic {
     public void setObservacao(String observacao) {
         this.observacao = observacao;
     }
+
+    public BigDecimal getPercentualUtilizado() {
+
+        if (limiteTotal == null || limiteDisponivel == null || limiteTotal.compareTo(BigDecimal.ZERO) == 0) {
+            return BigDecimal.ZERO;
+        }
+
+        BigDecimal usado = limiteTotal.subtract(limiteDisponivel);
+
+        return usado
+                .multiply(BigDecimal.valueOf(100))
+                .divide(limiteTotal, 2, RoundingMode.HALF_UP);
+    }
+
+    public String getPercentualUtilizadoFormatado() {
+        if (limiteTotal == null || limiteDisponivel == null || limiteTotal.compareTo(BigDecimal.ZERO) == 0) {
+            return "0%";
+        }
+
+        BigDecimal usado = limiteTotal.subtract(limiteDisponivel);
+
+        BigDecimal percentual = usado
+                .multiply(BigDecimal.valueOf(100))
+                .divide(limiteTotal, 2, RoundingMode.HALF_UP);
+
+        DecimalFormat df = new DecimalFormat("#,##0.00");
+        return df.format(percentual) + "%";
+    }
+
+    public String getPercentualUtilizadoFormatadoCss() {
+
+        if (limiteTotal == null || limiteDisponivel == null || limiteTotal.compareTo(BigDecimal.ZERO) == 0) {
+            return "0%";
+        }
+
+        BigDecimal usado = limiteTotal.subtract(limiteDisponivel);
+
+        BigDecimal percentual = usado
+                .multiply(BigDecimal.valueOf(100))
+                .divide(limiteTotal, 2, RoundingMode.HALF_UP);
+        DecimalFormatSymbols symbols = new DecimalFormatSymbols(Locale.US);
+
+        DecimalFormat df = new DecimalFormat("#,##0.00",symbols);
+        return df.format(percentual) + "%";
+    }
+
+
 }

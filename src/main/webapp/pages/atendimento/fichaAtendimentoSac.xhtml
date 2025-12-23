@@ -84,7 +84,8 @@
                 <div class="p-grid">
                     <h:form prependId="false" id="formConteudo">
 
-                        <h:panelGroup rendered="#{fichaAtendimentoSacBean.atendimento ne null}">
+                        <h:panelGroup rendered="#{fichaAtendimentoSacBean.atendimento ne null}"
+                                      id="pmpPrincipalAtendimento">
 
                             <div class="grid grid-nogutter">
 
@@ -205,7 +206,9 @@
 
                                                 <div class="flex flex-column gap-3 mt-3">
 
-                                                    <span class="tag-vip w-fit"><i class="pi pi-crown mr-1"></i> Cliente VIP</span>
+                                                    <h:panelGroup styleClass="tag-vip w-fit"
+                                                                  rendered="#{fichaAtendimentoSacBean.atendimento.clienteVip}"><i
+                                                            class="pi pi-crown mr-1"></i> Cliente VIP</h:panelGroup>
 
                                                     <div class="field  " style="margin-bottom: 0px !important;">
                                                         <p:outputLabel for="txtNome" value="Nome Completo"
@@ -237,16 +240,22 @@
                                                         <div class="ui-inputgroup">
                                                             <span class="ui-inputgroup-addon"><i
                                                                     class="pi pi-phone"></i></span>
+
                                                             <p:inputText readonly="true"
-                                                                         value="(11) 98765-4321"
-                                                            />
+                                                                         value="#{fichaAtendimentoSacBean.atendimento.telefoneResumido}"/>
+                                                            <!-- <p:inputText readonly="true"
+                                                                          value="(11) 98765-4321"-->
+
                                                         </div>
                                                     </div>
 
                                                     <p:outputLabel for="txtNome" value="Endereço"
                                                                    styleClass="font-semibold  block"/>
-                                                    <p:inputTextarea rows="3" value="Rua das Flores, 123 - SP"
+                                                    <p:inputTextarea rows="3"
+                                                                     value="#{fichaAtendimentoSacBean.atendimento.enderecoResumido}"
                                                                      readonly="true"/>
+                                                    <!--       <p:inputTextarea rows="3" value="Rua das Flores, 123 - SP"
+                                                                            readonly="true"/>-->
                                                 </div>
 
 
@@ -271,19 +280,19 @@
                                                     <div class="col-12 md:col-6 lg:col-3">
                                                         <div class="p-3 border-round bg-green-50">
                                                             <small class="text-600">Disponível Vista</small>
-                                                            <div class="limite-valor">#{fichaAtendimentoSacBean.atendimento.limitCreditoFormatado}</div>
+                                                            <div class="limite-valor">#{fichaAtendimentoSacBean.atendimento.limitDisponivelFormatado}</div>
                                                         </div>
                                                     </div>
                                                     <div class="col-12 md:col-6 lg:col-3">
                                                         <div class="p-3 border-round bg-cyan-50">
                                                             <small class="text-600">Limite Saque</small>
-                                                            <div class="limite-valor">#{fichaAtendimentoSacBean.atendimento.saqueFormatado}</div>
+                                                            <div class="limite-valor">#{fichaAtendimentoSacBean.atendimento.limiteSaqueFormatado}</div>
                                                         </div>
                                                     </div>
                                                     <div class="col-12 md:col-6 lg:col-3">
                                                         <div class="p-3 border-round bg-blue-50">
                                                             <small class="text-600">Disponível Saque</small>
-                                                            <div class="limite-valor">#{fichaAtendimentoSacBean.atendimento.limiteValorLiberadoFormatado}</div>
+                                                            <div class="limite-valor">#{fichaAtendimentoSacBean.atendimento.limiteSaqueDisponivel}</div>
                                                         </div>
                                                     </div>
                                                 </div>
@@ -474,7 +483,7 @@
                                                         </p:outputLabel>
 
                                                         <p:inputTextarea id="obs"
-                                                                         value="#{fichaAtendimentoSacBean.atendimento.observacao}"
+                                                                         value="#{fichaAtendimentoSacBean.atendimento.observacaoAdicional}"
                                                                          rows="3" styleClass="w-full"
                                                                          placeholder="Digite as observações do atendimento (campo obrigatório)..."
                                                                          required="true"
@@ -492,7 +501,7 @@
 
                                                         <p:commandButton value="Iniciar Atendimento" icon="pi pi-check"
                                                                          update="grl formConteudo"
-                                                                         actionListener="#{fichaAtendimentoSacBean.iniciarPreAtendimento()}"
+                                                                         actionListener="#{fichaAtendimentoSacBean.iniciarAtendimento()}"
                                                                          ignoreAutoUpdate="@form"
                                                                          process="cardClassificacao"
                                                                          styleClass="ui-button-primary w-6 bg-bluegray-700 border-bluegray-700"/>
@@ -509,43 +518,60 @@
 
                                                 <div class="card shadow-2 border-round-xl p-0 bg-white overflow-hidden">
 
-                                                    <div class="flex bg-gray-100 border-bottom-1 border-300">
+                                                    <h:panelGroup
+                                                            styleClass="flex bg-gray-100 border-bottom-1 border-300"
+                                                            layout="block" id="pnpAbasRegistrarAtendimento">
 
-                                                        <p:commandLink
-                                                                actionListener="#{fichaAtendimentoSacBean.trocarAba('CARTAO')}"
-                                                                update="panelOperacional" process="@this"
-                                                                styleClass="flex-1 p-3 text-center no-underline transition-colors border-right-1 border-200 #{fichaAtendimentoSacBean.abaAtiva eq 'CARTAO' ? 'font-bold text-gray-800 bg-white border-top-2 border-primary' : 'font-medium text-gray-600 hover:bg-gray-200'}">
-                                                            Cartão
-                                                        </p:commandLink>
+                                                        <ui:repeat
+                                                                value="#{fichaAtendimentoSacBean.atendimento.subMotivo.listTipoMetodosMotivos}"
+                                                                var="metodos">
 
-                                                        <p:commandLink
-                                                                actionListener="#{fichaAtendimentoSacBean.trocarAba('LIMITE')}"
-                                                                update="panelOperacional" process="@this"
-                                                                styleClass="flex-1 p-3 text-center no-underline transition-colors border-right-1 border-200 #{fichaAtendimentoSacBean.abaAtiva eq 'LIMITE' ? 'font-bold text-gray-800 bg-white border-top-2 border-primary' : 'font-medium text-gray-600 hover:bg-gray-200'}">
-                                                            Limite
-                                                        </p:commandLink>
+                                                            <p:commandLink
+                                                                    actionListener="#{fichaAtendimentoSacBean.trocarAba(metodos.name())}"
+                                                                    update="panelOperacional" process="@this"
+                                                                    styleClass="flex-1 p-3 text-center no-underline transition-colors border-right-1 border-200 #{fichaAtendimentoSacBean.abaAtiva eq metodos.name() ? 'font-bold text-gray-800 bg-white border-top-2 border-primary' : 'font-medium text-gray-600 hover:bg-gray-200'}">
+                                                                #{metodos.descricao}
+                                                            </p:commandLink>
 
-                                                        <p:commandLink
-                                                                actionListener="#{fichaAtendimentoSacBean.trocarAba('SENHA')}"
-                                                                update="panelOperacional" process="@this"
-                                                                styleClass="flex-1 p-3 text-center no-underline transition-colors border-right-1 border-200 #{fichaAtendimentoSacBean.abaAtiva eq 'SENHA' ? 'font-bold text-gray-800 bg-white border-top-2 border-primary' : 'font-medium text-gray-600 hover:bg-gray-200'}">
-                                                            Senha
-                                                        </p:commandLink>
+                                                        </ui:repeat>
 
-                                                        <p:commandLink
-                                                                actionListener="#{fichaAtendimentoSacBean.trocarAba('2VIA')}"
-                                                                update="panelOperacional" process="@this"
-                                                                styleClass="flex-1 p-3 text-center no-underline transition-colors border-right-1 border-200 #{fichaAtendimentoSacBean.abaAtiva eq '2VIA' ? 'font-bold text-gray-800 bg-white border-top-2 border-primary' : 'font-medium text-gray-600 hover:bg-gray-200'}">
-                                                            2ª Via
-                                                        </p:commandLink>
+                                                        <!--  <p:commandLink
+                                                                  actionListener="#{fichaAtendimentoSacBean.trocarAba('CARTAO')}"
+                                                                  update="panelOperacional" process="@this"
+                                                                  styleClass="flex-1 p-3 text-center no-underline transition-colors border-right-1 border-200 #{fichaAtendimentoSacBean.abaAtiva eq 'CARTAO' ? 'font-bold text-gray-800 bg-white border-top-2 border-primary' : 'font-medium text-gray-600 hover:bg-gray-200'}">
+                                                              Cartão
+                                                          </p:commandLink>
 
-                                                        <p:commandLink
-                                                                actionListener="#{fichaAtendimentoSacBean.trocarAba('NOTAS')}"
-                                                                update="panelOperacional" process="@this"
-                                                                styleClass="flex-1 p-3 text-center no-underline transition-colors #{fichaAtendimentoSacBean.abaAtiva eq 'NOTAS' ? 'font-bold text-gray-800 bg-white border-top-2 border-primary' : 'font-medium text-gray-600 hover:bg-gray-200'}">
-                                                            Notas
-                                                        </p:commandLink>
-                                                    </div>
+                                                          <p:commandLink
+                                                                  actionListener="#{fichaAtendimentoSacBean.trocarAba('LIMITE')}"
+                                                                  update="panelOperacional" process="@this"
+                                                                  styleClass="flex-1 p-3 text-center no-underline transition-colors border-right-1 border-200 #{fichaAtendimentoSacBean.abaAtiva eq 'LIMITE' ? 'font-bold text-gray-800 bg-white border-top-2 border-primary' : 'font-medium text-gray-600 hover:bg-gray-200'}">
+                                                              Limite
+                                                          </p:commandLink>
+
+                                                          <p:commandLink
+                                                                  actionListener="#{fichaAtendimentoSacBean.trocarAba('SENHA')}"
+                                                                  update="panelOperacional" process="@this"
+                                                                  styleClass="flex-1 p-3 text-center no-underline transition-colors border-right-1 border-200 #{fichaAtendimentoSacBean.abaAtiva eq 'SENHA' ? 'font-bold text-gray-800 bg-white border-top-2 border-primary' : 'font-medium text-gray-600 hover:bg-gray-200'}">
+                                                              Senha
+                                                          </p:commandLink>
+
+                                                          <p:commandLink
+                                                                  actionListener="#{fichaAtendimentoSacBean.trocarAba('2VIA')}"
+                                                                  update="panelOperacional" process="@this"
+                                                                  styleClass="flex-1 p-3 text-center no-underline transition-colors border-right-1 border-200 #{fichaAtendimentoSacBean.abaAtiva eq '2VIA' ? 'font-bold text-gray-800 bg-white border-top-2 border-primary' : 'font-medium text-gray-600 hover:bg-gray-200'}">
+                                                              2ª Via
+                                                          </p:commandLink>
+
+                                                          <p:commandLink
+                                                                  actionListener="#{fichaAtendimentoSacBean.trocarAba('NOTAS')}"
+                                                                  update="panelOperacional" process="@this"
+                                                                  styleClass="flex-1 p-3 text-center no-underline transition-colors #{fichaAtendimentoSacBean.abaAtiva eq 'NOTAS' ? 'font-bold text-gray-800 bg-white border-top-2 border-primary' : 'font-medium text-gray-600 hover:bg-gray-200'}">
+                                                              Notas
+                                                          </p:commandLink>
+  -->
+
+                                                    </h:panelGroup>
 
                                                     <div class="p-4" style="min-height: 400px;">
 
@@ -563,19 +589,43 @@
                                                                 <div class="col-4">
                                                                     <div class="surface-50 border-round p-3 text-center h-full border-1 border-200">
                                                                         <span class="text-blue-600 font-medium text-sm block mb-1">Limite Total</span>
-                                                                        <span class="text-blue-900 text-2xl font-bold">R$ 15.000</span>
+                                                                        <span class="text-blue-900 text-2xl font-bold">
+                                                                                <p:inputText
+                                                                                        value="#{fichaAtendimentoSacBean.cartaoCreditoSelecionado.limiteTotal}"
+                                                                                        styleClass="text-blue-900 text-2xl font-bold">
+                                                                                        <f:convertNumber type="currency"
+                                                                                                         currencySymbol="R$"
+                                                                                                         locale="pt_BR"/>
+                                                                                </p:inputText>
+                                                                        </span>
                                                                     </div>
                                                                 </div>
                                                                 <div class="col-4">
                                                                     <div class="surface-50 border-round p-3 text-center h-full border-1 border-200">
                                                                         <span class="text-green-600 font-medium text-sm block mb-1">Disponível</span>
-                                                                        <span class="text-green-900 text-2xl font-bold">R$ 8.500</span>
+                                                                        <span class="text-green-900 text-2xl font-bold">
+                                                                              <p:inputText
+                                                                                      value="#{fichaAtendimentoSacBean.cartaoCreditoSelecionado.limiteDisponivel}"
+                                                                                      styleClass="text-blue-900 text-2xl font-bold">
+                                                                                        <f:convertNumber type="currency"
+                                                                                                         currencySymbol="R$"
+                                                                                                         locale="pt_BR"/>
+                                                                                </p:inputText>
+                                                                        </span>
                                                                     </div>
                                                                 </div>
                                                                 <div class="col-4">
                                                                     <div class="surface-50 border-round p-3 text-center h-full border-1 border-200">
                                                                         <span class="text-purple-600 font-medium text-sm block mb-1">Emergencial</span>
-                                                                        <span class="text-purple-900 text-2xl font-bold">R$ 2.000</span>
+                                                                        <span class="text-purple-900 text-2xl font-bold">
+                                                                              <p:inputText
+                                                                                      value="#{fichaAtendimentoSacBean.cartaoCreditoSelecionado.limiteEmergencial}"
+                                                                                      styleClass="text-blue-900 text-2xl font-bold">
+                                                                                        <f:convertNumber type="currency"
+                                                                                                         currencySymbol="R$"
+                                                                                                         locale="pt_BR"/>
+                                                                                </p:inputText>
+                                                                        </span>
                                                                     </div>
                                                                 </div>
                                                             </div>
@@ -583,11 +633,13 @@
                                                             <div class="mb-4">
                                                                 <div class="flex justify-content-between mb-1">
                                                                     <span class="text-700 text-sm font-bold">Utilização do Limite</span>
-                                                                    <span class="text-primary font-bold text-sm">43.3%</span>
+                                                                    <span class="text-primary font-bold text-sm">
+                                                                            #{fichaAtendimentoSacBean.cartaoCreditoSelecionado.percentualUtilizadoFormatado}
+                                                                    </span>
                                                                 </div>
                                                                 <div class="w-full bg-gray-200 border-round-xl h-1rem overflow-hidden">
                                                                     <div class="bg-green-500 h-full"
-                                                                         style="width: 43.3%"></div>
+                                                                         style="width: #{fichaAtendimentoSacBean.cartaoCreditoSelecionado.percentualUtilizadoFormatadoCss}"></div>
                                                                 </div>
                                                             </div>
 
@@ -799,7 +851,7 @@
                                                         </h:panelGroup>
 
                                                         <h:panelGroup
-                                                                rendered="#{fichaAtendimentoSacBean.abaAtiva eq '2VIA'}"
+                                                                rendered="#{fichaAtendimentoSacBean.abaAtiva eq 'SEGUNDA_VIA'}"
                                                                 styleClass="fadein animation-duration-300">
 
                                                             <div class="flex align-items-center mb-4">
@@ -907,8 +959,11 @@
                                                                 <h2 class="text-xl text-900 font-bold m-0">Anotações Internas</h2>
                                                             </div>
                                                             <p:inputTextarea rows="10" styleClass="w-full"
+                                                                             value="#{fichaAtendimentoSacBean.atendimento.anotacao}"
                                                                              placeholder="Digite notas sobre este cartão..."/>
                                                         </h:panelGroup>
+
+
                                                     </div>
 
                                                     <div class="bg-blue-50 border-top-1 border-blue-100 p-4">
@@ -925,11 +980,14 @@
                                                         <div class="flex flex-column md:flex-row gap-3">
                                                             <p:commandButton value="Finalizar Atendimento"
                                                                              icon="pi pi-check"
-                                                                             action="#{fichaAtendimentoSacBean.salvarAtendimento()}"
+                                                                             process="@this panelOperacional"
+                                                                             update="dlgFinalizar"
+                                                                             oncomplete="PF('dlgFinalizar').show();"
                                                                              styleClass="ui-button-success w-full border-round-lg font-bold py-3"/>
 
-                                                            <p:commandButton value="Direcionar ao N2"
-                                                                             icon="pi pi-arrow-right" iconPos="right"
+                                                            <p:commandButton value="Direcionar ao N2" icon="pi pi-arrow-right" iconPos="right"
+                                                                             type="button"
+                                                                             onclick="PF('dlgDerivarN2').show()"
                                                                              styleClass="ui-button-outlined ui-button-warning w-full border-round-lg font-bold py-3 bg-white"/>
                                                         </div>
                                                     </div>
@@ -948,6 +1006,8 @@
 
                         </h:panelGroup>
 
+
+                        <!--  SEM ATENDIMENTO ESPERANDO...-->
                         <h:panelGroup rendered="#{fichaAtendimentoSacBean.atendimento eq null}">
 
                             <p:remoteCommand name="enviarCpf" actionListener="#{fichaAtendimentoSacBean.onCliente}"
@@ -1029,11 +1089,147 @@
                             }
 
                         </script>
+
+                        <p:dialog header="Finalizar Atendimento" widgetVar="dlgFinalizar" id="dlgFinalizar"
+                                  modal="true" responsive="true" width="500" showEffect="fade" hideEffect="fade"
+                                  draggable="false" resizable="false" styleClass="border-round-xl">
+
+
+
+                                <f:facet name="header">
+                                    <div class="flex align-items-center">
+                                        <div class="bg-green-100 border-circle w-2rem h-2rem flex align-items-center justify-content-center mr-2">
+                                            <i class="pi pi-check text-green-600 text-lg"></i>
+                                        </div>
+                                        <span class="text-xl font-bold ">Finalizar Atendimento</span>
+                                    </div>
+                                </f:facet>
+                            <h:panelGroup id="pbpDlgFinalizar"
+                                          rendered="#{not empty fichaAtendimentoSacBean.atendimento}">
+                                <div class="pt-2">
+
+                                    <div class="mb-4">
+                                        <span class="text-500 block text-sm mb-1">Classificação Atual:</span>
+                                        <div class="surface-100 p-2 border-round text-700 font-medium text-sm flex align-items-center">
+                                            <i class="pi pi-tag mr-2 text-primary"></i>
+                                            <h:outputText
+                                                    value="#{fichaAtendimentoSacBean.motivoSelecionado.descricao} | #{fichaAtendimentoSacBean.subMotivoSelecionado.descricao}"/>
+                                        </div>
+                                    </div>
+
+                                    <div class="field">
+                                        <div class="flex align-items-center mb-2">
+                                            <p:outputLabel for="obsFinal" value="Observações do Atendimento:"
+                                                           styleClass="font-bold text-900 mr-2"/>
+                                            <span class="text-red-500 font-bold mr-2">*</span>
+                                            <i class="pi pi-exclamation-circle text-orange-500"
+                                               title="Informação importante"></i>
+                                        </div>
+
+                                        <p:inputTextarea id="obsFinal"
+                                                         value="#{fichaAtendimentoSacBean.atendimento.observacao}"
+                                                         rows="4" styleClass="w-full bg-gray-50 border-round-lg"
+                                                         placeholder="Registre os detalhes do atendimento realizado (campo obrigatório)..."
+                                                         required="true"
+                                                         requiredMessage="A observação é obrigatória para finalizar."/>
+
+                                        <small class="text-600 block mt-1">Obrigatório: Descreva o que foi realizado no atendimento.</small>
+                                        <p:message for="obsFinal" id="msgObs"/>
+                                    </div>
+
+                                </div>
+                            </h:panelGroup>
+                                <f:facet name="footer">
+
+                                    <div class="flex justify-content-between gap-2 pt-2">
+
+                                        <p:commandButton value="Cancelar" icon="pi pi-times"
+                                                         onclick="PF('dlgFinalizar').hide()" type="button"
+                                                         styleClass="ui-button-outlined ui-button-secondary w-6 border-round-lg font-bold"/>
+
+                                        <p:commandButton value="Confirmar Finalização" icon="pi pi-check"
+                                                         actionListener="#{fichaAtendimentoSacBean.salvarAtendimento()}"
+                                                         update="msgObs pbpDlgFinalizar @form"
+
+                                                         process="@this obsFinal "
+
+                                                         styleClass="ui-button-success w-6 border-round-lg font-bold"/>
+                                    </div>
+                                </f:facet>
+
+
+                        </p:dialog>
+
+
+
+
+                        <p:dialog header="Direcionar para Área N2" widgetVar="dlgDerivarN2" id="dlgDerivarN2"
+                                  modal="true" responsive="true" width="500" showEffect="fade" hideEffect="fade"
+                                  draggable="false" resizable="false" styleClass="border-round-xl">
+
+                            <f:facet name="header">
+                                <div class="flex align-items-center">
+                                    <div class="bg-orange-100 border-circle w-2rem h-2rem flex align-items-center justify-content-center mr-2">
+                                        <i class="pi pi-arrow-right text-orange-600 text-lg font-bold"></i>
+                                    </div>
+                                    <span class="text-xl font-bold text-900">Direcionar para Área N2</span>
+                                </div>
+                            </f:facet>
+
+                            <h:panelGroup rendered="#{not empty fichaAtendimentoSacBean.atendimento}" id="pnpDerivarN2">
+                            <div class="pt-2">
+
+                                <div class="mb-4">
+                                    <span class="text-500 block text-sm mb-1">Classificação:</span>
+                                    <div class="text-700 font-medium text-sm flex align-items-center">
+                                        <h:outputText value="#{fichaAtendimentoSacBean.motivoSelecionado.descricao} | #{fichaAtendimentoSacBean.subMotivoSelecionado.descricao}" />
+                                    </div>
+                                </div>
+
+
+                                <div class="field">
+                                    <div class="flex align-items-center mb-2">
+                                        <p:outputLabel for="obsDerivacao" value="Observações da Derivação:" styleClass="font-bold text-900 mr-2"/>
+                                        <span class="text-red-500 font-bold mr-2">*</span>
+                                        <i class="pi pi-exclamation-circle text-orange-500" title="Informação obrigatória"></i>
+                                    </div>
+
+                                    <p:inputTextarea id="obsDerivacao"
+                                                     value="#{fichaAtendimentoSacBean.atendimento.observacaoN2}"
+                                                     rows="4" styleClass="w-full bg-gray-50 border-round-lg"
+                                                     placeholder="Descreva o motivo da derivação e informações relevantes (campo obrigatório)..."
+                                                     required="true" requiredMessage="A observação é obrigatória."/>
+
+                                    <small class="text-600 block mt-1">Obrigatório: Explique o contexto da derivação para a área N2.</small>
+                                    <p:message for="obsDerivacao" />
+                                </div>
+
+                            </div>
+                            </h:panelGroup>
+                            <f:facet name="footer">
+                                <div class="flex justify-content-between gap-2 pt-2">
+                                    <p:commandButton value="Cancelar"
+                                                     onclick="PF('dlgDerivarN2').hide()" type="button"
+                                                     styleClass="ui-button-outlined ui-button-secondary w-6 border-round-lg font-bold"/>
+
+                                    <p:commandButton value="Confirmar Derivação" icon="pi pi-arrow-right" iconPos="right"
+                                                     actionListener="#{fichaAtendimentoSacBean.derivarAtendimentoN2()}"
+                                                     update="pnpDerivarN2"
+                                                     process="@this pnpDerivarN2"
+
+                                                     styleClass="ui-button-warning w-6 border-round-lg font-bold bg-orange-600 border-orange-600 hover:bg-orange-700"/>
+                                </div>
+                            </f:facet>
+
+                        </p:dialog>
                     </h:form>
+
                 </div>
+
             </div>
 
-                <ui:include src="/pages/atendimento/modalPainelPontoAtendimento.xhtml"/>
+            <ui:include src="/pages/atendimento/modalPainelPontoAtendimento.xhtml"/>
+
 
         </div>
         <style>

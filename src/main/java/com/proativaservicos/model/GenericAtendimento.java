@@ -913,27 +913,17 @@ public abstract class GenericAtendimento extends GenericControle {
 		NumberFormat nf = NumberFormat.getCurrencyInstance(new Locale("pt", "BR"));
 		return nf.format(limite);
 	}
-	public String getLimitCreditoFormatado() {
+	public String getLimitDisponivelFormatado() {
 
-		if (valorCartaCredito == null) {
+		if (limiteDisponivel == null) {
 			return "R$ 0,00";
 		}
 
 		NumberFormat nf = NumberFormat.getCurrencyInstance(new Locale("pt", "BR"));
-		return nf.format(valorCartaCredito);
+		return nf.format(limiteDisponivel);
 	}
 
-	public String getSaqueFormatado() {
-
-		if (valorSaque == null) {
-			return "R$ 0,00";
-		}
-
-		NumberFormat nf = NumberFormat.getCurrencyInstance(new Locale("pt", "BR"));
-		return nf.format(valorSaque);
-	}
-
-	public String getLimiteValorLiberadoFormatado() {
+	public String getLimiteSaqueFormatado() {
 
 		if (valorLiberado == null) {
 			return "R$ 0,00";
@@ -941,6 +931,16 @@ public abstract class GenericAtendimento extends GenericControle {
 
 		NumberFormat nf = NumberFormat.getCurrencyInstance(new Locale("pt", "BR"));
 		return nf.format(valorLiberado);
+	}
+
+	public String getLimiteSaqueDisponivel() {
+
+		if (valorMaxOperacao == null) {
+			return "R$ 0,00";
+		}
+
+		NumberFormat nf = NumberFormat.getCurrencyInstance(new Locale("pt", "BR"));
+		return nf.format(valorMaxOperacao);
 	}
 
 

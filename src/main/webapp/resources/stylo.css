@@ -1763,8 +1763,12 @@ body .pi {
     margin: 0 5px;
 }
 
-
-body .ui-dialog .ui-dialog-titlebar {
+body .ui-dialog .ui-dialog-titlebar .ui-dialog-title {
+    margin: 0;
+    float: left;
+    font-size: 1.25rem;
+}
+/*body .ui-dialog .ui-dialog-titlebar {
     background: var(--primary-400);
     color: #fff;
     font-weight: 600;
@@ -1788,7 +1792,7 @@ body .ui-dialog .ui-dialog-titlebar .ui-dialog-titlebar-icon {
     line-height: 2rem;
     padding: 0;
     user-select: none;
-}
+}*/
 /*
 
 

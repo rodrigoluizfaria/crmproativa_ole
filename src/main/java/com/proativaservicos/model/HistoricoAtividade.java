@@ -1,30 +1,39 @@
-package com.proativaservicos.model.dto;
+package com.proativaservicos.model;
 
 import com.proativaservicos.util.constantes.TipoStatusAtividadesEnum;
+import jakarta.persistence.*;
 
 import java.util.Date;
 
-public class HistoricoAtividadesDto {
+@Entity
+@Table(name = "historico_atividade")
+public class HistoricoAtividade extends Generic {
 
 
+    @Column(name = "tipo_status_atividades")
+    @Enumerated(EnumType.STRING)
     private TipoStatusAtividadesEnum tipoStatusAtividade;
+
+    @Column(name = "descricao")
     private String descricao;
+
+    @Column(name = "detalhes")
     private String detalhes;
+
+    @Column(name = "data")
     private Date data;
-    private String autor;
+
+    @JoinColumn(name = "usuario_cadastro")
+    @OneToOne(fetch = FetchType.LAZY)
+    private Usuario usuario;
+
+    @JoinColumn(name = "atendimento")
+    @OneToOne(fetch = FetchType.LAZY)
+    private Atendimento atendimento;
+
+    @Column(name = "icone")
     private String tipoIcone;
 
-
-    public HistoricoAtividadesDto(){}
-
-    public HistoricoAtividadesDto(TipoStatusAtividadesEnum tipoStatusAtividade, String descricao, String detalhes, Date data, String autor, String tipoIcone) {
-        this.tipoStatusAtividade = tipoStatusAtividade;
-        this.descricao = descricao;
-        this.detalhes = detalhes;
-        this.data = data;
-        this.autor = autor;
-        this.tipoIcone = tipoIcone;
-    }
 
     public TipoStatusAtividadesEnum getTipoStatusAtividade() {
         return tipoStatusAtividade;
@@ -58,12 +67,12 @@ public class HistoricoAtividadesDto {
         this.data = data;
     }
 
-    public String getAutor() {
-        return autor;
+    public Usuario getUsuario() {
+        return usuario;
     }
 
-    public void setAutor(String autor) {
-        this.autor = autor;
+    public void setUsuario(Usuario usuario) {
+        this.usuario = usuario;
     }
 
     public String getTipoIcone() {
@@ -72,5 +81,13 @@ public class HistoricoAtividadesDto {
 
     public void setTipoIcone(String tipoIcone) {
         this.tipoIcone = tipoIcone;
+    }
+
+    public Atendimento getAtendimento() {
+        return atendimento;
+    }
+
+    public void setAtendimento(Atendimento atendimento) {
+        this.atendimento = atendimento;
     }
 }

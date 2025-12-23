@@ -32,6 +32,15 @@ public abstract class GenericHistoricoAtendimento extends Generic {
     @Column(name = "observacao", columnDefinition = "text")
     private String observacao;
 
+    @Column(name = "observacao_adicional", columnDefinition = "text")
+    private String observacaoAdicional;
+
+    @Column(name = "observacao_n2", columnDefinition = "text")
+    private String observacaoN2;
+
+    @Column(name = "anotacao", columnDefinition = "text")
+    private String anotacao;
+
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "pausa")
     private Pausa pausa;
@@ -69,6 +78,10 @@ public abstract class GenericHistoricoAtendimento extends Generic {
 
     @Column(name = "enviar_n2")
     private Boolean enviarN2;
+
+    @Column(name = "atendimento_finalizado")
+    private Boolean atendimentoFinalizado;
+
 
     @Column(name = "posicao_fila")
     private Integer posicaoFila;
@@ -290,5 +303,37 @@ public abstract class GenericHistoricoAtendimento extends Generic {
 
     public void setDataFimAtendimento(Date dataFimAtendimento) {
         this.dataFimAtendimento = dataFimAtendimento;
+    }
+
+    public String getObservacaoAdicional() {
+        return observacaoAdicional;
+    }
+
+    public void setObservacaoAdicional(String observacaoAdicional) {
+        this.observacaoAdicional = observacaoAdicional;
+    }
+
+    public String getObservacaoN2() {
+        return observacaoN2;
+    }
+
+    public void setObservacaoN2(String observacaoN2) {
+        this.observacaoN2 = observacaoN2;
+    }
+
+    public String getAnotacao() {
+        return anotacao;
+    }
+
+    public void setAnotacao(String anotacao) {
+        this.anotacao = anotacao;
+    }
+
+    public Boolean getAtendimentoFinalizado() {
+        return atendimentoFinalizado;
+    }
+
+    public void setAtendimentoFinalizado(Boolean atendimentoFinalizado) {
+        this.atendimentoFinalizado = atendimentoFinalizado;
     }
 }

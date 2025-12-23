@@ -51,907 +51,906 @@ import com.proativaservicos.util.Utils;
 
 public class GenericBean implements Serializable {
 
-	private static final long serialVersionUID = 1L;
+    private static final long serialVersionUID = 1L;
 
-	private Empresa empresa;
+    private Empresa empresa;
 
-	@Inject
-	private ServiceAbstract serviceAbstract;
+    @Inject
+    private ServiceAbstract serviceAbstract;
 
-	@Inject
-	private AtendimentoService serviceAtendimento;
+    @Inject
+    private AtendimentoService serviceAtendimento;
 
-	@Inject
-	private TelefoneService serviceTelefone;
-	
-	@Inject
-	private UsuarioService usuarioService;
-	
-	@Inject
-	private EquipeService serviceEquipe;
+    @Inject
+    private TelefoneService serviceTelefone;
 
-	public void inserir(Serializable entidade) throws ProativaException {
+    @Inject
+    private UsuarioService usuarioService;
 
-		inserir(entidade, true);
+    @Inject
+    private EquipeService serviceEquipe;
 
-	}
+    public void inserir(Serializable entidade) throws ProativaException {
 
-	public void inserir(Serializable entidade, boolean empresa) throws ProativaException {
+        inserir(entidade, true);
 
-		if (empresa) {
+    }
 
-			if (retornarEmpresaUsuarioSessao().getMatriz() == null) {
+    public void inserir(Serializable entidade, boolean empresa) throws ProativaException {
 
-				atribuirEmpresaEntidade(entidade);
+        if (empresa) {
 
-			} else {
+            if (retornarEmpresaUsuarioSessao().getMatriz() == null) {
 
-				atribuirEmpresaMatrizEntidade(entidade);
+                atribuirEmpresaEntidade(entidade);
 
-			}
+            } else {
 
-		} else if (!retornarEmpresaUsuarioSessao().isPossuiFiliais()) {
+                atribuirEmpresaMatrizEntidade(entidade);
 
-			atribuirEmpresaEntidade(entidade);
+            }
 
-		}
+        } else if (!retornarEmpresaUsuarioSessao().isPossuiFiliais()) {
 
-		atribuirUsuarioDataEntidade(entidade, true);
+            atribuirEmpresaEntidade(entidade);
 
-		this.serviceAbstract.inserir(entidade);
+        }
 
-	}
+        atribuirUsuarioDataEntidade(entidade, true);
 
-	public void inserirGenerico(Serializable entidade) throws ProativaException {
-		this.serviceAbstract.inserir(entidade);
-	}
+        this.serviceAbstract.inserir(entidade);
 
-	public void alterar(Serializable entidade) throws ProativaException {
+    }
 
-		alterar(entidade, true);
-	}
+    public void inserirGenerico(Serializable entidade) throws ProativaException {
+        this.serviceAbstract.inserir(entidade);
+    }
 
-	public void alterar(Serializable entidade, boolean empresa) throws ProativaException {
+    public void alterar(Serializable entidade) throws ProativaException {
 
-		if (empresa) {
+        alterar(entidade, true);
+    }
 
-			if (retornarEmpresaUsuarioSessao().getMatriz() == null) {
+    public void alterar(Serializable entidade, boolean empresa) throws ProativaException {
 
-				atribuirEmpresaEntidade(entidade);
+        if (empresa) {
 
-			} else {
+            if (retornarEmpresaUsuarioSessao().getMatriz() == null) {
 
-				atribuirEmpresaMatrizEntidade(entidade);
-			}
+                atribuirEmpresaEntidade(entidade);
 
-		} else if (!retornarEmpresaUsuarioSessao().isPossuiFiliais()) {
+            } else {
 
-			atribuirEmpresaEntidade(entidade);
-		}
+                atribuirEmpresaMatrizEntidade(entidade);
+            }
 
-		atribuirUsuarioDataEntidade(entidade, false);
+        } else if (!retornarEmpresaUsuarioSessao().isPossuiFiliais()) {
 
-		this.serviceAbstract.alterar(entidade);
-	}
+            atribuirEmpresaEntidade(entidade);
+        }
 
-	public void alterarGenerico(Serializable entidade) throws ProativaException {
-		this.serviceAbstract.alterar(entidade);
-	}
+        atribuirUsuarioDataEntidade(entidade, false);
 
-	public void excluir(Class<?> classe, Serializable pk) throws ProativaException {
-		this.serviceAbstract.excluir(classe, pk);
-	}
-	public void excluirClean(Class<?> classe, Serializable pk) throws ProativaException {
-		this.serviceAbstract.excluirClean(classe, pk);
-	}
+        this.serviceAbstract.alterar(entidade);
+    }
 
-	public List<?> pesquisarTodos(Class<?> classe, String orderBy) {
-		return this.serviceAbstract.pesquisarTodos(classe, orderBy);
-	}
+    public void alterarGenerico(Serializable entidade) throws ProativaException {
+        this.serviceAbstract.alterar(entidade);
+    }
 
-	public List<?> pesquisarTodos(Class<?> classe) {
-		return this.serviceAbstract.pesquisarTodos(classe);
-	}
+    public void excluir(Class<?> classe, Serializable pk) throws ProativaException {
+        this.serviceAbstract.excluir(classe, pk);
+    }
 
-	@SuppressWarnings("unchecked")
-	public <T> T pesquisar(Class<?> classe, Serializable pk) {
-		return (T) this.serviceAbstract.pesquisar(classe, pk);
-	}
+    public void excluirClean(Class<?> classe, Serializable pk) throws ProativaException {
+        this.serviceAbstract.excluirClean(classe, pk);
+    }
 
-	private void atribuirEmpresaEntidade(Serializable entidade) {
+    public List<?> pesquisarTodos(Class<?> classe, String orderBy) {
+        return this.serviceAbstract.pesquisarTodos(classe, orderBy);
+    }
 
-		try {
+    public List<?> pesquisarTodos(Class<?> classe) {
+        return this.serviceAbstract.pesquisarTodos(classe);
+    }
 
-			Method method = entidade.getClass().getDeclaredMethod("setEmpresa", new Class[] { Empresa.class });
-			method.invoke(entidade, new Object[] { ((Usuario) Faces.getSessionAttribute("usuario")).getEmpresa() });
+    @SuppressWarnings("unchecked")
+    public <T> T pesquisar(Class<?> classe, Serializable pk) {
+        return (T) this.serviceAbstract.pesquisar(classe, pk);
+    }
 
-		} catch (Exception exception) {
+    private void atribuirEmpresaEntidade(Serializable entidade) {
 
-		}
-	}
+        try {
 
-	private void atribuirEmpresaMatrizEntidade(Serializable entidade) {
+            Method method = entidade.getClass().getDeclaredMethod("setEmpresa", new Class[]{Empresa.class});
+            method.invoke(entidade, new Object[]{((Usuario) Faces.getSessionAttribute("usuario")).getEmpresa()});
 
-		try {
+        } catch (Exception exception) {
 
-			Method method = entidade.getClass().getDeclaredMethod("setEmpresa", new Class[] { Empresa.class });
-			method.invoke(entidade,
-					new Object[] { ((Usuario) Faces.getSessionAttribute("usuario")).getEmpresa().getMatriz() });
+        }
+    }
 
-		} catch (Exception exception) {
+    private void atribuirEmpresaMatrizEntidade(Serializable entidade) {
 
-		}
+        try {
 
-	}
+            Method method = entidade.getClass().getDeclaredMethod("setEmpresa", new Class[]{Empresa.class});
+            method.invoke(entidade,
+                    new Object[]{((Usuario) Faces.getSessionAttribute("usuario")).getEmpresa().getMatriz()});
 
-	protected void atribuirUsuarioDataEntidade(Serializable entidade, boolean inserirDataCadastro) {
+        } catch (Exception exception) {
 
-		if (entidade instanceof GenericControle) {
+        }
 
-			GenericControle genericContole = (GenericControle) entidade;
-			Usuario usuario = (Usuario) Faces.getSessionAttribute("usuario");
+    }
 
-			genericContole.setDataAlteracao(new Date());
-			genericContole.setUsuarioAlteracao(usuario);
+    protected void atribuirUsuarioDataEntidade(Serializable entidade, boolean inserirDataCadastro) {
 
-			if (inserirDataCadastro) {
+        if (entidade instanceof GenericControle) {
 
-				genericContole.setUsuarioCadastro(usuario);
-				genericContole.setDataCadastro(genericContole.getDataAlteracao());
-			}
-		}
-	}
+            GenericControle genericContole = (GenericControle) entidade;
+            Usuario usuario = (Usuario) Faces.getSessionAttribute("usuario");
 
-	public Empresa retornarEmpresaUsuarioSessao() {
+            genericContole.setDataAlteracao(new Date());
+            genericContole.setUsuarioAlteracao(usuario);
 
-		Usuario usuario = (Usuario) Faces.getSessionAttribute("usuario");
+            if (inserirDataCadastro) {
 
-		return (usuario == null) ? null : usuario.getEmpresa();
-	}
+                genericContole.setUsuarioCadastro(usuario);
+                genericContole.setDataCadastro(genericContole.getDataAlteracao());
+            }
+        }
+    }
 
-	public Empresa retornarEmpresaMatrizUsuarioSessao() {
+    public Empresa retornarEmpresaUsuarioSessao() {
 
-		Empresa empresa = retornarEmpresaUsuarioSessao();
+        Usuario usuario = (Usuario) Faces.getSessionAttribute("usuario");
 
-		if (empresa != null) {
+        return (usuario == null) ? null : usuario.getEmpresa();
+    }
 
-			return (empresa.getMatriz() == null) ? empresa : empresa.getMatriz();
-		}
+    public Empresa retornarEmpresaMatrizUsuarioSessao() {
 
-		return null;
-	}
+        Empresa empresa = retornarEmpresaUsuarioSessao();
 
-	public void inicializarEmpresa() {
+        if (empresa != null) {
 
-		inicializarEmpresa(null);
-	}
+            return (empresa.getMatriz() == null) ? empresa : empresa.getMatriz();
+        }
 
-	public void inicializarEmpresa(Empresa empresa) {
+        return null;
+    }
 
-		if (empresa != null) {
+    public void inicializarEmpresa() {
 
-			this.empresa = empresa;
+        inicializarEmpresa(null);
+    }
 
-		} else {
+    public void inicializarEmpresa(Empresa empresa) {
 
-			Usuario usuario = retornarUsuarioSessao();
+        if (empresa != null) {
 
-			if (usuario != null && usuario.getEmpresa() != null && !usuario.getEmpresa().isPossuiFiliais()) {
+            this.empresa = empresa;
 
-				this.empresa = retornarEmpresaUsuarioSessao();
+        } else {
 
-			} else {
+            Usuario usuario = retornarUsuarioSessao();
 
-				this.empresa = null;
+            if (usuario != null && usuario.getEmpresa() != null && !usuario.getEmpresa().isPossuiFiliais()) {
 
-			}
-		}
-	}
+                this.empresa = retornarEmpresaUsuarioSessao();
 
-	public List<InstituicaoFinanceiraEnum> getBancosEnum() {
+            } else {
 
-		return (List<InstituicaoFinanceiraEnum>) Arrays.asList(InstituicaoFinanceiraEnum.values()).stream()
-				.filter(b -> StringUtils.isNotEmpty(b.getNumeroBanco())).collect(Collectors.toList());
+                this.empresa = null;
 
-	}
+            }
+        }
+    }
 
-	public InputStream retornarFoto(String foto, String sexo) {
+    public List<InstituicaoFinanceiraEnum> getBancosEnum() {
 
-		try {
+        return (List<InstituicaoFinanceiraEnum>) Arrays.asList(InstituicaoFinanceiraEnum.values()).stream()
+                .filter(b -> StringUtils.isNotEmpty(b.getNumeroBanco())).collect(Collectors.toList());
 
-			if (foto == null || foto.trim().isEmpty()) {
+    }
 
-				if (sexo == null || sexo.equals(SexoEnum.MASCULINO.name())) {
+    public InputStream retornarFoto(String foto, String sexo) {
 
-					return Faces.getResourceAsStream("/resources/img/masculino.png");
+        try {
 
-				}
+            if (foto == null || foto.trim().isEmpty()) {
 
-				return Faces.getResourceAsStream("/resources/img/feminino.png");
+                if (sexo == null || sexo.equals(SexoEnum.MASCULINO.name())) {
 
-			}
-			
+                    return Faces.getResourceAsStream("/resources/img/masculino.png");
 
-			return new FileInputStream(System.getProperty("user.home") + File.separator + "proativa" + File.separator+ "fotos" + File.separator + foto);
+                }
 
-		} catch (FileNotFoundException e) {
+                return Faces.getResourceAsStream("/resources/img/feminino.png");
 
+            }
 
-			return Faces.getResourceAsStream("/resources/img/feminino.png");
 
-		} catch (Exception e) {
+            return new FileInputStream(System.getProperty("user.home") + File.separator + "proativa" + File.separator + "fotos" + File.separator + foto);
 
-			e.printStackTrace();
-			return null;
-		}
-	}
-	
-	public String retornarFotoString(String foto, String sexo) {
+        } catch (FileNotFoundException e) {
 
-		try {
-			if (foto == null || foto.trim().isEmpty()) {
 
-				if (sexo == null || sexo.equals(SexoEnum.MASCULINO.name())) {
+            return Faces.getResourceAsStream("/resources/img/feminino.png");
 
-					return "/crmproativa/jakarta.faces.resource/img/masculino.png.jsf";
+        } catch (Exception e) {
 
-				}
+            e.printStackTrace();
+            return null;
+        }
+    }
 
-				return "/crmproativa/jakarta.faces.resource/img/feminino.png.jsf";
+    public String retornarFotoString(String foto, String sexo) {
 
-			}
+        try {
+            if (foto == null || foto.trim().isEmpty()) {
 
-			File stream = new File(System.getProperty("user.home") + File.separator + "proativa" + File.separator+ "fotos" + File.separator + foto);
-		
-			byte[] fileContent = FileUtils.readFileToByteArray(stream);
-		
-			String encodedString = Base64.getEncoder().encodeToString(fileContent);
-			
-			return "data:image/jpeg;Base64,"+encodedString;
+                if (sexo == null || sexo.equals(SexoEnum.MASCULINO.name())) {
 
-		
+                    return "/crmproativa/jakarta.faces.resource/img/masculino.png.jsf";
 
+                }
 
-		} catch (Exception e) {
-			
-			return "/resources/img/feminino.png";
+                return "/crmproativa/jakarta.faces.resource/img/feminino.png.jsf";
 
-			
-		}
-	}
+            }
 
-	public String salvarArquivo(InputStream audio, String nome, String strDiretorio, boolean convertarMp3) {
+            File stream = new File(System.getProperty("user.home") + File.separator + "proativa" + File.separator + "fotos" + File.separator + foto);
 
-		try {
+            byte[] fileContent = FileUtils.readFileToByteArray(stream);
 
-			if (audio != null && StringUtils.isNotBlank(nome) && StringUtils.isNotBlank(strDiretorio)) {
+            String encodedString = Base64.getEncoder().encodeToString(fileContent);
 
-				File diretorio = new File(System.getProperty("user.home") + File.separator + "proativa" + File.separator + strDiretorio);
+            return "data:image/jpeg;Base64," + encodedString;
 
-				if (!diretorio.exists()) {
 
-					Files.createDirectories(diretorio.toPath(), (FileAttribute<?>[]) new FileAttribute[0]);
-				}
+        } catch (Exception e) {
 
-				File arquivo = new File(System.getProperty("user.home") + File.separator + "proativa" + File.separator	+ strDiretorio + File.separator + nome);
+            return "/resources/img/feminino.png";
 
-				Files.deleteIfExists(arquivo.toPath());
 
-				Files.copy(audio, arquivo.toPath(), new java.nio.file.CopyOption[0]);
+        }
+    }
 
-				audio.close();
+    public String salvarArquivo(InputStream audio, String nome, String strDiretorio, boolean convertarMp3) {
 
-				if (convertarMp3) {
+        try {
 
-					File mp3 = Utils.converterAudioMp3Format16(arquivo, new File(arquivo.getAbsolutePath()));
+            if (audio != null && StringUtils.isNotBlank(nome) && StringUtils.isNotBlank(strDiretorio)) {
 
-					if (mp3.isFile() && mp3.exists()) {
+                File diretorio = new File(System.getProperty("user.home") + File.separator + "proativa" + File.separator + strDiretorio);
 
-						Files.deleteIfExists(arquivo.toPath());
+                if (!diretorio.exists()) {
 
-					}
+                    Files.createDirectories(diretorio.toPath(), (FileAttribute<?>[]) new FileAttribute[0]);
+                }
 
-				}
+                File arquivo = new File(System.getProperty("user.home") + File.separator + "proativa" + File.separator + strDiretorio + File.separator + nome);
 
-				return diretorio.getAbsolutePath();
+                Files.deleteIfExists(arquivo.toPath());
 
-			} else {
+                Files.copy(audio, arquivo.toPath(), new java.nio.file.CopyOption[0]);
 
-				System.err.println("Não foi possivel salvar audio Diretorio e ou nome do arquivo não iformado.....");
+                audio.close();
 
-			}
+                if (convertarMp3) {
 
-		} catch (Exception e) {
+                    File mp3 = Utils.converterAudioMp3Format16(arquivo, new File(arquivo.getAbsolutePath()));
 
-			e.printStackTrace();
+                    if (mp3.isFile() && mp3.exists()) {
 
-		}
+                        Files.deleteIfExists(arquivo.toPath());
 
-		return strDiretorio;
-	}
+                    }
 
-	public String salvarArquivoMailing(InputStream mailing, String nome, String strDiretorio) {
+                }
 
-		try {
+                return diretorio.getAbsolutePath();
 
-			if (mailing != null && StringUtils.isNotBlank(nome) && StringUtils.isNotBlank(strDiretorio)) {
+            } else {
 
-				File diretorio = new File(System.getProperty("user.home") + File.separator + "proativa" + File.separator + strDiretorio);
+                System.err.println("Não foi possivel salvar audio Diretorio e ou nome do arquivo não iformado.....");
 
-				if (!diretorio.exists()) {
+            }
 
-					Files.createDirectories(diretorio.toPath(), (FileAttribute<?>[]) new FileAttribute[0]);
-				}
+        } catch (Exception e) {
 
-				File arquivo = new File(System.getProperty("user.home") + File.separator + "proativa" + File.separator + strDiretorio + File.separator + nome);
+            e.printStackTrace();
 
-				Files.deleteIfExists(arquivo.toPath());
+        }
 
-				Files.copy(mailing, arquivo.toPath(), new java.nio.file.CopyOption[0]);
+        return strDiretorio;
+    }
 
-				mailing.close();
+    public String salvarArquivoMailing(InputStream mailing, String nome, String strDiretorio) {
 
-				return diretorio.getAbsolutePath();
+        try {
 
-			} else {
+            if (mailing != null && StringUtils.isNotBlank(nome) && StringUtils.isNotBlank(strDiretorio)) {
 
-				System.err.println("Não foi possivel salvar audio Diretorio e ou nome do arquivo não iformado.....");
+                File diretorio = new File(System.getProperty("user.home") + File.separator + "proativa" + File.separator + strDiretorio);
 
-			}
+                if (!diretorio.exists()) {
 
-		} catch (Exception e) {
+                    Files.createDirectories(diretorio.toPath(), (FileAttribute<?>[]) new FileAttribute[0]);
+                }
 
-			e.printStackTrace();
+                File arquivo = new File(System.getProperty("user.home") + File.separator + "proativa" + File.separator + strDiretorio + File.separator + nome);
 
-		}
+                Files.deleteIfExists(arquivo.toPath());
 
-		return strDiretorio;
-	}
+                Files.copy(mailing, arquivo.toPath(), new java.nio.file.CopyOption[0]);
 
-	public File salvarArquivoAudio(InputStream audio, String nome, String strDiretorio, boolean convertarMp3) {
+                mailing.close();
 
-		try {
+                return diretorio.getAbsolutePath();
 
-			if ( audio != null && StringUtils.isNotBlank(nome) && StringUtils.isNotBlank(strDiretorio)) {
+            } else {
 
-				File diretorio = new File(System.getProperty("user.home") + File.separator + "proativa" + File.separator + strDiretorio);
+                System.err.println("Não foi possivel salvar audio Diretorio e ou nome do arquivo não iformado.....");
 
-				if (!diretorio.exists()) {
+            }
 
-					Files.createDirectories(diretorio.toPath(), (FileAttribute<?>[]) new FileAttribute[0]);
-				}
+        } catch (Exception e) {
 
-				File arquivo = new File(System.getProperty("user.home") + File.separator + "proativa" + File.separator	+ strDiretorio + File.separator + nome);
+            e.printStackTrace();
 
-				Files.deleteIfExists(arquivo.toPath());
+        }
 
-				Files.copy(audio, arquivo.toPath(), new java.nio.file.CopyOption[0]);
+        return strDiretorio;
+    }
 
-				audio.close();
+    public File salvarArquivoAudio(InputStream audio, String nome, String strDiretorio, boolean convertarMp3) {
 
-				if (convertarMp3 && !Objects.requireNonNull(ArquivoUtil.obterExtensao(arquivo)).equalsIgnoreCase("mp3") ) {
-					System.out.println("SALVANDO MP3");
-					File mp3 = Utils.converterAudioMp3Format16(arquivo,	new File(arquivo.getAbsolutePath().replaceAll("(?i)\\.wav$", ".mp3")));
+        try {
 
-					if (mp3.isFile() && mp3.exists()) {
+            if (audio != null && StringUtils.isNotBlank(nome) && StringUtils.isNotBlank(strDiretorio)) {
 
-						Files.deleteIfExists(arquivo.toPath());
-						return mp3;
+                File diretorio = new File(System.getProperty("user.home") + File.separator + "proativa" + File.separator + strDiretorio);
 
-					}
+                if (!diretorio.exists()) {
 
-				}
+                    Files.createDirectories(diretorio.toPath(), (FileAttribute<?>[]) new FileAttribute[0]);
+                }
 
-				return arquivo;
+                File arquivo = new File(System.getProperty("user.home") + File.separator + "proativa" + File.separator + strDiretorio + File.separator + nome);
 
-			} else {
+                Files.deleteIfExists(arquivo.toPath());
 
-				System.err.println("Não foi possivel salvar audio Diretorio e ou nome do arquivo não iformado.....");
+                Files.copy(audio, arquivo.toPath(), new java.nio.file.CopyOption[0]);
 
-			}
+                audio.close();
 
-		} catch (IOException e) {
-			System.out.println("Arquivo já anexado. "+e.getMessage());
-		//	e.printStackTrace();
+                if (convertarMp3 && !Objects.requireNonNull(ArquivoUtil.obterExtensao(arquivo)).equalsIgnoreCase("mp3")) {
+                    System.out.println("SALVANDO MP3");
+                    File mp3 = Utils.converterAudioMp3Format16(arquivo, new File(arquivo.getAbsolutePath().replaceAll("(?i)\\.wav$", ".mp3")));
 
-		} catch (Exception e) {
+                    if (mp3.isFile() && mp3.exists()) {
 
-			e.printStackTrace();
+                        Files.deleteIfExists(arquivo.toPath());
+                        return mp3;
 
-		}
+                    }
 
-		return null;
-	}
-	
-	public File criarDiretorios(String strDiretorio) throws IOException {
-		
-		File diretorio = new File(System.getProperty("user.home") + File.separator + "proativa" + File.separator + strDiretorio);
+                }
 
-		if (!diretorio.exists()) {
+                return arquivo;
 
-			Files.createDirectories(diretorio.toPath(), (FileAttribute<?>[]) new FileAttribute[0]);
-		}
-		return diretorio;
-		
-	}
+            } else {
 
-	/**
-	 * Metodo Validar Historico e se possui Agendamentos
-	 * 
-	 * @param historico           GenericHistoricoAtendimento
-	 * @param atendimento         GenericAtendimento
-	 * @param integracao          IntegracaoWs - necessário para a carga do discador
-	 * @param alterarDataCadastro boolean
-	 * @throws ProativaException
-	 */
-	public void validarHistoricoAtendimento(GenericHistoricoAtendimento historico, GenericAtendimento atendimento,	IntegracaoWs integracao, boolean alterarDataCadastro) throws ProativaException {
+                System.err.println("Não foi possivel salvar audio Diretorio e ou nome do arquivo não iformado.....");
 
-		if (historico.getStatusAtendimento() != null && (AcaoStatusAtendimentoEnum.AGENDAR.equals(historico.getStatusAtendimento().getAcao())	|| AcaoStatusAtendimentoEnum.AGENDAR_GLOBAL.equals(historico.getStatusAtendimento().getAcao()))) {
+            }
 
-			if (historico.getAgendamento() == null) {
+        } catch (IOException e) {
+            System.out.println("Arquivo já anexado. " + e.getMessage());
+            //	e.printStackTrace();
 
-				throw new ProativaException(MessagesEnum.DATA_AGENDAMENTO_REQUERIDO.constante);
-			}
+        } catch (Exception e) {
 
-			if (historico.getAgendamento().before(new Date(System.currentTimeMillis()))) {
+            e.printStackTrace();
 
-				throw new ProativaException(MessagesEnum.DATA_AGENDAMENTO_DEVE_SER_MAIOR_QUE_DATA_ATUAL.constante);
-			}
+        }
 
-		} else {
+        return null;
+    }
 
-			historico.setDataVisualizado(new Date(System.currentTimeMillis()));
+    public File criarDiretorios(String strDiretorio) throws IOException {
 
-			if (atendimento.getListaHistoricos() == null)
-				atendimento.setListHistoricos(new ArrayList<GenericHistoricoAtendimento>());
+        File diretorio = new File(System.getProperty("user.home") + File.separator + "proativa" + File.separator + strDiretorio);
 
-			for (GenericHistoricoAtendimento historicGeneric : atendimento.getListaHistoricos()) {
-				historicGeneric.setDataVisualizado(new Date(System.currentTimeMillis()));
-			}
+        if (!diretorio.exists()) {
 
-		}
+            Files.createDirectories(diretorio.toPath(), (FileAttribute<?>[]) new FileAttribute[0]);
+        }
+        return diretorio;
 
-		// historico.setDataVisualizado(null);
+    }
 
-		Usuario usuario = retornarUsuarioSessao();
+    /**
+     * Metodo Validar Historico e se possui Agendamentos
+     *
+     * @param historico           GenericHistoricoAtendimento
+     * @param atendimento         GenericAtendimento
+     * @param integracao          IntegracaoWs - necessário para a carga do discador
+     * @param alterarDataCadastro boolean
+     * @throws ProativaException
+     */
+    public void validarHistoricoAtendimento(GenericHistoricoAtendimento historico, GenericAtendimento atendimento, IntegracaoWs integracao, boolean alterarDataCadastro) throws ProativaException {
 
-		if (usuario.getPontoAtendimento() != null && usuario.getPontoAtendimento().getId() != null) {
+        if (historico.getStatusAtendimento() != null && (AcaoStatusAtendimentoEnum.AGENDAR.equals(historico.getStatusAtendimento().getAcao()) || AcaoStatusAtendimentoEnum.AGENDAR_GLOBAL.equals(historico.getStatusAtendimento().getAcao()))) {
 
-			historico.setPontoAtendimento(usuario.getPontoAtendimento());
+            if (historico.getAgendamento() == null) {
 
-		} else {
+                throw new ProativaException(MessagesEnum.DATA_AGENDAMENTO_REQUERIDO.constante);
+            }
 
-			historico.setPontoAtendimento(null);
-		}
+            if (historico.getAgendamento().before(new Date(System.currentTimeMillis()))) {
 
-		// VALIDAR REDISCAGEN CAMPANHA.....
-		// ADICIONAR PESO DE DISCAGEM.... ENVIAR PARA DISCADOR
-		if (historico.getStatusAtendimento() != null	&& AcaoStatusAtendimentoEnum.FIM_FILA.equals(historico.getStatusAtendimento().getAcao())) {
+                throw new ProativaException(MessagesEnum.DATA_AGENDAMENTO_DEVE_SER_MAIOR_QUE_DATA_ATUAL.constante);
+            }
 
-			atendimento.setPesoCarteira(Integer.valueOf((atendimento.getPesoCarteira() == null ? 1 : (atendimento.getPesoCarteira() + 1))));
+        } else {
 
-			atendimento.setPesoDiscagem(Integer.valueOf((atendimento.getPesoDiscagem() == null ? 1 : (atendimento.getPesoDiscagem() + 1))));
+            historico.setDataVisualizado(new Date(System.currentTimeMillis()));
 
-			atendimento.setQuantidadeDiscagem(Integer.valueOf((atendimento.getQuantidadeDiscagem() == null ? 1 : (atendimento.getQuantidadeDiscagem() + 1))));
+            if (atendimento.getListaHistoricos() == null)
+                atendimento.setListHistoricos(new ArrayList<GenericHistoricoAtendimento>());
 
-			if (((atendimento.getCampanha().getQuantdadeRediscagem() == null	&& atendimento.getQuantidadeDiscagem().intValue() <= 3)	|| (atendimento.getCampanha().getQuantdadeRediscagem() != null	&& atendimento.getQuantidadeDiscagem().intValue() < atendimento.getCampanha().getQuantdadeRediscagem().intValue()))
-					&& TipoCampanhaEnum.PREDITIVA.equals(atendimento.getCampanha().getTipoCampanha())	&& integracao != null) {
+            for (GenericHistoricoAtendimento historicGeneric : atendimento.getListaHistoricos()) {
+                historicGeneric.setDataVisualizado(new Date(System.currentTimeMillis()));
+            }
 
-				if (integracao.getTipoIntegracao().equals(TipoIntegracaoEnum.VONIX)) {
+        }
 
-					// this.serviceVonix.alimentarDiscagemFimFila(integracao, atendimento);
+        // historico.setDataVisualizado(null);
 
-				}
+        Usuario usuario = retornarUsuarioSessao();
 
-			}
+        if (usuario.getPontoAtendimento() != null && usuario.getPontoAtendimento().getId() != null) {
 
-		}
+            historico.setPontoAtendimento(usuario.getPontoAtendimento());
 
-		if (historico.getUsuario() == null) {
-			historico.setUsuario(usuario);
-		}
+        } else {
 
-		liberarAtendimento(historico, atendimento, alterarDataCadastro);
-	}
+            historico.setPontoAtendimento(null);
+        }
 
-	public void validarPropostaEfetivada(GenericHistoricoAtendimento historico, GenericAtendimento atendimento,	boolean editar) throws ProativaException {
+        // VALIDAR REDISCAGEN CAMPANHA.....
+        // ADICIONAR PESO DE DISCAGEM.... ENVIAR PARA DISCADOR
+        if (historico.getStatusAtendimento() != null && AcaoStatusAtendimentoEnum.FIM_FILA.equals(historico.getStatusAtendimento().getAcao())) {
 
-		// POSVENDAS
-		
-		atendimento.setComissaoPagar(null);
+            atendimento.setPesoCarteira(Integer.valueOf((atendimento.getPesoCarteira() == null ? 1 : (atendimento.getPesoCarteira() + 1))));
 
-		if (historico.getPausa() != null && historico.getStatusAtendimento() == null)
-			throw new ProativaException(MessagesEnum.INFORME_STATUS_ATENDIMENTO_PAUSA.constante);
-		
-		if (atendimento.getEmpresa()!=null && atendimento.getEmpresa().getParametroAdesaoCampoObrigatorio()!=null && atendimento.getEmpresa().getParametroAdesaoCampoObrigatorio().equals(Boolean.FALSE)) {
-			//return; 
-			
-		}
+            atendimento.setPesoDiscagem(Integer.valueOf((atendimento.getPesoDiscagem() == null ? 1 : (atendimento.getPesoDiscagem() + 1))));
 
-		if (atendimento.getCampanha().getSegmento().equals(SegmentoEnum.EMPRESTIMO)	&& historico.getStatusAtendimento().getAcao().equals(AcaoStatusAtendimentoEnum.PROPOSTA_EFETIVADA)) {
+            atendimento.setQuantidadeDiscagem(Integer.valueOf((atendimento.getQuantidadeDiscagem() == null ? 1 : (atendimento.getQuantidadeDiscagem() + 1))));
 
-		
-			if (atendimento.getFormaPagamento() == null || atendimento.getFormaPagamento().getId() == null	|| atendimento.getProduto() == null || atendimento.getProduto().getId() == null) {
-				throw new ProativaException(MessagesEnum.FORMA_PAGAMENTO_E_PRODUTO_SAO_OBRIGATORIOS.constante);
-			}
-			
-						
-			if (atendimento.getAdesao() != null) {
+            if (((atendimento.getCampanha().getQuantdadeRediscagem() == null && atendimento.getQuantidadeDiscagem().intValue() <= 3) || (atendimento.getCampanha().getQuantdadeRediscagem() != null && atendimento.getQuantidadeDiscagem().intValue() < atendimento.getCampanha().getQuantdadeRediscagem().intValue()))
+                    && TipoCampanhaEnum.PREDITIVA.equals(atendimento.getCampanha().getTipoCampanha()) && integracao != null) {
 
-				atendimento.setAdesao(StringUtils.deleteWhitespace(atendimento.getAdesao().trim()));
-			}
+                if (integracao.getTipoIntegracao().equals(TipoIntegracaoEnum.VONIX)) {
 
-			InstituicaoFinanceiraEnum instituicaoFinanceiraEnum = (atendimento.getInstituicaoFinanceira() == null)	? atendimento.getCampanha().getInstituicaoFinanceira()	: atendimento.getInstituicaoFinanceira();
+                    // this.serviceVonix.alimentarDiscagemFimFila(integracao, atendimento);
 
-			if(StringUtils.isBlank(atendimento.getAdesao()) && instituicaoFinanceiraEnum.equals(InstituicaoFinanceiraEnum.BANCO_MASTER)) {
+                }
 
-				atendimento.setAdesao(String.valueOf(atendimento.getId()));
+            }
 
-			}else if (!instituicaoFinanceiraEnum.equals(InstituicaoFinanceiraEnum.BANCO_MASTER) && !this.serviceAtendimento.validarProposta(editar ? atendimento.getId() : null,	atendimento.getAdesao().trim(), instituicaoFinanceiraEnum, retornarEmpresaUsuarioSessao().getId())) {
+        }
 
-				throw new ProativaException(MessagesEnum.PROPOSTA_JA_EXISTE.constante);
+        if (historico.getUsuario() == null) {
+            historico.setUsuario(usuario);
+        }
 
-			}
-			
-			
-			if (!atendimento.getCampanha().getInstituicaoFinanceira().equals(InstituicaoFinanceiraEnum.BANCO_MASTER) && StringUtils.isBlank(atendimento.getEntidadePrincipal())) {
-				throw new ProativaException("Entidade principal é obrigatório.");
-			}
+        liberarAtendimento(historico, atendimento, alterarDataCadastro);
+    }
 
-		
-			if ((atendimento.getProduto().getInserirDadosBancarios()==null || atendimento.getProduto().getInserirDadosBancarios().equals(Boolean.FALSE) ) && atendimento.getFormaPagamento() != null && atendimento.getFormaPagamento().getId() != null) {
+    public void validarPropostaEfetivada(GenericHistoricoAtendimento historico, GenericAtendimento atendimento, boolean editar) throws ProativaException {
 
-				FormaPagamento formaPagamento = pesquisar(FormaPagamento.class,	atendimento.getFormaPagamento().getId());
+        // POSVENDAS
 
-				if (!formaPagamento.getParametro().equals(ParamentroFormaPagamentoEnum.CHEQUE)	&& (atendimento.getListaDadosBancarios() == null	|| atendimento.getListaDadosBancarios().isEmpty())) {
+        atendimento.setComissaoPagar(null);
 
-					throw new ProativaException(MessagesEnum.FAVOR_CADASTRAR_DADOS_BANCARIOS.constante);
+        if (historico.getPausa() != null && historico.getStatusAtendimento() == null)
+            throw new ProativaException(MessagesEnum.INFORME_STATUS_ATENDIMENTO_PAUSA.constante);
 
-				}
+        if (atendimento.getEmpresa() != null && atendimento.getEmpresa().getParametroAdesaoCampoObrigatorio() != null && atendimento.getEmpresa().getParametroAdesaoCampoObrigatorio().equals(Boolean.FALSE)) {
+            //return;
 
-				if (!formaPagamento.getParametro().equals(ParamentroFormaPagamentoEnum.CHEQUE)) {
+        }
 
-					for (GenericDadosBancarios dadosBancarios : atendimento.getListaDadosBancarios()) {
+        if (atendimento.getCampanha().getSegmento().equals(SegmentoEnum.EMPRESTIMO) && historico.getStatusAtendimento().getAcao().equals(AcaoStatusAtendimentoEnum.PROPOSTA_EFETIVADA)) {
 
-						if (dadosBancarios.getBanco() == null || StringUtils.isBlank(dadosBancarios.getAgencia()) || StringUtils.isBlank(dadosBancarios.getConta())) {
 
-							throw new ProativaException(MessagesEnum.DADOS_BANCARIOS_INCOMPLETOS.constante);
-						}
+            if (atendimento.getFormaPagamento() == null || atendimento.getFormaPagamento().getId() == null || atendimento.getProduto() == null || atendimento.getProduto().getId() == null) {
+                throw new ProativaException(MessagesEnum.FORMA_PAGAMENTO_E_PRODUTO_SAO_OBRIGATORIOS.constante);
+            }
 
-					}
 
-				}
+            if (atendimento.getAdesao() != null) {
 
+                atendimento.setAdesao(StringUtils.deleteWhitespace(atendimento.getAdesao().trim()));
+            }
 
-			}
+            InstituicaoFinanceiraEnum instituicaoFinanceiraEnum = (atendimento.getInstituicaoFinanceira() == null) ? atendimento.getCampanha().getInstituicaoFinanceira() : atendimento.getInstituicaoFinanceira();
 
-		} // VALIDAR OUTROS SEGMENTOS
+            if (StringUtils.isBlank(atendimento.getAdesao()) && instituicaoFinanceiraEnum.equals(InstituicaoFinanceiraEnum.BANCO_MASTER)) {
 
-	}
+                atendimento.setAdesao(String.valueOf(atendimento.getId()));
 
-	public void validarStatusTelefone(GenericHistoricoAtendimento historicoAtendimento, GenericAtendimento atendimento,	boolean addRamal) throws ProativaException {
+            } else if (!instituicaoFinanceiraEnum.equals(InstituicaoFinanceiraEnum.BANCO_MASTER) && !this.serviceAtendimento.validarProposta(editar ? atendimento.getId() : null, atendimento.getAdesao().trim(), instituicaoFinanceiraEnum, retornarEmpresaUsuarioSessao().getId())) {
 
-		Empresa empresa = retornarEmpresaUsuarioSessao();
+                throw new ProativaException(MessagesEnum.PROPOSTA_JA_EXISTE.constante);
 
-		if (empresa.getParametroTabulacaoTelefone() != null && empresa.getParametroTabulacaoTelefone().booleanValue()	&& atendimento.getListaTelefones() != null && !atendimento.getListaTelefones().isEmpty()) {
+            }
 
-			for (GenericTelefone telefone : atendimento.getListaTelefones()) {
 
-				if (addRamal && retornarUsuarioSessao().getPontoAtendimento() != null) {
+            if (!atendimento.getCampanha().getInstituicaoFinanceira().equals(InstituicaoFinanceiraEnum.BANCO_MASTER) && StringUtils.isBlank(atendimento.getEntidadePrincipal())) {
+                throw new ProativaException("Entidade principal é obrigatório.");
+            }
 
-					String ramal = retornarUsuarioSessao().getPontoAtendimento().getRamal();
-					telefone.setRamal((ramal == null) ? null : ramal.replaceAll("\\D+", ""));
-				}
 
-				if ((telefone.getStatusTelefone() == null	|| (telefone.getStatusTelefone() != null && telefone.getStatusTelefone().getId() == null))	&& (telefone.getExibe() == null || telefone.getExibe().equals(SimNaoEnum.SIM))) {
+            if ((atendimento.getProduto().getInserirDadosBancarios() == null || atendimento.getProduto().getInserirDadosBancarios().equals(Boolean.FALSE)) && atendimento.getFormaPagamento() != null && atendimento.getFormaPagamento().getId() != null) {
 
-					throw new ProativaException(MessagesEnum.INFORME_STATUS_TELEFONE.constante + ": ("	+ telefone.getDdd() + ") " + telefone.getNumero());
-				}
+                FormaPagamento formaPagamento = pesquisar(FormaPagamento.class, atendimento.getFormaPagamento().getId());
 
-			}
+                if (!formaPagamento.getParametro().equals(ParamentroFormaPagamentoEnum.CHEQUE) && (atendimento.getListaDadosBancarios() == null || atendimento.getListaDadosBancarios().isEmpty())) {
 
-		} else if (atendimento != null && atendimento.getListaTelefones() != null && !atendimento.getListaTelefones().isEmpty()) {
+                    throw new ProativaException(MessagesEnum.FAVOR_CADASTRAR_DADOS_BANCARIOS.constante);
 
-			for (GenericTelefone telefone : atendimento.getListaTelefones()) {
+                }
 
-				if (addRamal && retornarUsuarioSessao().getPontoAtendimento() != null) {
+                if (!formaPagamento.getParametro().equals(ParamentroFormaPagamentoEnum.CHEQUE)) {
 
-					String ramal = retornarUsuarioSessao().getPontoAtendimento().getRamal();
-					telefone.setRamal((ramal == null) ? null : ramal.replaceAll("\\D+", ""));
-				}
+                    for (GenericDadosBancarios dadosBancarios : atendimento.getListaDadosBancarios()) {
 
-				if (telefone.getStatusTelefone() != null && telefone.getStatusTelefone().getId() == null) {
-					telefone.setStatusTelefone(null);
-				}
+                        if (dadosBancarios.getBanco() == null || StringUtils.isBlank(dadosBancarios.getAgencia()) || StringUtils.isBlank(dadosBancarios.getConta())) {
 
-			}
+                            throw new ProativaException(MessagesEnum.DADOS_BANCARIOS_INCOMPLETOS.constante);
+                        }
 
-		}
+                    }
 
-		if (historicoAtendimento != null && historicoAtendimento.getId() != null && historicoAtendimento.getStatusAtendimento().getAcao().equals(AcaoStatusAtendimentoEnum.PROPOSTA_EFETIVADA)) {
+                }
 
-			if (atendimento.getListaTelefones() == null || atendimento.getListaTelefones().isEmpty()) {
 
-				throw new ProativaException(MessagesEnum.DEVE_HAVER_PELO_MENOS_UM_TELEFONE_COM_STATUS_SUCESSO.constante);
-			}
+            }
 
-			int qtdadeSucesso = 0;
+        } // VALIDAR OUTROS SEGMENTOS
 
-			for (GenericTelefone telefone : atendimento.getListaTelefones()) {
+    }
 
-				if (telefone.getStatusTelefone() != null && telefone.getStatusTelefone().getParametro().equals(AcaoStatusTelefoneEnum.CONTATO_CLIENTE))
-					qtdadeSucesso++;
+    public void validarStatusTelefone(GenericHistoricoAtendimento historicoAtendimento, GenericAtendimento atendimento, boolean addRamal) throws ProativaException {
 
-			}
+        Empresa empresa = retornarEmpresaUsuarioSessao();
 
-			if (qtdadeSucesso == 0) {
-				throw new ProativaException(MessagesEnum.DEVE_HAVER_PELO_MENOS_UM_TELEFONE_COM_STATUS_SUCESSO.constante);
-			}
+        if (empresa.getParametroTabulacaoTelefone() != null && empresa.getParametroTabulacaoTelefone().booleanValue() && atendimento.getListaTelefones() != null && !atendimento.getListaTelefones().isEmpty()) {
 
-		}
-		
-		if(atendimento!=null && atendimento.getCampanha()!=null && atendimento.getCampanha().getTipoCampanha().equals(TipoCampanhaEnum.RECEPTIVA) && CollectionUtils.isEmpty(atendimento.getListaTelefones())) {
-			
-			throw new ProativaException(MessagesEnum.DEVE_HAVER_PELO_MENOS_UM_TELEFONE_CADASTRADO.constante);
-		}
+            for (GenericTelefone telefone : atendimento.getListaTelefones()) {
 
-	}
+                if (addRamal && retornarUsuarioSessao().getPontoAtendimento() != null) {
 
-	/**
-	 * Metodo Gerar o Historico de Atendimento.
-	 * 
-	 * @param historico           GenericHistoricoAtendimento
-	 * @param atendimento         GenericAtendimento
-	 * @param alterarDataCadastro boolean
-	 */
-	private void liberarAtendimento(GenericHistoricoAtendimento historico, GenericAtendimento atendimento,	boolean alterarDataCadastro) {
+                    String ramal = retornarUsuarioSessao().getPontoAtendimento().getRamal();
+                    telefone.setRamal((ramal == null) ? null : ramal.replaceAll("\\D+", ""));
+                }
 
-		if (historico.getPausa() == null || historico.getPausa().getId() == null) {
+                if ((telefone.getStatusTelefone() == null || (telefone.getStatusTelefone() != null && telefone.getStatusTelefone().getId() == null)) && (telefone.getExibe() == null || telefone.getExibe().equals(SimNaoEnum.SIM))) {
 
-			historico.setPausa(null);
+                    throw new ProativaException(MessagesEnum.INFORME_STATUS_TELEFONE.constante + ": (" + telefone.getDdd() + ") " + telefone.getNumero());
+                }
 
-		}
+            }
 
-		if (historico.getId() == null) {
-			atendimento.adicionarHistorico(historico);
-		}
+        } else if (atendimento != null && atendimento.getListaTelefones() != null && !atendimento.getListaTelefones().isEmpty()) {
 
-		if (alterarDataCadastro) {
-			historico.setDataCadastro(new Date(System.currentTimeMillis()));
-		}
+            for (GenericTelefone telefone : atendimento.getListaTelefones()) {
 
-		if (atendimento.getProtocolo() != null) {
-			historico.setProtocolo(atendimento.getProtocolo());
-		}
+                if (addRamal && retornarUsuarioSessao().getPontoAtendimento() != null) {
 
-		atendimento.setUsuarioOcupado(null);
-		atendimento.setStatus(historico.getStatusAtendimento());
+                    String ramal = retornarUsuarioSessao().getPontoAtendimento().getRamal();
+                    telefone.setRamal((ramal == null) ? null : ramal.replaceAll("\\D+", ""));
+                }
 
-		// FINALIZAR ATENDIMENTO DE ACORDO COM PESO DE DISCAGEM.
-		/*
-		 * if (historico.getStatusAtendimento() != null &&
-		 * historico.getStatusAtendimento().getAcao() != null &&
-		 * historico.getStatusAtendimento().getAcao().equals(AcaoStatusAtendimentoEnum.
-		 * FIM_FILA) && atendimento.getPesoDiscagem() != null &&
-		 * atendimento.getPesoDiscagem().intValue() >=
-		 * atendimento.getCampanha().getQuantdadeRediscagem()) {
-		 * 
-		 * 
-		 * // PESQUISAR STATUS FINALIZADOS....
-		 * 
-		 * }
-		 */
+                if (telefone.getStatusTelefone() != null && telefone.getStatusTelefone().getId() == null) {
+                    telefone.setStatusTelefone(null);
+                }
 
-	}
+            }
 
-	public void inserirEntidade(String tipo, GenericAtendimento atendimento) {
+        }
 
-		try {
+        if (historicoAtendimento != null && historicoAtendimento.getId() != null && historicoAtendimento.getStatusAtendimento().getAcao().equals(AcaoStatusAtendimentoEnum.PROPOSTA_EFETIVADA)) {
 
-			if (tipo.equals("ENDERECO")) {
+            if (atendimento.getListaTelefones() == null || atendimento.getListaTelefones().isEmpty()) {
 
-				((GenericAtendimento) atendimento).adicionarEndereco((GenericEndereco) new Endereco());
+                throw new ProativaException(MessagesEnum.DEVE_HAVER_PELO_MENOS_UM_TELEFONE_COM_STATUS_SUCESSO.constante);
+            }
 
-			} else if (tipo.equals("DADOS_BANCARIOS")) {
+            int qtdadeSucesso = 0;
 
-				((GenericAtendimento) atendimento)
-						.adicionarDadosBancarios((GenericDadosBancarios) new DadosBancarios());
+            for (GenericTelefone telefone : atendimento.getListaTelefones()) {
 
-			} else if (tipo.equals("TELEFONE")) {
+                if (telefone.getStatusTelefone() != null && telefone.getStatusTelefone().getParametro().equals(AcaoStatusTelefoneEnum.CONTATO_CLIENTE))
+                    qtdadeSucesso++;
 
-			}
+            }
 
-		} catch (Exception e) {
-			// TODO: handle exception
-		}
-	}
+            if (qtdadeSucesso == 0) {
+                throw new ProativaException(MessagesEnum.DEVE_HAVER_PELO_MENOS_UM_TELEFONE_COM_STATUS_SUCESSO.constante);
+            }
 
-	public void onStatusTelefone(Telefone tel, Long idStatus) {
+        }
 
-		if (tel != null & tel.getId() != null && idStatus != null) {
+        if (atendimento != null && atendimento.getCampanha() != null && atendimento.getCampanha().getTipoCampanha().equals(TipoCampanhaEnum.RECEPTIVA) && CollectionUtils.isEmpty(atendimento.getListaTelefones())) {
 
-			this.serviceTelefone.alterarTelefone(tel, idStatus, retornarUsuarioSessao().getId());
+            throw new ProativaException(MessagesEnum.DEVE_HAVER_PELO_MENOS_UM_TELEFONE_CADASTRADO.constante);
+        }
 
-		}
+    }
 
-	}
-	
-	
-	public Equipe retornarEquipeUsuario(Long idUsuario) {
-		
-		Long equipe = this.usuarioService.pesquisarEquipeUsuario(idUsuario);	
-		
-		if(equipe==null)
-			return null;
-		
-		return this.serviceEquipe.pesquisarEquipe(equipe,false);
-		
-	}
+    /**
+     * Metodo Gerar o Historico de Atendimento.
+     *
+     * @param historico           GenericHistoricoAtendimento
+     * @param atendimento         GenericAtendimento
+     * @param alterarDataCadastro boolean
+     */
+    private void liberarAtendimento(GenericHistoricoAtendimento historico, GenericAtendimento atendimento, boolean alterarDataCadastro) {
 
-	public Date pesquisarDataCorrenteServidor() {
+        if (historico.getPausa() == null || historico.getPausa().getId() == null) {
 
-		return this.serviceAbstract.pesquisarDataCorrenteServidor();
-	}
+            historico.setPausa(null);
 
-	public Usuario retornarUsuarioSessao() {
-		return (Usuario) Faces.getSessionAttribute("usuario");
-	}
+        }
 
-	public void exportarArquivoCsv(List<String> listCabecalho, List<Object[]> listDados, String nomeArquivo) throws IOException {
+        if (historico.getId() == null) {
+            atendimento.adicionarHistorico(historico);
+        }
 
-		HttpServletResponse response = Faces.getResponse();
-		response.reset();
-		response.setContentType("text/comma-separated-values;charset=iso-8859-1");
-		response.setHeader("Content-Disposition", "attachment; filename=\"" + nomeArquivo + "\"");
+        if (alterarDataCadastro) {
+            historico.setDataCadastro(new Date(System.currentTimeMillis()));
+        }
 
-		ServletOutputStream output = response.getOutputStream();
+        if (atendimento.getProtocolo() != null) {
+            historico.setProtocolo(atendimento.getProtocolo());
+        }
 
-		output.write(ArquivoUtil.gerarArquivoCSV(listCabecalho, listDados));
+        atendimento.setUsuarioOcupado(null);
+        atendimento.setStatus(historico.getStatusAtendimento());
 
-		output.flush();
-		output.close();
+        // FINALIZAR ATENDIMENTO DE ACORDO COM PESO DE DISCAGEM.
+        /*
+         * if (historico.getStatusAtendimento() != null &&
+         * historico.getStatusAtendimento().getAcao() != null &&
+         * historico.getStatusAtendimento().getAcao().equals(AcaoStatusAtendimentoEnum.
+         * FIM_FILA) && atendimento.getPesoDiscagem() != null &&
+         * atendimento.getPesoDiscagem().intValue() >=
+         * atendimento.getCampanha().getQuantdadeRediscagem()) {
+         *
+         *
+         * // PESQUISAR STATUS FINALIZADOS....
+         *
+         * }
+         */
 
-		Faces.responseComplete();
+    }
 
-	}
+    public void inserirEntidade(String tipo, GenericAtendimento atendimento) {
 
-	public void salvarAtendimento(GenericAtendimento atendimento, GenericHistoricoAtendimento historico,
-			Usuario usuario, boolean addRamal) throws ProativaException {
+        try {
 
-		salvarAtendimento(atendimento, historico, usuario, addRamal, null);
+            if (tipo.equals("ENDERECO")) {
 
-	}
+                ((GenericAtendimento) atendimento).adicionarEndereco((GenericEndereco) new Endereco());
 
-	@SuppressWarnings({ "serial", "rawtypes" })
-	private void salvarAtendimento(GenericAtendimento atendimento, GenericHistoricoAtendimento historico,	Usuario usuario, boolean addRamal, String msgAdicional) throws ProativaException {
+            } else if (tipo.equals("DADOS_BANCARIOS")) {
 
-		validarStatusTelefone(historico, atendimento, addRamal);
-		validarPropostaEfetivada(historico, atendimento, true);
-		validarHistoricoAtendimento(historico, atendimento, null, false);
+                ((GenericAtendimento) atendimento)
+                        .adicionarDadosBancarios((GenericDadosBancarios) new DadosBancarios());
 
-		StringBuilder obs = new StringBuilder("ATENDIMENTO EDITADO POR:: " + usuario.getNome() + "\n");
+            } else if (tipo.equals("TELEFONE")) {
 
-		obs.append("DATA: " + DateUtil.builder().formatarDataParaString("dd/MM/yyyy HH:mm:ss").getDataTexto() + "\n");
+            }
 
-		obs.append(!StringUtils.isBlank(msgAdicional) ? msgAdicional + "\n" : "");
+        } catch (Exception e) {
+            // TODO: handle exception
+        }
+    }
 
-		obs.append(historico.getObservacao());
+    public void onStatusTelefone(Telefone tel, Long idStatus) {
 
-		historico.setObservacao(obs.toString());
-		historico.setUsuario(atendimento.getUsuarioAlteracao());
+        if (tel != null & tel.getId() != null && idStatus != null) {
 
-		if (atendimento.getProduto() == null || atendimento.getProduto().getId() == null)
-			atendimento.setProduto(null);
+            this.serviceTelefone.alterarTelefone(tel, idStatus, retornarUsuarioSessao().getId());
 
-		if (atendimento.getFormaPagamento() == null || atendimento.getFormaPagamento().getId() == null)
-			atendimento.setFormaPagamento(null);
+        }
 
-		if (historico != null && historico.getStatusAtendimento() != null	&& !AcaoStatusAtendimentoEnum.PROPOSTA_EFETIVADA.equals(historico.getStatusAtendimento().getAcao())) {
+    }
 
-			atendimento.setContrato(null);
-			atendimento.setAdesao(null);
-			atendimento.setValorParcela(null);
-			atendimento.setQuantidadeParcela(null);
-			atendimento.setValorLiberado(null);
 
-		}
+    public Equipe retornarEquipeUsuario(Long idUsuario) {
 
-		if (atendimento.getListInformacoesComplementares() != null
-				&& !atendimento.getListInformacoesComplementares().isEmpty()) {
+        Long equipe = this.usuarioService.pesquisarEquipeUsuario(idUsuario);
 
-			Gson gson = new Gson();
-			Type gsonType = new TypeToken<HashMap>() {
-			}.getType();
-			String gsonStr = gson.toJson(atendimento.getListInformacoesComplementares(), gsonType);
-			atendimento.setInformacoesComplementares(gsonStr);
-		}
+        if (equipe == null)
+            return null;
 
-		this.serviceAbstract.alterar(atendimento);
+        return this.serviceEquipe.pesquisarEquipe(equipe, false);
+
+    }
+
+    public Date pesquisarDataCorrenteServidor() {
+
+        return this.serviceAbstract.pesquisarDataCorrenteServidor();
+    }
+
+    public Usuario retornarUsuarioSessao() {
+        return (Usuario) Faces.getSessionAttribute("usuario");
+    }
+
+    public void exportarArquivoCsv(List<String> listCabecalho, List<Object[]> listDados, String nomeArquivo) throws IOException {
+
+        HttpServletResponse response = Faces.getResponse();
+        response.reset();
+        response.setContentType("text/comma-separated-values;charset=iso-8859-1");
+        response.setHeader("Content-Disposition", "attachment; filename=\"" + nomeArquivo + "\"");
+
+        ServletOutputStream output = response.getOutputStream();
+
+        output.write(ArquivoUtil.gerarArquivoCSV(listCabecalho, listDados));
+
+        output.flush();
+        output.close();
+
+        Faces.responseComplete();
+
+    }
+
+    public void salvarAtendimento(GenericAtendimento atendimento, GenericHistoricoAtendimento historico,
+                                  Usuario usuario, boolean addRamal) throws ProativaException {
+
+        salvarAtendimento(atendimento, historico, usuario, addRamal, null);
+
+    }
+
+    @SuppressWarnings({"serial", "rawtypes"})
+    private void salvarAtendimento(GenericAtendimento atendimento, GenericHistoricoAtendimento historico, Usuario usuario, boolean addRamal, String msgAdicional) throws ProativaException {
+
+        validarStatusTelefone(historico, atendimento, addRamal);
+        validarPropostaEfetivada(historico, atendimento, true);
+        validarHistoricoAtendimento(historico, atendimento, null, false);
+
+        StringBuilder obs = new StringBuilder("ATENDIMENTO EDITADO POR:: " + usuario.getNome() + "\n");
+
+        obs.append("DATA: " + DateUtil.builder().formatarDataParaString("dd/MM/yyyy HH:mm:ss").getDataTexto() + "\n");
+
+        obs.append(!StringUtils.isBlank(msgAdicional) ? msgAdicional + "\n" : "");
+
+        obs.append(historico.getObservacao());
+
+        historico.setObservacao(obs.toString());
+        historico.setUsuario(atendimento.getUsuarioAlteracao());
+
+        if (atendimento.getProduto() == null || atendimento.getProduto().getId() == null)
+            atendimento.setProduto(null);
+
+        if (atendimento.getFormaPagamento() == null || atendimento.getFormaPagamento().getId() == null)
+            atendimento.setFormaPagamento(null);
+
+        if (historico != null && historico.getStatusAtendimento() != null && !AcaoStatusAtendimentoEnum.PROPOSTA_EFETIVADA.equals(historico.getStatusAtendimento().getAcao())) {
+
+            atendimento.setContrato(null);
+            atendimento.setAdesao(null);
+            atendimento.setValorParcela(null);
+            atendimento.setQuantidadeParcela(null);
+            atendimento.setValorLiberado(null);
+
+        }
+
+        if (atendimento.getListInformacoesComplementares() != null
+                && !atendimento.getListInformacoesComplementares().isEmpty()) {
+
+            Gson gson = new Gson();
+            Type gsonType = new TypeToken<HashMap>() {
+            }.getType();
+            String gsonStr = gson.toJson(atendimento.getListInformacoesComplementares(), gsonType);
+            atendimento.setInformacoesComplementares(gsonStr);
+        }
+
+        this.serviceAbstract.alterar(atendimento);
 //MOVER BKP		
-	}
+    }
 
-	public TipoFormaEnvioEnum[] getFormasEnviosSaque() {
-		return new TipoFormaEnvioEnum[] { TipoFormaEnvioEnum.GRAVACAO, TipoFormaEnvioEnum.BALCAO };
-	}
+    public TipoFormaEnvioEnum[] getFormasEnviosSaque() {
+        return new TipoFormaEnvioEnum[]{TipoFormaEnvioEnum.GRAVACAO, TipoFormaEnvioEnum.BALCAO};
+    }
 
-	public TipoFormaEnvioEnum[] getFormasEnviosSaque(TipoFormaEnvioEnum formaEnvio) {
+    public TipoFormaEnvioEnum[] getFormasEnviosSaque(TipoFormaEnvioEnum formaEnvio) {
 
-		if (TipoFormaEnvioEnum.GRAVACAO.equals(formaEnvio) || TipoFormaEnvioEnum.DIGITAL_GRAVADO.equals(formaEnvio))
-			return new TipoFormaEnvioEnum[] { TipoFormaEnvioEnum.GRAVACAO, TipoFormaEnvioEnum.DIGITAL_GRAVADO };
+        if (TipoFormaEnvioEnum.GRAVACAO.equals(formaEnvio) || TipoFormaEnvioEnum.DIGITAL_GRAVADO.equals(formaEnvio))
+            return new TipoFormaEnvioEnum[]{TipoFormaEnvioEnum.GRAVACAO, TipoFormaEnvioEnum.DIGITAL_GRAVADO};
 
-		return new TipoFormaEnvioEnum[] { TipoFormaEnvioEnum.BALCAO, TipoFormaEnvioEnum.DIGITAL_BALCAO };
-	}
+        return new TipoFormaEnvioEnum[]{TipoFormaEnvioEnum.BALCAO, TipoFormaEnvioEnum.DIGITAL_BALCAO};
+    }
 
-	public boolean filtrarContem(Object value, Object filter, Locale locale) {
+    public boolean filtrarContem(Object value, Object filter, Locale locale) {
 
-		String filterText = (filter == null) ? null : filter.toString().toLowerCase().trim();
-		String valor = String.valueOf(value).toLowerCase().trim();
+        String filterText = (filter == null) ? null : filter.toString().toLowerCase().trim();
+        String valor = String.valueOf(value).toLowerCase().trim();
 
-		if (filterText == null || filterText.equals(""))
-			return true;
+        if (filterText == null || filterText.equals(""))
+            return true;
 
-		if (value == null)
-			return false;
+        if (value == null)
+            return false;
 
-		return valor.contains(filterText);
-	}
+        return valor.contains(filterText);
+    }
 
-	public Empresa getEmpresa() {
-		return empresa;
-	}
+    public Empresa getEmpresa() {
+        return empresa;
+    }
 
-	public void setEmpresa(Empresa empresa) {
-		this.empresa = empresa;
-	}
+    public void setEmpresa(Empresa empresa) {
+        this.empresa = empresa;
+    }
 
-	public SexoEnum[] getListSexoEnum() {
-		return SexoEnum.values();
-	}
+    public SexoEnum[] getListSexoEnum() {
+        return SexoEnum.values();
+    }
 
-	public EstadoCivilEnum[] getEstadoCivil() {
-		return EstadoCivilEnum.values();
-	}
+    public EstadoCivilEnum[] getEstadoCivil() {
+        return EstadoCivilEnum.values();
+    }
 
-	public TipoFormaEnvioEnum[] getlistFormaEnvio() {
-		return TipoFormaEnvioEnum.values();
-	}
+    public TipoFormaEnvioEnum[] getlistFormaEnvio() {
+        return TipoFormaEnvioEnum.values();
+    }
 
-	public static void main(String[] args) {
+    public static void main(String[] args) {
 
-	}
+    }
 
-	public TipoAcessoEnum[] getAcessoEnum() {
-		return TipoAcessoEnum.values();
-	}
+    public TipoAcessoEnum[] getAcessoEnum() {
+        return TipoAcessoEnum.values();
+    }
 
-	public EstadosEnum[] getEstadosEnum() {
-		return EstadosEnum.values();
-	}
+    public EstadosEnum[] getEstadosEnum() {
+        return EstadosEnum.values();
+    }
 
-	public InstituicaoFinanceiraEnum[] getInstituicoesFinanceiras() {
-		return InstituicaoFinanceiraEnum.values();
-	}
+    public InstituicaoFinanceiraEnum[] getInstituicoesFinanceiras() {
+        return InstituicaoFinanceiraEnum.values();
+    }
 
-	public TipoEventoEnum[] getTipoEventos() {
+    public TipoEventoEnum[] getTipoEventos() {
 
-		return TipoEventoEnum.values();
+        return TipoEventoEnum.values();
 
-	}
+    }
 
-	public EstadosEnum[] getUfEnums() {
+    public EstadosEnum[] getUfEnums() {
 
-		return EstadosEnum.values();
+        return EstadosEnum.values();
 
-	}
+    }
 
-	public TipoCampanhaEnum[] getTipoCampanhas() {
+    public TipoCampanhaEnum[] getTipoCampanhas() {
 
-		return TipoCampanhaEnum.values();
+        return TipoCampanhaEnum.values();
 
-	}
-	
-	public MediaEnum [] getMediasEnum() {
-		return MediaEnum.values();
-	}
- 
+    }
+
+    public MediaEnum[] getMediasEnum() {
+        return MediaEnum.values();
+    }
+
 }

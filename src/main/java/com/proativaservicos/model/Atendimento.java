@@ -389,6 +389,17 @@ public class Atendimento extends GenericAtendimento implements Serializable {
         return builder.toString();
     }
 
+    public String getTelefoneResumido() {
+
+        if (CollectionUtils.isEmpty(listTelefones))
+            return null;
+
+        Telefone telefone = listTelefones.get(0);
+
+        return telefone.getDDDTelefoneFormatado();
+
+    }
+
     @Override
     public List<? extends GenericHistoricoAtendimento> getListaHistoricos() {
         // TODO Auto-generated method stub

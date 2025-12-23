@@ -15,16 +15,16 @@ import jakarta.faces.context.FacesContext;
 import jakarta.faces.view.ViewScoped;
 import jakarta.inject.Inject;
 import jakarta.inject.Named;
+import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.omnifaces.util.Faces;
 import org.omnifaces.util.Messages;
+import org.primefaces.PrimeFaces;
 
 import java.math.BigDecimal;
+import java.math.RoundingMode;
 import java.security.SecureRandom;
-import java.util.ArrayList;
-import java.util.Date;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
 @Named
 @ViewScoped
@@ -91,8 +91,11 @@ public class FichaAtendimentoSacBean extends GenericBean {
 
     private Usuario usuario;
 
-
     private Atendimento atendimento;
+
+    private HistoricoAtendimento historicoAtendimento;
+
+    private CartaoCredito cartaoCreditoSelecionado;
 
     private Boolean novoCliente;
 
@@ -133,13 +136,62 @@ public class FichaAtendimentoSacBean extends GenericBean {
         this.listMotivo = this.motivoService.pesquisarMotivosPorEmpresa(retornarEmpresaUsuarioSessao().getId());
     }
 
-    public void iniciarPreAtendimento() {
-
+    public void iniciarAtendimento() {
+        System.out.println("Iniciando atendimento...");
+        System.out.println(atendimento.getMotivo().getDescricao());
+        System.out.println(atendimento.getSubMotivo().getDescricao());
         ///SALVAR
         this.atendimentoIniciado = true;
+        String detalhes = retornarDetalhesAtendimento();
+        String descicao = (StringUtils.isBlank(this.atendimento.getObservacaoAdicional()) ? "" : " | " + this.atendimento.getObservacaoAdicional());
+        inserirAtividadesAtendimentos(TipoStatusAtividadesEnum.ATENDIMENTO_CLASSIFICADO, detalhes, descicao, "Você", "pi pi-user");
+        Messages.addGlobalInfo("Sua classificação registrada com sucesso!");
     }
 
+
     public void salvarAtendimento() {
+
+        System.out.println("Salnvando atendimento");
+        System.out.println(this.atendimento.getNome() + " - " + atendimento.getCpf());
+        System.out.println("Motivo: " + this.atendimento.getMotivo().getDescricao());
+        System.out.println("Sub Motico: " + this.atendimento.getSubMotivo().getDescricao());
+        System.out.println("AObs: " + this.atendimento.getObservacao());
+        System.out.println("Obs Adicioal: " + this.atendimento.getObservacaoAdicional());
+        System.out.println("ENVIAR N2: " + this.atendimento.getEnviarN2());
+
+        System.out.println("SALVAR HISTORICO DE ATENDIMENTO.......");
+        PrimeFaces.current().executeScript("PF('dlgFinalizar').hide();");
+        Messages.addGlobalInfo("Histórido de atendimento salvo com sucesso");
+
+
+        String descricao = this.atendimento.getObservacao();
+
+        inserirAtividadesAtendimentos(TipoStatusAtividadesEnum.SOLICITACAO_ABERTA, retornarDetalhesAtendimento(), descricao, "Você", "pi pi-user");
+
+        resetarAtendimento();
+
+    }
+
+    private String retornarDetalhesAtendimento() {
+
+        if (this.atendimento == null || this.atendimento.getMotivo() == null || this.atendimento.getSubMotivo() == null)
+            return "";
+        return this.atendimento.getMotivo().getDescricao() + " -> " + this.atendimento.getSubMotivo().getDescricao();
+    }
+
+    private void resetarAtendimento() {
+        resetClassificacao();
+        atendimentoIniciado = false;
+    }
+
+    public void encerrarAtendimento() {
+        System.out.println("Encerrando atendimento");
+    }
+
+    public void derivarAtendimentoN2() {
+
+        System.out.println("Derivar: " + this.atendimento.getObservacaoN2());
+        PrimeFaces.current().executeScript("PF('dlgDerivarN2').hide();");
     }
 
 
@@ -151,7 +203,6 @@ public class FichaAtendimentoSacBean extends GenericBean {
         System.out.println("O cliente foi encontrado: " + cpf);
 
         if (StringUtils.isNotBlank(cpf)) {
-
 
             inicializarAtendimento(cpf);
 
@@ -169,23 +220,44 @@ public class FichaAtendimentoSacBean extends GenericBean {
             this.atendimento = new Atendimento();
             this.atendimento.setCpf(cpf);
             this.atendimento.setNome("JOSE ANTONIO");
-            this.atendimento.setValorLiberado(new BigDecimal("10258.52"));
-            this.atendimento.setValorCartaCredito(new BigDecimal("7443.09"));
-            this.atendimento.setValorSaque(3085.66);
-            this.atendimento.setLimite(new BigDecimal("10285.54"));
-            this.atendimento.setValorLiberado(new BigDecimal("7199.88"));
+            this.atendimento.setLimite(new BigDecimal("10258.52"));
+            this.atendimento.setLimiteDisponivel(new BigDecimal("7443.09"));
+            this.atendimento.setValorLiberado(new BigDecimal("3085.66"));
+            this.atendimento.setValorMaxOperacao(new BigDecimal("7199.88"));
             this.atendimento.setProtocolo(gerarProtocolo());
+            this.atendimento.setClienteVip(Boolean.TRUE);
 
-            CartaoCredito cartaoCredito = new CartaoCredito();
-            cartaoCredito.setNumeroCartao("5117233260721226");
-            cartaoCredito.setValidade("09/2027");
-            cartaoCredito.setCodigoSeguranca(616);
-            cartaoCredito.setTipo("Múltiplo");
-            cartaoCredito.setCartaoAdicional(Boolean.FALSE);
-            cartaoCredito.setBandeira("Visa");
-            cartaoCredito.setStatus("BLOQUEADO");
+            this.cartaoCreditoSelecionado = new CartaoCredito();
+            cartaoCreditoSelecionado.setNumeroCartao("5117233260721226");
+            cartaoCreditoSelecionado.setValidade("09/2027");
+            cartaoCreditoSelecionado.setCodigoSeguranca(616);
+            cartaoCreditoSelecionado.setTipo("Múltiplo");
+            cartaoCreditoSelecionado.setCartaoAdicional(Boolean.FALSE);
+            cartaoCreditoSelecionado.setBandeira("Visa");
+            cartaoCreditoSelecionado.setStatus("BLOQUEADO");
 
-            this.atendimento.addCartao(cartaoCredito);
+            cartaoCreditoSelecionado.setLimiteTotal(new BigDecimal("15000.00"));
+            cartaoCreditoSelecionado.setLimiteDisponivel(new BigDecimal("8500.00"));
+            cartaoCreditoSelecionado.setLimiteEmergencial(new BigDecimal("2000.00"));
+
+            Telefone telefone = new Telefone();
+            telefone.setDdd(Short.valueOf("31"));
+            telefone.setNumero("999631311");
+            atendimento.adicionarTelefone(telefone);
+
+            BigDecimal limiteTotal = cartaoCreditoSelecionado.getLimiteTotal();
+            BigDecimal limiteDisponivel = cartaoCreditoSelecionado.getLimiteDisponivel();
+
+
+            BigDecimal usado = limiteTotal.subtract(limiteDisponivel);
+
+            BigDecimal percentualUsado = usado
+                    .multiply(BigDecimal.valueOf(100))
+                    .divide(limiteTotal, RoundingMode.HALF_UP);
+
+            System.out.println("Percentual usado: " + percentualUsado + "%");
+
+            this.atendimento.addCartao(cartaoCreditoSelecionado);
 
 
             carregarHistoricosAtendimentos();
@@ -211,7 +283,7 @@ public class FichaAtendimentoSacBean extends GenericBean {
 
     private void carregarHistoricosAtendimentos() {
 
-//MOCADO...
+        //MOCADO...
         this.listHistoricoProtocolos = new ArrayList<>();
 
         this.listHistoricoProtocolos.add(new ProtocoloDTO(
@@ -233,25 +305,51 @@ public class FichaAtendimentoSacBean extends GenericBean {
         ));
     }
 
+    private void inserirAtividadesAtendimentos(TipoStatusAtividadesEnum tipoAtendimento, String detalhes, String descicao, String autor, String icon) {
+
+        if (CollectionUtils.isEmpty(this.listHistoricoAtividadesDto))
+            this.listHistoricoAtividadesDto = new ArrayList<>();
+
+        this.listHistoricoAtividadesDto.add(new HistoricoAtividadesDto(tipoAtendimento, descicao, detalhes, new Date(), autor, icon));
+
+        this.listHistoricoAtividadesDto.stream().sorted(Comparator.comparing(HistoricoAtividadesDto::getData).reversed());
+
+        if (this.atendimento.getMotivo() != null && this.atendimento.getSubMotivo() != null) {
+
+
+            HistoricoAtividadesDto historicoAtividadesDto = new HistoricoAtividadesDto(tipoAtendimento,
+                    detalhes, descicao, new Date(), autor, icon);
+            //INSERIR NO BANCO...
+        }
+
+
+    }
+
     private void carregarAtividadesAtendimentos() {
 
         // Mocado === TEM QUE PEGAR DE OUTRA MANEIRA....
+
         this.listHistoricoAtividadesDto = new ArrayList<>();
 
-        listHistoricoAtividadesDto.add(new HistoricoAtividadesDto(TipoStatusAtividadesEnum.SOLICITACAO_AUMENTO_LINITE,
-                "De R$ 15.000 para R$ 22.222", "Motivo: Viagem internacional", new Date(), "voce","pi-user"));
+      /*  listHistoricoAtividadesDto.add(new HistoricoAtividadesDto(TipoStatusAtividadesEnum.SOLICITACAO_AUMENTO_LINITE,
+                "De R$ 15.000 para R$ 22.222", "Motivo: Viagem internacional", new Date(), "voce", "pi-user"));
 
         listHistoricoAtividadesDto.add(new HistoricoAtividadesDto(TipoStatusAtividadesEnum.ATENDIMENTO_CLASSIFICADO,
-                "Cartão | Limite → Consulta Disponível", "Consulta realizada com sucesso",new Date(), "Você", "pi-user"));
+                "Cartão | Limite → Consulta Disponível", "Consulta realizada com sucesso", new Date(), "Você", "pi-user"));
 
         listHistoricoAtividadesDto.add(new HistoricoAtividadesDto(TipoStatusAtividadesEnum.ATENDIMENTO_CLASSIFICADO,
-                "Cartão | Limite → Solicitação Aumento", "Cliente questionou taxas",new Date(), "Você", "pi-user"));
+                "Cartão | Limite → Solicitação Aumento", "Cliente questionou taxas", new Date(), "Você", "pi-user"));
 
         listHistoricoAtividadesDto.add(new HistoricoAtividadesDto(TipoStatusAtividadesEnum.ATENDIMENTO_CLASSIFICADO,
-                "Cartão | Limite → Solicitação Aumento", "Simulação realizada",new Date(), "Você", "pi-user"));
+                "Cartão | Limite → Solicitação Aumento", "Simulação realizada", new Date(), "Você", "pi-user"));*/
 
         listHistoricoAtividadesDto.add(new HistoricoAtividadesDto(TipoStatusAtividadesEnum.INICIO_ATENDIMENTO,
-                "Cliente conectado via URA", "Protocolo gerado automaticamente", new Date(),"Sistema", "pi-phone"));
+                "Cliente conectado via URA", "Protocolo gerado automaticamente", new Date(), "Sistema", "pi-phone"));
+
+    }
+
+
+    private void gerarHistoricoAtividade() {
 
     }
 
@@ -268,17 +366,28 @@ public class FichaAtendimentoSacBean extends GenericBean {
         this.subMotivoSelecionado = sub;
         this.stepClassificacao = 2;
 
+        if (CollectionUtils.isNotEmpty(sub.getListTipoMetodosMotivos())) {
+            this.abaAtiva = sub.getListTipoMetodosMotivos().get(0).name();
+        } else {
+            this.abaAtiva = null;
+        }
+
     }
 
     public void setStepClassificacao(int step) {
+
         this.stepClassificacao = step;
 
-
         if (step == 0) {
+
+            this.atendimento.setMotivo(null);
+            this.atendimento.setSubMotivo(null);
             this.motivoSelecionado = null;
             this.subMotivoSelecionado = null;
+
         } else if (step == 1) {
             this.subMotivoSelecionado = null;
+            this.atendimento.setSubMotivo(null);
         }
     }
 
@@ -290,7 +399,6 @@ public class FichaAtendimentoSacBean extends GenericBean {
     }
 
 
-
     public void resetClassificacao() {
         setStepClassificacao(0);
     }
@@ -300,6 +408,7 @@ public class FichaAtendimentoSacBean extends GenericBean {
         this.listPontoAtendimento = this.servicePontoAtendimento.pesquisarPontoAtendimentosPorEmpresa(retornarEmpresaUsuarioSessao().getId());
 
     }
+
 //METODOS -> SO SUBMOTIVO... API....
 
     public void registrarSolicitacaoLimite() {
@@ -315,6 +424,7 @@ public class FichaAtendimentoSacBean extends GenericBean {
     }
 
     public void trocarAba(String aba) {
+        System.out.println("ABA: " + aba);
         this.abaAtiva = aba;
     }
 
@@ -397,7 +507,7 @@ public class FichaAtendimentoSacBean extends GenericBean {
 
     public List<ProtocoloDTO> getListHistoricoProtocolos() {
 
-        
+
         return listHistoricoProtocolos;
     }
 
@@ -452,5 +562,9 @@ public class FichaAtendimentoSacBean extends GenericBean {
 
     public List<HistoricoAtividadesDto> getListHistoricoAtividadesDto() {
         return listHistoricoAtividadesDto;
+    }
+
+    public CartaoCredito getCartaoCreditoSelecionado() {
+        return cartaoCreditoSelecionado;
     }
 }

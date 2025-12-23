@@ -4,18 +4,13 @@ import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.google.gson.Gson;
-import com.proativaservicos.util.constantes.TipoMetodosMotivoEnum;
-import com.vladmihalcea.hibernate.type.json.JsonType;
-import jakarta.persistence.*;
-
 import com.proativaservicos.util.constantes.AcaoStatusAtendimentoEnum;
 import com.proativaservicos.util.constantes.TipoAcessoEnum;
-import jakarta.validation.constraints.Digits;
+import com.proativaservicos.util.constantes.TipoMetodosMotivoEnum;
+import jakarta.persistence.*;
 import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.lang3.StringUtils;
-import org.hibernate.annotations.Type;
 
-import java.util.ArrayList;
 import java.util.List;
 
 @MappedSuperclass
