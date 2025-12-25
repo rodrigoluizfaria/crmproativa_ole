@@ -251,4 +251,8 @@ public class CampanhaService extends GenericProService<Campanha> {
         this.dao.atualizarCampanhaAgendamento(campanha);
     }
 
+    public Campanha pesquisarCampanhaPorTipo(Long id, TipoCampanhaEnum tipoCampanhaEnum) {
+
+       return this.dao.pesquisarCampanhaPorTipo(id,tipoCampanhaEnum);
+    }
 }

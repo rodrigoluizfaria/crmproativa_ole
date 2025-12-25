@@ -379,8 +379,9 @@ public class Atendimento extends GenericAtendimento implements Serializable {
 
         StringBuilder builder = new StringBuilder();
         builder.append(endereco.getLogradouro());
+
         if (StringUtils.isNotBlank(endereco.getComplemento()))
-            builder.append(", ").append(endereco.getComplemento());
+            builder.append(", ").append(endereco.getComplemento()).append(", ");
 
         builder.append(endereco.getBairro()).append(" - ").append(endereco.getCidade()).append("/");
         builder.append(endereco.getUf());
@@ -397,6 +398,17 @@ public class Atendimento extends GenericAtendimento implements Serializable {
         Telefone telefone = listTelefones.get(0);
 
         return telefone.getDDDTelefoneFormatado();
+
+    }
+
+    public String getPrimeiroTelefone() {
+
+        if (CollectionUtils.isEmpty(listTelefones))
+            return null;
+
+        Telefone telefone = listTelefones.get(0);
+
+        return telefone.getDDDTelefone();
 
     }
 

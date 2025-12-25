@@ -25,6 +25,8 @@ public class HistoricoAtendimento extends GenericHistoricoAtendimento {
 		this.atendimento = (Atendimento) atn;
 		
 	}
+
+
 	
 	
 

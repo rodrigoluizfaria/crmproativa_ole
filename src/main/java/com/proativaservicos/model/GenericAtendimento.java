@@ -4,6 +4,8 @@ import java.math.BigDecimal;
 import java.text.NumberFormat;
 import java.util.*;
 
+import com.proativaservicos.util.DateUtil;
+import com.proativaservicos.util.constantes.*;
 import jakarta.persistence.CascadeType;
 import jakarta.persistence.Column;
 import jakarta.persistence.EnumType;
@@ -17,14 +19,6 @@ import jakarta.persistence.OneToOne;
 import jakarta.persistence.Temporal;
 import jakarta.persistence.TemporalType;
 import jakarta.persistence.Transient;
-
-import com.proativaservicos.util.constantes.EstadoCivilEnum;
-import com.proativaservicos.util.constantes.InstituicaoFinanceiraEnum;
-import com.proativaservicos.util.constantes.MotivoRetencaoEnum;
-import com.proativaservicos.util.constantes.PrioridadeEnum;
-import com.proativaservicos.util.constantes.SexoEnum;
-import com.proativaservicos.util.constantes.SimNaoEnum;
-import com.proativaservicos.util.constantes.TipoFluxoEsteira;
 
 /*
  * Classe Generica de atendimento
@@ -337,7 +331,7 @@ public abstract class GenericAtendimento extends GenericControle {
 	@Column(name = "demanda_encerrada")
 	private Boolean demandaEncerrada;
 
-	@Column (name = "vip")
+	@Transient
 	private Boolean clienteVip;
 
 
@@ -349,6 +343,10 @@ public abstract class GenericAtendimento extends GenericControle {
 
 	@Column(name = "observacao_n2")
 	private String observacaoN2;
+
+	@Column(name = "tipo_cliente")
+	@Enumerated(EnumType.STRING)
+	private TipoClienteEnum tipoClienteEnum;
 
 
 
@@ -1660,6 +1658,14 @@ public abstract class GenericAtendimento extends GenericControle {
 		this.demandaEncerrada = demandaEncerrada;
 	}
 
+	public TipoClienteEnum getTipoClienteEnum() {
+		return tipoClienteEnum;
+	}
+
+	public void setTipoClienteEnum(TipoClienteEnum tipoClienteEnum) {
+		this.tipoClienteEnum = tipoClienteEnum;
+	}
+
 	public Motivo getMotivo() {
 		return motivo;
 	}
@@ -1735,5 +1741,31 @@ public abstract class GenericAtendimento extends GenericControle {
 	public String getEspecie() {
 
 		return especie;
+	}
+
+	public String getDataAberturaDemandaFormatada(){
+
+		if(dataAberturaDemanda == null)
+			return "";
+
+		return DateUtil.builder(this.dataAberturaDemanda).formatarDataParaString("dd/MM/yyyy").getDataTexto();
+
+	}
+	public String getDataPrazoDemandaFormatada(){
+
+		if(prazoPrazoDemanda == null)
+			return "";
+
+		return DateUtil.builder(this.prazoPrazoDemanda).formatarDataParaString("dd/MM/yyyy").getDataTexto();
+
+	}
+
+	public String getDataFechamentoDemandaFormatada(){
+
+		if(dataFechamentoDemanda == null)
+			return "";
+
+		return DateUtil.builder(this.dataFechamentoDemanda).formatarDataParaString("dd/MM/yyyy").getDataTexto();
+
 	}
 }

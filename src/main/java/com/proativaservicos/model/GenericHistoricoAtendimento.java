@@ -2,6 +2,7 @@ package com.proativaservicos.model;
 
 import jakarta.persistence.*;
 
+import java.util.Arrays;
 import java.util.Date;
 
 @MappedSuperclass
@@ -335,5 +336,39 @@ public abstract class GenericHistoricoAtendimento extends Generic {
 
     public void setAtendimentoFinalizado(Boolean atendimentoFinalizado) {
         this.atendimentoFinalizado = atendimentoFinalizado;
+    }
+
+    @Override
+    public String toString() {
+        return "GenericHistoricoAtendimento{" +
+                "protocolo='" + protocolo + '\'' +
+                ", agendamento=" + agendamento +
+                ", dataCadastro=" + dataCadastro +
+                ", dataVisualizado=" + dataVisualizado +
+                ", numeroDestino='" + numeroDestino + '\'' +
+                ", nomeArquivo='" + nomeArquivo + '\'' +
+                ", observacao='" + observacao + '\'' +
+                ", observacaoAdicional='" + observacaoAdicional + '\'' +
+                ", observacaoN2='" + observacaoN2 + '\'' +
+                ", anotacao='" + anotacao + '\'' +
+                ", pausa=" + pausa +
+                ", usuario=" + usuario +
+                ", tempoPosAtendimento=" + tempoPosAtendimento +
+                ", anexo=" + Arrays.toString(anexo) +
+                ", pontoAtendimento=" + pontoAtendimento +
+                ", statusAtendimento=" + statusAtendimento +
+                ", usuarioTimeOut=" + usuarioTimeOut +
+                ", motivo=" + motivo +
+                ", subMotivomotivo=" + subMotivomotivo +
+                ", enviarN2=" + enviarN2 +
+                ", atendimentoFinalizado=" + atendimentoFinalizado +
+                ", posicaoFila=" + posicaoFila +
+                ", dataAberturaDemanda=" + dataAberturaDemanda +
+                ", prazoPrazoDemanda=" + prazoPrazoDemanda +
+                ", dataFechamentoDemanda=" + dataFechamentoDemanda +
+                ", demandaEncerrada=" + demandaEncerrada +
+                ", dataInicioAtendimento=" + dataInicioAtendimento +
+                ", dataFimAtendimento=" + dataFimAtendimento +
+                '}';
     }
 }

@@ -15,7 +15,7 @@
                              process="@this" partialSubmit="true" update="abasHistorico pnpHistoricoPrincipal"
                              style="font-weight: 600;"/>
 
-            <p:commandButton value="Protocolos (#{fichaAtendimentoSacBean.listHistoricoProtocolos.size()})"
+            <p:commandButton value="Protocolos (#{fichaAtendimentoSacBean.listHistoricoProtocolosDTO.size()})"
                              process="@this" update="abasHistorico pnpHistoricoPrincipal" partialSubmit="true"
                              actionListener="#{fichaAtendimentoSacBean.onSetStepModalHistorico(1)}"
                              styleClass="#{fichaAtendimentoSacBean.stepHistorico eq 1 ? 'ui-button-text bg-white text-900 shadow-1': 'ui-button-flat ui-button-secondary text-600'}   flex-1 border-round-2xl"
@@ -34,9 +34,9 @@
                 </div>
 
                 <h:panelGroup styleClass="overflow-y-auto" style="max-height: 500px;" layout="block"
-                              rendered="#{not empty fichaAtendimentoSacBean.listHistoricoProtocolos}">
+                              rendered="#{not empty fichaAtendimentoSacBean.listHistoricoProtocolosDTO}">
 
-                    <ui:repeat value="#{fichaAtendimentoSacBean.listHistoricoProtocolos}" var="proto">
+                    <ui:repeat value="#{fichaAtendimentoSacBean.listHistoricoProtocolosDTO}" var="proto">
 
                         <div class="surface-card border-1 border-200 border-round-xl p-3 mb-3 hover:shadow-2 hover:border-blue-500 transition-all transition-duration-200 cursor-pointer">
                             <div class="flex justify-content-between align-items-center mb-2">
@@ -83,7 +83,7 @@
                 </h:panelGroup>
 
                 <!-- HISTORICO PROTOCOLOS VAZIO-->
-                <h:panelGroup layout="block" rendered="#{ empty fichaAtendimentoSacBean.listHistoricoProtocolos}"
+                <h:panelGroup layout="block" rendered="#{ empty fichaAtendimentoSacBean.listHistoricoProtocolosDTO}"
                               styleClass="col-12">
 
                     <div class="flex flex-column align-items-center justify-content-center p-5 bg-white border-round-xl border-1 border-200 shadow-1 h-full">

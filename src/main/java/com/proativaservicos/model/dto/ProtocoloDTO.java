@@ -12,6 +12,7 @@ public class ProtocoloDTO {
     private Date dataAbertura;
     private Date dataPrazo;
 
+    public ProtocoloDTO(){}
     public ProtocoloDTO(String numero, String status, String tipo, String desc, String dataAb, String dataPz) {
         this.numeroProtocolo = numero;
         this.status = status;

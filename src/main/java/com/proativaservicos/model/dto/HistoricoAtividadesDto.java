@@ -8,6 +8,7 @@ public class HistoricoAtividadesDto {
 
 
     private TipoStatusAtividadesEnum tipoStatusAtividade;
+    private Long id;
     private String descricao;
     private String detalhes;
     private Date data;
@@ -24,6 +25,7 @@ public class HistoricoAtividadesDto {
         this.data = data;
         this.autor = autor;
         this.tipoIcone = tipoIcone;
+
     }
 
     public TipoStatusAtividadesEnum getTipoStatusAtividade() {
@@ -72,5 +74,13 @@ public class HistoricoAtividadesDto {
 
     public void setTipoIcone(String tipoIcone) {
         this.tipoIcone = tipoIcone;
+    }
+
+    public Long getId() {
+        return id;
+    }
+
+    public void setId(Long id) {
+        this.id = id;
     }
 }

@@ -4507,4 +4507,22 @@ public class DaoAtendimentoImp extends GenericDao<Atendimento> implements Serial
 
     }
 
+    public List<Atendimento> pesquisarAtendimentosSacPorCpf(String cpf) {
+
+        StringBuilder query = new StringBuilder();
+        Map<String, Object> parametros = new HashMap<>();
+
+        query.append("select distinct a ");
+        query.append("from Atendimento a ");
+        query.append(" join fetch a.campanha c ");
+        query.append(" left join fetch a.status s ");
+        query.append(" join fetch a.motivo m ");
+        query.append(" join fetch a.subMotivo sm ");
+        query.append(" join fetch a.usuarioAlteracao u ");
+        query.append(" where a.cpf = :cpf and c.tipoCampanha = 'SAC'");
+
+        parametros.put("cpf", StringUtils.leftPad(cpf.trim(), 11, "0"));
+
+        return searchEntidades(DaoEnum.HQL_QUERRY, query.toString(), parametros);
+    }
 }

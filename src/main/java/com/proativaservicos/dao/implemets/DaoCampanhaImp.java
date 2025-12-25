@@ -11,10 +11,7 @@ import com.proativaservicos.util.constantes.TipoCampanhaEnum;
 import jakarta.inject.Named;
 
 import java.math.BigDecimal;
-import java.util.Date;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
 @SuppressWarnings("unchecked")
 @Named
@@ -534,4 +531,17 @@ public class DaoCampanhaImp extends GenericDao<Campanha> {
 
     }
 
+    public Campanha pesquisarCampanhaPorTipo(Long idEmpresa, TipoCampanhaEnum tipoCampanhaEnum) {
+
+        HashMap<String, Object> parametros = new HashMap<>();
+        StringBuilder query = new StringBuilder();
+        query.append(" SELECT DISTINCT c ");
+        query.append(" FROM Campanha c ");
+        query.append(" where c.tipoCampanha = :tipoCampanha ");
+        query.append(" and c.empresa.id = :idCampanha ");
+        parametros.put("tipoCampanha", tipoCampanhaEnum);
+        parametros.put("idCampanha", idEmpresa);
+
+        return (Campanha) searchEntidade(DaoEnum.HQL_QUERRY, query.toString(), parametros,0,1);
+    }
 }

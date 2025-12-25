@@ -88,6 +88,8 @@ public class AtendimentoService extends GenericProService<Atendimento> implement
     }
 
 
+
+
     @SuppressWarnings({"unchecked", "rawtypes"})
     private GenericAtendimento detalharAtendimento(GenericAtendimento atendimento, boolean historico, SegmentoEnum segmento) {
 
@@ -711,5 +713,10 @@ public class AtendimentoService extends GenericProService<Atendimento> implement
     public Atendimento pesquisarAtendimentosConsultaAtivo(String cpf, SegmentoEnum segmentoEnum, Long empresa, boolean campanhaConsulta) {
 
         return this.dao.pesquisarAtendimentosConsulta(cpf, segmentoEnum, empresa, campanhaConsulta);
+    }
+
+    public List<Atendimento> pesquisarAtendimentosSacPorCpf(String cpf) {
+            return this.dao.pesquisarAtendimentosSacPorCpf(cpf);
+
     }
 }
