@@ -1,0 +1,240 @@
+<ui:composition xmlns="http://www.w3.org/1999/xhtml"
+                xmlns:h="http://xmlns.jcp.org/jsf/html"
+                xmlns:f="http://xmlns.jcp.org/jsf/core"
+                xmlns:p="http://primefaces.org/ui"
+                xmlns:ui="http://xmlns.jcp.org/jsf/facelets"
+                template="/WEB-INF/template.xhtml">
+
+    <ui:define name="metadata">
+        <f:metadata>
+            <f:viewParam name="id" value="#{tratativaBackofficeBean.idAtendimento}"/>
+            <f:viewAction action="#{tratativaBackofficeBean.inicializar}"/>
+        </f:metadata>
+    </ui:define>
+
+    <ui:define name="viewname">
+        <div class="bcca-breadcrumb">
+            <div class="bcca-breadcrumb-item bg-primary-500 hover:bg-primary-700">
+                <p:link outcome="/pages/backoffice/backoffice_fila" style="text-decoration: none; color: white;">
+                    <i class="pi pi-arrow-left mr-1 text-white"/> VOLTAR PARA FILA
+                </p:link>
+            </div>
+            <div class="bcca-breadcrumb-item font-bold">TRATATIVA N2</div>
+        </div>
+    </ui:define>
+
+    <ui:define name="content">
+
+        <h:form id="content" prependId="false">
+
+            <p:growl id="grl" showDetail="true" life="5000"/>
+
+            <h:panelGroup rendered="#{not empty tratativaBackofficeBean.atendimento}" id="pnpPrincipal">
+
+                <div class="card mb-3 p-3 flex flex-column md:flex-row align-items-center justify-content-between shadow-1 gap-3">
+
+                    <div class="flex align-items-center gap-3">
+                        <div class="bg-blue-50 border-circle w-3rem h-3rem flex align-items-center justify-content-center">
+                            <i class="pi pi-file-edit text-blue-600 text-xl"/>
+                        </div>
+                        <div>
+                            <h1 class="text-xl text-900 font-bold m-0">Tratativa de Nível 2</h1>
+                            <div class="flex align-items-center gap-2 mt-1 flex-wrap">
+                                <span class="text-600 text-sm">Protocolo:</span>
+                                <span class="text-blue-600 font-bold font-monospace">#{tratativaBackofficeBean.atendimento.protocolo}</span>
+                                <span class="text-400">|</span>
+
+                                <p:tag severity="#{tratativaBackofficeBean.atendimento.prazoEstourado ? 'danger' : 'warning'}"
+                                       styleClass="#{tratativaBackofficeBean.atendimento.prazoEstourado ? '' : 'bg-yellow-100 text-yellow-800'}">
+                                    <span class="flex align-items-center gap-1">
+                                        <i class="pi #{tratativaBackofficeBean.atendimento.prazoEstourado ? 'pi-exclamation-triangle' : 'pi-clock'}"/>
+                                        SLA:
+                                        <h:outputText value="#{tratativaBackofficeBean.atendimento.prazoPrazoDemanda}">
+                                            <f:convertDateTime pattern="dd/MM/yyyy"/>
+                                        </h:outputText>
+                                    </span>
+                                </p:tag>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="flex gap-2 w-full md:w-auto">
+
+                        <p:commandButton value="Concluir Demanda" icon="pi pi-check-circle"
+                                             action="#{tratativaBackofficeBean.salvar()}"
+                                         update="@form grl"
+
+                                         styleClass="ui-button-success font-bold flex-1 md:flex-none"/>
+                    </div>
+                </div>
+
+                <div class="grid">
+
+                    <div class="col-12 lg:col-4">
+
+                        <div class="card mb-3 border-left-3 border-blue-500 shadow-2">
+                            <div class="flex align-items-start gap-3">
+                                <p:avatar label="#{not empty tratativaBackofficeBean.atendimento.cliente.nome ? tratativaBackofficeBean.atendimento.cliente.nome.substring(0,1) : 'C'}"
+                                          size="large" shape="circle"
+                                          styleClass="bg-blue-100 text-blue-600 font-bold text-xl"/>
+
+                                <div class="flex-1">
+                                    <span class="block text-900 font-bold text-lg mb-1">#{tratativaBackofficeBean.atendimento.cliente.nome}</span>
+                                    <div class="flex flex-column gap-1">
+                                        <span class="text-600 text-sm"><i class="pi pi-id-card mr-2 w-2rem text-center"/>#{tratativaBackofficeBean.atendimento.cliente.cpf}</span>
+                                        <span class="text-600 text-sm"><i class="pi pi-phone mr-2 w-2rem text-center"/>#{tratativaBackofficeBean.atendimento.cliente.primeiroTelefone}</span>
+                                    </div>
+                                    <h:panelGroup styleClass="block mt-2" rendered="#{tratativaBackofficeBean.atendimento.cliente.clienteVip}">
+                                        <p:tag severity="warning" value="CLIENTE VIP" icon="pi pi-star-fill" rounded="true"/>
+                                    </h:panelGroup>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="card shadow-2">
+                            <div class="flex align-items-center justify-content-between mb-3 border-bottom-1 border-200 pb-2">
+                                <h3 class="text-900 font-bold text-base m-0">
+                                    <i class="pi pi-inbox mr-2 text-600"/>Solicitação Original (N1)
+                                </h3>
+                                <span class="text-xs text-500">
+                                    <h:outputText value="#{tratativaBackofficeBean.atendimento.dataInicioAtendimento}">
+                                        <f:convertDateTime pattern="dd/MM HH:mm"/>
+                                    </h:outputText>
+                                </span>
+                            </div>
+
+                            <div class="field">
+                                <label class="text-500 font-semibold text-xs uppercase">Classificação N1</label>
+                                <div class="surface-100 p-2 border-round mt-1">
+                                    <p class="m-0 text-900 font-medium text-sm">
+                                        #{tratativaBackofficeBean.atendimento.motivo.descricao}
+                                        <i class="pi pi-angle-right text-xs mx-1 text-400"/>
+                                        #{tratativaBackofficeBean.atendimento.subMotivo.descricao}
+                                    </p>
+                                </div>
+                            </div>
+
+                            <div class="field mt-3">
+                                <label class="text-500 font-semibold text-xs uppercase block mb-1">Relato de Abertura</label>
+                                <div class="bg-gray-50 border-1 border-300 border-round p-3 text-700 line-height-3 text-sm"
+                                     style="max-height: 300px; overflow-y: auto;">
+                                    <h:outputText value="#{tratativaBackofficeBean.atendimento.observacao}" escape="false" />
+                                </div>
+                            </div>
+
+                            <div class="mt-3 text-sm border-top-1 border-200 pt-2">
+                                <span class="text-500 block">Aberto por:</span>
+                                <span class="text-800 font-medium"><i class="pi pi-user mr-1"/> #{tratativaBackofficeBean.atendimento.usuarioAlteracao.nome}</span>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="col-12 lg:col-8">
+                        <div class="card h-full shadow-2">
+
+                            <div class="flex justify-content-between align-items-center mb-4 border-bottom-1 border-200 pb-3">
+                                <h3 class="text-900 font-bold text-lg m-0 flex align-items-center">
+                                    <i class="pi pi-pencil text-primary mr-2"/> Parecer Técnico (N2)
+                                </h3>
+
+                                <h:panelGroup id="statusTag">
+                                    <h:panelGroup rendered="#{not empty tratativaBackofficeBean.atendimento.status}">
+                                        <p:tag value="#{tratativaBackofficeBean.atendimento.status.descricao}"
+                                               icon="#{tratativaBackofficeBean.atendimento.status.acao.icone}"
+                                               styleClass="#{tratativaBackofficeBean.atendimento.status.acao.styleClass}"
+                                               rounded="true"/>
+                                    </h:panelGroup>
+                                    <h:panelGroup rendered="#{empty tratativaBackofficeBean.atendimento.status}">
+                                        <p:tag value="Em Análise" icon="pi pi-hourglass" styleClass="bg-gray-100 text-gray-700 border-gray-300" rounded="true"/>
+                                    </h:panelGroup>
+                                </h:panelGroup>
+                            </div>
+
+                            <div class="field">
+                                <p:outputLabel for="txtResolucao" value="Resolução / Análise Técnica" styleClass="font-bold text-900 block mb-2"/>
+                                <p:textEditor id="txtResolucao" widgetVar="editorResolucao"
+                                              value="#{tratativaBackofficeBean.atendimento.respostaN2}"
+                                              height="250" secure="false"
+                                              placeholder="Descreva detalhadamente a análise realizada e a solução aplicada...">
+                                    <f:facet name="toolbar">
+                                        <span class="ql-formats">
+                                            <button class="ql-bold"></button>
+                                            <button class="ql-italic"></button>
+                                            <button class="ql-underline"></button>
+                                            <button class="ql-list" value="ordered"></button>
+                                            <button class="ql-list" value="bullet"></button>
+                                        </span>
+                                    </f:facet>
+                                </p:textEditor>
+                            </div>
+
+                            <div class="formgrid grid mt-4">
+
+                                <div class="field col-12 md:col-6">
+                                    <div class="surface-50 p-3 border-round border-1 border-200 h-full">
+                                        <p:outputLabel value="Comunicação com Cliente" styleClass="font-bold text-900 block mb-3"/>
+                                        <div class="flex flex-column gap-3">
+                                            <p:selectBooleanCheckbox value="#{tratativaBackofficeBean.enviarEmail}"
+                                                                     itemLabel="Notificar resposta por E-mail" />
+                                            <p:selectBooleanCheckbox value="#{tratativaBackofficeBean.enviarSms}"
+                                                                     itemLabel="Enviar SMS de conclusão" />
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <div class="field col-12 md:col-6">
+
+                                    <div class="surface-50 p-3 border-round border-1 border-200 h-full">
+
+                                        <p:outputLabel for="statusMenu" value="Definição Final" styleClass="font-bold text-900 block mb-2"/>
+
+                                        <p:selectOneMenu id="statusMenu"
+                                                         value="#{tratativaBackofficeBean.atendimento.status}"
+                                                         converter="omnifaces.SelectItemsConverter"
+                                                         var="s"
+                                                         filter="true" filterMatchMode="contains"
+                                                         styleClass="w-full">
+
+                                            <p:ajax update="statusTag" process="@this"/>
+
+                                            <f:selectItem noSelectionOption="true" itemLabel="Selecione o resultado..."/>
+                                            <f:selectItems value="#{tratativaBackofficeBean.listStatusAtendimento}" var="item" itemLabel="#{item.descricao}" itemValue="#{item}"/>
+
+                                            <p:column>
+                                                <div class="flex align-items-center">
+                                                    <i class="#{s.acao.icone} mr-2 #{s.acao.textoCor}" />
+                                                    <div class="flex flex-column">
+                                                        <span class="font-medium text-900">#{s.descricao}</span>
+                                                        <span class="text-xs text-500">Ação: #{s.acao.constante}</span>
+                                                    </div>
+                                                </div>
+                                            </p:column>
+                                        </p:selectOneMenu>
+
+                                        <small class="block mt-2 text-500">Selecione o status para habilitar a conclusão.</small>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+            </h:panelGroup>
+
+            <h:panelGroup rendered="#{empty tratativaBackofficeBean.atendimento}">
+                <div class="flex align-items-center justify-content-center" style="height: 60vh;">
+                    <div class="surface-card shadow-2 border-round p-5 text-center" style="max-width: 400px;">
+                        <div class="bg-blue-50 border-circle w-6rem h-6rem flex align-items-center justify-content-center mx-auto mb-4">
+                            <i class="pi pi-search text-blue-500 text-5xl"></i>
+                        </div>
+                        <span class="block text-900 font-bold text-2xl mb-2">Atendimento não encontrado</span>
+                        <p class="text-600 line-height-3 mb-4">Não foi possível carregar os dados. Verifique se o ID está correto ou se o atendimento já foi movido.</p>
+                        <p:button value="Voltar para a Fila" outcome="/pages/backoffice/backoffice_fila" icon="pi pi-arrow-left" styleClass="ui-button-outlined"/>
+                    </div>
+                </div>
+            </h:panelGroup>
+
+        </h:form>
+
+    </ui:define>
+</ui:composition>

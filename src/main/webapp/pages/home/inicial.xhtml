@@ -7,188 +7,191 @@
 
     <ui:define name="content">
 
-        <style type="text/css">
-            /* Adiciona ícone ao botão Diário */
-            #periodoSelector .ui-button:nth-child(1) .ui-button-text:before {
-                content: "\e94a"; /* pi-clock */
-                font-family: 'primeicons';
-                margin-right: 0.5rem;
-            }
+        <div class="surface-ground px-4 py-5 md:px-6 lg:px-8 h-full">
 
-            /* Adiciona ícone ao botão Semanal */
-            #periodoSelector .ui-button:nth-child(2) .ui-button-text:before {
-                content: "\e93a"; /* pi-calendar-plus */
-                font-family: 'primeicons';
-                margin-right: 0.5rem;
-            }
+            <h:form id="formDashboard">
 
-            /* Adiciona ícone ao botão Mensal */
-            #periodoSelector .ui-button:nth-child(3) .ui-button-text:before {
-                content: "\e939"; /* pi-calendar */
-                font-family: 'primeicons';
-                margin-right: 0.5rem;
-            }
-
-            /* Estilo para o botão selecionado ganhar mais destaque */
-            #periodoSelector .ui-button.ui-state-active {
-                background: var(--primary-color) !important;
-                border-color: var(--primary-color) !important;
-                color: var(--primary-color-text) !important;
-            }
-        </style>
-        <div class="p-1">
-
-            <div class="card p-3 mb-5 shadow-1 border-round bg-surface-0">
-                <div class="flex flex-column md:flex-row justify-content-between align-items-center gap-3">
+                <div class="flex flex-column md:flex-row justify-content-between align-items-center mb-5 gap-4">
                     <div>
-                        <h2 class="text-900 font-bold m-0 text-xl flex align-items-center">
-                            <i class="pi pi-chart-bar text-primary mr-2"></i>
-                            Análise de Performance
-                        </h2>
-                        <p class="text-600 m-0 text-sm">Filtre os indicadores por período ou data específica</p>
-
+                        <h1 class="text-3xl font-bold text-900 m-0">Dashboard</h1>
+                        <span class="text-500 font-medium">Visão geral da operação</span>
                     </div>
 
-                    <div class="flex flex-wrap align-items-center gap-3">
-
-                        <p:selectOneButton id="periodoSelector" value="#{dashboardBean.periodoSelecionado}" >
-
-                            <f:selectItem itemLabel="DIÁRIO" itemValue="DIARIO"/>
-                            <f:selectItem itemLabel="SEMANAL" itemValue="SEMANAL"/>
-                            <f:selectItem itemLabel="MENSAL" itemValue="MENSAL"/>
-                            <f:selectItem itemLabel="PERSONALIZADO" itemValue="CUSTOM"/>
-
-                            <p:ajax update="@this panelCustomDates donutChart barChart" process="@this" partialSubmit="true" listener="#{dashboardBean.atualizarDados()}"/>
-
+                    <div class="surface-card p-2 shadow-1 border-round-2xl flex align-items-center gap-2">
+                        <p:selectOneButton id="periodoSelector" value="#{dashboardBean.periodoSelecionado}" unselectable="false">
+                            <f:selectItem itemLabel="Hoje" itemValue="DIARIO"/>
+                            <f:selectItem itemLabel="7 Dias" itemValue="SEMANAL"/>
+                            <f:selectItem itemLabel="Mês" itemValue="MENSAL"/>
+                            <f:selectItem itemLabel="Personalizado" itemValue="CUSTOM"/>
+                            <p:ajax update="@form" process="@this" listener="#{dashboardBean.atualizarDados()}"/>
                         </p:selectOneButton>
 
-                        <h:panelGroup id="panelCustomDates">
-
-                            <h:panelGroup styleClass="flex align-items-center gap-2"
-                                          rendered="#{dashboardBean.periodoSelecionado eq 'CUSTOM'}" layout="block">
-                                <p:calendar id="dataInicio" value="#{dashboardBean.dataInicio}"
-                                            placeholder="Início" pattern="dd/MM/yyyy" size="10"
-                                            showOn="button"/>
-
-                                <span class="text-500">até</span>
-
-                                <p:calendar id="dataFim" value="#{dashboardBean.dataFim}"
-                                            placeholder="Fim" pattern="dd/MM/yyyy" size="10"
-                                            showOn="button">
-                                    <p:ajax event="dateSelect" listener="#{dashboardBean.atualizarDados()}"
-                                            update=" donutChart barChart"/>
-                                </p:calendar>
-                            </h:panelGroup>
+                        <h:panelGroup id="panelCustomDates" rendered="#{dashboardBean.periodoSelecionado eq 'CUSTOM'}" styleClass="flex gap-2 ml-2 animate-fade-in">
+                            <p:datePicker value="#{dashboardBean.dataInicio}" pattern="dd/MM" showIcon="false" inputStyleClass="w-6rem text-center border-round-xl text-sm"/>
+                            <span class="text-400 flex align-items-center">-</span>
+                            <p:datePicker value="#{dashboardBean.dataFim}" pattern="dd/MM" showIcon="false" inputStyleClass="w-6rem text-center border-round-xl text-sm">
+                                <p:ajax event="dateSelect" listener="#{dashboardBean.atualizarDados()}" update="@form"/>
+                            </p:datePicker>
                         </h:panelGroup>
+
+                        <p:commandButton icon="pi pi-sync" actionListener="#{dashboardBean.atualizarDados()}" update="@form"
+                                         styleClass="ui-button-flat ui-button-secondary rounded-button w-3rem h-3rem ml-2"/>
                     </div>
                 </div>
-            </div>
 
-
-            <div class="grid">
-                <div class="col-12 md:col-6 lg:col-3">
-                    <div class="card p-3 shadow-2 border-round border-left-3 border-blue-500">
-                        <div class="flex justify-content-between mb-3">
-                            <div>
-                                <span class="block text-500 font-medium mb-3">Total de Atendimentos</span>
-                                <div class="text-900 font-bold text-xl">#{dashboardBean.totalMotivos}</div>
+                <div class="grid mb-5">
+                    <div class="col-12 sm:col-6 lg:col-2">
+                        <div class="surface-card shadow-1 p-3 border-round-xl text-center h-full hover:shadow-3 transition-duration-200 cursor-pointer">
+                            <div class="inline-flex align-items-center justify-content-center bg-green-50 text-green-600 border-circle w-3rem h-3rem mb-2">
+                                <i class="pi pi-users text-xl"></i>
                             </div>
-                            <div class="flex align-items-center justify-content-center bg-blue-100 border-round"
-                                 style="width:2.5rem;height:2.5rem">
-                                <i class="pi pi-tag text-blue-500 text-xl"></i>
+                            <span class="block text-900 font-bold text-2xl mb-1">#{dashboardBean.agentesOnline}</span>
+                            <span class="text-500 text-sm font-medium">Online</span>
+                        </div>
+                    </div>
+
+                    <div class="col-12 sm:col-6 lg:col-2">
+                        <div class="surface-card shadow-1 p-3 border-round-xl text-center h-full hover:shadow-3 transition-duration-200">
+                            <div class="inline-flex align-items-center justify-content-center bg-blue-50 text-blue-600 border-circle w-3rem h-3rem mb-2">
+                                <i class="pi pi-inbox text-xl"></i>
+                            </div>
+                            <span class="block text-900 font-bold text-2xl mb-1">#{dashboardBean.totalAtendimentosAbertos}</span>
+                            <span class="text-500 text-sm font-medium">Aguardando resolutiva</span>
+                        </div>
+                    </div>
+
+                    <div class="col-12 sm:col-6 lg:col-2">
+                        <div class="surface-card shadow-1 p-3 border-round-xl text-center h-full hover:shadow-3 transition-duration-200">
+                            <div class="inline-flex align-items-center justify-content-center bg-indigo-50 text-indigo-600 border-circle w-3rem h-3rem mb-2">
+                                <i class="pi pi-clock text-xl"></i>
+                            </div>
+                            <span class="block text-900 font-bold text-2xl mb-1">#{dashboardBean.tmaFormatado}</span>
+                            <span class="text-500 text-sm font-medium">TMA</span>
+                        </div>
+                    </div>
+
+                    <div class="col-12 sm:col-6 lg:col-2">
+                        <div class="surface-card shadow-1 p-3 border-round-xl text-center h-full hover:shadow-3 transition-duration-200">
+                            <div class="inline-flex align-items-center justify-content-center bg-orange-50 text-orange-600 border-circle w-3rem h-3rem mb-2">
+                                <i class="pi pi-check text-xl"></i>
+                            </div>
+                            <span class="block text-900 font-bold text-2xl mb-1">#{dashboardBean.totalAtendimentosFinalizados}</span>
+                            <span class="text-500 text-sm font-medium">Finalizados</span>
+                        </div>
+                    </div>
+
+                    <div class="col-12 sm:col-6 lg:col-2">
+                        <div class="surface-card shadow-1 p-3 border-round-xl text-center h-full hover:shadow-3 transition-duration-200">
+                            <div class="inline-flex align-items-center justify-content-center bg-purple-50 text-purple-600 border-circle w-3rem h-3rem mb-2">
+                                <i class="pi pi-star text-xl"></i>
+                            </div>
+                            <span class="block text-900 font-bold text-2xl mb-1">#{dashboardBean.totalFinalizadosN1}</span>
+                            <span class="text-500 text-sm font-medium">Resolvido N1</span>
+                        </div>
+                    </div>
+
+                    <div class="col-12 sm:col-6 lg:col-2">
+                        <div class="surface-card shadow-1 p-3 border-round-xl text-center h-full hover:shadow-3 transition-duration-200">
+                            <div class="inline-flex align-items-center justify-content-center bg-cyan-50 text-cyan-600 border-circle w-3rem h-3rem mb-2">
+                                <i class="pi pi-arrow-up-right text-xl"></i>
+                            </div>
+                            <span class="block text-900 font-bold text-2xl mb-1">#{dashboardBean.totalDerivadosN2}</span>
+                            <span class="text-500 text-sm font-medium">Escalados</span>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="grid">
+
+                    <div class="col-12 lg:col-4">
+                        <div class="surface-card shadow-1 border-round-2xl p-4 h-full">
+                            <div class="flex justify-content-between align-items-center mb-4">
+                                <span class="text-900 font-bold text-lg">Motivos de Contato</span>
+                                <p:commandButton icon="pi pi-ellipsis-v" styleClass="ui-button-flat ui-button-secondary rounded-circle w-2rem h-2rem"/>
+                            </div>
+                            <div class="flex justify-content-center">
+                                <p:donutChart model="#{dashboardBean.donutModel}" style="width: 100%; height: 220px;"/>
                             </div>
                         </div>
-                        <span class="text-green-500 font-medium">#{dashboardBean.motivosAtivos} </span>
-                        <span class="text-500 text-sm ml-1 italic">ativos no momento</span>
                     </div>
-                </div>
 
-                <div class="col-12 md:col-6 lg:col-3">
-                    <div class="card p-3 shadow-2 border-round border-left-3 border-orange-500">
-                        <div class="flex justify-content-between mb-3">
-                            <div>
-                                <span class="block text-500 font-medium mb-3">Atendimentos encerrados</span>
-                                <div class="text-900 font-bold text-xl">#{dashboardBean.totalSubMotivos}</div>
+                    <div class="col-12 lg:col-4">
+                        <div class="surface-card shadow-1 border-round-2xl p-4 h-full">
+                            <div class="flex justify-content-between align-items-center mb-4">
+                                <span class="text-900 font-bold text-lg">Volume por Status</span>
                             </div>
-                            <div class="flex align-items-center justify-content-center bg-orange-100 border-round"
-                                 style="width:2.5rem;height:2.5rem">
-                                <i class="pi pi-sitemap text-orange-500 text-xl"></i>
-                            </div>
+                            <p:barChart model="#{dashboardBean.barModel}" style="width: 100%; height: 220px;"/>
                         </div>
-                        <span class="text-500 text-sm font-medium">Categorias associadas</span>
                     </div>
-                </div>
 
-                <div class="col-12 md:col-6 lg:col-3">
-                    <div class="card p-3 shadow-2 border-round border-left-3 border-cyan-500">
-                        <div class="flex justify-content-between mb-3">
-                            <div>
-                                <span class="block text-500 font-medium mb-3">Envio para N2</span>
-                                <div class="text-900 font-bold text-xl">#{dashboardBean.percentualN2}%</div>
+                    <div class="col-12 lg:col-4">
+                        <div class="surface-card shadow-1 border-round-2xl p-4 h-full">
+                            <div class="flex align-items-center justify-content-between mb-3">
+                                <span class="text-900 font-bold text-lg">Top Performance</span>
+
+                                <span class="text-xs font-bold text-green-600 bg-green-100 px-2 py-1 border-round"> #{dashboardBean.periodoRank}</span>
                             </div>
-                            <div class="flex align-items-center justify-content-center bg-cyan-100 border-round"
-                                 style="width:2.5rem;height:2.5rem">
-                                <i class="pi pi-arrow-up-right text-cyan-500 text-xl"></i>
-                            </div>
+
+                            <p:dataTable value="#{dashboardBean.listaRanking}" var="rank"
+                                         styleClass="ui-datatable-borderless ui-datatable-sm text-sm"
+                                         rowStyleClass="border-bottom-1 border-100">
+
+                                <p:column width="10%">
+                                    <i class="pi pi-trophy text-yellow-500" rendered="#{rank[2] eq 1}"></i> <span class="text-500 font-medium" >#{rank[2]}</span>
+                                </p:column>
+
+                                <p:column headerText="Agente">
+                                    <div class="flex align-items-center gap-2">
+                                        <p:avatar label="#{rank[0].substring(0,1)}" shape="circle"
+                                                  styleClass="bg-blue-50 text-blue-600 text-xs w-2rem h-2rem font-bold"/>
+                                        <span class="font-medium text-700">#{rank[0]}</span>
+                                    </div>
+                                </p:column>
+
+                                <p:column headerText="Qtd" styleClass="text-right">
+                                    <span class="font-bold text-900">#{rank[1]}</span>
+                                </p:column>
+                            </p:dataTable>
                         </div>
-                        <span class="text-500 text-sm">Motivos com regra de escala</span>
                     </div>
                 </div>
 
-                <div class="col-12 md:col-6 lg:col-3">
-                    <div class="card p-3 shadow-2 border-round border-left-3 border-green-500">
-                        <div class="flex justify-content-between mb-3">
-                            <div>
-                                <span class="block text-500 font-medium mb-3">Agentes Online</span>
-                                <div class="text-900 font-bold text-xl">#{dashboardBean.agentesOnline}</div>
-                            </div>
-                            <div class="flex align-items-center justify-content-center bg-green-100 border-round"
-                                 style="width:2.5rem;height:2.5rem">
-                                <i class="pi pi-users text-green-500 text-xl"></i>
-                            </div>
-                        </div>
-                        <span class="p-badge p-badge-success">Operacional</span>
-                    </div>
-                </div>
-            </div>
-
-            <div class="grid mt-4">
-                <div class="col-12 lg:col-6">
-                    <div class="card shadow-2 p-4 border-round h-full">
-                        <h5 class="text-xl font-bold mb-4">Status de Acesso</h5>
-                        <p:donutChart model="#{dashboardBean.donutModel}" style="width: 100%; height: 300px;"
-                                      id="donutChart"/>
-                    </div>
-                </div>
-                <div class="col-12 lg:col-6">
-                    <div class="card shadow-2 p-4 border-round h-full">
-                        <h5 class="text-xl font-bold mb-4">Distribuição por Ação</h5>
-                        <p:barChart model="#{dashboardBean.barModel}" style="width: 100%; height: 300px;"
-                                    id="barChart"/>
-                    </div>
-                </div>
-            </div>
-
-            <div class="card mt-4 shadow-1 p-4 border-round bg-primary-reverse">
-                <h5 class="font-bold mb-3">Acesso Rápido</h5>
-                <div class="flex flex-wrap gap-3">
-                    <p:button value="Novo Motivo" icon="pi pi-tag" styleClass="ui-button-primary"
-                              outcome="/pages/cadastro/motivo"/>
-                    <p:button value="Novo Submotivo" icon="pi pi-sitemap" styleClass="ui-button-secondary"
-                              outcome="/pages/cadastro/submotivo"/>
-                    <p:button value="Relatórios" icon="pi pi-print" styleClass="ui-button-help ui-button-outlined"/>
-                </div>
-            </div>
+            </h:form>
         </div>
 
-        <style type="text/css">
-            .card {
-                background-color: var(--surface-card);
+        <style>
+            /* Customizações para deixar os componentes do PrimeFaces mais 'flat' */
+            body .ui-selectonebutton .ui-button.ui-state-active {
+                background: #EFF6FF; /* blue-50 */
+                border-color: #EFF6FF;
+                color: #2563EB; /* blue-600 */
+                font-weight: 700;
+            }
+            body .ui-selectonebutton .ui-button {
+                background: transparent;
+                border: 1px solid transparent;
+                color: #64748b;
+                transition: all 0.2s;
+            }
+            body .ui-selectonebutton .ui-button:hover {
+                background: #f8fafc;
+                color: #334155;
             }
 
-            .border-left-3 {
-                border-left-width: 6px !important;
+            /* Remove bordas da tabela para look 'clean' */
+            body .ui-datatable-borderless .ui-datatable-data > tr > td {
+                border-style: none;
+                padding: 0.75rem 0.5rem;
+            }
+            body .ui-datatable .ui-datatable-thead > tr > th {
+                background: transparent;
+                border: none;
+                color: #94a3b8;
+                font-size: 0.75rem;
+                text-transform: uppercase;
+                padding: 0.5rem;
             }
         </style>
+
     </ui:define>
 </ui:composition>

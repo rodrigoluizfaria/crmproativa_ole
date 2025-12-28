@@ -1,9 +1,7 @@
 package com.proativaservicos.model;
 
-import jakarta.persistence.Column;
-import jakarta.persistence.EnumType;
-import jakarta.persistence.Enumerated;
-import jakarta.persistence.MappedSuperclass;
+import com.thoughtworks.xstream.annotations.XStreamOmitField;
+import jakarta.persistence.*;
 
 import com.proativaservicos.util.constantes.InstituicaoFinanceiraEnum;
 import com.proativaservicos.util.constantes.TipoContaEnum;
@@ -47,7 +45,11 @@ public abstract class GenericDadosBancarios extends Generic{
 	
 	@Column(name = "uf",length = 30)
 	private String uf;
-	
+
+	@ManyToOne(fetch = FetchType.LAZY)
+	@JoinColumn(name = "cliente")
+	@XStreamOmitField
+	private Cliente cliente;
 
 	  public abstract GenericAtendimento getAtendimento();
 	  
@@ -116,5 +118,12 @@ public abstract class GenericDadosBancarios extends Generic{
 	  public void setNomeBanco(String nomeBanco) {
 		this.nomeBanco = nomeBanco;
 	}
-	  
+
+	public Cliente getCliente() {
+		return cliente;
+	}
+
+	public void setCliente(Cliente cliente) {
+		this.cliente = cliente;
+	}
 }

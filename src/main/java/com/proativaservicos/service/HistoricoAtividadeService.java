@@ -27,7 +27,11 @@ public class HistoricoAtividadeService extends GenericProService<HistoricoAtivid
         return this.dao;
     }
 
-    public List<HistoricoAtividade> pesquisarHistoricoAtividadePorId(Long atendimento) {
-        return this.dao.pesquisarHistoricoAtividadePorId(atendimento);
+    public List<HistoricoAtividade> pesquisarHistoricoAtividadePorId(Long idCliente) {
+        return this.dao.pesquisarHistoricoAtividadePorIdCliente(idCliente);
+    }
+
+    public List<HistoricoAtividade> pesquisarHistoricoAtividadePorProtocolo(String protocolo) {
+        return this.dao.pesquisarHistoricoAtividadePorProtocolo(protocolo);
     }
 }

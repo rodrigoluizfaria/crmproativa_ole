@@ -30,4 +30,17 @@ public class DaoEmailImp extends GenericDao<Email> implements Serializable {
     }
 
 
+    public List<Email> pesquisarEmailPorCliente(Long idCliente) {
+
+        StringBuilder query = new StringBuilder();
+
+        query.append("select e from Email e ");
+
+        query.append(" where e.cliente.id = :idCliente ");
+
+        HashMap<String, Object> parametros = new HashMap<>();
+        parametros.put("idCliente", idCliente);
+
+        return searchEntidades(DaoEnum.HQL_QUERRY, query.toString(), parametros);
+    }
 }

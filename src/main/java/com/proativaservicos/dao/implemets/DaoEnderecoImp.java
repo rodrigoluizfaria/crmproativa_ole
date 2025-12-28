@@ -51,4 +51,18 @@ public class DaoEnderecoImp extends GenericDao<Endereco> implements Serializable
         return searchEntidades(DaoEnum.HQL_QUERRY, builder.toString(), parametros, Integer.valueOf(0), Integer.valueOf(5));
     }
 
+    public List<Endereco> pesquisarEnderecoPorCliente(Long idCliente) {
+
+        StringBuilder builder = new StringBuilder();
+
+        builder.append("select e from Endereco e");
+
+        builder.append("\t where e.cliente.id = :idCliente");
+
+        Map<String, Object> parametros = new HashMap<String, Object>();
+
+        parametros.put("idCliente", idCliente);
+
+        return searchEntidades(DaoEnum.HQL_QUERRY, builder.toString(), parametros);
+    }
 }

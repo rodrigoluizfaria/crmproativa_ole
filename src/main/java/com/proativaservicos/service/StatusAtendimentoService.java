@@ -231,7 +231,9 @@ public class StatusAtendimentoService extends GenericProService<StatusAtendiment
 		this.dao.inserirStatusAtendimentoMotivo(idStatus,idMotivo);
 		
 	}
-
+	public List<StatusAtendimento> pesquisarStatusAtendimentoPorAcao(List<AcaoStatusAtendimentoEnum> acao, Long idEmpresa) {
+		return this.dao.pesquisarStatusAtendimentoPorAcao(acao,idEmpresa);
+	}
 
 
 }

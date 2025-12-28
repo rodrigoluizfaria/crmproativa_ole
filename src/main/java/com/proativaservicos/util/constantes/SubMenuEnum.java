@@ -23,6 +23,7 @@ public enum SubMenuEnum {
 	ATENDIMENTO_BACKOFFICE_PONTO_ATENDIMENTO("pontoAtendimento","associarPontoAtendimentoBackoffice",MenuEnum.BACKOFFICE,null,new PerfilUsuarioEnum[0]),
 	PRODUTIVIDADE_BACKOFFICE("produtividadeAtendimentoBackoffice","produtividadeAtendimentoBackoffice",MenuEnum.BACKOFFICE,null,new PerfilUsuarioEnum[] { PerfilUsuarioEnum.OPERADOR_BACKOFFICE }),
 	MONITOR_BACKOFFICE("monitorMailingBackoffice","monitorMailingBackoffice",MenuEnum.BACKOFFICE,null,new PerfilUsuarioEnum[] { PerfilUsuarioEnum.OPERADOR_BACKOFFICE }),
+	BACKOFFICE_FILA("backoffice_fila","backoffice_fila",MenuEnum.BACKOFFICE,null, PerfilUsuarioEnum.OPERADOR_BACKOFFICE),
 
 	PAINEL_BACKOFFICE("painelBackoffice","painelBackoffice",MenuEnum.BACKOFFICE,null,new PerfilUsuarioEnum[] { PerfilUsuarioEnum.OPERADOR_BACKOFFICE }),
 

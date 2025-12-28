@@ -427,4 +427,26 @@ public class Atendimento extends GenericAtendimento implements Serializable {
     public void setListPortabilidades(List<Portabilidade> listPortabilidades) {
         this.listPortabilidades = listPortabilidades;
     }
+
+    @Transient
+    public boolean isPrazoEstourado() {
+        // 1. Se não tem prazo definido, não tem como estar estourado
+        if (this.getPrazoPrazoDemanda() == null) {
+            return false;
+        }
+
+        // 2. Define qual data vamos comparar com o prazo
+        Date dataComparacao;
+
+        if (Boolean.TRUE.equals(getDemandaEncerrada()) && getDataFechamentoDemanda() != null) {
+            // Se já encerrou, verificamos se encerrou DEPOIS do prazo
+            dataComparacao = getDataFechamentoDemanda();
+        } else {
+            // Se ainda está aberto, comparamos com AGORA (Hoje)
+            dataComparacao = new Date();
+        }
+
+        // 3. Retorna TRUE se a data de comparação for DEPOIS do prazo
+        return dataComparacao.after(getPrazoPrazoDemanda());
+    }
 }

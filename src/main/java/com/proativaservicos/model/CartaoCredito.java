@@ -19,6 +19,11 @@ public class CartaoCredito extends GenericCartaoCredito {
     @JoinColumn(name = "atendimento")
     private Atendimento atendimento;
 
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "cliente")
+    private Cliente cliente;
+
+
 
     @Override
     public GenericAtendimento getAtendimento() {
@@ -32,5 +37,17 @@ public class CartaoCredito extends GenericCartaoCredito {
 
     }
 
+    public void setAtendimento(Atendimento atendimento) {
+        this.atendimento = atendimento;
+    }
 
+    @Override
+    public Cliente getCliente() {
+        return cliente;
+    }
+
+    @Override
+    public void setCliente(Cliente cliente) {
+        this.cliente = cliente;
+    }
 }

@@ -14,10 +14,7 @@ import org.apache.commons.lang3.StringUtils;
 
 import java.io.Serializable;
 import java.math.BigInteger;
-import java.util.Date;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
 @ApplicationScoped
 @Named
@@ -401,5 +398,30 @@ public class DaoHistoricoAtendimentoImp extends GenericDao<HistoricoAtendimento>
         return searchEntidades(DaoEnum.NATIVE_OBJECT, query.toString(), parametros);
 
     }
+
+
+    public List<HistoricoAtendimento> pesquisarHistoricoSacPorCpf(String cpf) {
+
+        if (cpf == null || cpf.isBlank()) {
+            return Collections.emptyList();
+        }
+
+        String jpql = "select distinct h from HistoricoAtendimento h "
+                + " join fetch h.atendimento a "
+                + " join fetch a.cliente c "
+                + " join fetch h.usuario u "
+                + " join fetch h.motivo m "
+                + " join fetch h.subMotivo sb "
+                + " left join fetch h.statusAtendimento sa "
+                + " where c.cpf = :cpf "
+                + "   and a.campanha.tipoCampanha = 'SAC'";
+
+        Map<String, Object> parametros = new HashMap<>();
+
+        parametros.put("cpf", cpf.replaceAll("\\D+", "").trim());
+
+        return searchEntidades(DaoEnum.HQL_QUERRY, jpql, parametros);
+    }
+
 
 }

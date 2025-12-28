@@ -54,6 +54,9 @@ public class AtendimentoService extends GenericProService<Atendimento> implement
     @Inject
     private DocumentoService serviceDocumento;
 
+    @Inject
+    private ClienteService serviceCliente;
+
     public GenericAtendimento pesquisarAtendimento(String cpf, Long id) {
 
         return pesquisarAtendimento(cpf, id, null);
@@ -86,8 +89,6 @@ public class AtendimentoService extends GenericProService<Atendimento> implement
 
 
     }
-
-
 
 
     @SuppressWarnings({"unchecked", "rawtypes"})
@@ -716,7 +717,68 @@ public class AtendimentoService extends GenericProService<Atendimento> implement
     }
 
     public List<Atendimento> pesquisarAtendimentosSacPorCpf(String cpf) {
-            return this.dao.pesquisarAtendimentosSacPorCpf(cpf);
+        return this.dao.pesquisarAtendimentosSacPorCpf(cpf);
 
     }
+
+    public Atendimento pesquisarAtendimentoSacPorCodigo(Long idAtendimento) {
+
+        Atendimento atendimento = this.dao.pesquisarAtendimentoSacPorCodigo(idAtendimento);
+
+        if (atendimento != null) {
+            atendimento.setCliente(this.serviceCliente.pesquisarClienteAtendimentoSacPorId(atendimento.getCliente().getId()));
+        }
+
+
+        return atendimento;
+    }
+
+    public List<Atendimento> pesquisarAtendimentosSacPorCliente(Long codigoCliente) {
+        return this.dao.pesquisarAtendimentosSacPorCliente(codigoCliente);
+
+    }
+
+    public void deletarAtendimentoSemClassificacao(Long idCliente, String protocolo) {
+        this.dao.deletarAtendimentoSemClassificacao(idCliente, protocolo);
+
+    }
+
+    public Long buscarQuantidadeClientesAtendidosDiario(Long idUsuario, String protocoloAtual) {
+        return this.dao.buscarQuantidadeClientesAtendidosDiario(idUsuario, protocoloAtual);
+    }
+
+    public List<Atendimento> pesquisarAtendimentosDerivados() {
+
+        return this.dao.pesquisarAtendimentosDerivados();
+    }
+
+    public List<Atendimento> pesquisarAtendimentosSacFiltros(String filtroProtocolo, String filtroCpf, Boolean encerrado) {
+        return this.dao.pesquisarAtendimentosSacFiltros(filtroProtocolo,filtroCpf,encerrado);
+    }
+
+    public List<?> listarQuantidadeResumoDerivadosSac(Date dataInicio, Date dataFim) {
+
+      return  this.dao.listarQuantidadeResumoDerivadosSac(dataInicio, dataFim);
+
+    }
+    public List<Object[]> buscarQuantidadePorMotivo(Date dataInicio, Date dataFim) {
+        return this.dao.buscarQuantidadePorMotivo(dataInicio, dataFim);
+    }
+
+    public List<Object[]> buscarTop10Usuarios(Date dataInicio, Date dataFim) {
+        return this.dao.buscarTop10Usuarios(dataInicio, dataFim);
+    }
+
+    public String buscarTmaAtendimentosSac(Date dataInicio, Date dataFim) {
+        return this.dao.buscarTmaAtendimentosSac(dataInicio, dataFim);
+    }
+
+    public List<Object[]> buscarQuantidadePorStatus(Date dataInicio, Date dataFim) {
+       return this.dao.buscarQuantidadePorStatus(dataInicio, dataFim);
+    }
+
+
+
+
+
 }

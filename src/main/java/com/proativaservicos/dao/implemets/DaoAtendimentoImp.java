@@ -2,6 +2,7 @@ package com.proativaservicos.dao.implemets;
 
 import com.proativaservicos.model.*;
 import com.proativaservicos.util.DateUtil;
+import com.proativaservicos.util.Util;
 import com.proativaservicos.util.Utils;
 import com.proativaservicos.util.constantes.*;
 import jakarta.enterprise.context.Dependent;
@@ -16,6 +17,10 @@ import org.apache.commons.lang3.StringUtils;
 import java.io.Serializable;
 import java.math.BigDecimal;
 import java.math.BigInteger;
+import java.time.LocalDate;
+import java.time.LocalDateTime;
+import java.time.LocalTime;
+import java.time.ZoneId;
 import java.util.*;
 
 @SuppressWarnings("unchecked")
@@ -426,6 +431,7 @@ public class DaoAtendimentoImp extends GenericDao<Atendimento> implements Serial
         query.append("\tleft join fetch a.contrato ");
         query.append("\tleft join fetch a.loja ");
         query.append("\tleft join fetch a.equipe ");
+        query.append("\tleft join fetch a.cliente c ");
         query.append("where a.id = :id ");
 
         Map<String, Object> parametros = new HashMap<String, Object>();
@@ -4515,14 +4521,282 @@ public class DaoAtendimentoImp extends GenericDao<Atendimento> implements Serial
         query.append("select distinct a ");
         query.append("from Atendimento a ");
         query.append(" join fetch a.campanha c ");
+        query.append(" join fetch a.cliente cli ");
         query.append(" left join fetch a.status s ");
         query.append(" join fetch a.motivo m ");
         query.append(" join fetch a.subMotivo sm ");
         query.append(" join fetch a.usuarioAlteracao u ");
-        query.append(" where a.cpf = :cpf and c.tipoCampanha = 'SAC'");
+        query.append(" where cli.cpf = :cpf and c.tipoCampanha = 'SAC'");
 
         parametros.put("cpf", StringUtils.leftPad(cpf.trim(), 11, "0"));
 
         return searchEntidades(DaoEnum.HQL_QUERRY, query.toString(), parametros);
     }
+
+    public Atendimento pesquisarAtendimentoSacPorCodigo(Long idAtendimento) {
+
+        StringBuilder query = new StringBuilder();
+        Map<String, Object> parametros = new HashMap<>();
+
+        query.append("select distinct a ");
+        query.append("from Atendimento a ");
+        query.append(" join fetch a.campanha c ");
+        query.append(" join fetch a.cliente cli ");
+        query.append(" left join fetch a.status s ");
+        query.append(" join fetch a.motivo m ");
+        query.append(" join fetch a.subMotivo sm ");
+        query.append(" join fetch a.usuarioAlteracao u ");
+        query.append(" left join fetch a.responsavelN2 n2 ");
+        query.append(" where a.id = :id and c.tipoCampanha = 'SAC'");
+
+        parametros.put("id", idAtendimento);
+
+        return (Atendimento) searchEntidade(DaoEnum.HQL_QUERRY, query.toString(), parametros);
+    }
+
+
+    public List<Atendimento> pesquisarAtendimentosSacPorCliente(Long codigoCliente) {
+
+        StringBuilder query = new StringBuilder();
+        Map<String, Object> parametros = new HashMap<>();
+
+        query.append("select distinct a ");
+        query.append("from Atendimento a ");
+        query.append(" join fetch a.campanha c ");
+        query.append(" join fetch a.cliente cli ");
+        query.append(" left join fetch a.status s ");
+        query.append(" left join fetch a.motivo m ");
+        query.append(" left join fetch a.subMotivo sm ");
+        query.append(" left join fetch a.usuarioAlteracao u ");
+        query.append(" where cli.id = :codigoCliente and c.tipoCampanha = 'SAC'");
+
+        parametros.put("codigoCliente", codigoCliente);
+
+        return searchEntidades(DaoEnum.HQL_QUERRY, query.toString(), parametros);
+    }
+
+    @Transactional
+    public void deletarAtendimentoSemClassificacao(Long idCliente, String protocolo) {
+        StringBuilder sql = new StringBuilder();
+        Map<String, Object> parametros = new HashMap<>();
+
+        sql.append("DELETE FROM atendimento ");
+        sql.append("WHERE cliente = :idCliente ");
+        sql.append("AND motivo IS NULL ");
+        sql.append("AND submotivo IS NULL ");
+        sql.append("AND protocolo = :protocolo");
+
+        parametros.put("idCliente", idCliente);
+        parametros.put("protocolo", protocolo);
+
+        executeSqlUpdate(DaoEnum.NATIVE_CLASSE, sql.toString(), parametros);
+    }
+
+    public Long buscarQuantidadeClientesAtendidosDiario(Long idUsuario, String protocoloAtual) {
+        StringBuilder sql = new StringBuilder();
+        Map<String, Object> parametros = new HashMap<>();
+
+        sql.append("SELECT COUNT(DISTINCT cliente) ");
+        sql.append("FROM atendimento ");
+        sql.append("WHERE usuario_alteracao = :idUsuario ");
+        sql.append("AND DATE(data_cadastro) = CURRENT_DATE ");
+
+        if (StringUtils.isNotBlank(protocoloAtual)) {
+            sql.append("AND protocolo <> :protocolo ");
+            parametros.put("protocolo", protocoloAtual);
+        }
+
+        parametros.put("idUsuario", idUsuario);
+
+        Number resultado = (Number) searchEntidade(DaoEnum.NATIVE_OBJECT, sql.toString(), parametros);
+
+        return resultado != null ? resultado.longValue() : 0L;
+    }
+
+    public List<Atendimento> pesquisarAtendimentosDerivados() {
+        StringBuilder query = new StringBuilder();
+
+        query.append("select distinct a ");
+        query.append("from Atendimento a ");
+        query.append(" join fetch a.campanha c ");
+        query.append(" join fetch a.cliente cli ");
+        query.append(" left join fetch a.status s ");
+        query.append(" left join fetch a.motivo m ");
+        query.append(" left join fetch a.subMotivo sm ");
+        query.append(" left join fetch a.usuarioAlteracao u ");
+        query.append(" where a.enviarN2 is not null and a.enviarN2 = true and c.tipoCampanha = 'SAC'");
+
+        return searchEntidades(DaoEnum.HQL_QUERRY, query.toString(), null);
+    }
+
+    public List<Atendimento> pesquisarAtendimentosSacFiltros(String filtroProtocolo, String filtroCpf, Boolean encerrado) {
+        StringBuilder query = new StringBuilder();
+        Map<String, Object> parametros = new HashMap<>();
+
+        query.append("select distinct a ");
+        query.append("from Atendimento a ");
+        query.append(" join fetch a.campanha c ");
+        query.append(" join fetch a.cliente cli ");
+        query.append(" left join fetch a.status s ");
+        query.append(" left join fetch a.motivo m ");
+        query.append(" left join fetch a.subMotivo sm ");
+        query.append(" left join fetch a.usuarioAlteracao u ");
+        query.append(" where a.enviarN2 is not null and a.enviarN2 = true and c.tipoCampanha = 'SAC' ");
+
+        if (StringUtils.isNotBlank(filtroProtocolo)) {
+            query.append(" and a.protocolo = :protocolo");
+            parametros.put("protocolo", filtroProtocolo);
+        }
+
+        if (StringUtils.isNotBlank(filtroCpf)) {
+            query.append(" and a.cpf = :cpf");
+            parametros.put("cpf", StringUtils.leftPad(filtroCpf.trim(), 11, "0").replaceAll("\\D", ""));
+        }
+
+        if (Boolean.FALSE.equals(encerrado)) {
+            query.append(" and (a.demandaEncerrada is null or a.demandaEncerrada = false)");
+        } else if (Boolean.TRUE.equals(encerrado)) {
+            query.append(" and a.demandaEncerrada = true");
+        }
+
+
+        query.append(" order by a.dataCadastro");
+
+        System.out.println(query.toString());
+
+        return searchEntidades(DaoEnum.HQL_QUERRY, query.toString(), parametros);
+    }
+
+    public List<?> listarQuantidadeResumoDerivadosSac(Date dataInicio, Date dataFim) {
+        StringBuilder sql = new StringBuilder();
+        Map<String, Object> parametros = new HashMap<>();
+
+        sql.append("SELECT ");
+        sql.append("SUM(CASE WHEN a.demanda_encerrada = true OR s.acao LIKE 'CONCLUIR%' THEN 1 ELSE 0 END) AS qtd_finalizados, ");
+        sql.append("SUM(CASE WHEN a.enviar_n2 = true OR s.acao = 'DERIVAR' THEN 1 ELSE 0 END) AS qtd_escalados_n2, ");
+        sql.append("SUM(CASE WHEN a.enviar_n2 = true AND (a.status IS NULL OR s.acao <> 'CONCLUIR') THEN 1 ELSE 0 END) AS pendentes, ");
+        sql.append("SUM(CASE WHEN (a.enviar_n2 IS NULL OR a.enviar_n2 = false) AND s.acao = 'CONCLUIR_N1' THEN 1 ELSE 0 END) AS qtd_finalizados_n1, ");
+        sql.append("SUM(CASE WHEN a.enviar_n2 = true AND s.acao = 'CONCLUIR' THEN 1 ELSE 0 END) AS qtd_finalizados_n2 ");
+        sql.append("FROM atendimento a ");
+        sql.append("JOIN campanha c ON a.campanha = c.id ");
+        sql.append("LEFT JOIN status_atendimento s ON a.status = s.id ");
+        sql.append("WHERE c.tipo_campanha = 'SAC' ");
+
+        if (dataInicio != null && dataFim != null) {
+            sql.append("AND a.data_cadastro >= :dataInicio AND a.data_cadastro <= :dataFim ");
+            parametros.put("dataInicio", atStartOfDay(dataInicio));
+            parametros.put("dataFim", atEndOfDay(dataFim));
+        }
+        System.out.println(sql.toString());
+        List<?> list = searchEntidades(DaoEnum.NATIVE_OBJECT, sql.toString(), parametros);
+        return CollectionUtils.isNotEmpty(list) ? list : Collections.emptyList();
+
+
+    }
+
+    public List<Object[]> buscarQuantidadePorMotivo(Date dataInicio, Date dataFim) {
+
+        StringBuilder sql = new StringBuilder();
+        Map<String, Object> parametros = new HashMap<>();
+
+        sql.append("SELECT m.descricao, m.cor, COUNT(a.id) ");
+        sql.append("FROM atendimento a ");
+        sql.append("JOIN campanha c ON a.campanha = c.id ");
+        sql.append("JOIN motivo m ON a.motivo = m.id ");
+
+        sql.append("WHERE c.tipo_campanha = 'SAC' ");
+
+        if (dataInicio != null && dataFim != null) {
+            sql.append("AND a.data_cadastro >= :dataInicio AND a.data_cadastro <= :dataFim ");
+            parametros.put("dataInicio", atStartOfDay(dataInicio));
+            parametros.put("dataFim", atEndOfDay(dataFim));
+        }
+
+        sql.append("GROUP BY m.descricao,m.cor ");
+
+        List<Object[]> list = searchEntidades(DaoEnum.NATIVE_OBJECT, sql.toString(), parametros);
+        return CollectionUtils.isNotEmpty(list) ? list : Collections.emptyList();
+    }
+
+    public List<Object[]> buscarTop10Usuarios(Date dataInicio, Date dataFim) {
+        StringBuilder sql = new StringBuilder();
+        Map<String, Object> parametros = new HashMap<>();
+
+        sql.append("SELECT u.nome, COUNT(DISTINCT a.protocolo) AS qtd_protocolos ");
+        sql.append("FROM atendimento a ");
+        sql.append("JOIN campanha c ON a.campanha = c.id ");
+        sql.append("JOIN usuario u ON a.usuario_cadastro = u.id ");
+        sql.append("WHERE c.tipo_campanha = 'SAC' ");
+
+        if (dataInicio != null && dataFim != null) {
+            sql.append("AND a.data_cadastro >= :dataInicio AND a.data_cadastro <= :dataFim ");
+            parametros.put("dataInicio", atStartOfDay(dataInicio));
+            parametros.put("dataFim", atEndOfDay(dataFim));
+        }
+
+        sql.append("GROUP BY u.nome ");
+        sql.append("ORDER BY qtd_protocolos DESC ");
+        sql.append("LIMIT 10");
+
+        List<Object[]> list = searchEntidades(DaoEnum.NATIVE_OBJECT, sql.toString(), parametros);
+        return CollectionUtils.isNotEmpty(list) ? list : Collections.emptyList();
+    }
+
+
+    public String buscarTmaAtendimentosSac(Date dataInicio, Date dataFim) {
+        StringBuilder sql = new StringBuilder();
+        Map<String, Object> parametros = new HashMap<>();
+
+        sql.append("SELECT ");
+        sql.append("TO_CHAR(AVG(a.data_fim_atendimento - a.data_inicio_atendimento), 'HH24:MI:SS') AS tma_formatado ");
+        sql.append("FROM atendimento a ");
+        sql.append("JOIN campanha c ON a.campanha = c.id ");
+        sql.append("WHERE c.tipo_campanha = 'SAC' ");
+        sql.append("AND a.data_inicio_atendimento IS NOT NULL ");
+        sql.append("AND a.data_fim_atendimento IS NOT NULL ");
+
+        if (dataInicio != null && dataFim != null) {
+            sql.append("AND a.data_cadastro >= :dataInicio AND a.data_cadastro <= :dataFim ");
+            parametros.put("dataInicio", atStartOfDay(dataInicio));
+            parametros.put("dataFim", atEndOfDay(dataFim));
+        }
+
+        // agora esperamos uma lista de Strings
+        List<String> list = searchEntidades(DaoEnum.NATIVE_OBJECT, sql.toString(), parametros);
+
+        if (CollectionUtils.isNotEmpty(list)) {
+            String tma = list.get(0);
+            // se vier com frações de segundos, corta
+            if (tma != null && tma.contains(".")) {
+                tma = tma.substring(0, tma.indexOf("."));
+            }
+            return tma;
+        }
+
+        return "00:00:00";
+    }
+
+
+    public List<Object[]> buscarQuantidadePorStatus(Date dataInicio, Date dataFim) {
+        StringBuilder sql = new StringBuilder();
+        Map<String, Object> parametros = new HashMap<>();
+
+        sql.append("SELECT s.descricao, COUNT(a.id) ");
+        sql.append("FROM atendimento a ");
+        sql.append("JOIN campanha c ON a.campanha = c.id ");
+        sql.append("JOIN status_atendimento s ON a.status = s.id ");
+        sql.append("WHERE c.tipo_campanha = 'SAC' ");
+
+        if (dataInicio != null && dataFim != null) {
+            sql.append("AND a.data_cadastro >= :dataInicio AND a.data_cadastro <= :dataFim ");
+            parametros.put("dataInicio", atStartOfDay(dataInicio));
+            parametros.put("dataFim", atEndOfDay(dataFim));
+        }
+
+        sql.append("GROUP BY s.descricao");
+
+        List<Object[]> list = searchEntidades(DaoEnum.NATIVE_OBJECT, sql.toString(), parametros);
+        return CollectionUtils.isNotEmpty(list) ? list : Collections.emptyList();
+    }
+
 }

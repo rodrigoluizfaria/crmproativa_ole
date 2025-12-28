@@ -32,4 +32,7 @@ public class EmailService extends GenericProService<Email> implements Serializab
     }
 
 
+    public List<Email> pesquisarEmailPorCliente(Long idCliente) {
+        return this.dao.pesquisarEmailPorCliente(idCliente);
+    }
 }

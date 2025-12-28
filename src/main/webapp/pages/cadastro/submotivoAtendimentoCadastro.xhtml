@@ -13,6 +13,7 @@
         .grid-checkbox td {
             padding: 0.5rem;
         }
+
         .grid-checkbox label {
             margin-left: 0.5rem;
             color: #495057;
@@ -109,24 +110,64 @@
                         <div class="grid ui-fluid">
 
                             <div class="col-12 mb-3">
-                                <div class="surface-50 border-round p-3 border-1 border-300 flex align-items-start">
-                                    <p:selectBooleanCheckbox id="ckbEnviaGravao"
-                                                             value="#{cadastroSubMotivoBean.subMotivo.envarN2}"
-                                                             styleClass="mr-3 mt-1"/>
+                                <div class="surface-50 border-round p-3 border-1 border-300 formgrid grid align-items-center m-0">
 
-                                    <div>
-                                        <p:outputLabel for="ckbEnviaGravao"
-                                                       value="Exigir Escalonamento para N2"
-                                                       styleClass="text-900 font-bold cursor-pointer block mb-1"/>
-                                        <span class="text-600 text-sm line-height-3">
-                                                 Se habilitado, o atendimento não poderá ser finalizado no N1 e abrirá automaticamente o fluxo de derivação para a equipe de Nível 2.
-                    </span>
+                                    <div class="col-12 md:col-8 flex align-items-start">
+                                        <p:selectBooleanCheckbox id="ckbEnviaGravao"
+                                                                 value="#{cadastroSubMotivoBean.subMotivo.envarN2}"
+                                                                 styleClass="mr-3 mt-1">
+                                            <p:ajax process="@this" update="pnpPrazoContainer" global="false"/>
+                                        </p:selectBooleanCheckbox>
+
+                                        <div>
+                                            <p:outputLabel for="ckbEnviaGravao"
+                                                           value="Exigir Escalonamento para N2"
+                                                           styleClass="text-900 font-bold cursor-pointer block mb-1"/>
+                                            <span class="text-600 text-sm line-height-3 block">
+                                                      Se habilitado, o atendimento não poderá ser finalizado no N1 e abrirá automaticamente o fluxo para a equipe N2.
+                                            </span>
+
+                                        </div>
+
                                     </div>
+
+                                    <h:panelGroup id="pnpPrazoContainer" styleClass="col-12 md:col-4">
+
+                                        <h:panelGroup layout="block"
+                                                      rendered="#{cadastroSubMotivoBean.subMotivo.envarN2}"
+                                                      styleClass="fadein animation-duration-300">
+
+                                            <div class="field mb-0">
+
+                                                <p:outputLabel for="inputPrazo" value="Prazo (Dias)" styleClass="font-bold text-sm mb-1 block text-700"/>
+
+                                                <div class="ui-inputgroup">
+
+                                                    <span class="ui-inputgroup-addon bg-white border-300">
+                                                        <i class="pi pi-clock text-600"/>
+                                                    </span>
+
+                                                    <p:spinner id="inputPrazo"
+                                                               value="#{cadastroSubMotivoBean.subMotivo.prazoDemanda}"
+                                                               min="0"
+                                                               required="true"
+                                                               requiredMessage="Informe o prazo"
+                                                               styleClass="w-full"/>
+                                                    <p:message for="inputPrazo"/>
+                                                </div>
+
+                                            </div>
+
+                                        </h:panelGroup>
+
+                                    </h:panelGroup>
+
                                 </div>
                             </div>
 
                             <div class="col-12">
-                                   <p:outputLabel for="chekBoxMetodos" value="Métodos / Ações Disponíveis" styleClass="text-700 font-bold mb-3 block"/>
+                                <p:outputLabel for="chekBoxMetodos" value="Métodos / Ações Disponíveis"
+                                               styleClass="text-700 font-bold mb-3 block"/>
 
                                 <p:selectManyCheckbox id="chekBoxMetodos"
                                                       value="#{cadastroSubMotivoBean.listTipoMetodosMotivoSelecionados}"

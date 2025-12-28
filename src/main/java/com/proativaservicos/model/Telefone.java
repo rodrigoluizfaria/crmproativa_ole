@@ -30,9 +30,10 @@ public class Telefone extends GenericTelefone {
 	@ManyToOne(fetch = FetchType.LAZY)
     @XStreamOmitField
 	private Atendimento atendimento;
-	
-	
-	  public Telefone() {}
+
+
+
+	public Telefone() {}
 	  
 	  public Telefone(Short ddd, String numero) { super(ddd.shortValue(), numero); }
 
@@ -66,7 +67,6 @@ public class Telefone extends GenericTelefone {
 		this.atendimento = (Atendimento) atendimento;
 		
 	}
-
 
 
 }

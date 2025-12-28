@@ -1,7 +1,6 @@
 package com.proativaservicos.model;
 
-import jakarta.persistence.Column;
-import jakarta.persistence.MappedSuperclass;
+import jakarta.persistence.*;
 import org.apache.commons.lang3.StringUtils;
 
 import java.math.BigDecimal;
@@ -54,6 +53,11 @@ public abstract class GenericCartaoCredito extends Generic {
 
     @Column(name = "limite_emergencial")
     private BigDecimal limiteEmergencial;
+
+
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "cliente")
+    private Cliente cliente;
 
 
     public String getNumeroCartao() {
@@ -167,6 +171,14 @@ public abstract class GenericCartaoCredito extends Generic {
         this.observacao = observacao;
     }
 
+    public Cliente getCliente() {
+        return cliente;
+    }
+
+    public void setCliente(Cliente cliente) {
+        this.cliente = cliente;
+    }
+
     public BigDecimal getPercentualUtilizado() {
 
         if (limiteTotal == null || limiteDisponivel == null || limiteTotal.compareTo(BigDecimal.ZERO) == 0) {
@@ -181,6 +193,7 @@ public abstract class GenericCartaoCredito extends Generic {
     }
 
     public String getPercentualUtilizadoFormatado() {
+
         if (limiteTotal == null || limiteDisponivel == null || limiteTotal.compareTo(BigDecimal.ZERO) == 0) {
             return "0%";
         }

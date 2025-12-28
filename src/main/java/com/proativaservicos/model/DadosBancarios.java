@@ -15,6 +15,9 @@ public class DadosBancarios extends GenericDadosBancarios {
 	 @XStreamOmitField
 	private Atendimento atendimento;
 
+
+
+
 	@Override
 	public GenericAtendimento getAtendimento() {
 		// TODO Auto-generated method stub
@@ -29,8 +32,5 @@ public class DadosBancarios extends GenericDadosBancarios {
 		
 	}
 
-	
-
-	
 
 }

@@ -6,6 +6,7 @@ import java.util.*;
 
 import com.proativaservicos.util.DateUtil;
 import com.proativaservicos.util.constantes.*;
+import com.thoughtworks.xstream.annotations.XStreamOmitField;
 import jakarta.persistence.CascadeType;
 import jakarta.persistence.Column;
 import jakarta.persistence.EnumType;
@@ -22,1750 +23,1800 @@ import jakarta.persistence.Transient;
 
 /*
  * Classe Generica de atendimento
- * 
+ *
  */
 
 @MappedSuperclass
 public abstract class GenericAtendimento extends GenericControle {
 
-	public GenericAtendimento() {
-		this.fazerSeguro = true;
-		this.abrirContaPagamento = false;
-		this.valorComissaoPagar = Double.valueOf(0.0D);
-		this.quantidadeProposta = Integer.valueOf(1);
-	}
+    public GenericAtendimento() {
+        this.fazerSeguro = true;
+        this.abrirContaPagamento = false;
+        this.valorComissaoPagar = Double.valueOf(0.0D);
+        this.quantidadeProposta = Integer.valueOf(1);
+    }
 
-	public GenericAtendimento(Long id) {
-		setId(id);
-	}
+    public GenericAtendimento(Long id) {
+        setId(id);
+    }
 
-	public GenericAtendimento(String nome) {
-		this.nome = nome;
-	}
+    public GenericAtendimento(String nome) {
+        this.nome = nome;
+    }
 
-	private static final long serialVersionUID = 1L;
+    private static final long serialVersionUID = 1L;
 
-	@Column(name = "adesao", length = 30)
-	private String adesao;
+    @Column(name = "adesao", length = 30)
+    private String adesao;
 
-	@Column(name = "protocolo", length = 50)
-	private String protocolo;
+    @Column(name = "protocolo", length = 50)
+    private String protocolo;
 
-	// CLIENTE
-	@Column(name = "nome", length = 150)
-	private String nome;
+    // CLIENTE
+    @Column(name = "nome", length = 150)
+    private String nome;
 
-	@Column(name = "cpf", length = 15)
-	private String cpf;
+    @Column(name = "cpf", length = 15)
+    private String cpf;
 
-	@Column(name = "data_nascimento")
-	private Date dataNascimento;
+    @Column(name = "data_nascimento")
+    private Date dataNascimento;
 
-	@Column(name = "sexo")
-	@Enumerated(EnumType.STRING)
-	private SexoEnum sexo;
+    @Column(name = "sexo")
+    @Enumerated(EnumType.STRING)
+    private SexoEnum sexo;
 
-	@Column(name = "nome_mae", length = 150)
-	private String nomeMae;
+    @Column(name = "nome_mae", length = 150)
+    private String nomeMae;
 
-	@Column(name = "nome_pai", length = 150)
-	private String nomePai;
+    @Column(name = "nome_pai", length = 150)
+    private String nomePai;
 
-	@Column(name = "nome_conjuge", length = 150)
-	private String nomeConjuge;
+    @Column(name = "nome_conjuge", length = 150)
+    private String nomeConjuge;
 
-	@Column(name = "uf", length = 30)
-	private String uf;
+    @Column(name = "uf", length = 30)
+    private String uf;
 
-	@Column(name = "nacionalidade", length = 60)
-	private String nacionalidade;
+    @Column(name = "nacionalidade", length = 60)
+    private String nacionalidade;
 
-	@Column(name = "uf_nascimento")
-	private String ufNascimento;
+    @Column(name = "uf_nascimento")
+    private String ufNascimento;
 
-	@Column(name = "cidade_nascimento", length = 30)
-	private String cidadeNascimento;
+    @Column(name = "cidade_nascimento", length = 30)
+    private String cidadeNascimento;
 
-	@Column(name = "estado_civil", length = 20)
-	@Enumerated(EnumType.STRING)
-	private EstadoCivilEnum estadoCivil;
+    @Column(name = "estado_civil", length = 20)
+    @Enumerated(EnumType.STRING)
+    private EstadoCivilEnum estadoCivil;
 
-	@Column(name = "uf_documento", length = 30)
-	private String ufDocumento;
+    @Column(name = "uf_documento", length = 30)
+    private String ufDocumento;
 
-	@Column(name = "data_emissao_documento")
-	private Date dataEmissaoDocumento;
+    @Column(name = "data_emissao_documento")
+    private Date dataEmissaoDocumento;
 
-	@Column(name = "numero_documento", length = 30)
-	private String numeroDocumento;
+    @Column(name = "numero_documento", length = 30)
+    private String numeroDocumento;
 
-	@Column(name = "signo")
-	private String signo;
+    @Column(name = "signo")
+    private String signo;
 
-	@Column(name = "orgao_doc", length = 30)
-	private String orgaoDocumento;
+    @Column(name = "orgao_doc", length = 30)
+    private String orgaoDocumento;
 
-	// ATN
-	@Column(name = "prioridade", length = 30)
-	@Enumerated(EnumType.STRING)
-	private PrioridadeEnum prioridade;
+    // ATN
+    @Column(name = "prioridade", length = 30)
+    @Enumerated(EnumType.STRING)
+    private PrioridadeEnum prioridade;
 
-	@Column(name = "enviado")
-	private Boolean enviado;
+    @Column(name = "enviado")
+    private Boolean enviado;
 
-	@Enumerated(EnumType.STRING)
-	private SimNaoEnum atender;
+    @Enumerated(EnumType.STRING)
+    private SimNaoEnum atender;
 
-	@Column(name = "conciliado")
-	private Boolean conciliado;
+    @Column(name = "conciliado")
+    private Boolean conciliado;
 
-	@Temporal(TemporalType.TIMESTAMP)
-	@Column(name = "data_conciliacao")
-	private Date dataConciliacao;
+    @Temporal(TemporalType.TIMESTAMP)
+    @Column(name = "data_conciliacao")
+    private Date dataConciliacao;
 
-	@Column(name = "discou")
-	private Boolean discou;
+    @Column(name = "discou")
+    private Boolean discou;
 
-	@Column(name = "publico")
-	private Boolean publico;
+    @Column(name = "publico")
+    private Boolean publico;
 
-	// DESCOBRIR
-	@Column(name = "tipo_beneficio")
-	private Integer tipoBeneficio;
-	
-	@Column(name = "tempo_pos_atendimento")
-	private Long tempoPosAtendimento;
-
-	@Column(name = "situacao_servidor")
-	private Integer situacaoServidor;
-
-	// IDENTIFICAR
-	@Column(name = "peso_carteira")
-	private Integer pesoCarteira;
+    // DESCOBRIR
+    @Column(name = "tipo_beneficio")
+    private Integer tipoBeneficio;
 
-	@Column(name = "quantidade_discagem")
-	private Integer quantidadeDiscagem;
+    @Column(name = "tempo_pos_atendimento")
+    private Long tempoPosAtendimento;
 
-	// DISCADOR
-	@Column(name = "peso_discagem")
-	private Integer pesoDiscagem;
+    @Column(name = "situacao_servidor")
+    private Integer situacaoServidor;
 
-	@Column(name = "abertura_conta")
-	private Boolean aberturaConta;
+    // IDENTIFICAR
+    @Column(name = "peso_carteira")
+    private Integer pesoCarteira;
 
-	// IDENTIFICAR
-	@Column(name = "fluxo", length = 30)
-	private String fluxo;
+    @Column(name = "quantidade_discagem")
+    private Integer quantidadeDiscagem;
 
-	// OBS
-	@Column(name = "outras_informacoes", columnDefinition = "text")
-	private String outrasInformacoes;
+    // DISCADOR
+    @Column(name = "peso_discagem")
+    private Integer pesoDiscagem;
 
-	//
-	@Column(name = "margem_resultado", length = 30)
-	private String margemResultado;
+    @Column(name = "abertura_conta")
+    private Boolean aberturaConta;
 
-	@Column(name = "manifesto", columnDefinition = "text")
-	private String manifesto;
+    // IDENTIFICAR
+    @Column(name = "fluxo", length = 30)
+    private String fluxo;
 
-	@Column(name = "motivo_retencao")
-	private MotivoRetencaoEnum motivoRetencao;
+    // OBS
+    @Column(name = "outras_informacoes", columnDefinition = "text")
+    private String outrasInformacoes;
 
-	@Column(name = "observacao", columnDefinition = "text")
-	private String observacao;
+    //
+    @Column(name = "margem_resultado", length = 30)
+    private String margemResultado;
 
-	@Column(name = "prospect")
-	private boolean prospect;
+    @Column(name = "manifesto", columnDefinition = "text")
+    private String manifesto;
 
-	@Column(name = "vinculo_matricula", length = 30)
-	private String vinculoMatricula;
+    @Column(name = "motivo_retencao")
+    private MotivoRetencaoEnum motivoRetencao;
 
-	@Column(name = "codigo_averbacao", length = 30)
-	private String codigoAverbacao;
+    @Column(name = "observacao", columnDefinition = "text")
+    private String observacao;
 
-	@Column(name = "tipo_convenio", length = 30)
-	private String tipoConvenio;
+    @Column(name = "prospect")
+    private boolean prospect;
 
-	@Temporal(TemporalType.TIMESTAMP)
-	@Column(name = "data_inicio_atendimento")
-	private Date dataInicioAtendimento;
+    @Column(name = "vinculo_matricula", length = 30)
+    private String vinculoMatricula;
 
-	@Temporal(TemporalType.TIMESTAMP)
-	@Column(name = "data_fim_atendimento")
-	private Date dataFimAtendimento;
+    @Column(name = "codigo_averbacao", length = 30)
+    private String codigoAverbacao;
 
-	@Column(name = "comissao_pagar", length = 30)
-	private String comissaoPagar;
+    @Column(name = "tipo_convenio", length = 30)
+    private String tipoConvenio;
 
-	@Column(name = "valor_liberado", columnDefinition = "NUMERIC(19,2)")
-	private BigDecimal valorLiberado;
+    @Temporal(TemporalType.TIMESTAMP)
+    @Column(name = "data_inicio_atendimento")
+    private Date dataInicioAtendimento;
 
-	@Column(name = "valor_parcela", columnDefinition = "NUMERIC(19,2)")
-	private BigDecimal valorParcela;
+    @Temporal(TemporalType.TIMESTAMP)
+    @Column(name = "data_fim_atendimento")
+    private Date dataFimAtendimento;
 
-	@Column(name = "valor_max_operacao", columnDefinition = "NUMERIC(19,2)")
-	private BigDecimal valorMaxOperacao;
+    @Column(name = "comissao_pagar", length = 30)
+    private String comissaoPagar;
 
-	@Column(name = "margem", columnDefinition = "NUMERIC(19,2)")
-	private BigDecimal margem;
-	
-	@Column(name = "margem_cinco", columnDefinition = "NUMERIC(19,2)")
-	private BigDecimal margemCinco;
-	
-	@Column(name = "margem_secundaria", columnDefinition = "NUMERIC(19,2)")
-	private BigDecimal margemSecundaria;
-	
-	@Column(name = "margem_secundaria_cinco", columnDefinition = "NUMERIC(19,2)")
-	private BigDecimal margemSecundariaCinco;
-	
-	@Column(name = "limite", columnDefinition = "NUMERIC(19,2)")
-	private BigDecimal limite;
+    @Column(name = "valor_liberado", columnDefinition = "NUMERIC(19,2)")
+    private BigDecimal valorLiberado;
 
-	@Column(name = "limite_disponivel", columnDefinition = "NUMERIC(19,2)")
-	private BigDecimal limiteDisponivel;
+    @Column(name = "valor_parcela", columnDefinition = "NUMERIC(19,2)")
+    private BigDecimal valorParcela;
 
-	@Column(name = "seguro", columnDefinition = "NUMERIC(19,2)")
-	private BigDecimal seguro;
-	
-	@Column(name = "valor_seguro_liberado", columnDefinition = "NUMERIC(19,2)")
-	private BigDecimal valorSeguroLiberado;
-	
-	@Column(name = "seguro_prestamista", columnDefinition = "NUMERIC(19,2)")
-	private BigDecimal seguroPrestamista;
+    @Column(name = "valor_max_operacao", columnDefinition = "NUMERIC(19,2)")
+    private BigDecimal valorMaxOperacao;
 
-	@Column(name = "valor_contrato", columnDefinition = "NUMERIC(19,2)")
-	private BigDecimal valorContrato;
+    @Column(name = "margem", columnDefinition = "NUMERIC(19,2)")
+    private BigDecimal margem;
 
-	@Column(name = "saldo_devedor", columnDefinition = "NUMERIC(19,2)")
-	private BigDecimal saldoDevedor;
+    @Column(name = "margem_cinco", columnDefinition = "NUMERIC(19,2)")
+    private BigDecimal margemCinco;
 
-	@Column(name = "valor_total", columnDefinition = "NUMERIC(19,2)")
-	private BigDecimal valorTotal;
+    @Column(name = "margem_secundaria", columnDefinition = "NUMERIC(19,2)")
+    private BigDecimal margemSecundaria;
 
-	@Column(name = "risco", columnDefinition = "NUMERIC(19,2)")
-	private BigDecimal risco;
+    @Column(name = "margem_secundaria_cinco", columnDefinition = "NUMERIC(19,2)")
+    private BigDecimal margemSecundariaCinco;
 
-	@Column(name = "valor_liberado_refin", columnDefinition = "NUMERIC(19,2)")
-	private BigDecimal valorLiberadoRefinanciamento;
+    @Column(name = "limite", columnDefinition = "NUMERIC(19,2)")
+    private BigDecimal limite;
 
-	@Column(name = "valor_liberado_emp", columnDefinition = "NUMERIC(19,2)")
-	private BigDecimal valorLiberadoEmprestimo;
+    @Column(name = "limite_disponivel", columnDefinition = "NUMERIC(19,2)")
+    private BigDecimal limiteDisponivel;
 
-	@Column(name = "salario_cliente", columnDefinition = "NUMERIC(19,2)")
-	private BigDecimal salarioCliente;
+    @Column(name = "seguro", columnDefinition = "NUMERIC(19,2)")
+    private BigDecimal seguro;
 
-	@Column(name = "valor_carta_credito", columnDefinition = "NUMERIC(19,2)")
-	private BigDecimal valorCartaCredito;
+    @Column(name = "valor_seguro_liberado", columnDefinition = "NUMERIC(19,2)")
+    private BigDecimal valorSeguroLiberado;
 
-	@Column(name = "taxa", columnDefinition = "NUMERIC(19,2)")
-	private BigDecimal taxa;
+    @Column(name = "seguro_prestamista", columnDefinition = "NUMERIC(19,2)")
+    private BigDecimal seguroPrestamista;
 
-	@Column(name = "beneficio_principal")
-	private String beneficioPrincipal;
+    @Column(name = "valor_contrato", columnDefinition = "NUMERIC(19,2)")
+    private BigDecimal valorContrato;
 
-	@Column(name = "beneficio_secundario", length = 30)
-	private String beneficioSecundario;
+    @Column(name = "saldo_devedor", columnDefinition = "NUMERIC(19,2)")
+    private BigDecimal saldoDevedor;
 
-	@Column(name = "desconto_compulsorio", columnDefinition = "NUMERIC(19,2)")
-	private BigDecimal descontoCompulsorio;
+    @Column(name = "valor_total", columnDefinition = "NUMERIC(19,2)")
+    private BigDecimal valorTotal;
 
-	@Column(name = "desconto_facultativo", columnDefinition = "NUMERIC(19,2)")
-	private BigDecimal descontoFacultativo;
+    @Column(name = "risco", columnDefinition = "NUMERIC(19,2)")
+    private BigDecimal risco;
 
-	@Temporal(TemporalType.TIMESTAMP)
-	@Column(name = "data_vencimento")
-	private Date dataVencimento;
+    @Column(name = "valor_liberado_refin", columnDefinition = "NUMERIC(19,2)")
+    private BigDecimal valorLiberadoRefinanciamento;
 
-	@Column(name = "quantidade_contratos")
-	private int quantidadeContratos;
+    @Column(name = "valor_liberado_emp", columnDefinition = "NUMERIC(19,2)")
+    private BigDecimal valorLiberadoEmprestimo;
 
-	@Column(name = "quantidade_parcelas")
-	private Integer quantidadeParcela;
+    @Column(name = "salario_cliente", columnDefinition = "NUMERIC(19,2)")
+    private BigDecimal salarioCliente;
 
-	@Column(name = "instituicao_financeira", length = 30)
-	@Enumerated(EnumType.STRING)
-	private InstituicaoFinanceiraEnum instituicaoFinanceira;
+    @Column(name = "valor_carta_credito", columnDefinition = "NUMERIC(19,2)")
+    private BigDecimal valorCartaCredito;
 
-	@Column(name = "informacoes_complementares", columnDefinition = "text")
-	private String informacoesComplementares;
+    @Column(name = "taxa", columnDefinition = "NUMERIC(19,2)")
+    private BigDecimal taxa;
 
-	@Column(name = "cod_loja", length = 30)
-	private String codigoLoja;
+    @Column(name = "beneficio_principal")
+    private String beneficioPrincipal;
 
-	@Column(name = "entidade_principal", length = 50)
-	private String entidadePrincipal;
+    @Column(name = "beneficio_secundario", length = 30)
+    private String beneficioSecundario;
 
-	@Column(name = "entidade_secundaria", length = 50)
-	private String entidadeSecundaria;
+    @Column(name = "desconto_compulsorio", columnDefinition = "NUMERIC(19,2)")
+    private BigDecimal descontoCompulsorio;
 
-	@Column(name = "orgao_principal", length = 50)
-	private String orgaoPrincipal;
+    @Column(name = "desconto_facultativo", columnDefinition = "NUMERIC(19,2)")
+    private BigDecimal descontoFacultativo;
 
-	@Column(name = "orgao_secundario", length = 50)
-	private String orgaoSecundario;
-	
-	@Column(name = "mailingid")
-	private String mailingId;
-	
-	@Column(name = "cod_tabela_refin")
-	private Integer codTabelaRefin;
+    @Temporal(TemporalType.TIMESTAMP)
+    @Column(name = "data_vencimento")
+    private Date dataVencimento;
 
-	@Column(name = "target")
-	private boolean target;
+    @Column(name = "quantidade_contratos")
+    private int quantidadeContratos;
 
-	@Column(name = "enviar_n2")
-	private Boolean enviarN2;
+    @Column(name = "quantidade_parcelas")
+    private Integer quantidadeParcela;
 
-	@Column(name = "posicao_fila")
-	private Integer posicaoFila;
+    @Column(name = "instituicao_financeira", length = 30)
+    @Enumerated(EnumType.STRING)
+    private InstituicaoFinanceiraEnum instituicaoFinanceira;
 
-	@Column(name = "abertura_demanda")
-	private Date dataAberturaDemanda;
+    @Column(name = "informacoes_complementares", columnDefinition = "text")
+    private String informacoesComplementares;
 
-	@Column(name = "prazo_demanda")
-	private Date prazoPrazoDemanda;
+    @Column(name = "cod_loja", length = 30)
+    private String codigoLoja;
 
-	@Column(name = "fechamento_demanda")
-	private Date dataFechamentoDemanda;
+    @Column(name = "entidade_principal", length = 50)
+    private String entidadePrincipal;
 
-	@Column(name = "demanda_encerrada")
-	private Boolean demandaEncerrada;
+    @Column(name = "entidade_secundaria", length = 50)
+    private String entidadeSecundaria;
 
-	@Transient
-	private Boolean clienteVip;
+    @Column(name = "orgao_principal", length = 50)
+    private String orgaoPrincipal;
 
+    @Column(name = "orgao_secundario", length = 50)
+    private String orgaoSecundario;
 
-	@Column(name = "anotacao")
-	private String anotacao;
+    @Column(name = "mailingid")
+    private String mailingId;
 
-	@Column(name = "observacao_adicional")
-	private String observacaoAdicional;
+    @Column(name = "cod_tabela_refin")
+    private Integer codTabelaRefin;
 
-	@Column(name = "observacao_n2")
-	private String observacaoN2;
+    @Column(name = "target")
+    private boolean target;
 
-	@Column(name = "tipo_cliente")
-	@Enumerated(EnumType.STRING)
-	private TipoClienteEnum tipoClienteEnum;
+    @Column(name = "enviar_n2")
+    private Boolean enviarN2;
 
+    @Column(name = "posicao_fila")
+    private Integer posicaoFila;
 
+    @Column(name = "abertura_demanda")
+    private Date dataAberturaDemanda;
 
-	@Column(name = "fluxo_esteira")
-	@Enumerated(EnumType.STRING)
-	private TipoFluxoEsteira fluxoEsteira;
+    @Column(name = "prazo_demanda")
+    private Date prazoPrazoDemanda;
 
-	@JoinColumn(name = "usuario_em_atendimento", foreignKey = @ForeignKey(name = "atendimento_usr_em_atn_fk"))
-	@ManyToOne(fetch = FetchType.LAZY)
-	private Usuario usuarioOcupado;
+    @Column(name = "fechamento_demanda")
+    private Date dataFechamentoDemanda;
 
-	@JoinColumn(name = "campanha", foreignKey = @ForeignKey(name = "atendimento_campanha_fk"))
-	@ManyToOne(fetch = FetchType.LAZY)
-	private Campanha campanha;
+    @Column(name = "demanda_encerrada")
+    private Boolean demandaEncerrada;
 
-	@JoinColumn(name = "status", foreignKey = @ForeignKey(name = "atendimento_status_fk"))
-	@ManyToOne(fetch = FetchType.LAZY)
-	private StatusAtendimento status;
+    @Transient
+    private Boolean clienteVip;
 
-	@JoinColumn(name = "motivo")
-	@ManyToOne(fetch = FetchType.LAZY)
-	private Motivo motivo;
 
-	@JoinColumn(name = "submotivo")
-	@ManyToOne(fetch = FetchType.LAZY)
-	private SubMotivo subMotivo;
+    @Column(name = "anotacao")
+    private String anotacao;
 
-	@JoinColumn(name = "produto", foreignKey = @ForeignKey(name = "atendimento_produto_fk"))
-	@ManyToOne(fetch = FetchType.LAZY)
-	private Produto produto;
+    @Column(name = "observacao_adicional")
+    private String observacaoAdicional;
 
-	@JoinColumn(name = "importacao", foreignKey = @ForeignKey(name = "atendimento_importacao_fk"))
-	@ManyToOne(fetch = FetchType.LAZY)
-	private Importacao importacao;
+    @Column(name = "observacao_n2")
+    private String observacaoN2;
 
-	@ManyToOne(fetch = FetchType.LAZY)
-	@JoinColumn(name = "equipe", foreignKey = @ForeignKey(name = "atendimento_equipe_fk"))
-	private Equipe equipe;
+    @Column(name = "resposta_n2")
+    private String respostaN2;
 
-	@ManyToOne(fetch = FetchType.LAZY)
-	@JoinColumn(name = "empresa", foreignKey = @ForeignKey(name = "atendimento_empresa_fk"))
-	private Empresa empresa;
+    @Column(name = "tipo_cliente")
+    @Enumerated(EnumType.STRING)
+    private TipoClienteEnum tipoClienteEnum;
 
-	@ManyToOne(fetch = FetchType.LAZY)
-	@JoinColumn(name = "loja", foreignKey = @ForeignKey(name = "atendimento_loja_fk"))
-	private Loja loja;
-	
-	@ManyToOne(fetch = FetchType.LAZY)
-	@JoinColumn(name = "supervisor")
-	private Usuario supervisor;
-	
-	@ManyToOne(fetch = FetchType.LAZY)
-	@JoinColumn(name = "coordenador")
-	private Usuario coordenador;
+    @Column(name = "atendimento_finalizado")
+    private Boolean atendimentoFinalizado;
 
-	@ManyToOne(fetch = FetchType.LAZY)
-	@JoinColumn(name = "forma_pagamento", foreignKey = @ForeignKey(name = "atendimento_forma_pag_fk"))
-	private FormaPagamento formaPagamento;
 
-	@OneToOne(fetch = FetchType.LAZY, cascade = { CascadeType.ALL })
-	@JoinColumn(name = "contrato")
-	private Contrato contrato;
+    @Column(name = "fluxo_esteira")
+    @Enumerated(EnumType.STRING)
+    private TipoFluxoEsteira fluxoEsteira;
 
-	@Column(name = "prioridade_fila")
-	private Integer prioridadeFila;
+    @JoinColumn(name = "usuario_em_atendimento", foreignKey = @ForeignKey(name = "atendimento_usr_em_atn_fk"))
+    @ManyToOne(fetch = FetchType.LAZY)
+    private Usuario usuarioOcupado;
 
+    @JoinColumn(name = "campanha", foreignKey = @ForeignKey(name = "atendimento_campanha_fk"))
+    @ManyToOne(fetch = FetchType.LAZY)
+    private Campanha campanha;
 
-	@Column(name = "tiket", length = 30)
-	private String tiket;
-	
-	@Column(name = "bko")
-	private Boolean bko;
+    @JoinColumn(name = "status", foreignKey = @ForeignKey(name = "atendimento_status_fk"))
+    @ManyToOne(fetch = FetchType.LAZY)
+    private StatusAtendimento status;
 
-	@Column(name = "rating")
-	private Integer rating;
+    @JoinColumn(name = "motivo")
+    @ManyToOne(fetch = FetchType.LAZY)
+    private Motivo motivo;
 
+    @JoinColumn(name = "submotivo")
+    @ManyToOne(fetch = FetchType.LAZY)
+    private SubMotivo subMotivo;
 
-	
-	@Transient
-	private Map<String, String> listInformacoesComplementares;
+    @JoinColumn(name = "produto", foreignKey = @ForeignKey(name = "atendimento_produto_fk"))
+    @ManyToOne(fetch = FetchType.LAZY)
+    private Produto produto;
 
-	@Transient
-	private Double valorSaque;
+    @JoinColumn(name = "importacao", foreignKey = @ForeignKey(name = "atendimento_importacao_fk"))
+    @ManyToOne(fetch = FetchType.LAZY)
+    private Importacao importacao;
 
-	@Transient
-	private String descricaoSeguro;
-	@Transient
-	private double capitalSegurado;
-	@Transient
-	private double valorSeguro;
-	@Transient
-	private boolean fazerSeguro;
-	@Transient
-	private boolean abrirContaPagamento;
-	@Transient
-	private Object situacaoFuncional;
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "equipe", foreignKey = @ForeignKey(name = "atendimento_equipe_fk"))
+    private Equipe equipe;
 
-	@Transient
-	private Double valorComissaoPagar;
-	@Transient
-	private Integer quantidadeProposta;
-	@Transient
-	private List<Equipe> equipes;
-	
-	@Transient
-	private List<StatusAtendimento> listStatusAtendimentos;
-	
-	@Transient
-	private List<StatusTelefone> statusTelefones;
-	@Transient
-	private List<Pausa> pausas;
-	@Transient
-	private List<Produto> produtos;
-	@Transient
-	private List<FormaPagamento> formaPagamentos;
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "empresa", foreignKey = @ForeignKey(name = "atendimento_empresa_fk"))
+    private Empresa empresa;
 
-	@Transient
-	private String especie;
-	
-	
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "loja", foreignKey = @ForeignKey(name = "atendimento_loja_fk"))
+    private Loja loja;
 
-	public List<String> getListInformacoesComplementaresChaves() {
-		if (this.listInformacoesComplementares == null) {
-			return null;
-		}
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "supervisor")
+    private Usuario supervisor;
 
-		return new ArrayList<>(this.listInformacoesComplementares.keySet());
-	}
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "coordenador")
+    private Usuario coordenador;
 
-	public String getAdesao() {
-		return adesao;
-	}
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "forma_pagamento", foreignKey = @ForeignKey(name = "atendimento_forma_pag_fk"))
+    private FormaPagamento formaPagamento;
 
-	public void setAdesao(String adesao) {
-		this.adesao = adesao;
-	}
+    @OneToOne(fetch = FetchType.LAZY, cascade = {CascadeType.ALL})
+    @JoinColumn(name = "contrato")
+    private Contrato contrato;
 
-	public String getProtocolo() {
-		return protocolo;
-	}
+    @Column(name = "prioridade_fila")
+    private Integer prioridadeFila;
 
-	public void setProtocolo(String protocolo) {
-		this.protocolo = protocolo;
-	}
 
-	public String getNome() {
-		return nome;
-	}
+    @Column(name = "tiket", length = 30)
+    private String tiket;
 
-	public void setNome(String nome) {
-		this.nome = nome;
-	}
+    @Column(name = "bko")
+    private Boolean bko;
 
-	public String getCpf() {
-		return cpf;
-	}
+    @Column(name = "rating")
+    private Integer rating;
 
-	public void setCpf(String cpf) {
-		this.cpf = cpf;
-	}
+    @JoinColumn(name = "cliente")
+    @ManyToOne(fetch = FetchType.LAZY)
+    @XStreamOmitField
+    private Cliente cliente;
 
-	public Date getDataNascimento() {
-		return dataNascimento;
-	}
+    @JoinColumn(name = "responsaveln2")
+    @ManyToOne(fetch = FetchType.LAZY)
+    private Usuario responsavelN2;
 
-	public void setDataNascimento(Date dataNascimento) {
-		this.dataNascimento = dataNascimento;
-	}
+    @Transient
+    private Map<String, String> listInformacoesComplementares;
 
-	public SexoEnum getSexo() {
-		return sexo;
-	}
+    @Transient
+    private Double valorSaque;
 
-	public void setSexo(SexoEnum sexo) {
-		this.sexo = sexo;
-	}
+    @Transient
+    private String descricaoSeguro;
+    @Transient
+    private double capitalSegurado;
+    @Transient
+    private double valorSeguro;
+    @Transient
+    private boolean fazerSeguro;
+    @Transient
+    private boolean abrirContaPagamento;
+    @Transient
+    private Object situacaoFuncional;
 
-	public String getNomeMae() {
-		return nomeMae;
-	}
+    @Transient
+    private Double valorComissaoPagar;
+    @Transient
+    private Integer quantidadeProposta;
+    @Transient
+    private List<Equipe> equipes;
 
-	public void setNomeMae(String nomeMae) {
-		this.nomeMae = nomeMae;
-	}
+    @Transient
+    private List<StatusAtendimento> listStatusAtendimentos;
 
-	public String getNomePai() {
-		return nomePai;
-	}
+    @Transient
+    private List<StatusTelefone> statusTelefones;
+    @Transient
+    private List<Pausa> pausas;
+    @Transient
+    private List<Produto> produtos;
+    @Transient
+    private List<FormaPagamento> formaPagamentos;
 
-	public void setNomePai(String nomePai) {
-		this.nomePai = nomePai;
-	}
+    @Transient
+    private String especie;
 
-	public String getNomeConjuge() {
-		return nomeConjuge;
-	}
 
-	public void setNomeConjuge(String nomeConjuge) {
-		this.nomeConjuge = nomeConjuge;
-	}
+    public List<String> getListInformacoesComplementaresChaves() {
+        if (this.listInformacoesComplementares == null) {
+            return null;
+        }
 
-	public String getUf() {
-		return uf;
-	}
+        return new ArrayList<>(this.listInformacoesComplementares.keySet());
+    }
 
-	public void setUf(String uf) {
-		this.uf = uf;
-	}
+    public Usuario getResponsavelN2() {
+        return responsavelN2;
+    }
 
-	public String getNacionalidade() {
-		return nacionalidade;
-	}
+    public void setResponsavelN2(Usuario responsavelN2) {
+        this.responsavelN2 = responsavelN2;
+    }
 
-	public void setNacionalidade(String nacionalidade) {
-		this.nacionalidade = nacionalidade;
-	}
+    public String getAdesao() {
+        return adesao;
+    }
 
-	public String getUfNascimento() {
-		return ufNascimento;
-	}
+    public void setAdesao(String adesao) {
+        this.adesao = adesao;
+    }
 
-	public void setUfNascimento(String ufNascimento) {
-		this.ufNascimento = ufNascimento;
-	}
+    public String getProtocolo() {
+        return protocolo;
+    }
 
-	public String getCidadeNascimento() {
-		return cidadeNascimento;
-	}
+    public void setProtocolo(String protocolo) {
+        this.protocolo = protocolo;
+    }
 
-	public void setCidadeNascimento(String cidadeNascimento) {
-		this.cidadeNascimento = cidadeNascimento;
-	}
+    public String getNome() {
+        return nome;
+    }
 
-	public EstadoCivilEnum getEstadoCivil() {
-		return estadoCivil;
-	}
+    public void setNome(String nome) {
+        this.nome = nome;
+    }
 
-	public void setEstadoCivil(EstadoCivilEnum estadoCivil) {
-		this.estadoCivil = estadoCivil;
-	}
+    public String getCpf() {
+        return cpf;
+    }
 
-	public String getUfDocumento() {
-		return ufDocumento;
-	}
+    public void setCpf(String cpf) {
+        this.cpf = cpf;
+    }
 
-	public void setUfDocumento(String ufDocumento) {
-		this.ufDocumento = ufDocumento;
-	}
+    public Date getDataNascimento() {
+        return dataNascimento;
+    }
 
-	public Date getDataEmissaoDocumento() {
-		return dataEmissaoDocumento;
-	}
+    public void setDataNascimento(Date dataNascimento) {
+        this.dataNascimento = dataNascimento;
+    }
 
-	public void setDataEmissaoDocumento(Date dataEmissaoDocumento) {
-		this.dataEmissaoDocumento = dataEmissaoDocumento;
-	}
+    public SexoEnum getSexo() {
+        return sexo;
+    }
 
-	public String getNumeroDocumento() {
-		return numeroDocumento;
-	}
+    public void setSexo(SexoEnum sexo) {
+        this.sexo = sexo;
+    }
 
-	public void setNumeroDocumento(String numeroDocumento) {
-		this.numeroDocumento = numeroDocumento;
-	}
+    public String getNomeMae() {
+        return nomeMae;
+    }
 
-	public String getSigno() {
-		return signo;
-	}
+    public void setNomeMae(String nomeMae) {
+        this.nomeMae = nomeMae;
+    }
 
-	public void setSigno(String signo) {
-		this.signo = signo;
-	}
+    public String getNomePai() {
+        return nomePai;
+    }
 
-	public String getEntidadePrincipal() {
-		return entidadePrincipal;
-	}
+    public void setNomePai(String nomePai) {
+        this.nomePai = nomePai;
+    }
 
-	public void setEntidadePrincipal(String entidadePrincipal) {
-		this.entidadePrincipal = entidadePrincipal;
-	}
+    public String getNomeConjuge() {
+        return nomeConjuge;
+    }
 
-	public String getEntidadeSecundaria() {
-		return entidadeSecundaria;
-	}
+    public void setNomeConjuge(String nomeConjuge) {
+        this.nomeConjuge = nomeConjuge;
+    }
 
-	public void setEntidadeSecundaria(String entidadeSecundaria) {
-		this.entidadeSecundaria = entidadeSecundaria;
-	}
+    public String getUf() {
+        return uf;
+    }
 
-	public String getOrgaoPrincipal() {
-		return orgaoPrincipal;
-	}
+    public void setUf(String uf) {
+        this.uf = uf;
+    }
 
-	public void setOrgaoPrincipal(String orgaoPrincipal) {
-		this.orgaoPrincipal = orgaoPrincipal;
-	}
+    public String getNacionalidade() {
+        return nacionalidade;
+    }
 
-	public String getOrgaoSecundario() {
-		return orgaoSecundario;
-	}
+    public void setNacionalidade(String nacionalidade) {
+        this.nacionalidade = nacionalidade;
+    }
 
-	public void setOrgaoSecundario(String orgaoSecundario) {
-		this.orgaoSecundario = orgaoSecundario;
-	}
+    public String getUfNascimento() {
+        return ufNascimento;
+    }
 
-	public String getOrgaoDocumento() {
-		return orgaoDocumento;
-	}
+    public void setUfNascimento(String ufNascimento) {
+        this.ufNascimento = ufNascimento;
+    }
 
-	public void setOrgaoDocumento(String orgaoDocumento) {
-		this.orgaoDocumento = orgaoDocumento;
-	}
+    public String getCidadeNascimento() {
+        return cidadeNascimento;
+    }
 
-	public PrioridadeEnum getPrioridade() {
-		return prioridade;
-	}
+    public void setCidadeNascimento(String cidadeNascimento) {
+        this.cidadeNascimento = cidadeNascimento;
+    }
 
-	public void setPrioridade(PrioridadeEnum prioridade) {
-		this.prioridade = prioridade;
-	}
+    public EstadoCivilEnum getEstadoCivil() {
+        return estadoCivil;
+    }
 
-	public Boolean getEnviado() {
-		return enviado;
-	}
+    public void setEstadoCivil(EstadoCivilEnum estadoCivil) {
+        this.estadoCivil = estadoCivil;
+    }
 
-	public void setEnviado(Boolean enviado) {
-		this.enviado = enviado;
-	}
+    public String getUfDocumento() {
+        return ufDocumento;
+    }
 
-	public SimNaoEnum getAtender() {
-		return atender;
-	}
+    public void setUfDocumento(String ufDocumento) {
+        this.ufDocumento = ufDocumento;
+    }
 
-	public void setAtender(SimNaoEnum atender) {
-		this.atender = atender;
-	}
+    public Date getDataEmissaoDocumento() {
+        return dataEmissaoDocumento;
+    }
 
-	public Boolean getConciliado() {
-		return conciliado;
-	}
+    public void setDataEmissaoDocumento(Date dataEmissaoDocumento) {
+        this.dataEmissaoDocumento = dataEmissaoDocumento;
+    }
 
-	public void setConciliado(Boolean conciliado) {
-		this.conciliado = conciliado;
-	}
+    public String getNumeroDocumento() {
+        return numeroDocumento;
+    }
 
-	public Date getDataConciliacao() {
-		return dataConciliacao;
-	}
+    public void setNumeroDocumento(String numeroDocumento) {
+        this.numeroDocumento = numeroDocumento;
+    }
 
-	public void setDataConciliacao(Date dataConciliacao) {
-		this.dataConciliacao = dataConciliacao;
-	}
+    public String getSigno() {
+        return signo;
+    }
 
-	public Boolean getDiscou() {
-		return discou;
-	}
+    public void setSigno(String signo) {
+        this.signo = signo;
+    }
 
-	public void setDiscou(Boolean discou) {
-		this.discou = discou;
-	}
+    public String getEntidadePrincipal() {
+        return entidadePrincipal;
+    }
 
-	public Boolean getPublico() {
-		return publico;
-	}
+    public void setEntidadePrincipal(String entidadePrincipal) {
+        this.entidadePrincipal = entidadePrincipal;
+    }
 
-	public void setPublico(Boolean publico) {
-		this.publico = publico;
-	}
+    public String getEntidadeSecundaria() {
+        return entidadeSecundaria;
+    }
 
-	public Integer getTipoBeneficio() {
-		return tipoBeneficio;
-	}
+    public void setEntidadeSecundaria(String entidadeSecundaria) {
+        this.entidadeSecundaria = entidadeSecundaria;
+    }
 
-	public void setTipoBeneficio(Integer tipoBeneficio) {
-		this.tipoBeneficio = tipoBeneficio;
-	}
+    public String getOrgaoPrincipal() {
+        return orgaoPrincipal;
+    }
 
-	public Integer getSituacaoServidor() {
-		return situacaoServidor;
-	}
+    public void setOrgaoPrincipal(String orgaoPrincipal) {
+        this.orgaoPrincipal = orgaoPrincipal;
+    }
 
-	public void setSituacaoServidor(Integer situacaoServidor) {
-		this.situacaoServidor = situacaoServidor;
-	}
+    public String getOrgaoSecundario() {
+        return orgaoSecundario;
+    }
 
-	public Integer getPesoCarteira() {
-		return pesoCarteira;
-	}
+    public void setOrgaoSecundario(String orgaoSecundario) {
+        this.orgaoSecundario = orgaoSecundario;
+    }
 
-	public void setPesoCarteira(Integer pesoCarteira) {
-		this.pesoCarteira = pesoCarteira;
-	}
+    public String getOrgaoDocumento() {
+        return orgaoDocumento;
+    }
 
-	public Integer getQuantidadeDiscagem() {
-		return quantidadeDiscagem;
-	}
+    public void setOrgaoDocumento(String orgaoDocumento) {
+        this.orgaoDocumento = orgaoDocumento;
+    }
 
-	public void setQuantidadeDiscagem(Integer quantidadeDiscagem) {
-		this.quantidadeDiscagem = quantidadeDiscagem;
-	}
+    public PrioridadeEnum getPrioridade() {
+        return prioridade;
+    }
 
-	public Integer getPesoDiscagem() {
-		return pesoDiscagem;
-	}
+    public void setPrioridade(PrioridadeEnum prioridade) {
+        this.prioridade = prioridade;
+    }
 
-	public void setPesoDiscagem(Integer pesoDiscagem) {
-		this.pesoDiscagem = pesoDiscagem;
-	}
+    public Boolean getEnviado() {
+        return enviado;
+    }
 
-	public Boolean getAberturaConta() {
-		return aberturaConta;
-	}
+    public void setEnviado(Boolean enviado) {
+        this.enviado = enviado;
+    }
 
-	public void setAberturaConta(Boolean aberturaConta) {
-		this.aberturaConta = aberturaConta;
-	}
+    public SimNaoEnum getAtender() {
+        return atender;
+    }
 
-	public String getFluxo() {
-		return fluxo;
-	}
+    public void setAtender(SimNaoEnum atender) {
+        this.atender = atender;
+    }
 
-	public void setFluxo(String fluxo) {
-		this.fluxo = fluxo;
-	}
+    public Boolean getConciliado() {
+        return conciliado;
+    }
 
-	public String getOutrasInformacoes() {
-		return outrasInformacoes;
-	}
+    public void setConciliado(Boolean conciliado) {
+        this.conciliado = conciliado;
+    }
 
-	public void setOutrasInformacoes(String outrasInformacoes) {
-		this.outrasInformacoes = outrasInformacoes;
-	}
+    public Date getDataConciliacao() {
+        return dataConciliacao;
+    }
 
-	public String getMargemResultado() {
-		return margemResultado;
-	}
+    public void setDataConciliacao(Date dataConciliacao) {
+        this.dataConciliacao = dataConciliacao;
+    }
 
-	public void setMargemResultado(String margemResultado) {
-		this.margemResultado = margemResultado;
-	}
+    public Boolean getDiscou() {
+        return discou;
+    }
 
-	public String getManifesto() {
-		return manifesto;
-	}
+    public void setDiscou(Boolean discou) {
+        this.discou = discou;
+    }
 
-	public void setManifesto(String manifesto) {
-		this.manifesto = manifesto;
-	}
+    public Boolean getPublico() {
+        return publico;
+    }
 
-	public MotivoRetencaoEnum getMotivoRetencao() {
-		return motivoRetencao;
-	}
+    public void setPublico(Boolean publico) {
+        this.publico = publico;
+    }
 
-	public void setMotivoRetencao(MotivoRetencaoEnum motivoRetencao) {
-		this.motivoRetencao = motivoRetencao;
-	}
+    public Integer getTipoBeneficio() {
+        return tipoBeneficio;
+    }
 
-	public String getObservacao() {
-		return observacao;
-	}
+    public void setTipoBeneficio(Integer tipoBeneficio) {
+        this.tipoBeneficio = tipoBeneficio;
+    }
 
-	public void setObservacao(String observacao) {
-		this.observacao = observacao;
-	}
+    public Integer getSituacaoServidor() {
+        return situacaoServidor;
+    }
 
-	public boolean isProspect() {
-		return prospect;
-	}
+    public void setSituacaoServidor(Integer situacaoServidor) {
+        this.situacaoServidor = situacaoServidor;
+    }
 
-	public void setProspect(boolean prospect) {
-		this.prospect = prospect;
-	}
+    public Integer getPesoCarteira() {
+        return pesoCarteira;
+    }
 
-	public String getVinculoMatricula() {
-		return vinculoMatricula;
-	}
+    public void setPesoCarteira(Integer pesoCarteira) {
+        this.pesoCarteira = pesoCarteira;
+    }
 
-	public void setVinculoMatricula(String vinculoMatricula) {
-		this.vinculoMatricula = vinculoMatricula;
-	}
+    public Integer getQuantidadeDiscagem() {
+        return quantidadeDiscagem;
+    }
 
-	public String getCodigoAverbacao() {
-		return codigoAverbacao;
-	}
+    public void setQuantidadeDiscagem(Integer quantidadeDiscagem) {
+        this.quantidadeDiscagem = quantidadeDiscagem;
+    }
 
-	public void setCodigoAverbacao(String codigoAverbacao) {
-		this.codigoAverbacao = codigoAverbacao;
-	}
+    public Integer getPesoDiscagem() {
+        return pesoDiscagem;
+    }
 
-	public String getTipoConvenio() {
-		return tipoConvenio;
-	}
+    public void setPesoDiscagem(Integer pesoDiscagem) {
+        this.pesoDiscagem = pesoDiscagem;
+    }
 
-	public void setTipoConvenio(String tipoConvenio) {
-		this.tipoConvenio = tipoConvenio;
-	}
+    public Boolean getAberturaConta() {
+        return aberturaConta;
+    }
 
-	public Date getDataInicioAtendimento() {
-		return dataInicioAtendimento;
-	}
+    public void setAberturaConta(Boolean aberturaConta) {
+        this.aberturaConta = aberturaConta;
+    }
 
-	public void setDataInicioAtendimento(Date dataInicioAtendimento) {
-		this.dataInicioAtendimento = dataInicioAtendimento;
-	}
+    public String getFluxo() {
+        return fluxo;
+    }
 
-	public Date getDataFimAtendimento() {
-		return dataFimAtendimento;
-	}
+    public void setFluxo(String fluxo) {
+        this.fluxo = fluxo;
+    }
 
-	public void setDataFimAtendimento(Date dataFimAtendimento) {
-		this.dataFimAtendimento = dataFimAtendimento;
-	}
+    public String getOutrasInformacoes() {
+        return outrasInformacoes;
+    }
 
-	public String getComissaoPagar() {
-		return comissaoPagar;
-	}
+    public void setOutrasInformacoes(String outrasInformacoes) {
+        this.outrasInformacoes = outrasInformacoes;
+    }
 
-	public void setComissaoPagar(String comissaoPagar) {
-		this.comissaoPagar = comissaoPagar;
-	}
+    public String getMargemResultado() {
+        return margemResultado;
+    }
 
-	public BigDecimal getValorLiberado() {
-		return valorLiberado;
-	}
+    public void setMargemResultado(String margemResultado) {
+        this.margemResultado = margemResultado;
+    }
 
-	public void setValorLiberado(BigDecimal valorLiberado) {
-		this.valorLiberado = valorLiberado;
-	}
+    public String getManifesto() {
+        return manifesto;
+    }
 
-	public BigDecimal getValorParcela() {
-		return valorParcela;
-	}
+    public void setManifesto(String manifesto) {
+        this.manifesto = manifesto;
+    }
 
-	public void setValorParcela(BigDecimal valorParcela) {
-		this.valorParcela = valorParcela;
-	}
+    public MotivoRetencaoEnum getMotivoRetencao() {
+        return motivoRetencao;
+    }
 
-	public BigDecimal getValorMaxOperacao() {
-		return valorMaxOperacao;
-	}
+    public void setMotivoRetencao(MotivoRetencaoEnum motivoRetencao) {
+        this.motivoRetencao = motivoRetencao;
+    }
 
-	public void setValorMaxOperacao(BigDecimal valorMaxOperacao) {
-		this.valorMaxOperacao = valorMaxOperacao;
-	}
+    public String getObservacao() {
+        return observacao;
+    }
 
-	public BigDecimal getMargem() {
-		return margem;
-	}
+    public void setObservacao(String observacao) {
+        this.observacao = observacao;
+    }
 
-	public void setMargem(BigDecimal margem) {
-		this.margem = margem;
-	}
+    public boolean isProspect() {
+        return prospect;
+    }
 
-	public BigDecimal getLimite() {
-		return limite;
-	}
+    public void setProspect(boolean prospect) {
+        this.prospect = prospect;
+    }
 
-	public String getLimitFormatado() {
-		if (limite == null) {
-			return "R$ 0,00";
-		}
-		NumberFormat nf = NumberFormat.getCurrencyInstance(new Locale("pt", "BR"));
-		return nf.format(limite);
-	}
-	public String getLimitDisponivelFormatado() {
+    public String getVinculoMatricula() {
+        return vinculoMatricula;
+    }
 
-		if (limiteDisponivel == null) {
-			return "R$ 0,00";
-		}
+    public void setVinculoMatricula(String vinculoMatricula) {
+        this.vinculoMatricula = vinculoMatricula;
+    }
 
-		NumberFormat nf = NumberFormat.getCurrencyInstance(new Locale("pt", "BR"));
-		return nf.format(limiteDisponivel);
-	}
+    public String getCodigoAverbacao() {
+        return codigoAverbacao;
+    }
 
-	public String getLimiteSaqueFormatado() {
+    public void setCodigoAverbacao(String codigoAverbacao) {
+        this.codigoAverbacao = codigoAverbacao;
+    }
 
-		if (valorLiberado == null) {
-			return "R$ 0,00";
-		}
+    public String getTipoConvenio() {
+        return tipoConvenio;
+    }
 
-		NumberFormat nf = NumberFormat.getCurrencyInstance(new Locale("pt", "BR"));
-		return nf.format(valorLiberado);
-	}
+    public void setTipoConvenio(String tipoConvenio) {
+        this.tipoConvenio = tipoConvenio;
+    }
 
-	public String getLimiteSaqueDisponivel() {
+    public Date getDataInicioAtendimento() {
+        return dataInicioAtendimento;
+    }
 
-		if (valorMaxOperacao == null) {
-			return "R$ 0,00";
-		}
+    public void setDataInicioAtendimento(Date dataInicioAtendimento) {
+        this.dataInicioAtendimento = dataInicioAtendimento;
+    }
 
-		NumberFormat nf = NumberFormat.getCurrencyInstance(new Locale("pt", "BR"));
-		return nf.format(valorMaxOperacao);
-	}
+    public Date getDataFimAtendimento() {
+        return dataFimAtendimento;
+    }
 
+    public void setDataFimAtendimento(Date dataFimAtendimento) {
+        this.dataFimAtendimento = dataFimAtendimento;
+    }
 
+    public String getComissaoPagar() {
+        return comissaoPagar;
+    }
 
+    public void setComissaoPagar(String comissaoPagar) {
+        this.comissaoPagar = comissaoPagar;
+    }
 
-	public void setLimite(BigDecimal limite) {
-		this.limite = limite;
-	}
+    public BigDecimal getValorLiberado() {
+        return valorLiberado;
+    }
 
-	public BigDecimal getSeguro() {
-		return seguro;
-	}
+    public void setValorLiberado(BigDecimal valorLiberado) {
+        this.valorLiberado = valorLiberado;
+    }
 
-	public void setSeguro(BigDecimal seguro) {
-		this.seguro = seguro;
-	}
+    public BigDecimal getValorParcela() {
+        return valorParcela;
+    }
 
-	public BigDecimal getValorContrato() {
-		return valorContrato;
-	}
+    public void setValorParcela(BigDecimal valorParcela) {
+        this.valorParcela = valorParcela;
+    }
 
-	public void setValorContrato(BigDecimal valorContrato) {
-		this.valorContrato = valorContrato;
-	}
+    public BigDecimal getValorMaxOperacao() {
+        return valorMaxOperacao;
+    }
 
-	public BigDecimal getSaldoDevedor() {
-		return saldoDevedor;
-	}
-	
-	public BigDecimal getSeguroPrestamista() {
-		return seguroPrestamista;
-	}
-	
-	public void setSeguroPrestamista(BigDecimal seguroPrestamista) {
-		this.seguroPrestamista = seguroPrestamista;
-	}
+    public void setValorMaxOperacao(BigDecimal valorMaxOperacao) {
+        this.valorMaxOperacao = valorMaxOperacao;
+    }
 
-	public void setSaldoDevedor(BigDecimal saldoDevedor) {
-		this.saldoDevedor = saldoDevedor;
-	}
+    public BigDecimal getMargem() {
+        return margem;
+    }
 
-	public BigDecimal getValorTotal() {
-		return valorTotal;
-	}
+    public void setMargem(BigDecimal margem) {
+        this.margem = margem;
+    }
 
-	public void setValorTotal(BigDecimal valorTotal) {
-		this.valorTotal = valorTotal;
-	}
+    public BigDecimal getLimite() {
+        return limite;
+    }
 
-	public BigDecimal getRisco() {
-		return risco;
-	}
+    public String getLimitFormatado() {
+        if (limite == null) {
+            return "R$ 0,00";
+        }
+        NumberFormat nf = NumberFormat.getCurrencyInstance(new Locale("pt", "BR"));
+        return nf.format(limite);
+    }
 
-	public void setRisco(BigDecimal risco) {
-		this.risco = risco;
-	}
+    public String getLimitDisponivelFormatado() {
 
-	public BigDecimal getValorLiberadoRefinanciamento() {
-		return valorLiberadoRefinanciamento;
-	}
+        if (limiteDisponivel == null) {
+            return "R$ 0,00";
+        }
 
-	public void setValorLiberadoRefinanciamento(BigDecimal valorLiberadoRefinanciamento) {
-		this.valorLiberadoRefinanciamento = valorLiberadoRefinanciamento;
-	}
+        NumberFormat nf = NumberFormat.getCurrencyInstance(new Locale("pt", "BR"));
+        return nf.format(limiteDisponivel);
+    }
 
-	public BigDecimal getValorLiberadoEmprestimo() {
-		return valorLiberadoEmprestimo;
-	}
+    public String getLimiteSaqueFormatado() {
 
-	public void setValorLiberadoEmprestimo(BigDecimal valorLiberadoEmprestimo) {
-		this.valorLiberadoEmprestimo = valorLiberadoEmprestimo;
-	}
+        if (valorLiberado == null) {
+            return "R$ 0,00";
+        }
 
-	public BigDecimal getSalarioCliente() {
-		return salarioCliente;
-	}
+        NumberFormat nf = NumberFormat.getCurrencyInstance(new Locale("pt", "BR"));
+        return nf.format(valorLiberado);
+    }
 
-	public void setSalarioCliente(BigDecimal salarioCliente) {
-		this.salarioCliente = salarioCliente;
-	}
+    public String getLimiteSaqueDisponivel() {
 
-	public BigDecimal getValorCartaCredito() {
-		return valorCartaCredito;
-	}
+        if (valorMaxOperacao == null) {
+            return "R$ 0,00";
+        }
 
-	public void setValorCartaCredito(BigDecimal valorCartaCredito) {
-		this.valorCartaCredito = valorCartaCredito;
-	}
+        NumberFormat nf = NumberFormat.getCurrencyInstance(new Locale("pt", "BR"));
+        return nf.format(valorMaxOperacao);
+    }
 
-	public BigDecimal getTaxa() {
-		return taxa;
-	}
 
-	public void setTaxa(BigDecimal taxa) {
-		this.taxa = taxa;
-	}
+    public void setLimite(BigDecimal limite) {
+        this.limite = limite;
+    }
 
-	public String getBeneficioPrincipal() {
-		return beneficioPrincipal;
-	}
+    public BigDecimal getSeguro() {
+        return seguro;
+    }
 
-	public void setBeneficioPrincipal(String beneficioPrincipal) {
-		this.beneficioPrincipal = beneficioPrincipal;
-	}
+    public void setSeguro(BigDecimal seguro) {
+        this.seguro = seguro;
+    }
 
-	public String getBeneficioSecundario() {
-		return beneficioSecundario;
-	}
+    public BigDecimal getValorContrato() {
+        return valorContrato;
+    }
 
-	public void setBeneficioSecundario(String beneficioSecundario) {
-		this.beneficioSecundario = beneficioSecundario;
-	}
+    public void setValorContrato(BigDecimal valorContrato) {
+        this.valorContrato = valorContrato;
+    }
 
-	public BigDecimal getDescontoCompulsorio() {
-		return descontoCompulsorio;
-	}
+    public BigDecimal getSaldoDevedor() {
+        return saldoDevedor;
+    }
 
-	public void setDescontoCompulsorio(BigDecimal descontoCompulsorio) {
-		this.descontoCompulsorio = descontoCompulsorio;
-	}
+    public BigDecimal getSeguroPrestamista() {
+        return seguroPrestamista;
+    }
 
-	public BigDecimal getDescontoFacultativo() {
-		return descontoFacultativo;
-	}
+    public void setSeguroPrestamista(BigDecimal seguroPrestamista) {
+        this.seguroPrestamista = seguroPrestamista;
+    }
 
-	public void setDescontoFacultativo(BigDecimal descontoFacultativo) {
-		this.descontoFacultativo = descontoFacultativo;
-	}
+    public void setSaldoDevedor(BigDecimal saldoDevedor) {
+        this.saldoDevedor = saldoDevedor;
+    }
 
-	public Date getDataVencimento() {
-		return dataVencimento;
-	}
+    public BigDecimal getValorTotal() {
+        return valorTotal;
+    }
 
-	public void setDataVencimento(Date dataVencimento) {
-		this.dataVencimento = dataVencimento;
-	}
+    public void setValorTotal(BigDecimal valorTotal) {
+        this.valorTotal = valorTotal;
+    }
 
-	public int getQuantidadeContratos() {
-		return quantidadeContratos;
-	}
+    public BigDecimal getRisco() {
+        return risco;
+    }
 
-	public void setQuantidadeContratos(int quantidadeContratos) {
-		this.quantidadeContratos = quantidadeContratos;
-	}
+    public void setRisco(BigDecimal risco) {
+        this.risco = risco;
+    }
 
-	public Integer getQuantidadeParcela() {
-		return quantidadeParcela;
-	}
+    public BigDecimal getValorLiberadoRefinanciamento() {
+        return valorLiberadoRefinanciamento;
+    }
 
-	public void setQuantidadeParcela(Integer quantidadeParcela) {
-		this.quantidadeParcela = quantidadeParcela;
-	}
+    public void setValorLiberadoRefinanciamento(BigDecimal valorLiberadoRefinanciamento) {
+        this.valorLiberadoRefinanciamento = valorLiberadoRefinanciamento;
+    }
 
-	public InstituicaoFinanceiraEnum getInstituicaoFinanceira() {
-		return instituicaoFinanceira;
-	}
-
-	public void setInstituicaoFinanceira(InstituicaoFinanceiraEnum instituicaoFinanceira) {
-		this.instituicaoFinanceira = instituicaoFinanceira;
-	}
-
-	public String getInformacoesComplementares() {
-		return informacoesComplementares;
-	}
-
-	public void setInformacoesComplementares(String informacoesComplementares) {
-		this.informacoesComplementares = informacoesComplementares;
-	}
-
-	public String getCodigoLoja() {
-		return codigoLoja;
-	}
-
-	public void setCodigoLoja(String codigoLoja) {
-		this.codigoLoja = codigoLoja;
-	}
-
-	public boolean isTarget() {
-		return target;
-	}
-
-	public void setTarget(boolean target) {
-		this.target = target;
-	}
-
-	public TipoFluxoEsteira getFluxoEsteira() {
-		return fluxoEsteira;
-	}
-
-	public void setFluxoEsteira(TipoFluxoEsteira fluxoEsteira) {
-		this.fluxoEsteira = fluxoEsteira;
-	}
-
-	public Usuario getUsuarioOcupado() {
-		return usuarioOcupado;
-	}
-
-	public void setUsuarioOcupado(Usuario usuarioOcupado) {
-		this.usuarioOcupado = usuarioOcupado;
-	}
-
-	public Campanha getCampanha() {
-		return campanha;
-	}
-
-	public void setCampanha(Campanha campanha) {
-		this.campanha = campanha;
-	}
-
-	public StatusAtendimento getStatus() {
-		return status;
-	}
-
-	public void setStatus(StatusAtendimento status) {
-		this.status = status;
-	}
-
-	public Produto getProduto() {
-		return produto;
-	}
-
-	public void setProduto(Produto produto) {
-		this.produto = produto;
-	}
-
-	public Importacao getImportacao() {
-		return importacao;
-	}
-
-	public void setImportacao(Importacao importacao) {
-		this.importacao = importacao;
-	}
-
-	public Equipe getEquipe() {
-		return equipe;
-	}
-
-	public void setEquipe(Equipe equipe) {
-		this.equipe = equipe;
-	}
-
-	public Empresa getEmpresa() {
-		return empresa;
-	}
-
-	public BigDecimal getMargemSecundaria() {
-		return margemSecundaria;
-	}
-	
-	public void setMargemSecundaria(BigDecimal margemSecundaria) {
-		this.margemSecundaria = margemSecundaria;
-	}
-	
-	public void setEmpresa(Empresa empresa) {
-		this.empresa = empresa;
-	}
-
-	public Loja getLoja() {
-		return loja;
-	}
-
-	public void setLoja(Loja loja) {
-		this.loja = loja;
-	}
-
-	public FormaPagamento getFormaPagamento() {
-		return formaPagamento;
-	}
-
-	public void setFormaPagamento(FormaPagamento formaPagamento) {
-		this.formaPagamento = formaPagamento;
-	}
-
-	public Map<String, String> getListInformacoesComplementares() {
-		return listInformacoesComplementares;
-	}
-
-	public void setListInformacoesComplementares(Map<String, String> listInformacoesComplementares) {
-		this.listInformacoesComplementares = listInformacoesComplementares;
-	}
-
-	public Double getValorSaque() {
-		return valorSaque;
-	}
-
-	public void setValorSaque(Double valorSaque) {
-		this.valorSaque = valorSaque;
-	}
-
-	public String getDescricaoSeguro() {
-		return descricaoSeguro;
-	}
-
-	public void setDescricaoSeguro(String descricaoSeguro) {
-		this.descricaoSeguro = descricaoSeguro;
-	}
-
-	public double getCapitalSegurado() {
-		return capitalSegurado;
-	}
-
-	public void setCapitalSegurado(double capitalSegurado) {
-		this.capitalSegurado = capitalSegurado;
-	}
-
-	public double getValorSeguro() {
-		return valorSeguro;
-	}
-	
-	
-
-	public void setValorSeguro(double valorSeguro) {
-		this.valorSeguro = valorSeguro;
-	}
-
-	public boolean isFazerSeguro() {
-		return fazerSeguro;
-	}
-
-	public void setFazerSeguro(boolean fazerSeguro) {
-		this.fazerSeguro = fazerSeguro;
-	}
-
-	public boolean isAbrirContaPagamento() {
-		return abrirContaPagamento;
-	}
-
-	public void setAbrirContaPagamento(boolean abrirContaPagamento) {
-		this.abrirContaPagamento = abrirContaPagamento;
-	}
-
-	public Object getSituacaoFuncional() {
-		return situacaoFuncional;
-	}
-
-	public void setSituacaoFuncional(Object situacaoFuncional) {
-		this.situacaoFuncional = situacaoFuncional;
-	}
-
-	public Double getValorComissaoPagar() {
-		return valorComissaoPagar;
-	}
-
-	public void setValorComissaoPagar(Double valorComissaoPagar) {
-		this.valorComissaoPagar = valorComissaoPagar;
-	}
-
-	public Integer getQuantidadeProposta() {
-		return quantidadeProposta;
-	}
-
-	public void setQuantidadeProposta(Integer quantidadeProposta) {
-		this.quantidadeProposta = quantidadeProposta;
-	}
-
-	public List<Equipe> getEquipes() {
-		return equipes;
-	}
-
-	public void setEquipes(List<Equipe> equipes) {
-		this.equipes = equipes;
-	}
-
-	public List<StatusAtendimento> getListStatusAtendimentos() {
-		return listStatusAtendimentos;
-	}
-
-	public void setListStatusAtendimentos(List<StatusAtendimento> statusListAtendimentos) {
-		this.listStatusAtendimentos = statusListAtendimentos;
-	}
-
-	public List<StatusTelefone> getStatusTelefones() {
-		return statusTelefones;
-	}
-
-	public void setStatusTelefones(List<StatusTelefone> statusTelefones) {
-		this.statusTelefones = statusTelefones;
-	}
-
-	public List<Pausa> getPausas() {
-		return pausas;
-	}
-
-	public void setPausas(List<Pausa> pausas) {
-		this.pausas = pausas;
-	}
-
-	public List<Produto> getProdutos() {
-		return produtos;
-	}
-
-	public void setProdutos(List<Produto> produtos) {
-		this.produtos = produtos;
-	}
-
-	public List<FormaPagamento> getFormaPagamentos() {
-		return formaPagamentos;
-	}
-
-	public void setFormaPagamentos(List<FormaPagamento> formaPagamentos) {
-		this.formaPagamentos = formaPagamentos;
-	}
-
-	public Contrato getContrato() {
-		return contrato;
-	}
-
-	public void setContrato(Contrato contrato) {
-		this.contrato = contrato;
-	}
-
-	public Integer getPrioridadeFila() {
-		return prioridadeFila;
-	}
-
-	public void setPrioridadeFila(Integer prioridadeFila) {
-		this.prioridadeFila = prioridadeFila;
-	}
-
-	
-	
-	
-	public Long getTempoPosAtendimento() {
-		return tempoPosAtendimento;
-	}
-
-	public void setTempoPosAtendimento(Long tempoPosAtendimento) {
-		this.tempoPosAtendimento = tempoPosAtendimento;
-	}
-
-	public BigDecimal getMargemCinco() {
-		return margemCinco;
-	}
-
-	public void setMargemCinco(BigDecimal margemCinco) {
-		this.margemCinco = margemCinco;
-	}
-
-	public BigDecimal getMargemSecundariaCinco() {
-		return margemSecundariaCinco;
-	}
-
-	public void setMargemSecundariaCinco(BigDecimal margemSecundariaCinco) {
-		this.margemSecundariaCinco = margemSecundariaCinco;
-	}
-
-
-	
-	public String getMailingId() {
-		return mailingId;
-	}
-	
-	public void setMailingId(String mailingId) {
-		this.mailingId = mailingId;
-	}
-	
-	public Integer getCodTabelaRefin() {
-		return codTabelaRefin;
-	}
-	
-	public void setCodTabelaRefin(Integer codTabelaRefin) {
-		this.codTabelaRefin = codTabelaRefin;
-	}
-	
-	public Usuario getCoordenador() {
-		return coordenador;
-	}
-	
-	public void setCoordenador(Usuario coordenador) {
-		this.coordenador = coordenador;
-	}
-	
-	public Usuario getSupervisor() {
-		return supervisor;
-	}
-	
-	public void setSupervisor(Usuario supervisor) {
-		this.supervisor = supervisor;
-	}
-
-	public String getTiket() {
-		return tiket;
-	}
-	public void setTiket(String tiket) {
-		this.tiket = tiket;
-	}
-	
-	public Boolean getBko() {
-		return bko;
-	}
-	
-	public void setBko(Boolean bko) {
-		this.bko = bko;
-	}
-	
-	public BigDecimal getValorSeguroLiberado() {
-		return valorSeguroLiberado;
-	}
-	
-	public void setValorSeguroLiberado(BigDecimal valorSeguroLiberado) {
-		this.valorSeguroLiberado = valorSeguroLiberado;
-	}
-	
-	public abstract void setListHistoricos(List<? extends GenericHistoricoAtendimento> paramList);
-
-	public abstract void adicionarHistorico(GenericHistoricoAtendimento paramGenericHistorico);
-
-	public abstract List<? extends GenericTelefone> getListaTelefones();
-
-	public abstract List<? extends GenericTelefone> getListaTelefonesOrdenada();
-
-	public abstract void setListaTelefones(List<? extends GenericTelefone> paramList);
-
-	public abstract boolean adicionarTelefone(GenericTelefone paramGenericTelefone);
-
-	public abstract List<? extends GenericDadosBancarios> getListaDadosBancarios();
-
-	public abstract void setListaDadosBancarios(List<? extends Generic> paramList);
-
-	public abstract List<? extends GenericCartaoCredito> getListaCartoesCredito();
-
-	public abstract void setListaCartoesCredito(List<? extends GenericCartaoCredito> paramList);
-
-	public abstract void adicionarDadosBancarios(GenericDadosBancarios paramGenericDadosBancarios);
-
-	public abstract void adicionarCartoesCredito(GenericCartaoCredito paramGenericCartaoCredito);
-
-	public abstract List<? extends GenericEmail> getListaEmails();
-
-	public abstract void setListaEmails(List<? extends GenericEmail> paramList);
-
-	public abstract void adicionarEmail(GenericEmail paramGenericEmail);
-
-	public abstract List<? extends GenericEndereco> getListaEnderecos();
-
-	public abstract void setListaEnderecos(List<? extends GenericEndereco> paramList);
-
-	public abstract void adicionarEndereco(GenericEndereco paramGenericEndereco);
-
-	public abstract List<? extends GenericContratoEfetivado> getListaContratosEfetivados();
-
-	public abstract void setListaContratosEfetivados(List<? extends GenericContratoEfetivado> paramList);
-
-	public abstract void adicionarContratoEfetivado(GenericContratoEfetivado paramGenericContratoEfetivado);
-
-	public abstract void adicionarPortabilidade(Portabilidade portabilidade);
-
-	public abstract List<? extends GenericHistoricoAtendimento> getListaHistoricos();
-
-	@Override
-	public String toString() {
-		return "GenericAtendimento{" +
-				"adesao='" + adesao + '\'' +
-				", protocolo='" + protocolo + '\'' +
-				", nome='" + nome + '\'' +
-				", cpf='" + cpf + '\'' +
-				", dataNascimento=" + dataNascimento +
-				", sexo=" + sexo +
-				", nomeMae='" + nomeMae + '\'' +
-				", nomePai='" + nomePai + '\'' +
-				", nomeConjuge='" + nomeConjuge + '\'' +
-				", uf='" + uf + '\'' +
-				", nacionalidade='" + nacionalidade + '\'' +
-				", ufNascimento='" + ufNascimento + '\'' +
-				", cidadeNascimento='" + cidadeNascimento + '\'' +
-				", estadoCivil=" + estadoCivil +
-				", ufDocumento='" + ufDocumento + '\'' +
-				", dataEmissaoDocumento=" + dataEmissaoDocumento +
-				", numeroDocumento='" + numeroDocumento + '\'' +
-				", signo='" + signo + '\'' +
-				", orgaoDocumento='" + orgaoDocumento + '\'' +
-				", prioridade=" + prioridade +
-				", enviado=" + enviado +
-				", atender=" + atender +
-				", conciliado=" + conciliado +
-				", dataConciliacao=" + dataConciliacao +
-				", discou=" + discou +
-				", publico=" + publico +
-				", tipoBeneficio=" + tipoBeneficio +
-				", tempoPosAtendimento=" + tempoPosAtendimento +
-				", situacaoServidor=" + situacaoServidor +
-				", pesoCarteira=" + pesoCarteira +
-				", quantidadeDiscagem=" + quantidadeDiscagem +
-				", pesoDiscagem=" + pesoDiscagem +
-				", aberturaConta=" + aberturaConta +
-				", fluxo='" + fluxo + '\'' +
-				", outrasInformacoes='" + outrasInformacoes + '\'' +
-				", margemResultado='" + margemResultado + '\'' +
-				", manifesto='" + manifesto + '\'' +
-				", motivoRetencao=" + motivoRetencao +
-				", observacao='" + observacao + '\'' +
-				", prospect=" + prospect +
-				", vinculoMatricula='" + vinculoMatricula + '\'' +
-				", codigoAverbacao='" + codigoAverbacao + '\'' +
-				", tipoConvenio='" + tipoConvenio + '\'' +
-				", dataInicioAtendimento=" + dataInicioAtendimento +
-				", dataFimAtendimento=" + dataFimAtendimento +
-				", comissaoPagar='" + comissaoPagar + '\'' +
-				", valorLiberado=" + valorLiberado +
-				", valorParcela=" + valorParcela +
-				", valorMaxOperacao=" + valorMaxOperacao +
-				", margem=" + margem +
-				", margemCinco=" + margemCinco +
-				", margemSecundaria=" + margemSecundaria +
-				", margemSecundariaCinco=" + margemSecundariaCinco +
-				", limite=" + limite +
-				", seguro=" + seguro +
-				", valorSeguroLiberado=" + valorSeguroLiberado +
-				", seguroPrestamista=" + seguroPrestamista +
-				", valorContrato=" + valorContrato +
-				", saldoDevedor=" + saldoDevedor +
-				", valorTotal=" + valorTotal +
-				", risco=" + risco +
-				", valorLiberadoRefinanciamento=" + valorLiberadoRefinanciamento +
-				", valorLiberadoEmprestimo=" + valorLiberadoEmprestimo +
-				", salarioCliente=" + salarioCliente +
-				", valorCartaCredito=" + valorCartaCredito +
-				", taxa=" + taxa +
-				", beneficioPrincipal='" + beneficioPrincipal + '\'' +
-				", beneficioSecundario='" + beneficioSecundario + '\'' +
-				", descontoCompulsorio=" + descontoCompulsorio +
-				", descontoFacultativo=" + descontoFacultativo +
-				", dataVencimento=" + dataVencimento +
-				", quantidadeContratos=" + quantidadeContratos +
-				", quantidadeParcela=" + quantidadeParcela +
-				", instituicaoFinanceira=" + instituicaoFinanceira +
-				", informacoesComplementares='" + informacoesComplementares + '\'' +
-				", codigoLoja='" + codigoLoja + '\'' +
-				", entidadePrincipal='" + entidadePrincipal + '\'' +
-				", entidadeSecundaria='" + entidadeSecundaria + '\'' +
-				", orgaoPrincipal='" + orgaoPrincipal + '\'' +
-				", orgaoSecundario='" + orgaoSecundario + '\'' +
-				", mailingId='" + mailingId + '\'' +
-				", codTabelaRefin=" + codTabelaRefin +
-				", target=" + target +
-				", fluxoEsteira=" + fluxoEsteira +
-				", usuarioOcupado=" + usuarioOcupado +
-				", campanha=" + campanha +
-				", status=" + status +
-				", produto=" + produto +
-				", importacao=" + importacao +
-				", equipe=" + equipe +
-				", empresa=" + empresa +
-				", loja=" + loja +
-				", supervisor=" + supervisor +
-				", coordenador=" + coordenador +
-				", formaPagamento=" + formaPagamento +
-				", contrato=" + contrato +
-				", prioridadeFila=" + prioridadeFila +
-				", tiket='" + tiket + '\'' +
-				", bko=" + bko +
-				", listInformacoesComplementares=" + listInformacoesComplementares +
-				", valorSaque=" + valorSaque +
-				", descricaoSeguro='" + descricaoSeguro + '\'' +
-				", capitalSegurado=" + capitalSegurado +
-				", valorSeguro=" + valorSeguro +
-				", fazerSeguro=" + fazerSeguro +
-				", abrirContaPagamento=" + abrirContaPagamento +
-				", situacaoFuncional=" + situacaoFuncional +
-				", valorComissaoPagar=" + valorComissaoPagar +
-				", quantidadeProposta=" + quantidadeProposta +
-				", equipes=" + equipes +
-				", listStatusAtendimentos=" + listStatusAtendimentos +
-				", statusTelefones=" + statusTelefones +
-				", pausas=" + pausas +
-				", produtos=" + produtos +
-				", formaPagamentos=" + formaPagamentos +
-				'}';
-	}
-
-
-	public Boolean getEnviarN2() {
-		return enviarN2;
-	}
-
-	public void setEnviarN2(Boolean enviarN2) {
-		this.enviarN2 = enviarN2;
-	}
-
-	public Integer getPosicaoFila() {
-		return posicaoFila;
-	}
-
-	public void setPosicaoFila(Integer posicaoFila) {
-		this.posicaoFila = posicaoFila;
-	}
-
-	public Date getDataAberturaDemanda() {
-		return dataAberturaDemanda;
-	}
-
-	public void setDataAberturaDemanda(Date dataAberturaDemanda) {
-		this.dataAberturaDemanda = dataAberturaDemanda;
-	}
-
-	public Date getPrazoPrazoDemanda() {
-		return prazoPrazoDemanda;
-	}
-
-	public void setPrazoPrazoDemanda(Date prazoPrazoDemanda) {
-		this.prazoPrazoDemanda = prazoPrazoDemanda;
-	}
-
-	public Date getDataFechamentoDemanda() {
-		return dataFechamentoDemanda;
-	}
-
-	public void setDataFechamentoDemanda(Date dataFechamentoDemanda) {
-		this.dataFechamentoDemanda = dataFechamentoDemanda;
-	}
-
-	public Boolean getDemandaEncerrada() {
-		return demandaEncerrada;
-	}
-
-	public void setDemandaEncerrada(Boolean demandaEncerrada) {
-		this.demandaEncerrada = demandaEncerrada;
-	}
-
-	public TipoClienteEnum getTipoClienteEnum() {
-		return tipoClienteEnum;
-	}
-
-	public void setTipoClienteEnum(TipoClienteEnum tipoClienteEnum) {
-		this.tipoClienteEnum = tipoClienteEnum;
-	}
-
-	public Motivo getMotivo() {
-		return motivo;
-	}
-
-	public void setMotivo(Motivo motivo) {
-		this.motivo = motivo;
-	}
-
-	public SubMotivo getSubMotivo() {
-		return subMotivo;
-	}
-
-	public void setSubMotivo(SubMotivo subMotivo) {
-		this.subMotivo = subMotivo;
-	}
-
-	public BigDecimal getLimiteDisponivel() {
-		return limiteDisponivel;
-	}
-
-	public void setLimiteDisponivel(BigDecimal limiteDisponivel) {
-		this.limiteDisponivel = limiteDisponivel;
-	}
-
-	public Boolean getClienteVip() {
-		return clienteVip;
-	}
-
-	public void setClienteVip(Boolean clienteVip) {
-		this.clienteVip = clienteVip;
-	}
-
-	public String getAnotacao() {
-		return anotacao;
-	}
-
-	public void setAnotacao(String anotacao) {
-		this.anotacao = anotacao;
-	}
-
-	public String getObservacaoAdicional() {
-		return observacaoAdicional;
-	}
-
-	public void setObservacaoAdicional(String observacaoAdicional) {
-		this.observacaoAdicional = observacaoAdicional;
-	}
-
-	public String getObservacaoN2() {
-		return observacaoN2;
-	}
-
-	public void setObservacaoN2(String observacaoN2) {
-		this.observacaoN2 = observacaoN2;
-	}
-
-	public void setRating(Integer rating) {
-		this.rating = rating;
-	}
-
-	public Integer getRating() {
-		return rating;
-	}
-
-	public abstract List<Portabilidade> getListPortabilidades();
-
-	public abstract void setListPortabilidades(List<Portabilidade> listPortabilidades);
-
-	public void setEspecie(String especie) {
-		this.especie = especie;
-	}
-
-	public String getEspecie() {
-
-		return especie;
-	}
-
-	public String getDataAberturaDemandaFormatada(){
-
-		if(dataAberturaDemanda == null)
-			return "";
-
-		return DateUtil.builder(this.dataAberturaDemanda).formatarDataParaString("dd/MM/yyyy").getDataTexto();
-
-	}
-	public String getDataPrazoDemandaFormatada(){
-
-		if(prazoPrazoDemanda == null)
-			return "";
-
-		return DateUtil.builder(this.prazoPrazoDemanda).formatarDataParaString("dd/MM/yyyy").getDataTexto();
-
-	}
-
-	public String getDataFechamentoDemandaFormatada(){
-
-		if(dataFechamentoDemanda == null)
-			return "";
-
-		return DateUtil.builder(this.dataFechamentoDemanda).formatarDataParaString("dd/MM/yyyy").getDataTexto();
-
-	}
+    public BigDecimal getValorLiberadoEmprestimo() {
+        return valorLiberadoEmprestimo;
+    }
+
+    public void setValorLiberadoEmprestimo(BigDecimal valorLiberadoEmprestimo) {
+        this.valorLiberadoEmprestimo = valorLiberadoEmprestimo;
+    }
+
+    public BigDecimal getSalarioCliente() {
+        return salarioCliente;
+    }
+
+    public void setSalarioCliente(BigDecimal salarioCliente) {
+        this.salarioCliente = salarioCliente;
+    }
+
+    public BigDecimal getValorCartaCredito() {
+        return valorCartaCredito;
+    }
+
+    public void setValorCartaCredito(BigDecimal valorCartaCredito) {
+        this.valorCartaCredito = valorCartaCredito;
+    }
+
+    public BigDecimal getTaxa() {
+        return taxa;
+    }
+
+    public void setTaxa(BigDecimal taxa) {
+        this.taxa = taxa;
+    }
+
+    public String getBeneficioPrincipal() {
+        return beneficioPrincipal;
+    }
+
+    public void setBeneficioPrincipal(String beneficioPrincipal) {
+        this.beneficioPrincipal = beneficioPrincipal;
+    }
+
+    public String getBeneficioSecundario() {
+        return beneficioSecundario;
+    }
+
+    public void setBeneficioSecundario(String beneficioSecundario) {
+        this.beneficioSecundario = beneficioSecundario;
+    }
+
+    public BigDecimal getDescontoCompulsorio() {
+        return descontoCompulsorio;
+    }
+
+    public void setDescontoCompulsorio(BigDecimal descontoCompulsorio) {
+        this.descontoCompulsorio = descontoCompulsorio;
+    }
+
+    public BigDecimal getDescontoFacultativo() {
+        return descontoFacultativo;
+    }
+
+    public void setDescontoFacultativo(BigDecimal descontoFacultativo) {
+        this.descontoFacultativo = descontoFacultativo;
+    }
+
+    public Date getDataVencimento() {
+        return dataVencimento;
+    }
+
+    public void setDataVencimento(Date dataVencimento) {
+        this.dataVencimento = dataVencimento;
+    }
+
+    public int getQuantidadeContratos() {
+        return quantidadeContratos;
+    }
+
+    public void setQuantidadeContratos(int quantidadeContratos) {
+        this.quantidadeContratos = quantidadeContratos;
+    }
+
+    public Integer getQuantidadeParcela() {
+        return quantidadeParcela;
+    }
+
+    public void setQuantidadeParcela(Integer quantidadeParcela) {
+        this.quantidadeParcela = quantidadeParcela;
+    }
+
+    public InstituicaoFinanceiraEnum getInstituicaoFinanceira() {
+        return instituicaoFinanceira;
+    }
+
+    public void setInstituicaoFinanceira(InstituicaoFinanceiraEnum instituicaoFinanceira) {
+        this.instituicaoFinanceira = instituicaoFinanceira;
+    }
+
+    public String getInformacoesComplementares() {
+        return informacoesComplementares;
+    }
+
+    public void setInformacoesComplementares(String informacoesComplementares) {
+        this.informacoesComplementares = informacoesComplementares;
+    }
+
+    public String getCodigoLoja() {
+        return codigoLoja;
+    }
+
+    public void setCodigoLoja(String codigoLoja) {
+        this.codigoLoja = codigoLoja;
+    }
+
+    public boolean isTarget() {
+        return target;
+    }
+
+    public void setTarget(boolean target) {
+        this.target = target;
+    }
+
+    public TipoFluxoEsteira getFluxoEsteira() {
+        return fluxoEsteira;
+    }
+
+    public void setFluxoEsteira(TipoFluxoEsteira fluxoEsteira) {
+        this.fluxoEsteira = fluxoEsteira;
+    }
+
+    public Usuario getUsuarioOcupado() {
+        return usuarioOcupado;
+    }
+
+    public void setUsuarioOcupado(Usuario usuarioOcupado) {
+        this.usuarioOcupado = usuarioOcupado;
+    }
+
+    public Campanha getCampanha() {
+        return campanha;
+    }
+
+    public void setCampanha(Campanha campanha) {
+        this.campanha = campanha;
+    }
+
+    public StatusAtendimento getStatus() {
+        return status;
+    }
+
+    public void setStatus(StatusAtendimento status) {
+        this.status = status;
+    }
+
+    public Produto getProduto() {
+        return produto;
+    }
+
+    public void setProduto(Produto produto) {
+        this.produto = produto;
+    }
+
+    public Importacao getImportacao() {
+        return importacao;
+    }
+
+    public void setImportacao(Importacao importacao) {
+        this.importacao = importacao;
+    }
+
+    public Equipe getEquipe() {
+        return equipe;
+    }
+
+    public void setEquipe(Equipe equipe) {
+        this.equipe = equipe;
+    }
+
+    public Empresa getEmpresa() {
+        return empresa;
+    }
+
+    public BigDecimal getMargemSecundaria() {
+        return margemSecundaria;
+    }
+
+    public void setMargemSecundaria(BigDecimal margemSecundaria) {
+        this.margemSecundaria = margemSecundaria;
+    }
+
+    public void setEmpresa(Empresa empresa) {
+        this.empresa = empresa;
+    }
+
+    public Loja getLoja() {
+        return loja;
+    }
+
+    public void setLoja(Loja loja) {
+        this.loja = loja;
+    }
+
+    public FormaPagamento getFormaPagamento() {
+        return formaPagamento;
+    }
+
+    public void setFormaPagamento(FormaPagamento formaPagamento) {
+        this.formaPagamento = formaPagamento;
+    }
+
+    public Map<String, String> getListInformacoesComplementares() {
+        return listInformacoesComplementares;
+    }
+
+    public void setListInformacoesComplementares(Map<String, String> listInformacoesComplementares) {
+        this.listInformacoesComplementares = listInformacoesComplementares;
+    }
+
+    public Double getValorSaque() {
+        return valorSaque;
+    }
+
+    public void setValorSaque(Double valorSaque) {
+        this.valorSaque = valorSaque;
+    }
+
+    public String getDescricaoSeguro() {
+        return descricaoSeguro;
+    }
+
+    public void setDescricaoSeguro(String descricaoSeguro) {
+        this.descricaoSeguro = descricaoSeguro;
+    }
+
+    public double getCapitalSegurado() {
+        return capitalSegurado;
+    }
+
+    public void setCapitalSegurado(double capitalSegurado) {
+        this.capitalSegurado = capitalSegurado;
+    }
+
+    public double getValorSeguro() {
+        return valorSeguro;
+    }
+
+
+    public void setValorSeguro(double valorSeguro) {
+        this.valorSeguro = valorSeguro;
+    }
+
+    public boolean isFazerSeguro() {
+        return fazerSeguro;
+    }
+
+    public void setFazerSeguro(boolean fazerSeguro) {
+        this.fazerSeguro = fazerSeguro;
+    }
+
+    public boolean isAbrirContaPagamento() {
+        return abrirContaPagamento;
+    }
+
+    public void setAbrirContaPagamento(boolean abrirContaPagamento) {
+        this.abrirContaPagamento = abrirContaPagamento;
+    }
+
+    public Object getSituacaoFuncional() {
+        return situacaoFuncional;
+    }
+
+    public void setSituacaoFuncional(Object situacaoFuncional) {
+        this.situacaoFuncional = situacaoFuncional;
+    }
+
+    public Double getValorComissaoPagar() {
+        return valorComissaoPagar;
+    }
+
+    public void setValorComissaoPagar(Double valorComissaoPagar) {
+        this.valorComissaoPagar = valorComissaoPagar;
+    }
+
+    public Integer getQuantidadeProposta() {
+        return quantidadeProposta;
+    }
+
+    public void setQuantidadeProposta(Integer quantidadeProposta) {
+        this.quantidadeProposta = quantidadeProposta;
+    }
+
+    public List<Equipe> getEquipes() {
+        return equipes;
+    }
+
+    public void setEquipes(List<Equipe> equipes) {
+        this.equipes = equipes;
+    }
+
+    public List<StatusAtendimento> getListStatusAtendimentos() {
+        return listStatusAtendimentos;
+    }
+
+    public void setListStatusAtendimentos(List<StatusAtendimento> statusListAtendimentos) {
+        this.listStatusAtendimentos = statusListAtendimentos;
+    }
+
+    public List<StatusTelefone> getStatusTelefones() {
+        return statusTelefones;
+    }
+
+    public void setStatusTelefones(List<StatusTelefone> statusTelefones) {
+        this.statusTelefones = statusTelefones;
+    }
+
+    public List<Pausa> getPausas() {
+        return pausas;
+    }
+
+    public void setPausas(List<Pausa> pausas) {
+        this.pausas = pausas;
+    }
+
+    public List<Produto> getProdutos() {
+        return produtos;
+    }
+
+    public void setProdutos(List<Produto> produtos) {
+        this.produtos = produtos;
+    }
+
+    public List<FormaPagamento> getFormaPagamentos() {
+        return formaPagamentos;
+    }
+
+    public void setFormaPagamentos(List<FormaPagamento> formaPagamentos) {
+        this.formaPagamentos = formaPagamentos;
+    }
+
+    public Contrato getContrato() {
+        return contrato;
+    }
+
+    public void setContrato(Contrato contrato) {
+        this.contrato = contrato;
+    }
+
+    public Integer getPrioridadeFila() {
+        return prioridadeFila;
+    }
+
+    public void setPrioridadeFila(Integer prioridadeFila) {
+        this.prioridadeFila = prioridadeFila;
+    }
+
+
+    public Long getTempoPosAtendimento() {
+        return tempoPosAtendimento;
+    }
+
+    public void setTempoPosAtendimento(Long tempoPosAtendimento) {
+        this.tempoPosAtendimento = tempoPosAtendimento;
+    }
+
+    public BigDecimal getMargemCinco() {
+        return margemCinco;
+    }
+
+    public void setMargemCinco(BigDecimal margemCinco) {
+        this.margemCinco = margemCinco;
+    }
+
+    public BigDecimal getMargemSecundariaCinco() {
+        return margemSecundariaCinco;
+    }
+
+    public void setMargemSecundariaCinco(BigDecimal margemSecundariaCinco) {
+        this.margemSecundariaCinco = margemSecundariaCinco;
+    }
+
+
+    public String getMailingId() {
+        return mailingId;
+    }
+
+    public void setMailingId(String mailingId) {
+        this.mailingId = mailingId;
+    }
+
+    public Integer getCodTabelaRefin() {
+        return codTabelaRefin;
+    }
+
+    public void setCodTabelaRefin(Integer codTabelaRefin) {
+        this.codTabelaRefin = codTabelaRefin;
+    }
+
+    public Usuario getCoordenador() {
+        return coordenador;
+    }
+
+    public void setCoordenador(Usuario coordenador) {
+        this.coordenador = coordenador;
+    }
+
+    public Usuario getSupervisor() {
+        return supervisor;
+    }
+
+    public void setSupervisor(Usuario supervisor) {
+        this.supervisor = supervisor;
+    }
+
+    public String getTiket() {
+        return tiket;
+    }
+
+    public void setTiket(String tiket) {
+        this.tiket = tiket;
+    }
+
+    public Boolean getBko() {
+        return bko;
+    }
+
+    public void setBko(Boolean bko) {
+        this.bko = bko;
+    }
+
+    public BigDecimal getValorSeguroLiberado() {
+        return valorSeguroLiberado;
+    }
+
+    public void setValorSeguroLiberado(BigDecimal valorSeguroLiberado) {
+        this.valorSeguroLiberado = valorSeguroLiberado;
+    }
+
+    public abstract void setListHistoricos(List<? extends GenericHistoricoAtendimento> paramList);
+
+    public abstract void adicionarHistorico(GenericHistoricoAtendimento paramGenericHistorico);
+
+    public abstract List<? extends GenericTelefone> getListaTelefones();
+
+    public abstract List<? extends GenericTelefone> getListaTelefonesOrdenada();
+
+    public abstract void setListaTelefones(List<? extends GenericTelefone> paramList);
+
+    public abstract boolean adicionarTelefone(GenericTelefone paramGenericTelefone);
+
+    public abstract List<? extends GenericDadosBancarios> getListaDadosBancarios();
+
+    public abstract void setListaDadosBancarios(List<? extends Generic> paramList);
+
+    public abstract List<? extends GenericCartaoCredito> getListaCartoesCredito();
+
+    public abstract void setListaCartoesCredito(List<? extends GenericCartaoCredito> paramList);
+
+    public abstract void adicionarDadosBancarios(GenericDadosBancarios paramGenericDadosBancarios);
+
+    public abstract void adicionarCartoesCredito(GenericCartaoCredito paramGenericCartaoCredito);
+
+    public abstract List<? extends GenericEmail> getListaEmails();
+
+    public abstract void setListaEmails(List<? extends GenericEmail> paramList);
+
+    public abstract void adicionarEmail(GenericEmail paramGenericEmail);
+
+    public abstract List<? extends GenericEndereco> getListaEnderecos();
+
+    public abstract void setListaEnderecos(List<? extends GenericEndereco> paramList);
+
+    public abstract void adicionarEndereco(GenericEndereco paramGenericEndereco);
+
+    public abstract List<? extends GenericContratoEfetivado> getListaContratosEfetivados();
+
+    public abstract void setListaContratosEfetivados(List<? extends GenericContratoEfetivado> paramList);
+
+    public abstract void adicionarContratoEfetivado(GenericContratoEfetivado paramGenericContratoEfetivado);
+
+    public abstract void adicionarPortabilidade(Portabilidade portabilidade);
+
+    public abstract List<? extends GenericHistoricoAtendimento> getListaHistoricos();
+
+    @Override
+    public String toString() {
+        return "GenericAtendimento{" +
+                "adesao='" + adesao + '\'' +
+                ", protocolo='" + protocolo + '\'' +
+                ", nome='" + nome + '\'' +
+                ", cpf='" + cpf + '\'' +
+                ", dataNascimento=" + dataNascimento +
+                ", sexo=" + sexo +
+                ", nomeMae='" + nomeMae + '\'' +
+                ", nomePai='" + nomePai + '\'' +
+                ", nomeConjuge='" + nomeConjuge + '\'' +
+                ", uf='" + uf + '\'' +
+                ", nacionalidade='" + nacionalidade + '\'' +
+                ", ufNascimento='" + ufNascimento + '\'' +
+                ", cidadeNascimento='" + cidadeNascimento + '\'' +
+                ", estadoCivil=" + estadoCivil +
+                ", ufDocumento='" + ufDocumento + '\'' +
+                ", dataEmissaoDocumento=" + dataEmissaoDocumento +
+                ", numeroDocumento='" + numeroDocumento + '\'' +
+                ", signo='" + signo + '\'' +
+                ", orgaoDocumento='" + orgaoDocumento + '\'' +
+                ", prioridade=" + prioridade +
+                ", enviado=" + enviado +
+                ", atender=" + atender +
+                ", conciliado=" + conciliado +
+                ", dataConciliacao=" + dataConciliacao +
+                ", discou=" + discou +
+                ", publico=" + publico +
+                ", tipoBeneficio=" + tipoBeneficio +
+                ", tempoPosAtendimento=" + tempoPosAtendimento +
+                ", situacaoServidor=" + situacaoServidor +
+                ", pesoCarteira=" + pesoCarteira +
+                ", quantidadeDiscagem=" + quantidadeDiscagem +
+                ", pesoDiscagem=" + pesoDiscagem +
+                ", aberturaConta=" + aberturaConta +
+                ", fluxo='" + fluxo + '\'' +
+                ", outrasInformacoes='" + outrasInformacoes + '\'' +
+                ", margemResultado='" + margemResultado + '\'' +
+                ", manifesto='" + manifesto + '\'' +
+                ", motivoRetencao=" + motivoRetencao +
+                ", observacao='" + observacao + '\'' +
+                ", prospect=" + prospect +
+                ", vinculoMatricula='" + vinculoMatricula + '\'' +
+                ", codigoAverbacao='" + codigoAverbacao + '\'' +
+                ", tipoConvenio='" + tipoConvenio + '\'' +
+                ", dataInicioAtendimento=" + dataInicioAtendimento +
+                ", dataFimAtendimento=" + dataFimAtendimento +
+                ", comissaoPagar='" + comissaoPagar + '\'' +
+                ", valorLiberado=" + valorLiberado +
+                ", valorParcela=" + valorParcela +
+                ", valorMaxOperacao=" + valorMaxOperacao +
+                ", margem=" + margem +
+                ", margemCinco=" + margemCinco +
+                ", margemSecundaria=" + margemSecundaria +
+                ", margemSecundariaCinco=" + margemSecundariaCinco +
+                ", limite=" + limite +
+                ", seguro=" + seguro +
+                ", valorSeguroLiberado=" + valorSeguroLiberado +
+                ", seguroPrestamista=" + seguroPrestamista +
+                ", valorContrato=" + valorContrato +
+                ", saldoDevedor=" + saldoDevedor +
+                ", valorTotal=" + valorTotal +
+                ", risco=" + risco +
+                ", valorLiberadoRefinanciamento=" + valorLiberadoRefinanciamento +
+                ", valorLiberadoEmprestimo=" + valorLiberadoEmprestimo +
+                ", salarioCliente=" + salarioCliente +
+                ", valorCartaCredito=" + valorCartaCredito +
+                ", taxa=" + taxa +
+                ", beneficioPrincipal='" + beneficioPrincipal + '\'' +
+                ", beneficioSecundario='" + beneficioSecundario + '\'' +
+                ", descontoCompulsorio=" + descontoCompulsorio +
+                ", descontoFacultativo=" + descontoFacultativo +
+                ", dataVencimento=" + dataVencimento +
+                ", quantidadeContratos=" + quantidadeContratos +
+                ", quantidadeParcela=" + quantidadeParcela +
+                ", instituicaoFinanceira=" + instituicaoFinanceira +
+                ", informacoesComplementares='" + informacoesComplementares + '\'' +
+                ", codigoLoja='" + codigoLoja + '\'' +
+                ", entidadePrincipal='" + entidadePrincipal + '\'' +
+                ", entidadeSecundaria='" + entidadeSecundaria + '\'' +
+                ", orgaoPrincipal='" + orgaoPrincipal + '\'' +
+                ", orgaoSecundario='" + orgaoSecundario + '\'' +
+                ", mailingId='" + mailingId + '\'' +
+                ", codTabelaRefin=" + codTabelaRefin +
+                ", target=" + target +
+                ", fluxoEsteira=" + fluxoEsteira +
+                ", usuarioOcupado=" + usuarioOcupado +
+                ", campanha=" + campanha +
+                ", status=" + status +
+                ", produto=" + produto +
+                ", importacao=" + importacao +
+                ", equipe=" + equipe +
+                ", empresa=" + empresa +
+                ", loja=" + loja +
+                ", supervisor=" + supervisor +
+                ", coordenador=" + coordenador +
+                ", formaPagamento=" + formaPagamento +
+                ", contrato=" + contrato +
+                ", prioridadeFila=" + prioridadeFila +
+                ", tiket='" + tiket + '\'' +
+                ", bko=" + bko +
+                ", listInformacoesComplementares=" + listInformacoesComplementares +
+                ", valorSaque=" + valorSaque +
+                ", descricaoSeguro='" + descricaoSeguro + '\'' +
+                ", capitalSegurado=" + capitalSegurado +
+                ", valorSeguro=" + valorSeguro +
+                ", fazerSeguro=" + fazerSeguro +
+                ", abrirContaPagamento=" + abrirContaPagamento +
+                ", situacaoFuncional=" + situacaoFuncional +
+                ", valorComissaoPagar=" + valorComissaoPagar +
+                ", quantidadeProposta=" + quantidadeProposta +
+                ", equipes=" + equipes +
+                ", listStatusAtendimentos=" + listStatusAtendimentos +
+                ", statusTelefones=" + statusTelefones +
+                ", pausas=" + pausas +
+                ", produtos=" + produtos +
+                ", formaPagamentos=" + formaPagamentos +
+                '}';
+    }
+
+
+    public Boolean getEnviarN2() {
+        return enviarN2;
+    }
+
+    public void setEnviarN2(Boolean enviarN2) {
+        this.enviarN2 = enviarN2;
+    }
+
+    public Integer getPosicaoFila() {
+        return posicaoFila;
+    }
+
+    public void setPosicaoFila(Integer posicaoFila) {
+        this.posicaoFila = posicaoFila;
+    }
+
+    public Date getDataAberturaDemanda() {
+        return dataAberturaDemanda;
+    }
+
+    public void setDataAberturaDemanda(Date dataAberturaDemanda) {
+        this.dataAberturaDemanda = dataAberturaDemanda;
+    }
+
+    public Date getPrazoPrazoDemanda() {
+        return prazoPrazoDemanda;
+    }
+
+    public void setPrazoPrazoDemanda(Date prazoPrazoDemanda) {
+        this.prazoPrazoDemanda = prazoPrazoDemanda;
+    }
+
+    public Date getDataFechamentoDemanda() {
+        return dataFechamentoDemanda;
+    }
+
+    public void setDataFechamentoDemanda(Date dataFechamentoDemanda) {
+        this.dataFechamentoDemanda = dataFechamentoDemanda;
+    }
+
+    public Boolean getDemandaEncerrada() {
+        return demandaEncerrada;
+    }
+
+    public void setDemandaEncerrada(Boolean demandaEncerrada) {
+        this.demandaEncerrada = demandaEncerrada;
+    }
+
+    public TipoClienteEnum getTipoClienteEnum() {
+        return tipoClienteEnum;
+    }
+
+    public void setTipoClienteEnum(TipoClienteEnum tipoClienteEnum) {
+        this.tipoClienteEnum = tipoClienteEnum;
+    }
+
+    public Motivo getMotivo() {
+        return motivo;
+    }
+
+    public void setMotivo(Motivo motivo) {
+        this.motivo = motivo;
+    }
+
+    public SubMotivo getSubMotivo() {
+        return subMotivo;
+    }
+
+    public void setSubMotivo(SubMotivo subMotivo) {
+        this.subMotivo = subMotivo;
+    }
+
+    public BigDecimal getLimiteDisponivel() {
+        return limiteDisponivel;
+    }
+
+    public void setLimiteDisponivel(BigDecimal limiteDisponivel) {
+        this.limiteDisponivel = limiteDisponivel;
+    }
+
+    public Boolean getClienteVip() {
+        return clienteVip;
+    }
+
+    public void setClienteVip(Boolean clienteVip) {
+        this.clienteVip = clienteVip;
+    }
+
+    public String getAnotacao() {
+        return anotacao;
+    }
+
+    public void setAnotacao(String anotacao) {
+        this.anotacao = anotacao;
+    }
+
+    public String getObservacaoAdicional() {
+        return observacaoAdicional;
+    }
+
+    public void setObservacaoAdicional(String observacaoAdicional) {
+        this.observacaoAdicional = observacaoAdicional;
+    }
+
+    public String getObservacaoN2() {
+        return observacaoN2;
+    }
+
+    public void setObservacaoN2(String observacaoN2) {
+        this.observacaoN2 = observacaoN2;
+    }
+
+    public void setRating(Integer rating) {
+        this.rating = rating;
+    }
+
+    public Integer getRating() {
+        return rating;
+    }
+
+    public abstract List<Portabilidade> getListPortabilidades();
+
+    public abstract void setListPortabilidades(List<Portabilidade> listPortabilidades);
+
+    public void setEspecie(String especie) {
+        this.especie = especie;
+    }
+
+    public String getEspecie() {
+
+        return especie;
+    }
+
+    public Boolean getAtendimentoFinalizado() {
+        return atendimentoFinalizado;
+    }
+
+    public void setAtendimentoFinalizado(Boolean atendimentoFinalizado) {
+        this.atendimentoFinalizado = atendimentoFinalizado;
+    }
+
+    public String getRespostaN2() {
+        return respostaN2;
+    }
+
+    public void setRespostaN2(String respostaN2) {
+        this.respostaN2 = respostaN2;
+    }
+
+    public String getDataAberturaDemandaFormatada() {
+
+        if (dataAberturaDemanda == null)
+            return "";
+
+        return DateUtil.builder(this.dataAberturaDemanda).formatarDataParaString("dd/MM/yyyy").getDataTexto();
+
+    }
+
+    public String getDataPrazoDemandaFormatada() {
+
+        if (prazoPrazoDemanda == null)
+            return "";
+
+        return DateUtil.builder(this.prazoPrazoDemanda).formatarDataParaString("dd/MM/yyyy").getDataTexto();
+
+    }
+
+    public String getDataFechamentoDemandaFormatada() {
+
+        if (dataFechamentoDemanda == null)
+            return "";
+
+        return DateUtil.builder(this.dataFechamentoDemanda).formatarDataParaString("dd/MM/yyyy").getDataTexto();
+
+    }
+
+    public Cliente getCliente() {
+        return cliente;
+    }
+
+    public void setCliente(Cliente cliente) {
+        this.cliente = cliente;
+    }
+
+    public String getDescricaoCliente() {
+
+        return Optional.ofNullable(cliente)
+                .map(c -> String.format("%s | CPF: %s",
+                        Optional.ofNullable(c.getNome()).orElse("Nome não informado"),
+                        Optional.ofNullable(c.getCpf()).orElse("CPF não informado")))
+                .orElse("Não informado");
+    }
+
 }

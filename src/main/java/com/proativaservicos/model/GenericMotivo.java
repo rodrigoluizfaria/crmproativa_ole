@@ -40,6 +40,8 @@ public abstract class GenericMotivo extends GenericControle {
     @Column(name = "cor")
     private String cor;
 
+    @Column(name = "prazo_demanda")
+    private Integer  prazoDemanda;
 
     @Column(name = "tipo_metodos")
     private String tipoMetodosMotivo;
@@ -130,6 +132,18 @@ public abstract class GenericMotivo extends GenericControle {
 
     public void setTipoMetodosMotivo(String tipoMetodosMotivo) {
         this.tipoMetodosMotivo = tipoMetodosMotivo;
+    }
+
+    public void setListTipoMetodosMotivos(List<TipoMetodosMotivoEnum> listTipoMetodosMotivos) {
+        this.listTipoMetodosMotivos = listTipoMetodosMotivos;
+    }
+
+    public Integer getPrazoDemanda() {
+        return prazoDemanda;
+    }
+
+    public void setPrazoDemanda(Integer prazoDemanda) {
+        this.prazoDemanda = prazoDemanda;
     }
 
     @JsonIgnore

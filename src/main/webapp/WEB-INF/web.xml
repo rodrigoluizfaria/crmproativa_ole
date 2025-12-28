@@ -21,6 +21,11 @@
         <url-pattern>*.jsf</url-pattern>
     </servlet-mapping>
 
+    <context-param>
+        <param-name>jakarta.faces.interpret_empty_string_submitted_values_as_null</param-name>
+        <param-value>true</param-value>
+    </context-param>
+
     <servlet-mapping>
         <servlet-name>Faces Servlet</servlet-name>
         <url-pattern>*.xhtml</url-pattern>

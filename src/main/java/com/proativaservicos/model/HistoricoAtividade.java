@@ -20,6 +20,10 @@ public class HistoricoAtividade extends Generic {
     @Column(name = "detalhes")
     private String detalhes;
 
+
+    @Column(name = "protocolo")
+    private String protocolo;
+
     @Column(name = "data")
     private Date data;
 
@@ -27,9 +31,9 @@ public class HistoricoAtividade extends Generic {
     @OneToOne(fetch = FetchType.LAZY)
     private Usuario usuario;
 
-    @JoinColumn(name = "atendimento")
+    @JoinColumn(name = "cliente")
     @OneToOne(fetch = FetchType.LAZY)
-    private Atendimento atendimento;
+    private Cliente cliente;
 
     @Column(name = "icone")
     private String tipoIcone;
@@ -83,11 +87,19 @@ public class HistoricoAtividade extends Generic {
         this.tipoIcone = tipoIcone;
     }
 
-    public Atendimento getAtendimento() {
-        return atendimento;
+    public Cliente getCliente() {
+        return cliente;
     }
 
-    public void setAtendimento(Atendimento atendimento) {
-        this.atendimento = atendimento;
+    public void setCliente(Cliente cliente) {
+        this.cliente = cliente;
+    }
+
+    public String getProtocolo() {
+        return protocolo;
+    }
+
+    public void setProtocolo(String protocolo) {
+        this.protocolo = protocolo;
     }
 }

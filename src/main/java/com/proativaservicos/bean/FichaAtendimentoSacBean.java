@@ -9,6 +9,7 @@ import com.proativaservicos.service.*;
 import com.proativaservicos.util.CorreiosUtil;
 import com.proativaservicos.util.DateUtil;
 import com.proativaservicos.util.RegistroSistemaUtil;
+import com.proativaservicos.util.Utils;
 import com.proativaservicos.util.constantes.*;
 import jakarta.annotation.PostConstruct;
 import jakarta.faces.context.FacesContext;
@@ -25,7 +26,6 @@ import java.math.BigDecimal;
 import java.math.RoundingMode;
 import java.security.SecureRandom;
 import java.util.*;
-import java.util.stream.Collectors;
 
 @Named
 @ViewScoped
@@ -87,6 +87,12 @@ public class FichaAtendimentoSacBean extends GenericBean {
     private CampanhaService campanhaService;
 
     @Inject
+    private ClienteService clienteService;
+
+    @Inject
+    private StatusAtendimentoService statusAtendimentoService;
+
+    @Inject
     private HistoricoAtividadeService serviceHistoricoAtividade;
 
     private List<ProtocoloDTO> listHistoricoProtocolosDTO;
@@ -102,6 +108,7 @@ public class FichaAtendimentoSacBean extends GenericBean {
     private List<SubMotivo> listSubMotivo;
 
     private List<Atendimento> listProtocolosAtendimento;
+
     private List<HistoricoAtividade> listHistoricoAtividades;
 
     private Usuario usuario;
@@ -111,6 +118,9 @@ public class FichaAtendimentoSacBean extends GenericBean {
     private Campanha campanha;
 
     private Atendimento atendimento;
+    private Atendimento atendimentoVisualizar;
+
+    private Cliente cliente;
 
     private Endereco endereco;
 
@@ -147,17 +157,19 @@ public class FichaAtendimentoSacBean extends GenericBean {
 
     private Long InicioAtendimentoMillis;
 
+    private Long quantidadeAtendimento;
+
     @PostConstruct
     public void init() {
 
         this.usuario = retornarUsuarioSessao();
         String cpfTmp = (String) Faces.getSession().getAttribute("cpf_atn");
-        Object objAtn = Faces.getSession().getAttribute("atendimento_iniciado");
+        Long codigoAtendimento = (Long) Faces.getSession().getAttribute("atendimento_iniciado");
 
-        if (objAtn != null) {
+        if (codigoAtendimento != null && this.atendimento == null) {
 
             System.out.println("Atendimento iniciado F5");
-            this.atendimento = (Atendimento) objAtn;
+            this.atendimento = this.serviceAtendimento.pesquisarAtendimentoPorId(codigoAtendimento);
             System.out.println("Atendimento iniciado F6: " + this.atendimento.getProtocolo());
         }
 
@@ -173,7 +185,8 @@ public class FichaAtendimentoSacBean extends GenericBean {
         this.listMotivo = this.motivoService.pesquisarMotivosPorEmpresa(retornarEmpresaUsuarioSessao().getId());
     }
 
-    public void iniciarAtendimento() {
+    //INICIA UM NOVO ATENDIMENTO MESMO PROTOCOLO
+    public void classificarAtendimento() {
 
         System.out.println("Iniciando atendimento...");
         System.out.println(atendimento.getMotivo().getDescricao());
@@ -183,7 +196,7 @@ public class FichaAtendimentoSacBean extends GenericBean {
         this.atendimentoIniciado = true;
         String detalhes = retornarDetalhesAtendimento();
         String descicao = (StringUtils.isBlank(this.atendimento.getObservacaoAdicional()) ? "" : " | " + this.atendimento.getObservacaoAdicional());
-        inserirAtividadesAtendimentos(TipoStatusAtividadesEnum.ATENDIMENTO_CLASSIFICADO, detalhes, descicao, this.usuario, "pi pi-user");
+        inserirAtividadesAtendimentos(TipoStatusAtividadesEnum.ATENDIMENTO_CLASSIFICADO, detalhes, descicao, this.usuario, "pi pi-user", new Date(), atendimento.getProtocolo());
         Messages.addGlobalInfo("Sua classificação registrada com sucesso!");
         this.historicoAtendimento = new HistoricoAtendimento();
 
@@ -193,30 +206,54 @@ public class FichaAtendimentoSacBean extends GenericBean {
 
     public void salvarSolicitacaoAtendimento() {
 
+        try {
 
-        System.out.println("Salnvando atendimento");
+            validarSalvarAtendimento();
+            System.out.println("Salnvando solicitação de atendimento");
 
+            System.out.println(this.cliente.getNome() + " - " + cliente.getCpf());
+            System.out.println("Motivo: " + this.atendimento.getMotivo().getDescricao());
+            System.out.println("Sub Motico: " + this.atendimento.getSubMotivo().getDescricao());
+            System.out.println("AObs: " + this.atendimento.getObservacao());
+            System.out.println("Obs Adicioal: " + this.atendimento.getObservacaoAdicional());
+            System.out.println("ENVIAR N2: " + this.atendimento.getEnviarN2());
 
-        System.out.println(this.atendimento.getNome() + " - " + atendimento.getCpf());
-        System.out.println("Motivo: " + this.atendimento.getMotivo().getDescricao());
-        System.out.println("Sub Motico: " + this.atendimento.getSubMotivo().getDescricao());
-        System.out.println("AObs: " + this.atendimento.getObservacao());
-        System.out.println("Obs Adicioal: " + this.atendimento.getObservacaoAdicional());
-        System.out.println("ENVIAR N2: " + this.atendimento.getEnviarN2());
+            System.out.println("SALVAR HISTORICO DE ATENDIMENTO.......");
+            PrimeFaces.current().executeScript("PF('dlgFinalizar').hide();");
+            Messages.addGlobalInfo("Atendimento salvo com sucesso");
+            String descricao = StringUtils.defaultString(this.atendimento.getObservacao(), "Sem observação");
 
-        System.out.println("SALVAR HISTORICO DE ATENDIMENTO.......");
-        PrimeFaces.current().executeScript("PF('dlgFinalizar').hide();");
-        Messages.addGlobalInfo("Histórido de atendimento salvo com sucesso");
+            inserirAtividadesAtendimentos(determinarStatusAtividade(), retornarDetalhesAtendimento(), descricao, this.usuario, "pi pi-user", new Date(), atendimento.getProtocolo());
 
-        gerarHistoricoAtendimento();
+            gerarNovoAtendimento();
+            resetarAtendimento();
+            temAtendimentoFinalizado = true;
 
-        String descricao = StringUtils.defaultString(this.atendimento.getObservacao(), "Sem observação");
-        inserirAtividadesAtendimentos(determinarStatusAtividade(), retornarDetalhesAtendimento(), descricao, this.usuario, "pi pi-user");
+        } catch (ProativaException e) {
+            Messages.addGlobalError(e.getMessage());
+        }
 
-        resetarAtendimento();
-        temAtendimentoFinalizado = true;
+    }
 
+    public void derivarAtendimentoN2() {
 
+        try {
+
+            validarSalvarAtendimento();
+            System.out.println("Derivar: " + this.atendimento.getObservacao());
+            this.atendimento.setEnviarN2(Boolean.TRUE);
+            String descricao = StringUtils.defaultString(this.atendimento.getObservacao(), "Sem observação");
+            inserirAtividadesAtendimentos(determinarStatusAtividade(), retornarDetalhesAtendimento(), descricao, this.usuario, "pi pi-user", new Date(), atendimento.getProtocolo());
+            gerarNovoAtendimento();
+            resetarAtendimento();
+            temAtendimentoFinalizado = true;
+            PrimeFaces.current().executeScript("PF('dlgDerivarN2').hide();");
+            Messages.addGlobalInfo("Atendimento derivado com sucesso");
+
+        } catch (ProativaException e) {
+            e.printStackTrace();
+            Messages.addGlobalError(e.getMessage());
+        }
     }
 
     private TipoStatusAtividadesEnum determinarStatusAtividade() {
@@ -229,6 +266,11 @@ public class FichaAtendimentoSacBean extends GenericBean {
                 : TipoStatusAtividadesEnum.ATENDIMENTO_FINALIZADO;
     }
 
+    private void validarSalvarAtendimento() throws ProativaException {
+
+        if (StringUtils.isBlank(this.atendimento.getObservacao()))
+            throw new ProativaException("Informe o manifesto do atendimento");
+    }
 
     private void validarEncerrarAtendimento() throws ProativaException {
 
@@ -240,27 +282,12 @@ public class FichaAtendimentoSacBean extends GenericBean {
         if (!temAtendimentoFinalizado)
             throw new ProativaException("Não é possível prosseguir: finalize pelo menos um atendimento antes de continuar.");
 
-        if (StringUtils.isBlank(this.atendimento.getNome()))
+        if (StringUtils.isBlank(this.cliente.getNome()))
             throw new ProativaException("É necessário informar o nome do cliente para continuar.");
 
-
+        this.serviceAtendimento.deletarAtendimentoSemClassificacao(this.cliente.getId(), cliente.getProtocolo());
     }
 
-    public void derivarAtendimentoN2() {
-
-        System.out.println("Derivar: " + this.atendimento.getObservacaoN2());
-        this.atendimento.setEnviarN2(Boolean.TRUE);
-        gerarHistoricoAtendimento();
-
-        String descricao = StringUtils.defaultString(this.atendimento.getObservacaoN2(), "Sem observação");
-        inserirAtividadesAtendimentos(determinarStatusAtividade(), retornarDetalhesAtendimento(), descricao, this.usuario, "pi pi-user");
-
-        resetarAtendimento();
-        temAtendimentoFinalizado = true;
-
-
-        PrimeFaces.current().executeScript("PF('dlgDerivarN2').hide();");
-    }
 
     public void encerrarAtendimento() {
 
@@ -273,6 +300,7 @@ public class FichaAtendimentoSacBean extends GenericBean {
             resetarAtendimento();
             this.atendimento = null;
             Faces.getSession().removeAttribute("cpf_atn");
+            Faces.getSession().removeAttribute("atendimento_iniciado");
 
 
         } catch (ProativaException e) {
@@ -285,15 +313,130 @@ public class FichaAtendimentoSacBean extends GenericBean {
     }
 
 
+    private void gerarNovoAtendimento() {
+
+
+        this.atendimento.setId(null);
+        this.atendimento.setUsuarioCadastro(this.usuario);
+        this.atendimento.setDataCadastro(new Date());
+        this.atendimento.setDataInicioAtendimento(this.dataInicioClassificacaoHistorico);
+        this.atendimento.setDataFimAtendimento(new Date());
+        this.atendimento.setDataAberturaDemanda(new Date());
+        this.atendimento.setEmpresa(retornarEmpresaUsuarioSessao());
+
+        if (this.atendimento.getEnviarN2() != null && this.atendimento.getEnviarN2()) {
+
+            this.atendimento.setDataFechamentoDemanda(null);
+            this.atendimento.setDataAberturaDemanda(new Date());
+            this.atendimento.setDemandaEncerrada(Boolean.FALSE);
+
+            if (this.atendimento.getSubMotivo() != null && this.atendimento.getSubMotivo().getPrazoDemanda() != null && this.atendimento.getSubMotivo().getPrazoDemanda() > 0)
+                this.atendimento.setPrazoPrazoDemanda(DateUtil.builder(new Date()).adicionarTempoData(DataEnum.DIA, this.atendimento.getSubMotivo().getPrazoDemanda()).getData());
+
+            this.atendimento.setAtendimentoFinalizado(Boolean.FALSE);
+            this.atendimento.setStatus(retornarStatusDerivadorAtendimentoN2());
+
+        } else {
+
+            this.atendimento.setDataFechamentoDemanda(null);
+            this.atendimento.setDataAberturaDemanda(null);
+            this.atendimento.setDemandaEncerrada(null);
+            this.atendimento.setAtendimentoFinalizado(Boolean.TRUE);
+            this.atendimento.setStatus(retornarStatusFinalizadorAtendimentoN1());
+
+        }
+        //INSERIR HISTORICO
+        try {
+            this.atendimento.setUsuarioOcupado(null);
+            inserir(this.atendimento);
+            gerarHistoricoAtendimento();
+
+            if (CollectionUtils.isEmpty(this.listProtocolosAtendimento))
+                this.listProtocolosAtendimento = new ArrayList<>();
+
+            this.listProtocolosAtendimento.add(this.atendimento);
+            carregarHistoricosAtendimentosMocado();
+            this.atendimento = new Atendimento();
+            this.atendimento.setProtocolo(cliente.getProtocolo());
+            this.atendimento.setUsuarioOcupado(this.usuario);
+
+
+        } catch (ProativaException e) {
+            Messages.addGlobalError(e.getMessage());
+        }
+
+    }
+
+    private StatusAtendimento retornarStatusFinalizadorAtendimentoN1() {
+
+        try {
+
+
+            StatusAtendimento statusAtendimento = this.statusAtendimentoService.pesquisarStatusAtendimentoPorAcao(AcaoStatusAtendimentoEnum.CONCLUIR_N1, retornarEmpresaUsuarioSessao().getId());
+
+            if (statusAtendimento == null) {
+                statusAtendimento = new StatusAtendimento();
+                statusAtendimento.setAcao(AcaoStatusAtendimentoEnum.CONCLUIR_N1);
+                statusAtendimento.setDescricao("Finalizado N1");
+                statusAtendimento.setUsuarioCadastro(retornarUsuarioSessao());
+                statusAtendimento.setDataCadastro(new Date());
+                statusAtendimento.setUsuarioAlteracao(retornarUsuarioSessao());
+                statusAtendimento.setAtivo(TipoAcessoEnum.ATIVO);
+                inserir(statusAtendimento);
+                return statusAtendimento;
+            }
+
+            return statusAtendimento;
+
+        } catch (ProativaException e) {
+            e.printStackTrace();
+            return null;
+        }
+
+    }
+
+    private StatusAtendimento retornarStatusDerivadorAtendimentoN2() {
+
+        try {
+
+
+            StatusAtendimento statusAtendimento = this.statusAtendimentoService.pesquisarStatusAtendimentoPorAcao(AcaoStatusAtendimentoEnum.DERIVAR, retornarEmpresaUsuarioSessao().getId());
+
+            if (statusAtendimento == null) {
+                statusAtendimento = new StatusAtendimento();
+                statusAtendimento.setAcao(AcaoStatusAtendimentoEnum.DERIVAR);
+                statusAtendimento.setDescricao("Escalonado N2");
+                statusAtendimento.setUsuarioCadastro(retornarUsuarioSessao());
+                statusAtendimento.setDataCadastro(new Date());
+                statusAtendimento.setUsuarioAlteracao(retornarUsuarioSessao());
+                statusAtendimento.setAtivo(TipoAcessoEnum.ATIVO);
+                inserir(statusAtendimento);
+                return statusAtendimento;
+            }
+
+            return statusAtendimento;
+
+        } catch (ProativaException e) {
+            e.printStackTrace();
+            return null;
+        }
+
+    }
+
+    public void entrarEmPausaAtendimento() {
+        System.out.println("Pausando atendimento");
+    }
+
+
     private void gerarHistoricoAtendimento() {
 
-        if (historicoAtendimento == null)
-            historicoAtendimento = new HistoricoAtendimento();
+
+        HistoricoAtendimento historicoAtendimento = new HistoricoAtendimento();
 
         historicoAtendimento.setId(null);
         historicoAtendimento.setAtendimento(this.atendimento);
         historicoAtendimento.setMotivo(this.atendimento.getMotivo());
-        historicoAtendimento.setSubMotivomotivo(this.atendimento.getSubMotivo());
+        historicoAtendimento.setSubMotivo(this.atendimento.getSubMotivo());
         historicoAtendimento.setUsuario(retornarUsuarioSessao());
         historicoAtendimento.setDataCadastro(new Date());
 
@@ -304,7 +447,9 @@ public class FichaAtendimentoSacBean extends GenericBean {
         historicoAtendimento.setAnotacao(this.atendimento.getAnotacao());
 
         historicoAtendimento.setEnviarN2(this.atendimento.getEnviarN2());
+
         historicoAtendimento.setDataInicioAtendimento(this.dataInicioClassificacaoHistorico);
+
         historicoAtendimento.setDataFimAtendimento(new Date());
 
         historicoAtendimento.setDataAberturaDemanda(new Date());
@@ -318,21 +463,24 @@ public class FichaAtendimentoSacBean extends GenericBean {
 
         } else {
 
-            historicoAtendimento.setDataFechamentoDemanda(new Date());
-            historicoAtendimento.setDataAberturaDemanda(new Date());
-            historicoAtendimento.setDemandaEncerrada(Boolean.TRUE);
+            historicoAtendimento.setDataFechamentoDemanda(null);
+            historicoAtendimento.setDataAberturaDemanda(null);
+            historicoAtendimento.setDemandaEncerrada(null);
             historicoAtendimento.setAtendimentoFinalizado(Boolean.TRUE);
 
         }
         //INSERIR HISTORICO
-        System.out.println(historicoAtendimento);
+        try {
+            System.out.println("Salvando historico....");
+            inserir(historicoAtendimento);
+            System.out.println(historicoAtendimento);
+
+
+        } catch (ProativaException e) {
+            Messages.addGlobalError(e.getMessage());
+        }
 
     }
-
-    public void entrarEmPausaAtendimento() {
-        System.out.println("Pausando atendimento");
-    }
-
 
     private String retornarDetalhesAtendimento() {
 
@@ -373,43 +521,57 @@ public class FichaAtendimentoSacBean extends GenericBean {
         }
     }
 
+    public void inicializarCliente(String cpf) throws ProativaException {
+
+        if (StringUtils.isNotBlank(cpf)) {
+
+            this.cliente = this.clienteService.pesquisarClienteComAtendimentosSacPorCpf(cpf, true);
+
+            if (this.cliente == null) {
+                System.out.println("Inserindo cliente");
+                criarNovoCliente(cpf);
+            }
+        }
+    }
+
     public void inicializarAtendimento(String cpf) {
 
         try {
 
-
             if (StringUtils.isNotBlank(cpf)) {
 
-                if (this.atendimento == null || this.atendimento.getId() == null)
-                    this.atendimento = (Atendimento) this.serviceAtendimento.pesquisarAtendimentoPorCpf(cpf, retornarEmpresaUsuarioSessao().getId(), null);
+                if (this.atendimento == null || this.atendimento.getId() == null) {
 
-                if (atendimento == null) {
+                    inicializarCliente(cpf);
+                    //this.cliente = this.clienteService.pesquisarClienteComAtendimentosSacPorCpf(cpf);
+                    criarNovoAtendimento(this.cliente);
 
-                    //     gerarClienteMocado(cpf);
-                    inicializarListas();
-                    criarNovoAtendimento(cpf);
-                    carregarHistoricosAtendimentos();
                     //  carregarAtividadesAtendimentosMocado();
-
-
-                    System.out.println("Inserindo Cliente...");
+                    System.out.println("Inserindo Atendimento...");
                     inserir(this.atendimento);
-                    inicializarHistoricoAtividade();
-                    Faces.getSession().setAttribute("atendimento_iniciado", this.atendimento);
+                    Faces.getSession().setAttribute("atendimento_iniciado", this.atendimento.getId());
 
 
                 } else {
 
                     System.out.println("Existe atn");
                     this.campanha = this.atendimento.getCampanha();
-                    this.listProtocolosAtendimento = this.serviceAtendimento.pesquisarAtendimentosSacPorCpf(cpf);
-                    this.listHistoricoAtividades = this.serviceHistoricoAtividade.pesquisarHistoricoAtividadePorId(this.atendimento.getId());
-                    inicializarListas();
-                    inicializarHistoricoAtividade();
-                    carregarHistoricosAtendimentos();
+                    this.cliente = this.clienteService.pesquisarClienteComAtendimentosSacPorId(this.atendimento.getCliente().getId(), true);
+                    this.cliente.setProtocolo(this.atendimento.getProtocolo());
+                    this.cliente.setUltimoProtocolo(this.atendimento.getProtocolo());
+                    //   this.listProtocolosAtendimento = this.serviceAtendimento.pesquisarAtendimentosSacPorCliente(cliente.getId());
 
+
+                    this.listHistoricoAtividades = this.serviceHistoricoAtividade.pesquisarHistoricoAtividadePorProtocolo(this.atendimento.getProtocolo());
 
                 }
+
+                cliente.adicionarTelefone(new Telefone(Short.valueOf("31"), "999631311"));
+                this.listProtocolosAtendimento = this.cliente.getListAtendimentos();
+                this.quantidadeAtendimento = this.serviceAtendimento.buscarQuantidadeClientesAtendidosDiario(this.usuario.getId(), cliente.getProtocolo());
+                inicializarListas();
+                inicializarHistoricoAtividade();
+                carregarHistoricosAtendimentosMocado();
 
             }
         } catch (ProativaException e) {
@@ -424,15 +586,41 @@ public class FichaAtendimentoSacBean extends GenericBean {
 
     }
 
-    private void criarNovoAtendimento(String cpf) {
+    private void criarNovoCliente(String cpf) throws ProativaException {
+
+
+        if (StringUtils.isNotBlank(cpf)) {
+
+            this.cliente = new Cliente();
+            this.cliente.setCpf(cpf);
+            this.cliente.setUsuarioCadastro(retornarUsuarioSessao());
+            this.cliente.setEmpresa(retornarEmpresaUsuarioSessao());
+            this.cliente.setTipoClienteEnum(TipoClienteEnum.CLIENTE_NOVO);
+            this.endereco = new Endereco();
+            System.out.println("Inserindo cliente...");
+            inserir(this.cliente);
+            System.out.println("- ID CLIENTE: " + this.cliente.getId());
+            System.out.println("- CPF: " + this.cliente.getCpf());
+        }
+
+    }
+
+
+    private void criarNovoAtendimento(Cliente cliente) {
 
         this.atendimento = new Atendimento();
         this.atendimento.setDataCadastro(new Date());
-        this.atendimento.setCpf(cpf);
+        this.atendimento.setCpf(cliente.getCpf());
+        this.atendimento.setCliente(cliente);
         this.atendimento.setTipoClienteEnum(TipoClienteEnum.CLIENTE_NOVO);
+        this.atendimento.setUsuarioOcupado(this.usuario);
         this.endereco = new Endereco();
         this.campanha = this.campanhaService.pesquisarCampanhaPorTipo(retornarEmpresaUsuarioSessao().getId(), TipoCampanhaEnum.SAC);
-        this.atendimento.setProtocolo(gerarProtocolo());
+        this.atendimento.setEmpresa(retornarEmpresaUsuarioSessao());
+        String protocolo = gerarProtocolo();
+        cliente.setProtocolo(protocolo);
+        cliente.setUltimoProtocolo(protocolo);
+        this.atendimento.setProtocolo(protocolo);
 
         if (this.campanha == null) {
             System.out.println("Campanha não encontrada;");
@@ -449,15 +637,13 @@ public class FichaAtendimentoSacBean extends GenericBean {
             return this.atendimento.getProtocolo();
 
         String formatoData = DateUtil.builder(new Date()).formatarDataParaString("yyyyMMddHHmm").getDataTexto();
-        SecureRandom random = new SecureRandom();
 
-        int numero = 10000000 + random.nextInt(90000000);
 
-        return formatoData + numero;
+        return formatoData + Utils.getNumeroRandomico() + this.cliente.getId();
 
     }
 
-    private void carregarHistoricosAtendimentos() {
+    private void carregarHistoricosAtendimentosMocado() {
 
         ///PESQUISAR NO BAMCP;;;
         //MOCADO...
@@ -465,8 +651,8 @@ public class FichaAtendimentoSacBean extends GenericBean {
         if (CollectionUtils.isEmpty(this.listProtocolosAtendimento)) {
 
             this.listHistoricoProtocolosDTO = new ArrayList<>();
-
-            this.listHistoricoProtocolosDTO.add(new ProtocoloDTO(
+            System.out.println("Inserir Mocado...");
+       /*     this.listHistoricoProtocolosDTO.add(new ProtocoloDTO(
                     "SAC12345678",
                     "Encerrado",
                     "Reclamação",
@@ -483,22 +669,113 @@ public class FichaAtendimentoSacBean extends GenericBean {
                     "09/09/2024",
                     "16/09/2024"
             ));
-
+*/
         } else {
 
+            //ALTERAR DEPOS;;;;
             this.listHistoricoProtocolosDTO = new ArrayList<>();
 
-            for (Atendimento atnAux : this.listProtocolosAtendimento) {
+            for (Atendimento atn : this.listProtocolosAtendimento) { // GenericAtendimento ou sua classe concreta
 
-                ProtocoloDTO protocoloDTO = new ProtocoloDTO();
-                protocoloDTO.setNumeroProtocolo(atnAux.getProtocolo());
-                protocoloDTO.setTipo(atnAux.getMotivo().getDescricao());
-                protocoloDTO.setDescricao(atnAux.getSubMotivo().getDescricao());
+                // Pula o atendimento atual da lista (não mostra ele mesmo no histórico)
+                if (!atn.getProtocolo().equals(this.atendimento.getProtocolo())) {
 
-                protocoloDTO.setDataAbertura(atnAux.getDataAberturaDemanda());
-                protocoloDTO.setDataPrazo(atnAux.getPrazoPrazoDemanda());
-                listHistoricoProtocolosDTO.add(protocoloDTO);
 
+                    ProtocoloDTO protocoloDTO = new ProtocoloDTO();
+                    protocoloDTO.setIdAtendimento(atn.getId());
+                    protocoloDTO.setNumeroProtocolo(atn.getProtocolo());
+
+                    // --- 1. DEFINE DATAS E DESCRIÇÕES BÁSICAS ---
+                    if (atn.getMotivo() != null) {
+                        protocoloDTO.setTipo(atn.getMotivo().getDescricao());
+                    } else {
+                        protocoloDTO.setTipo("Sem motivo");
+                    }
+
+                    if (atn.getSubMotivo() != null) {
+                        protocoloDTO.setDescricao(atn.getSubMotivo().getDescricao());
+                    } else {
+                        protocoloDTO.setDescricao("Sem submotivo");
+                    }
+
+                    // --- 2. LÓGICA DE STATUS BASEADA NAS AÇÕES ---
+
+                    // Status padrão inicial
+                    StatusProtocoloEnum statusCalculado = StatusProtocoloEnum.ABERTO;
+
+                    // CENÁRIO A: É uma demanda de Backoffice (N2)?
+                    if (Boolean.TRUE.equals(atn.getEnviarN2())) {
+
+                        // Define datas específicas de N2
+                        protocoloDTO.setDataAbertura(atn.getDataAberturaDemanda());
+                        protocoloDTO.setDataPrazo(atn.getPrazoPrazoDemanda());
+
+                        if (Boolean.TRUE.equals(atn.getDemandaEncerrada())) {
+                            statusCalculado = StatusProtocoloEnum.CONCLUIDO;
+                        } else {
+                            // Verifica se o prazo estourou (usando aquele método Transient que criamos)
+                            if (atn.isPrazoEstourado()) {
+                                statusCalculado = StatusProtocoloEnum.ATRASADO;
+                            } else {
+                                statusCalculado = StatusProtocoloEnum.EM_ANDAMENTO;
+                            }
+                        }
+
+                    }
+                    // CENÁRIO B: É um atendimento de N1 (Front)?
+                    else {
+
+                        // Define data de atendimento normal
+                        protocoloDTO.setDataAbertura(atn.getDataInicioAtendimento());
+
+                        // Analisa a Ação do Status (Se houver status selecionado)
+                        if (atn.getStatus() != null && atn.getStatus().getAcao() != null) {
+
+                            switch (atn.getStatus().getAcao()) {
+                                case CONCLUIR:
+                                case PROPOSTA_EFETIVADA:
+                                case FIM_FILA:
+                                case BLOQUEAR_CPF:
+                                case SEM_ACAO:
+                                case CONCLUIR_N1:
+                                    statusCalculado = StatusProtocoloEnum.CONCLUIDO;
+                                    break;
+
+                                case AGENDAR:
+                                case AGENDAR_GLOBAL:
+                                case AGENDAR_DUAS_HORAS:
+                                case AGENDAR_QUATRO_HORAS:
+                                case AGENDAR_SEIS_HORAS:
+                                case AGENDAR_VINTE_QUATRO_HORAS:
+
+                                case CONTATO: // Contato realizado mas não fechou
+                                    statusCalculado = StatusProtocoloEnum.EM_ANDAMENTO;
+                                    break;
+
+                                case DERIVAR:
+                                case EM_ANALISE:
+                                    statusCalculado = StatusProtocoloEnum.EM_ANDAMENTO;
+                                    break;
+
+                                case DEVOLVER:
+                                    statusCalculado = StatusProtocoloEnum.ABERTO; // Devolveu pra fila
+                                    break;
+
+                                default:
+                                    statusCalculado = StatusProtocoloEnum.ABERTO;
+                                    break;
+                            }
+                        } else {
+                            // Se não tem status, considera Aberto ou que a ligação caiu (Cancelado/Aberto)
+                            statusCalculado = StatusProtocoloEnum.ABERTO;
+                        }
+                    }
+
+                    protocoloDTO.setStatus(statusCalculado); // Seu DTO deve esperar o Enum StatusProtocoloEnum
+
+                    // Adiciona na lista
+                    listHistoricoProtocolosDTO.add(protocoloDTO);
+                }
             }
 
         }
@@ -511,10 +788,15 @@ public class FichaAtendimentoSacBean extends GenericBean {
             criarHistoricoAtividadeInicial();
 
         } else {
+
             System.out.println("POPULANDO LIST HISTORICO");
+
             for (HistoricoAtividade h : this.listHistoricoAtividades) {
+
                 System.out.println(h.getDetalhes() + "- " + h.getDescricao());
-                inserirAtividadesAtendimentos(h.getTipoStatusAtividade(), h.getDetalhes(), h.getDescricao(), h.getUsuario(), h.getTipoIcone(), true);
+                inserirAtividadesAtendimentos(h.getTipoStatusAtividade(), h.getDetalhes(), h.getDescricao(), h.getUsuario(), h.getTipoIcone(), h.getData(), h.getProtocolo(), true);
+                if (h.getTipoStatusAtividade().isAtendimentoFinalizador())
+                    this.temAtendimentoFinalizado = true;
             }
 
         }
@@ -528,7 +810,7 @@ public class FichaAtendimentoSacBean extends GenericBean {
         String descricao = "Cliente conectado via " + canal;
         String detalhes = "Protocolo gerado automaticamente";
 
-        inserirAtividadesAtendimentos(TipoStatusAtividadesEnum.INICIO_ATENDIMENTO, descricao, detalhes, null, "pi-phone", false);
+        inserirAtividadesAtendimentos(TipoStatusAtividadesEnum.INICIO_ATENDIMENTO, descricao, detalhes, null, "pi-phone", new Date(), cliente.getProtocolo(), false);
     }
 
     private void carregarAtividadesAtendimentosMocado() {
@@ -553,25 +835,26 @@ public class FichaAtendimentoSacBean extends GenericBean {
 
     }
 
-    private void inserirAtividadesAtendimentos(TipoStatusAtividadesEnum tipoAtendimento, String detalhes, String descicao, Usuario autor, String icon) {
+    private void inserirAtividadesAtendimentos(TipoStatusAtividadesEnum tipoAtendimento, String detalhes, String descicao, Usuario autor, String icon, Date data, String protocolo) {
 
-        inserirAtividadesAtendimentos(tipoAtendimento, detalhes, descicao, autor, icon, false);
+        inserirAtividadesAtendimentos(tipoAtendimento, detalhes, descicao, autor, icon, data, protocolo, false);
 
     }
 
-    private void inserirAtividadesAtendimentos(TipoStatusAtividadesEnum tipoAtendimento, String detalhes, String descicao, Usuario autor, String icon, boolean naoInserirHistoricoAtividade) {
+    private void inserirAtividadesAtendimentos(TipoStatusAtividadesEnum tipoAtendimento, String detalhes, String descicao, Usuario autor, String icon, Date data, String protocolo, boolean naoInserirHistoricoAtividade) {
 
         if (CollectionUtils.isEmpty(this.listHistoricoAtividadesDto))
             this.listHistoricoAtividadesDto = new ArrayList<>();
 
 
-        this.listHistoricoAtividadesDto.add(new HistoricoAtividadesDto(tipoAtendimento, descicao, detalhes, new Date(), retornarAutor(autor), icon));
+        this.listHistoricoAtividadesDto.add(new HistoricoAtividadesDto(tipoAtendimento, descicao, detalhes, data, retornarAutor(autor), icon));
 
         //MUDAR PARA ID
         this.listHistoricoAtividadesDto.sort(Comparator.comparing(HistoricoAtividadesDto::getData).reversed());
 
 
         try {
+
             if (!naoInserirHistoricoAtividade) {
                 //INSERIR NO BANCO...
                 HistoricoAtividade historicoAtividade = new HistoricoAtividade();
@@ -579,11 +862,13 @@ public class FichaAtendimentoSacBean extends GenericBean {
                 historicoAtividade.setDescricao(descicao);
                 historicoAtividade.setDetalhes(detalhes);
                 historicoAtividade.setUsuario(autor);
-                historicoAtividade.setAtendimento(this.atendimento);
+                historicoAtividade.setCliente(this.cliente);
                 historicoAtividade.setData(new Date());
                 historicoAtividade.setTipoIcone(icon);
+                historicoAtividade.setProtocolo(protocolo);
                 inserir(historicoAtividade);
             }
+
         } catch (ProativaException e) {
             Messages.addGlobalError(e.getMessage());
 
@@ -687,6 +972,10 @@ public class FichaAtendimentoSacBean extends GenericBean {
 
     }
 
+    public void visualizarAtendimentoProtocolo(Long id) {
+        this.atendimentoVisualizar = this.serviceAtendimento.pesquisarAtendimentoSacPorCodigo(id);
+    }
+
     public void editarDadosCadastrais() {
         this.endereco = new Endereco();
     }
@@ -717,18 +1006,37 @@ public class FichaAtendimentoSacBean extends GenericBean {
     }
 
     public void salvarDadosCadastrais() {
-
         System.out.println("SALVANDO DADOS CADASTRAIS");
 
-        this.atendimento.adicionarEndereco(this.endereco);
+        this.endereco.setCliente(this.cliente);
+        System.out.println(this.endereco.getLogradouro());
+
         inserirAtividadesAtendimentos(
                 TipoStatusAtividadesEnum.ATUALIZACAO_DADOS_CADASTRAIS,
                 "Dados atualizados",
                 "Atualização dos dados cadastrais",
                 this.usuario,
-                "pi pi-user"
+                "pi pi-user",
+                new Date(), cliente.getProtocolo()
         );
 
+        if (StringUtils.isNotBlank(this.cliente.getNome())) {
+            this.clienteService.atualizarNomeCliente(this.cliente.getNome(), this.cliente.getId());
+        }
+
+        try {
+            this.endereco.setId(null);
+            inserir(this.endereco);
+            this.cliente.adicionarEndereco(this.endereco);
+            this.endereco = new Endereco();
+            Messages.addGlobalInfo("Dados cadastrais atualizados com sucesso!");
+        } catch (ProativaException e) {
+            Messages.addGlobalError(e.getMessage());
+        }
+    }
+
+    public void limparClassificacao() {
+        resetarAtendimento();
     }
 
     public void onListarPausa() {
@@ -913,21 +1221,27 @@ public class FichaAtendimentoSacBean extends GenericBean {
     private void gerarClienteMocado(String cpf) {
 
         System.out.println("Cliente novo....");
+        cliente = new Cliente();
+        cliente.setTipoClienteEnum(TipoClienteEnum.CLIENTE_NOVO);
         atendimento = new Atendimento();
-        atendimento.setTipoClienteEnum(TipoClienteEnum.CLIENTE_NOVO);
 
 
         inicializarListas();
         this.cpf = cpf;
 
-        this.atendimento.setCpf(cpf);
-        this.atendimento.setNome("JOSE ANTONIO");
+        this.cliente.setCpf(cpf);
+        this.cliente.setNome("JOSE ANTONIO");
         this.atendimento.setLimite(new BigDecimal("10258.52"));
         this.atendimento.setLimiteDisponivel(new BigDecimal("7443.09"));
         this.atendimento.setValorLiberado(new BigDecimal("3085.66"));
         this.atendimento.setValorMaxOperacao(new BigDecimal("7199.88"));
-        this.atendimento.setProtocolo(gerarProtocolo());
-        this.atendimento.setClienteVip(Boolean.TRUE);
+
+        String protoColo = gerarProtocolo();
+        this.atendimento.setProtocolo(protoColo);
+        cliente.setProtocolo(protoColo);
+        cliente.setUltimoProtocolo(protoColo);
+
+        this.cliente.setClienteVip(Boolean.TRUE);
 
 
         this.cartaoCreditoSelecionado = new CartaoCredito();
@@ -946,7 +1260,7 @@ public class FichaAtendimentoSacBean extends GenericBean {
         Telefone telefone = new Telefone();
         telefone.setDdd(Short.valueOf("31"));
         telefone.setNumero("999631311");
-        atendimento.adicionarTelefone(telefone);
+        cliente.adicionarTelefone(telefone);
 
         BigDecimal limiteTotal = cartaoCreditoSelecionado.getLimiteTotal();
         BigDecimal limiteDisponivel = cartaoCreditoSelecionado.getLimiteDisponivel();
@@ -960,9 +1274,10 @@ public class FichaAtendimentoSacBean extends GenericBean {
 
         System.out.println("Percentual usado: " + percentualUsado + "%");
 
-        this.atendimento.addCartao(cartaoCreditoSelecionado);
-        carregarHistoricosAtendimentos();
-        carregarAtividadesAtendimentosMocado();
+        this.cliente.addCartao(cartaoCreditoSelecionado);
+        carregarHistoricosAtendimentosMocado();
+
+        this.quantidadeAtendimento = 3L;
     }
 
     public void setInicioAtendimentoMillis(Long inicioAtendimentoMillis) {
@@ -976,5 +1291,25 @@ public class FichaAtendimentoSacBean extends GenericBean {
             return this.atendimento.getDataCadastro().getTime();
         }
         return System.currentTimeMillis(); // Ou System.currentTimeMillis() se quiser começar agora
+    }
+
+    public Cliente getCliente() {
+        return cliente;
+    }
+
+    public void setCliente(Cliente cliente) {
+        this.cliente = cliente;
+    }
+
+    public Long getQuantidadeAtendimento() {
+        return quantidadeAtendimento;
+    }
+
+    public Atendimento getAtendimentoVisualizar() {
+        return atendimentoVisualizar;
+    }
+
+    public void setAtendimentoVisualizar(Atendimento atendimentoVisualizar) {
+        this.atendimentoVisualizar = atendimentoVisualizar;
     }
 }

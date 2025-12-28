@@ -6,6 +6,7 @@ import java.math.BigDecimal;
 import com.proativaservicos.model.pwd.Numero;
 import com.proativaservicos.util.NumeroUtil;
 import com.proativaservicos.util.Util;
+import com.thoughtworks.xstream.annotations.XStreamOmitField;
 import jakarta.persistence.Column;
 import jakarta.persistence.EnumType;
 import jakarta.persistence.Enumerated;
@@ -68,6 +69,11 @@ public abstract class GenericTelefone extends Generic implements Serializable, C
 
     @Column(name = "quantidade_atendido")
     private Integer quantidadeAtendido;
+
+    @JoinColumn(name = "cliente")
+    @ManyToOne(fetch = FetchType.LAZY)
+    @XStreamOmitField
+    private Cliente cliente;
 
     @Transient
     private boolean condicaoNovo;
@@ -250,6 +256,14 @@ public abstract class GenericTelefone extends Generic implements Serializable, C
         return dddTelefone;
     }
 
+    public Cliente getCliente() {
+        return cliente;
+    }
+
+    public void setCliente(Cliente cliente) {
+        this.cliente = cliente;
+    }
+
     public String getDDDTelefoneFormatado() {
 
         String dddTelefone = "";
@@ -272,5 +286,9 @@ public abstract class GenericTelefone extends Generic implements Serializable, C
     public abstract GenericAtendimento getAtendimento();
 
     public abstract void setAtendimento(GenericAtendimento parametroGenericAtendimento);
+
+
+
+
 
 }

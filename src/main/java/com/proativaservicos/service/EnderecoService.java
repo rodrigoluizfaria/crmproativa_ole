@@ -40,4 +40,7 @@ public class EnderecoService extends GenericProService<Endereco> implements Seri
 		
 	}
 
+    public List<Endereco> pesquisarEnderecoPorCliente(Long idCliente) {
+		return this.dao.pesquisarEnderecoPorCliente(idCliente);
+    }
 }

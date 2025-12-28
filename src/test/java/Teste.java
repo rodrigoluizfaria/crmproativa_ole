@@ -4,13 +4,9 @@ import java.io.FileReader;
 import java.net.MalformedURLException;
 import java.net.URL;
 import java.rmi.RemoteException;
+import java.security.SecureRandom;
 import java.text.Normalizer;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Date;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 import java.util.regex.Pattern;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
@@ -44,7 +40,7 @@ public class Teste {
 	public static String URL_SAQUE_COMPLEMENTAR = "/SaqueComplementar?wsdl";
 
 	public static void main(String[] args) {
-		System.out.println(Teste.deAccent("maçaão"));
+		/*System.out.println(Teste.deAccent("maçaão"));
 
 		System.out.println(DateUtil.builder(new Date()).formatarDataParaString("yyyyMMddHHmmss").getDataTexto());
 		try {
@@ -121,6 +117,31 @@ public class Teste {
 			e.printStackTrace();
 
 		}
+*/
+
+		SecureRandom random = new SecureRandom();
+
+// Gera número entre 0 e 99
+		int numero = random.nextInt(100);
+
+// Formata com dois dígitos (zero à esquerda se necessário)
+		String numeroFormatado = String.format("%02d", numero);
+
+		System.out.println("Número gerado: " + Utils.getNumeroRandomico());
+
+		// Data com milissegundos para maior precisão
+		String formatoData = DateUtil.builder(new Date())
+				.formatarDataParaString("yyyyMMddHHmmss")
+				.getDataTexto();
+
+		// Gera um UUID e pega apenas os 8 primeiros caracteres
+		String uuidCurto = UUID.randomUUID().toString().substring(0, 2).toUpperCase();
+
+		// Dois dígitos aleatórios para reforçar
+		String numeroRandomico = String.format("%02d", new SecureRandom().nextInt(100));
+
+		System.out.println(formatoData + "-" + uuidCurto + "-" + numeroRandomico + "-");
+
 
 	}
 

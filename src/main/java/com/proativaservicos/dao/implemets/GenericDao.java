@@ -15,6 +15,11 @@ import jakarta.transaction.Transactional;
 import java.io.Serializable;
 import java.lang.reflect.ParameterizedType;
 import java.lang.reflect.Type;
+import java.time.LocalDate;
+import java.time.LocalDateTime;
+import java.time.LocalTime;
+import java.time.ZoneId;
+import java.util.Date;
 import java.util.List;
 import java.util.Map;
 
@@ -607,6 +612,25 @@ public abstract class GenericDao<E> {
 
 		return sb.toString();
 	}
-	
+
+	// Retorna a data ajustada para 00:00:00
+	public static Date atStartOfDay(Date date) {
+		if (date == null) return null;
+		LocalDate localDate = date.toInstant()
+				.atZone(ZoneId.systemDefault())
+				.toLocalDate();
+		LocalDateTime startOfDay = localDate.atStartOfDay();
+		return Date.from(startOfDay.atZone(ZoneId.systemDefault()).toInstant());
+	}
+
+	// Retorna a data ajustada para 23:59:59.999
+	public static Date atEndOfDay(Date date) {
+		if (date == null) return null;
+		LocalDate localDate = date.toInstant()
+				.atZone(ZoneId.systemDefault())
+				.toLocalDate();
+		LocalDateTime endOfDay = localDate.atTime(LocalTime.MAX);
+		return Date.from(endOfDay.atZone(ZoneId.systemDefault()).toInstant());
+	}
 
 }

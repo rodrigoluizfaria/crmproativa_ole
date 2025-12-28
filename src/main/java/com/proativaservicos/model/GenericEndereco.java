@@ -2,9 +2,8 @@ package com.proativaservicos.model;
 
 import java.io.Serializable;
 
-import jakarta.persistence.Column;
-import jakarta.persistence.MappedSuperclass;
-import jakarta.persistence.Transient;
+import com.thoughtworks.xstream.annotations.XStreamOmitField;
+import jakarta.persistence.*;
 
 @MappedSuperclass
 public abstract class GenericEndereco extends Generic implements Serializable {
@@ -37,6 +36,11 @@ public abstract class GenericEndereco extends Generic implements Serializable {
 
 	@Transient
 	private String localidade;
+
+	@ManyToOne(fetch = FetchType.LAZY)
+	@JoinColumn(name = "cliente")
+	@XStreamOmitField
+	private Cliente cliente;
 
 	public abstract GenericAtendimento getAtendimento();
 
@@ -105,7 +109,12 @@ public abstract class GenericEndereco extends Generic implements Serializable {
 	public void setLocalidade(String localidade) {
 		this.localidade = localidade;
 	}
-	
-	
 
+	public Cliente getCliente() {
+		return cliente;
+	}
+
+	public void setCliente(Cliente cliente) {
+		this.cliente = cliente;
+	}
 }

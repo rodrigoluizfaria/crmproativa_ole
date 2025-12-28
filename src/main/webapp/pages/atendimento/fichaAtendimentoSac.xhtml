@@ -1,6 +1,6 @@
 <ui:composition xmlns="http://www.w3.org/1999/xhtml"
-                xmlns:h="http://java.sun.com/jsf/html"
-                xmlns:f="http://java.sun.com/jsf/core"
+                xmlns:h="http://xmlns.jcp.org/jsf/html"
+                xmlns:f="http://xmlns.jcp.org/jsf/core"
                 xmlns:ui="http://java.sun.com/jsf/facelets"
                 xmlns:p="http://primefaces.org/ui"
                 template="/WEB-INF/template.xhtml">
@@ -61,9 +61,10 @@
                 padding: 2px 8px;
                 border-radius: 4px;
             }
+
             .tag-new {
                 background-color: #e0f2fe; /* Azul bem claro */
-                color: #0284c7;            /* Azul forte */
+                color: #0284c7; /* Azul forte */
                 font-weight: 700;
                 padding: 3px 12px;
                 border-radius: 6px;
@@ -77,7 +78,7 @@
                 /* Substitui o background-color */
                 background: linear-gradient(135deg, #ffe259 0%, #ffa751 100%);
                 color: #5d4037; /* Marrom escuro para contraste melhor que preto */
-                border: none;   /* Remove bordas padrão para o gradiente brilhar */
+                border: none; /* Remove bordas padrão para o gradiente brilhar */
                 font-weight: 600;
                 padding: 3px 12px;
                 border-radius: 20px;
@@ -85,7 +86,8 @@
                 letter-spacing: 0.5px;
                 box-shadow: 0 2px 4px rgba(168, 85, 247, 0.2)
             }
-            .base-tag{
+
+            .base-tag {
 
             }
 
@@ -160,10 +162,10 @@
 
                                             <div class="surface-100 border-1 border-300 border-round px-3 py-2 flex align-items-center h-full">
                                                 <span class="text-600 font-bold text-xs mr-2 uppercase">Protocolo:</span>
-                                                <span class="text-900 font-bold font-monospace select-all">#{fichaAtendimentoSacBean.atendimento.protocolo}</span>
+                                                <span class="text-900 font-bold font-monospace select-all">#{fichaAtendimentoSacBean.cliente.protocolo}</span>
                                                 <p:commandLink title="Copiar Protocolo"
                                                                styleClass="ml-2 text-400 hover:text-primary"
-                                                               onclick="copiarTexto('#{fichaAtendimentoSacBean.atendimento.protocolo}');  return false">
+                                                               onclick="copiarTexto('#{fichaAtendimentoSacBean.cliente.protocolo}');  return false">
                                                     <i class="pi pi-copy"></i>
                                                 </p:commandLink>
                                             </div>
@@ -221,7 +223,9 @@
                                                             00:00:00
                                                         </div>
 
-                                                        <h:inputHidden id="inicioMillis" value="#{fichaAtendimentoSacBean.inicioAtendimentoMillis}" />
+                                                        <h:inputHidden id="inicioMillis"
+                                                                       value="#{fichaAtendimentoSacBean.inicioAtendimentoMillis}"
+                                                                       disabled="true"/>
                                                     </div>
 
                                                 </div>
@@ -258,7 +262,7 @@
 
                                                     <div class="flex flex-column">
                                                         <span class="text-orange-900 font-medium text-sm mb-1">Contatos Anteriores</span>
-                                                        <div class="text-2xl font-bold text-orange-800">2</div>
+                                                        <div class="text-2xl font-bold text-orange-800">#{fichaAtendimentoSacBean.quantidadeAtendimento}</div>
                                                     </div>
                                                 </div>
                                             </div>
@@ -291,7 +295,7 @@
 
                                         <div class="col-12 lg:col-4">
 
-                                            <p:card styleClass="shadow-2" >
+                                            <p:card styleClass="shadow-2">
 
                                                 <f:facet name="title">
 
@@ -299,12 +303,14 @@
                                                         <div>
                                                             <span class="">  Dados do Cliente</span>
                                                             <p class="text-sm text-gray-500">Informações cadastrais</p>
-                                                            <h:panelGroup rendered="#{fichaAtendimentoSacBean.atendimento.tipoClienteEnum ne 'CLIENTE'}"
-                                                                          styleClass="w-fit inline-flex align-items-center border-round-3xl px-3 py-1 font-bold text-sm #{fichaAtendimentoSacBean.atendimento.tipoClienteEnum.colorCss}">
+                                                            <h:panelGroup
+                                                                    rendered="#{fichaAtendimentoSacBean.cliente.tipoClienteEnum ne 'CLIENTE'}"
+                                                                    styleClass="w-fit inline-flex align-items-center border-round-3xl px-3 py-1 font-bold text-sm #{fichaAtendimentoSacBean.cliente.tipoClienteEnum.colorCss}">
 
-                                                                <i class="#{fichaAtendimentoSacBean.atendimento.tipoClienteEnum.icon} mr-2" />
+                                                                <i class="#{fichaAtendimentoSacBean.cliente.tipoClienteEnum.icon} mr-2"/>
 
-                                                                <h:outputText value="#{fichaAtendimentoSacBean.atendimento.tipoClienteEnum.descricao}" />
+                                                                <h:outputText
+                                                                        value="#{fichaAtendimentoSacBean.cliente.tipoClienteEnum.descricao}"/>
 
                                                             </h:panelGroup>
                                                         </div>
@@ -320,29 +326,28 @@
                                                 <div class="flex flex-column gap-3 mt-3">
 
 
-
-
                                                     <div class="field mb-0">
-                                                        <p:outputLabel for="txtNome" value="Nome Completo" styleClass="font-semibold  block"/>
+                                                        <p:outputLabel for="txtNome" value="Nome Completo"
+                                                                       styleClass="font-semibold  block"/>
 
                                                         <div class="flex align-items-center border-1 border-300 border-round bg-white overflow-hidden">
 
                                                             <div class="bg-gray-50 px-3 border-right-1 border-300 flex align-items-center justify-content-center"
                                                                  style="height: 2.5rem;">
-                                                                <i class="pi pi-user text-600" />
+                                                                <i class="pi pi-user text-600"/>
                                                             </div>
 
                                                             <div class="flex-1">
                                                                 <p:inputText id="txtNome"
                                                                              readonly="true"
-                                                                             value="#{fichaAtendimentoSacBean.atendimento.nome}"
+                                                                             value="#{fichaAtendimentoSacBean.cliente.nome}"
                                                                              styleClass="w-full border-none shadow-none bg-transparent "/>
                                                             </div>
 
                                                             <p:commandButton icon="pi pi-copy"
                                                                              title="Copiar Nome"
                                                                              type="button"
-                                                                             onclick="copiarTexto('#{fichaAtendimentoSacBean.atendimento.nome}'); return false;"
+                                                                             onclick="copiarTexto('#{fichaAtendimentoSacBean.cliente.nome}'); return false;"
                                                                              styleClass="ui-button-flat ui-button-secondary text-500 rounded-none h-full hover:bg-gray-100 px-3"/>
                                                         </div>
                                                     </div>
@@ -350,25 +355,27 @@
 
                                                     <div class="field mb-0">
 
-                                                        <p:outputLabel for="txtCpf" value="CPF"  styleClass="font-semibold  block"/>
+                                                        <p:outputLabel for="txtCpf" value="CPF"
+                                                                       styleClass="font-semibold  block"/>
 
                                                         <div class="flex align-items-center border-1 border-300 border-round bg-white overflow-hidden">
 
                                                             <div class="bg-gray-50 px-3 border-right-1 border-300 flex align-items-center justify-content-center"
-                                                                 style="height: 2.5rem;"> <i class="pi pi-id-card text-600" />
+                                                                 style="height: 2.5rem;"><i
+                                                                    class="pi pi-id-card text-600"/>
                                                             </div>
 
                                                             <div class="flex-1">
                                                                 <p:inputText id="txtCpf"
                                                                              readonly="true"
-                                                                             value="#{fichaAtendimentoSacBean.atendimento.cpf}"
+                                                                             value="#{fichaAtendimentoSacBean.cliente.cpf}"
                                                                              styleClass="w-full border-none shadow-none bg-transparent"/>
                                                             </div>
 
                                                             <p:commandButton icon="pi pi-copy"
                                                                              title="Copiar CPF"
                                                                              type="button"
-                                                                             onclick="copiarTexto('#{fichaAtendimentoSacBean.atendimento.cpf}'); return false;"
+                                                                             onclick="copiarTexto('#{fichaAtendimentoSacBean.cliente.cpf}'); return false;"
                                                                              styleClass="ui-button-flat ui-button-secondary text-500 rounded-none h-full hover:bg-gray-100 px-3"/>
                                                         </div>
 
@@ -393,13 +400,13 @@
 
                                                                     <div class="flex-1 px-3 py-2">
                                                                         <h:outputText
-                                                                                value="#{fichaAtendimentoSacBean.atendimento.telefoneResumido}"/>
+                                                                                value="#{fichaAtendimentoSacBean.cliente.telefoneResumido}"/>
                                                                     </div>
 
                                                                     <p:commandButton icon="pi pi-copy"
                                                                                      title="Copiar Telefone"
                                                                                      type="button"
-                                                                                     onclick="copiarTexto('#{fichaAtendimentoSacBean.atendimento.primeiroTelefone}'); return false;"
+                                                                                     onclick="copiarTexto('#{fichaAtendimentoSacBean.cliente.primeiroTelefone}'); return false;"
                                                                                      styleClass="ui-button-flat ui-button-secondary text-400 rounded-circle ui-button-sm hover:bg-gray-100"/>
                                                                 </div>
                                                             </div>
@@ -422,7 +429,7 @@
 
                                                             <div class="flex-1 p-3">
                                                                 <h:outputText
-                                                                        value="#{fichaAtendimentoSacBean.atendimento.enderecoResumido}"
+                                                                        value="#{fichaAtendimentoSacBean.cliente.enderecoResumido}"
 
                                                                         style="white-space: pre-wrap; word-break: break-word;"/>
                                                             </div>
@@ -431,7 +438,7 @@
                                                                 <p:commandButton icon="pi pi-copy"
                                                                                  title="Copiar Endereço"
                                                                                  type="button"
-                                                                                 onclick="copiarTexto('#{fichaAtendimentoSacBean.atendimento.enderecoResumido}'); return false;"
+                                                                                 onclick="copiarTexto('#{fichaAtendimentoSacBean.cliente.enderecoResumido}'); return false;"
                                                                                  styleClass="ui-button-flat ui-button-secondary text-400 rounded-circle ui-button-sm hover:bg-gray-100"/>
                                                             </div>
 
@@ -682,7 +689,7 @@
 
                                                         <p:commandButton value="Iniciar Atendimento" icon="pi pi-check"
                                                                          update="grl formConteudo"
-                                                                         actionListener="#{fichaAtendimentoSacBean.iniciarAtendimento()}"
+                                                                         actionListener="#{fichaAtendimentoSacBean.classificarAtendimento()}"
                                                                          ignoreAutoUpdate="@form"
                                                                          process="cardClassificacao"
                                                                          styleClass="ui-button-primary w-6 bg-bluegray-700 border-bluegray-700"/>
@@ -877,12 +884,12 @@
 
                                                             <h:panelGroup styleClass="ui-fluid formgrid grid"
                                                                           layout="block"
-                                                                          rendered="#{not empty fichaAtendimentoSacBean.atendimento.cartaoCreditoPrincipal}">
+                                                                          rendered="#{not empty fichaAtendimentoSacBean.cliente.cartaoCreditoPrincipal}">
                                                                 <div class="field col-12 md:col-6">
                                                                     <p:outputLabel value="Número do Cartão"
                                                                                    styleClass="text-500 font-medium"/>
                                                                     <p:inputText
-                                                                            value="#{fichaAtendimentoSacBean.atendimento.cartaoCreditoPrincipal.getNumeroMascarado()}"
+                                                                            value="#{fichaAtendimentoSacBean.cliente.cartaoCreditoPrincipal.getNumeroMascarado()}"
                                                                             readonly="true"
                                                                             styleClass="bg-gray-50 text-900 font-bold border-round-lg"/>
                                                                 </div>
@@ -890,7 +897,7 @@
                                                                     <p:outputLabel value="Bandeira"
                                                                                    styleClass="text-500 font-medium"/>
                                                                     <p:inputText
-                                                                            value="#{fichaAtendimentoSacBean.atendimento.cartaoCreditoPrincipal.bandeira}"
+                                                                            value="#{fichaAtendimentoSacBean.cliente.cartaoCreditoPrincipal.bandeira}"
                                                                             readonly="true"
                                                                             styleClass="bg-gray-50 text-900 border-round-lg"/>
                                                                 </div>
@@ -898,7 +905,7 @@
                                                                     <p:outputLabel value="Tipo"
                                                                                    styleClass="text-500 font-medium"/>
                                                                     <p:inputText
-                                                                            value="#{fichaAtendimentoSacBean.atendimento.cartaoCreditoPrincipal.tipo}"
+                                                                            value="#{fichaAtendimentoSacBean.cliente.cartaoCreditoPrincipal.tipo}"
                                                                             readonly="true"
                                                                             styleClass="bg-gray-50 text-900 border-round-lg"/>
                                                                 </div>
@@ -906,7 +913,7 @@
                                                                     <p:outputLabel value="Validade"
                                                                                    styleClass="text-500 font-medium"/>
                                                                     <p:inputText
-                                                                            value="#{fichaAtendimentoSacBean.atendimento.cartaoCreditoPrincipal.validade}"
+                                                                            value="#{fichaAtendimentoSacBean.cliente.cartaoCreditoPrincipal.validade}"
                                                                             readonly="true"
                                                                             styleClass="bg-gray-50 text-900 border-round-lg"/>
                                                                 </div>
@@ -914,7 +921,7 @@
                                                                     <p:outputLabel value="Status"
                                                                                    styleClass="text-500 font-medium"/>
                                                                     <p:inputText
-                                                                            value="#{fichaAtendimentoSacBean.atendimento.cartaoCreditoPrincipal.status}"
+                                                                            value="#{fichaAtendimentoSacBean.cliente.cartaoCreditoPrincipal.status}"
                                                                             readonly="true"
                                                                             styleClass="bg-orange-50 text-orange-600 font-bold border-orange-200 border-round-lg"/>
                                                                 </div>
@@ -940,7 +947,7 @@
                                                             </h:panelGroup>
 
                                                             <h:panelGroup layout="block"
-                                                                          rendered="#{ empty fichaAtendimentoSacBean.atendimento.cartaoCreditoPrincipal}"
+                                                                          rendered="#{ empty fichaAtendimentoSacBean.cliente.cartaoCreditoPrincipal}"
                                                                           styleClass="col-12">
 
                                                                 <div class="flex flex-column align-items-center justify-content-center p-5 bg-white border-round-xl border-1 border-200 shadow-1 h-full">
@@ -958,6 +965,7 @@
 
                                                                     <div class="mt-4">
                                                                         <p:commandButton value="Atualizar Cadastro"
+
                                                                                          icon="pi pi-refresh"
                                                                                          styleClass="ui-button-outlined ui-button-secondary border-round-lg"/>
                                                                     </div>
@@ -1114,7 +1122,7 @@
                                                                             <div class="overflow-hidden">
                                                                                 <span class="text-500 text-sm block">Endereço de Envio</span>
                                                                                 <span class="text-800 font-medium text-sm block white-space-nowrap overflow-hidden text-overflow-ellipsis">
-                                                                                       #{fichaAtendimentoSacBean.atendimento.enderecoResumido ne null ? fichaAtendimentoSacBean.atendimento.enderecoResumido : 'Rua das Flores, 123 - Jd. Paulista'}
+                                                                                       #{fichaAtendimentoSacBean.cliente.enderecoResumido ne null ? fichaAtendimentoSacBean.cliente.enderecoResumido : 'Rua das Flores, 123 - Jd. Paulista'}
                                                                                  </span>
                                                                                 <small class="text-primary cursor-pointer hover:underline">Confirmar endereço</small>
                                                                             </div>
@@ -1148,29 +1156,52 @@
                                                     </div>
 
                                                     <div class="bg-blue-50 border-top-1 border-blue-100 p-4">
-                                                        <h3 class="text-blue-800 text-lg font-bold m-0 mb-2">Ações do Atendimento</h3>
 
-                                                        <div class="mb-3 text-sm">
-                                                            <span class="text-600">Classificação: </span>
-                                                            <span class="font-bold text-800">
-                                                                     #{fichaAtendimentoSacBean.motivoSelecionado.descricao} |
-                                                                #{fichaAtendimentoSacBean.subMotivoSelecionado.descricao}
-                </span>
+                                                        <div class="flex align-items-center justify-content-between mb-3">
+                                                            <h3 class="text-blue-800 text-lg font-bold m-0 flex align-items-center">
+                                                                <i class="pi pi-verified mr-2"></i> Ações do Atendimento
+                                                            </h3>
                                                         </div>
 
-                                                        <div class="flex flex-column md:flex-row gap-3">
-                                                            <p:commandButton value="Finalizar Atendimento"
-                                                                             icon="pi pi-check"
-                                                                             process="@this panelOperacional"
-                                                                             update="dlgFinalizar"
-                                                                             oncomplete="PF('dlgFinalizar').show();"
-                                                                             styleClass="ui-button-success w-full border-round-lg font-bold py-3"/>
+                                                        <div class="surface-0 border-1 border-blue-100 border-round p-3 mb-4 flex flex-column md:flex-row align-items-start md:align-items-center justify-content-between gap-2 shadow-1">
 
-                                                            <p:commandButton value="Direcionar ao N2"
-                                                                             icon="pi pi-arrow-right" iconPos="right"
-                                                                             type="button"
-                                                                             onclick="PF('dlgDerivarN2').show()"
-                                                                             styleClass="ui-button-outlined ui-button-warning w-full border-round-lg font-bold py-3 bg-white"/>
+                                                            <div class="flex flex-column">
+                                                                <span class="text-500 text-xs font-bold uppercase mb-1">Classificação Definida</span>
+                                                                <span class="text-800 font-medium text-lg">
+                <i class="pi pi-tag text-blue-600 mr-1 text-sm"></i>
+                                                                    #{fichaAtendimentoSacBean.motivoSelecionado.descricao}
+                                                                    <span class="text-400 mx-2">|</span>
+                                                                    #{fichaAtendimentoSacBean.subMotivoSelecionado.descricao}
+            </span>
+                                                            </div>
+
+                                                            <p:commandButton value="Alterar"
+                                                                             icon="pi pi-pencil"
+                                                                             title="Redefinir classificação"
+                                                                             actionListener="#{fichaAtendimentoSacBean.limparClassificacao()}"
+                                                                             update="@form" process="@this"
+                                                                             styleClass="ui-button-flat ui-button-secondary text-sm font-bold"/>
+                                                        </div>
+
+                                                        <div class="grid formgrid">
+
+                                                            <div class="col-12 md:col-6">
+                                                                <p:commandButton value="Direcionar ao N2"
+                                                                                 icon="pi pi-arrow-right" iconPos="right"
+                                                                                 type="button"
+                                                                                 onclick="PF('dlgDerivarN2').show()"
+                                                                                 styleClass="ui-button-outlined ui-button-warning w-full border-round-lg font-bold py-3 bg-white surface-hover"/>
+                                                            </div>
+
+                                                            <div class="col-12 md:col-6">
+                                                                <p:commandButton value="Finalizar Atendimento"
+                                                                                 icon="pi pi-check"
+                                                                                 process="@this panelOperacional"
+                                                                                 update="dlgFinalizar"
+                                                                                 oncomplete="PF('dlgFinalizar').show();"
+                                                                                 styleClass="ui-button-success w-full border-round-lg font-bold py-3 shadow-2"/>
+                                                            </div>
+
                                                         </div>
                                                     </div>
 
@@ -1195,70 +1226,77 @@
                             <p:remoteCommand name="enviarCpf" actionListener="#{fichaAtendimentoSacBean.onCliente}"
                                              update="@form" oncomplete="tocarNotificacao();"/>
 
-                            <div class="grid justify-content-center mt-3">
-                                <div class="col-12 md:col-10 lg:col-8">
-                                    <div class="flex justify-content-end mb-3">
-                                        <p:commandButton icon="pi pi-history" value="Teste receber chamada"
+                            <div class="grid justify-content-center mt-4">
+                                <div class="col-12 md:col-8 lg:col-6">
+
+                                    <div class="flex justify-content-end mb-3 gap-2">
+                                        <p:commandButton icon="pi pi-phone" value="Simular Chamada"
                                                          process="@this" update="dlgPonto"
                                                          onclick="enviarMocado()"
+                                                         styleClass="ui-button-outlined ui-button-secondary text-sm"/>
 
-                                                         styleClass="ui-button-outlined ui-button-secondary border-round-lg shadow-1 mr-2"/>
-
-                                        <p:commandButton icon="pi pi-history" value="Associar ponto atendimento"
+                                        <p:commandButton icon="pi pi-cog" value="Config. Ramal"
                                                          oncomplete="PF('dlgPonto').show()" process="@this"
                                                          update="dlgPonto"
                                                          actionListener="#{fichaAtendimentoSacBean.onListarPontosAtendimentos()}"
-                                                         styleClass="ui-button-outlined ui-button-secondary border-round-lg shadow-1"/>
+                                                         styleClass="ui-button-outlined ui-button-secondary text-sm"/>
                                     </div>
 
-                                    <p:card styleClass="shadow-2 border-round-xl mb-3 border-none">
-                                        <div class="flex flex-wrap align-items-center justify-content-between">
-                                            <div class="flex align-items-center">
-                                                <div class="w-3rem h-3rem border-circle bg-blue-100 flex align-items-center justify-content-center mr-3">
-                                                    <i class="pi pi-user text-blue-700 text-xl"></i>
-                                                </div>
-                                                <div>
-                                                    <h2 class="text-xl font-bold m-0 text-800">#{agentCC.msg}</h2>
-                                                    <small class="text-500 font-bold">RAMAL: #{ empty fichaAtendimentoSacBean.usuario.pontoAtendimento? 'Nenhum ramal associado':fichaAtendimentoSacBean.usuario.pontoAtendimento.ramal}</small>
+                                    <div class="surface-card shadow-2 border-round-xl p-3 mb-3 flex align-items-center justify-content-between border-left-3 border-blue-500">
+                                        <div class="flex align-items-center">
+                                            <p:avatar icon="pi pi-user" styleClass="mr-3 bg-blue-100 text-blue-600" size="large" shape="circle" />
+                                            <div>
+                                                <span class="text-900 font-bold block text-lg">#{agentCC.msg}</span>
+                                                <div class="flex align-items-center mt-1">
+                                                    <i class="pi pi-phone text-500 mr-1 text-sm"></i>
+                                                    <span class="text-600 text-sm">Ramal:
+                                <span class="font-bold text-700">#{empty fichaAtendimentoSacBean.usuario.pontoAtendimento ? 'Sem Ramal' : fichaAtendimentoSacBean.usuario.pontoAtendimento.ramal}</span>
+                            </span>
                                                 </div>
                                             </div>
-                                            <p:tag severity="success" value="ONLINE" rounded="true" id="statusTag"/>
                                         </div>
-                                    </p:card>
+                                        <p:tag severity="success" value="DISPONÍVEL" icon="pi pi-check-circle" rounded="true"/>
+                                    </div>
 
-                                    <p:card id="cpfBox"
-                                            styleClass="shadow-6 border-round-xl border-none transition-all duration-500 #{not empty agentCC.cpf ? 'bg-green-50 border-left-3 border-green-500' : ''}">
-                                        <f:facet name="title">
-                                            <div class="flex justify-content-between">
-                                                <span class="text-700 font-bold"><i
-                                                        class="pi pi-phone-at-call mr-2 text-primary"/>Atendimento Atual</span>
-                                                <h:panelGroup rendered="#{not empty fichaAtendimentoSacBean.cpf}">
-                                                    <span class="p-tag p-tag-danger p-tag-rounded animate-pulse">CHAMADA ATIVA</span>
-                                                </h:panelGroup>
-                                            </div>
-                                        </f:facet>
+                                    <p:card id="cpfBox" styleClass="shadow-4 border-round-2xl border-none overflow-hidden">
 
                                         <h:panelGroup rendered="#{empty fichaAtendimentoSacBean.cpf}" layout="block"
-                                                      styleClass="text-center py-6">
-                                            <div class="pulse-container mb-3">
-                                                <i class="pi pi-phone text-300 text-5xl"></i>
+                                                      styleClass="text-center py-6 flex flex-column align-items-center justify-content-center">
+
+                                            <div class="waiting-icon mb-4">
+                                                <i class="pi pi-phone text-5xl"></i>
                                             </div>
-                                            <h:outputText value="Pronto para receber chamadas..."
-                                                          styleClass="text-400 font-medium block"/>
+
+                                            <span class="text-800 font-bold text-xl block mb-2">Aguardando nova chamada...</span>
+                                            <span class="text-500 text-sm">O sistema identificará o cliente automaticamente.</span>
                                         </h:panelGroup>
 
                                         <h:panelGroup rendered="#{not empty fichaAtendimentoSacBean.cpf}" layout="block"
-                                                      styleClass="fadein p-2">
-                                            <div class="grid">
-                                                <div class="col-12 md:col-6">
-                                                    <label class="block text-500 font-bold text-xs mb-1">CPF IDENTIFICADO</label>
-                                                    <div class="text-2xl font-bold text-900 font-monospace">#{fichaAtendimentoSacBean.cpf}</div>
+                                                      styleClass="fadein animation-duration-500 surface-50 h-full">
+
+                                            <div class="bg-blue-600 text-white p-3 flex align-items-center justify-content-between">
+                                                <span class="font-bold flex align-items-center"><i class="pi pi-phone-at-call mr-2 animate-pulse"></i> CHAMADA ENTRANDO</span>
+                                                <span class="text-sm opacity-90">Identificando...</span>
+                                            </div>
+
+                                            <div class="p-4 grid align-items-center">
+                                                <div class="col-12 md:col-6 text-center md:text-left border-bottom-1 md:border-bottom-none md:border-right-1 border-300 pb-3 md:pb-0">
+                                                    <span class="block text-500 font-semibold text-xs uppercase mb-1">Cliente Identificado</span>
+                                                    <div class="text-3xl font-bold text-blue-800 font-monospace tracking-wide">
+                                                        #{fichaAtendimentoSacBean.cpf}
+                                                    </div>
                                                 </div>
-                                                <div class="col-12 md:col-6">
-                                                    <div class="text-2xl font-bold text-900">Buscando dados do cliente...</div>
+
+                                                <div class="col-12 md:col-6 text-center">
+                                                    <div class="flex flex-column align-items-center justify-content-center">
+                                                        <i class="pi pi-spin pi-spinner text-blue-600 text-3xl mb-2"></i>
+                                                        <span class="text-700 font-medium">Carregando ficha...</span>
+                                                        <p:progressBar mode="indeterminate" styleClass="h-1rem w-10rem mt-2" />
+                                                    </div>
                                                 </div>
                                             </div>
                                         </h:panelGroup>
+
                                     </p:card>
                                 </div>
                             </div>
@@ -1377,7 +1415,7 @@
                                         </div>
 
                                         <p:inputTextarea id="obsDerivacao"
-                                                         value="#{fichaAtendimentoSacBean.atendimento.observacaoN2}"
+                                                         value="#{fichaAtendimentoSacBean.atendimento.observacao}"
                                                          rows="4" styleClass="w-full bg-gray-50 border-round-lg"
                                                          placeholder="Descreva o motivo da derivação e informações relevantes (campo obrigatório)..."
                                                          required="true" requiredMessage="A observação é obrigatória."/>
@@ -1429,16 +1467,19 @@
                                     </div>
 
                                     <div class="field col-12 md:col-8">
-                                        <p:outputLabel for="txtNomeEdit" value="Nome Completo" styleClass="font-semibold"/>
+                                        <p:outputLabel for="txtNomeEdit" value="Nome Completo"
+                                                       styleClass="font-semibold"/>
                                         <div class="ui-inputgroup">
-                                            <span class="ui-inputgroup-addon bg-gray-50"><i class="pi pi-user"></i></span>
-                                            <p:inputText id="txtNomeEdit" value="#{fichaAtendimentoSacBean.atendimento.nome}"/>
+                                            <span class="ui-inputgroup-addon bg-gray-50"><i
+                                                    class="pi pi-user"></i></span>
+                                            <p:inputText id="txtNomeEdit"
+                                                         value="#{fichaAtendimentoSacBean.cliente.nome}"/>
                                         </div>
                                     </div>
 
                                     <div class="field col-12 md:col-4">
                                         <p:outputLabel for="txtCpfEdit" value="CPF" styleClass="font-semibold"/>
-                                        <p:inputText id="txtCpfEdit" value="#{fichaAtendimentoSacBean.atendimento.cpf}"
+                                        <p:inputText id="txtCpfEdit" value="#{fichaAtendimentoSacBean.cliente.cpf}"
                                                      readonly="true" styleClass="bg-gray-50"/>
                                     </div>
 
@@ -1460,33 +1501,41 @@
                                     </div>
 
                                     <div class="field col-12 md:col-7">
-                                        <p:outputLabel for="txtLogradouro" value="Logradouro" styleClass="font-semibold"/>
-                                        <p:inputText id="txtLogradouro" value="#{fichaAtendimentoSacBean.endereco.logradouro}"/>
+                                        <p:outputLabel for="txtLogradouro" value="Logradouro"
+                                                       styleClass="font-semibold"/>
+                                        <p:inputText id="txtLogradouro"
+                                                     value="#{fichaAtendimentoSacBean.endereco.logradouro}"/>
                                     </div>
 
                                     <div class="field col-12 md:col-2">
                                         <p:outputLabel for="txtNumeroEdit" value="Número" styleClass="font-semibold"/>
-                                        <p:inputText id="txtNumeroEdit" value="#{fichaAtendimentoSacBean.endereco.numero}"/>
+                                        <p:inputText id="txtNumeroEdit"
+                                                     value="#{fichaAtendimentoSacBean.endereco.numero}"/>
                                     </div>
 
                                     <div class="field col-12 md:col-6">
-                                        <p:outputLabel for="txtComplementoEdit" value="Complemento" styleClass="font-semibold"/>
-                                        <p:inputText id="txtComplementoEdit" value="#{fichaAtendimentoSacBean.endereco.complemento}"/>
+                                        <p:outputLabel for="txtComplementoEdit" value="Complemento"
+                                                       styleClass="font-semibold"/>
+                                        <p:inputText id="txtComplementoEdit"
+                                                     value="#{fichaAtendimentoSacBean.endereco.complemento}"/>
                                     </div>
 
                                     <div class="field col-12 md:col-6">
                                         <p:outputLabel for="txtBairroEdit" value="Bairro" styleClass="font-semibold"/>
-                                        <p:inputText id="txtBairroEdit" value="#{fichaAtendimentoSacBean.endereco.bairro}"/>
+                                        <p:inputText id="txtBairroEdit"
+                                                     value="#{fichaAtendimentoSacBean.endereco.bairro}"/>
                                     </div>
 
                                     <div class="field col-12 md:col-10">
                                         <p:outputLabel for="txtCidadeEdit" value="Cidade" styleClass="font-semibold"/>
-                                        <p:inputText id="txtCidadeEdit" value="#{fichaAtendimentoSacBean.endereco.cidade}"/>
+                                        <p:inputText id="txtCidadeEdit"
+                                                     value="#{fichaAtendimentoSacBean.endereco.cidade}"/>
                                     </div>
 
                                     <div class="field col-12 md:col-2">
                                         <p:outputLabel for="txtUfEdit" value="UF" styleClass="font-semibold"/>
-                                        <p:inputText id="txtUfEdit" value="#{fichaAtendimentoSacBean.endereco.uf}" maxlength="2"/>
+                                        <p:inputText id="txtUfEdit" value="#{fichaAtendimentoSacBean.endereco.uf}"
+                                                     maxlength="2"/>
                                     </div>
 
                                 </div>
@@ -1602,11 +1651,11 @@
         </div>
 
         <script type="text/javascript">
-            (function() {
+            (function () {
                 var startMillis = Number("#{fichaAtendimentoSacBean.inicioAtendimentoMillis}");
 
                 function atualizarCronometro() {
-                        console.log('INICIANDO CRONOMETRO: '+startMillis)
+                    console.log('INICIANDO CRONOMETRO: ' + startMillis)
                     if (!startMillis || startMillis === 0) return;
 
                     var now = new Date().getTime();
@@ -1625,7 +1674,7 @@
                     var s = String(seconds).padStart(2, '0');
 
                     var display = document.getElementById("cronometroTma");
-                    if(display) {
+                    if (display) {
                         display.innerText = h + ":" + m + ":" + s;
 
                         // Exemplo: Se passar de 10 min, fica vermelho
@@ -1642,6 +1691,19 @@
             })();
         </script>
         <style>
+            @keyframes pulse-blue {
+                0% { transform: scale(1); box-shadow: 0 0 0 0 rgba(59, 130, 246, 0.7); }
+                70% { transform: scale(1.1); box-shadow: 0 0 0 20px rgba(59, 130, 246, 0); }
+                100% { transform: scale(1); box-shadow: 0 0 0 0 rgba(59, 130, 246, 0); }
+            }
+
+            .waiting-icon {
+                animation: pulse-blue 2s infinite;
+                border-radius: 50%;
+                padding: 1.5rem;
+                background-color: #eff6ff; /* blue-50 */
+                color: #3b82f6; /* blue-500 */
+            }
             .font-monospace {
                 font-family: 'Courier New', monospace;
                 letter-spacing: 1px;

@@ -39,6 +39,9 @@ public abstract class GenericHistoricoAtendimento extends Generic {
     @Column(name = "observacao_n2", columnDefinition = "text")
     private String observacaoN2;
 
+    @Column(name = "resposta_n2")
+    private String respostaN2;
+
     @Column(name = "anotacao", columnDefinition = "text")
     private String anotacao;
 
@@ -75,7 +78,7 @@ public abstract class GenericHistoricoAtendimento extends Generic {
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "submotivo")
-    private SubMotivo subMotivomotivo;
+    private SubMotivo subMotivo;
 
     @Column(name = "enviar_n2")
     private Boolean enviarN2;
@@ -109,6 +112,11 @@ public abstract class GenericHistoricoAtendimento extends Generic {
     @Column(name = "data_fim_atendimento")
     @Temporal(TemporalType.TIMESTAMP)
     private Date dataFimAtendimento;
+
+    @JoinColumn(name = "responsavelN2")
+    @ManyToOne(fetch = FetchType.LAZY)
+    private Usuario responsavelN2;
+
 
     public String getProtocolo() {
         return protocolo;
@@ -226,6 +234,14 @@ public abstract class GenericHistoricoAtendimento extends Generic {
         this.usuarioTimeOut = usuarioTimeOut;
     }
 
+    public Usuario getResponsavelN2() {
+        return responsavelN2;
+    }
+
+    public void setResponsavelN2(Usuario responsavelN2) {
+        this.responsavelN2 = responsavelN2;
+    }
+
     public Motivo getMotivo() {
         return motivo;
     }
@@ -234,12 +250,22 @@ public abstract class GenericHistoricoAtendimento extends Generic {
         this.motivo = motivo;
     }
 
-    public SubMotivo getSubMotivomotivo() {
-        return subMotivomotivo;
+    public SubMotivo getSubMotivo() {
+        return subMotivo;
+
+
     }
 
-    public void setSubMotivomotivo(SubMotivo subMotivomotivo) {
-        this.subMotivomotivo = subMotivomotivo;
+    public String getRespostaN2() {
+        return respostaN2;
+    }
+
+    public void setRespostaN2(String respostaN2) {
+        this.respostaN2 = respostaN2;
+    }
+
+    public void setSubMotivo(SubMotivo subMotivomotivo) {
+        this.subMotivo = subMotivomotivo;
     }
 
     public Boolean getEnviarN2() {
@@ -359,7 +385,7 @@ public abstract class GenericHistoricoAtendimento extends Generic {
                 ", statusAtendimento=" + statusAtendimento +
                 ", usuarioTimeOut=" + usuarioTimeOut +
                 ", motivo=" + motivo +
-                ", subMotivomotivo=" + subMotivomotivo +
+                ", subMotivomotivo=" + subMotivo +
                 ", enviarN2=" + enviarN2 +
                 ", atendimentoFinalizado=" + atendimentoFinalizado +
                 ", posicaoFila=" + posicaoFila +

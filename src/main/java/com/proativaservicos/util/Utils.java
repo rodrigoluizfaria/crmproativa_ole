@@ -10,6 +10,7 @@ import org.json.JSONObject;
 import java.io.*;
 import java.math.BigInteger;
 import java.nio.charset.StandardCharsets;
+import java.security.SecureRandom;
 import java.text.Normalizer;
 import java.util.ArrayList;
 import java.util.List;
@@ -479,5 +480,17 @@ public class Utils {
         }
     }
 
+
+    public static String getNumeroRandomico(){
+        SecureRandom random = new SecureRandom();
+
+
+        int numero = random.nextInt(100);
+
+
+        String numeroFormatado = String.format("%02d", numero);
+
+        return numeroFormatado;
+    }
 
 }

@@ -1,0 +1,324 @@
+<ui:composition xmlns="http://www.w3.org/1999/xhtml"
+                xmlns:h="http://java.sun.com/jsf/html"
+                xmlns:f="http://java.sun.com/jsf/core"
+                xmlns:ui="http://java.sun.com/jsf/facelets"
+                xmlns:p="http://primefaces.org/ui"
+                template="/WEB-INF/template.xhtml">
+
+    <ui:define name="viewname">
+        <div class="bcca-breadcrumb">
+            <div class="bcca-breadcrumb-item bg-primary-500 hover:bg-primary-700">
+                <p:link outcome="/pages/backoffice/backoffice_fila" style="text-decoration: none">TRATATIVA N2</p:link>
+            </div>
+            <div class="bcca-breadcrumb-item ">BACKOFFICE</div>
+        </div>
+    </ui:define>
+
+    <ui:define name="content">
+
+        <div class="flex flex-column md:flex-row justify-content-between align-items-start md:align-items-center mb-4 gap-3">
+            <div>
+                <h1 class="text-2xl text-900 font-bold m-0">Fila de Backoffice</h1>
+                <span class="text-500">Gerenciamento e tratamento de demandas escalonadas</span>
+            </div>
+            <p:commandButton icon="pi pi-refresh" title="Atualizar Lista"
+                             actionListener="#{backofficeFilaBean.pesquisar}"
+                             update="pnpFila pnpQuantidades"
+                             styleClass="ui-button-outlined ui-button-secondary rounded-button"/>
+        </div>
+
+        <h:panelGroup styleClass="grid mb-4" id="pnpQuantidades" layout="block">
+            <div class="col-12 md:col-4">
+                <div class="surface-card shadow-1 p-3 border-round border-left-3 border-yellow-500 flex align-items-center h-full hover:shadow-2 transition-duration-200">
+                    <div class="bg-yellow-100 border-circle w-3rem h-3rem flex align-items-center justify-content-center mr-3">
+                        <i class="pi pi-exclamation-circle text-yellow-600 text-xl"></i>
+                    </div>
+                    <div>
+                        <span class="block text-900 font-bold text-3xl">#{backofficeFilaBean.qtdPendentes}</span>
+                        <span class="text-600 font-medium">Pendentes</span>
+                    </div>
+                </div>
+            </div>
+
+            <div class="col-12 md:col-4">
+                <div class="surface-card shadow-1 p-3 border-round border-left-3 border-blue-500 flex align-items-center h-full hover:shadow-2 transition-duration-200">
+                    <div class="bg-blue-100 border-circle w-3rem h-3rem flex align-items-center justify-content-center mr-3">
+                        <i class="pi pi-spinner text-blue-600 text-xl"></i>
+                    </div>
+                    <div>
+                        <span class="block text-900 font-bold text-3xl">#{backofficeFilaBean.qtdAndamento}</span>
+                        <span class="text-600 font-medium">Em Andamento</span>
+                    </div>
+                </div>
+            </div>
+
+            <div class="col-12 md:col-4">
+                <div class="surface-card shadow-1 p-3 border-round border-left-3 border-green-500 flex align-items-center h-full hover:shadow-2 transition-duration-200">
+                    <div class="bg-green-100 border-circle w-3rem h-3rem flex align-items-center justify-content-center mr-3">
+                        <i class="pi pi-check-circle text-green-600 text-xl"></i>
+                    </div>
+                    <div>
+                        <span class="block text-900 font-bold text-3xl">#{backofficeFilaBean.qtdConcluidos}</span>
+                        <span class="text-600 font-medium">Concluídos (Hoje)</span>
+                    </div>
+                </div>
+            </div>
+        </h:panelGroup>
+
+        <h:form id="frmFiltros" prependId="false">
+
+            <div class="surface-card p-4 shadow-1 border-round mb-4">
+                <span class="text-900 font-bold block mb-3 border-bottom-1 border-100 pb-2">Filtros de Pesquisa</span>
+
+                <div class="grid formgrid ui-fluid">
+
+                    <div class="col-12 md:col-3 mb-3 md:mb-0">
+                        <p:outputLabel for="filtroProtocolo" value="Protocolo"
+                                       styleClass="font-bold mb-2 block text-sm text-700"/>
+                        <p:inputText id="filtroProtocolo" value="#{backofficeFilaBean.filtroProtocolo}"
+                                     placeholder="Digite o protocolo"/>
+                    </div>
+
+                    <div class="col-12 md:col-3 mb-3 md:mb-0">
+                        <p:outputLabel for="filtroCpf" value="CPF do Cliente"
+                                       styleClass="font-bold mb-2 block text-sm text-700"/>
+                        <p:inputMask id="filtroCpf" value="#{backofficeFilaBean.filtroCpf}" mask="999.999.999-99"
+                                     placeholder="000.000.000-00"/>
+                    </div>
+
+                    <div class="col-12 md:col-3 mb-3 md:mb-0">
+                        <p:outputLabel for="filtroStatus" value="Status da Demanda"
+                                       styleClass="font-bold mb-2 block text-sm text-700"/>
+
+                        <p:selectOneMenu id="filtroStatus" value="#{backofficeFilaBean.filtroStatus}" autoWidth="false">
+                            <f:selectItem itemLabel="Todos" itemValue=""/>
+                            <f:selectItem itemLabel="Pendentes / Em Tratativa" itemValue="PENDENTE"/>
+                            <f:selectItem itemLabel="Concluídos / Encerrados" itemValue="CONCLUIDO"/>
+                        </p:selectOneMenu>
+                    </div>
+
+                    <div class="col-12 md:col-3 flex align-items-end gap-2">
+
+                        <p:commandButton value="Filtrar" icon="pi pi-search" id="btnFiltar"
+                                         actionListener="#{backofficeFilaBean.pesquisar}"
+                                         process="frmFiltros" update="pnpFila pnpQuantidades"
+                                         styleClass="flex-1 font-bold"/>
+
+                        <p:commandButton icon="pi pi-times" title="Limpar" id="btnFiltrar"
+                                         actionListener="#{backofficeFilaBean.limparFiltros}"
+                                         process="frmFiltros" update="@form pnpFila pnpQuantidades"
+                                         styleClass="ui-button-secondary ui-button-outlined w-3rem"/>
+                    </div>
+                </div>
+            </div>
+
+
+            <h:panelGroup layout="block" id="pnpFila">
+
+                <ui:repeat value="#{backofficeFilaBean.listaAtendimentos}" var="item">
+
+                    <div class="surface-card p-0 shadow-1 border-round mb-3 hover:shadow-3 transition-duration-200 relative overflow-hidden flex flex-column md:flex-row">
+
+                        <div class="w-full md:w-1 bg-gray-50 flex flex-column align-items-center justify-content-center py-2 md:py-0 border-bottom-1 md:border-bottom-none md:border-right-1 border-200 relative">
+                            <div class="absolute top-0 left-0 bottom-0 w-4px #{item.prazoEstourado ? 'bg-red-500' : 'bg-green-500'}"></div>
+
+                            <h:panelGroup rendered="#{item.prazoEstourado}">
+                                <i class="pi pi-exclamation-triangle text-red-500 text-2xl mb-1"></i>
+                                <span class="text-xs font-bold text-red-600 uppercase">Atrasado</span>
+                            </h:panelGroup>
+
+                            <h:panelGroup rendered="#{not item.prazoEstourado}">
+                                <i class="pi pi-clock text-green-500 text-2xl mb-1"></i>
+                                <span class="text-xs font-bold text-green-600 uppercase">No Prazo</span>
+                            </h:panelGroup>
+                        </div>
+
+                        <div class="flex-1 p-3">
+                            <div class="flex flex-column md:flex-row justify-content-between mb-2">
+                                <div class="flex align-items-center gap-2 mb-2 md:mb-0">
+                                    <span class="text-500 text-sm font-medium">Protocolo:</span>
+                                    <span class="text-900 font-bold font-monospace bg-gray-100 px-2 border-round">#{item.protocolo}</span>
+
+                                    <span class="text-300 mx-1">|</span>
+
+                                    <h:outputText value="#{item.dataInicioAtendimento}" styleClass="text-600 text-sm">
+                                        <f:convertDateTime pattern="dd/MM/yyyy HH:mm"/>
+                                    </h:outputText>
+                                </div>
+
+                                <h:panelGroup>
+                                    <h:panelGroup rendered="#{not empty item.status and item.status.acao ne 'DERIVAR'}">
+                                        <p:tag value="#{item.status.descricao}"
+                                               icon="#{item.status.acao.icone}"
+                                               styleClass="#{item.status.acao.styleClass} border-1 font-bold px-2"/>
+                                    </h:panelGroup>
+
+                                    <h:panelGroup rendered="#{empty item.status or item.status.acao eq 'DERIVAR'}">
+                                        <p:tag value="Aguardando Tratativa"
+                                               icon="pi pi-inbox"
+                                               styleClass="bg-yellow-50 text-yellow-700 border-yellow-200 border-1 font-bold px-2"/>
+                                    </h:panelGroup>
+                                </h:panelGroup>
+                            </div>
+
+                            <h2 class="text-lg font-bold text-900 m-0 mb-2">#{item.motivo.descricao}</h2>
+
+                            <p class="text-700 m-0 text-sm line-height-3 mb-3 bg-gray-50 p-2 border-round border-1 border-100"
+                               style="max-height: 60px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap;">
+                                #{item.observacao}
+                            </p>
+
+                            <div class="flex flex-wrap align-items-center gap-4 text-sm mt-3 pt-3 border-top-1 border-200">
+                             <span class="flex align-items-center gap-2 text-700">
+                                <i class="pi pi-user bg-blue-50 text-blue-500 p-1 border-circle"></i>
+                                <span class="font-medium">#{item.cliente.nome}</span>
+                            </span>
+
+                                <span class="flex align-items-center gap-2 text-700">
+                                <i class="pi pi-id-card bg-blue-50 text-blue-500 p-1 border-circle"></i>
+                                <span>#{item.cliente.cpf}</span>
+                            </span>
+
+                                <span class="flex align-items-center gap-2 #{item.prazoEstourado ? 'text-red-600' : 'text-600'} ml-auto">
+                                <span class="uppercase text-xs font-bold text-500">Prazo Limite:</span>
+                                <i class="pi pi-calendar-times"></i>
+                                <h:outputText value="#{item.prazoPrazoDemanda}" styleClass="font-bold">
+                                    <f:convertDateTime pattern="dd/MM/yyyy"/>
+                                </h:outputText>
+                            </span>
+                            </div>
+                        </div>
+
+                        <div class="w-full md:w-auto p-3 flex align-items-center justify-content-center bg-gray-50 md:bg-white border-top-1 md:border-top-none md:border-left-1 border-200">
+                            <div class="flex flex-row md:flex-column gap-2 w-full">
+
+                                <p:button value="Tratar"
+                                          rendered="#{empty item.status or item.status.acao ne 'CONCLUIR'}"
+                                          icon="pi pi-pencil" iconPos="right"
+                                          outcome="/pages/backoffice/tratativa_n2"
+                                          styleClass="ui-button-raised ui-button-primary font-bold shadow-1 w-full">
+                                    <f:param name="id" value="#{item.id}"/>
+                                </p:button>
+
+                                <p:commandButton value="Detalhes"
+                                                 rendered="#{not empty item.status and item.status.acao eq 'CONCLUIR'}"
+                                                 icon="pi pi-eye"
+                                                 actionListener="#{backofficeFilaBean.selecionarAtendimento(item.id)}"
+                                                 update="dlgVisualizar"
+                                                 oncomplete="PF('dlgVisualizar').show()"
+                                                 styleClass="ui-button-outlined ui-button-secondary font-bold w-full"/>
+                            </div>
+                        </div>
+
+                    </div>
+                </ui:repeat>
+
+                <h:panelGroup rendered="#{empty backofficeFilaBean.listaAtendimentos}"
+                              styleClass="text-center py-6 surface-card border-round shadow-1">
+                    <div class="w-6rem h-6rem bg-gray-100 border-circle flex align-items-center justify-content-center mx-auto mb-4">
+                        <i class="pi pi-search text-gray-400 text-4xl"></i>
+                    </div>
+                    <span class="block text-900 text-xl font-bold mb-2">Nenhum atendimento encontrado</span>
+                    <span class="block text-600 text-base" style="max-width: 400px; margin: 0 auto;">
+                    Não encontramos registros com os filtros selecionados ou a fila está vazia no momento.
+
+
+
+                        </span>
+
+                    <span class="block text-600 text-base" style="max-width: 400px; margin: 0 auto;">
+                             <p:commandButton value="Limpar Filtros" icon="pi pi-filter-slash" id="bntLimpar"
+                                              actionListener="#{backofficeFilaBean.limparFiltros}"
+                                              update=" @form pnpQuantidades"
+                                              styleClass="mt-4 ui-button-text"/>
+                    </span>
+                </h:panelGroup>
+
+            </h:panelGroup>
+
+        </h:form>
+
+        <p:dialog header="Detalhamento do Atendimento" widgetVar="dlgVisualizar" id="dlgVisualizar"
+                  modal="true" responsive="true" width="70%" fitViewport="true"
+                  showEffect="fade" hideEffect="fade" closeOnEscape="true"
+                  styleClass="border-round-xl">
+
+            <h:panelGroup id="conteudoVisualizacao" rendered="#{not empty backofficeFilaBean.atendimentoSelecionado}">
+
+                <div class="flex justify-content-between align-items-center mb-4 border-bottom-1 border-200 pb-3">
+                    <div>
+                        <span class="text-sm text-500 block">Protocolo</span>
+                        <span class="text-xl font-bold text-900 font-monospace">#{backofficeFilaBean.atendimentoSelecionado.protocolo}</span>
+                    </div>
+
+                    <p:tag value="CONCLUÍDO" severity="success" icon="pi pi-check-circle" rounded="true"/>
+                </div>
+
+                <div class="grid">
+
+                    <div class="col-12 md:col-5 border-right-1 border-200">
+                        <div class="mb-4">
+                            <span class="text-xs font-bold text-500 uppercase block mb-2">Cliente</span>
+                            <div class="flex align-items-center gap-2">
+                                <p:avatar
+                                        label="#{backofficeFilaBean.atendimentoSelecionado.cliente.nome.substring(0,1)}"
+                                        shape="circle"/>
+                                <div>
+                                    <span class="font-bold text-900 block">#{backofficeFilaBean.atendimentoSelecionado.cliente.nome}</span>
+                                    <span class="text-sm text-600">#{backofficeFilaBean.atendimentoSelecionado.cpf}</span>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div>
+                            <span class="text-xs font-bold text-500 uppercase block mb-2">Solicitação N1</span>
+                            <div class="surface-100 p-3 border-round text-sm line-height-3 text-700">
+                                <h:outputText value="#{backofficeFilaBean.atendimentoSelecionado.observacao}"/>
+                            </div>
+                            <div class="mt-2 text-xs text-500">
+                                Aberto em:
+                                <h:outputText
+                                        value="#{backofficeFilaBean.atendimentoSelecionado.dataInicioAtendimento}">
+                                    <f:convertDateTime pattern="dd/MM/yyyy HH:mm"/>
+                                </h:outputText>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="col-12 md:col-7 pl-4">
+                <span class="text-xs font-bold text-blue-600 uppercase block mb-2">
+                    <i class="pi pi-check-circle mr-1"/> Resolução N2
+                </span>
+
+                        <div class="text-900 line-height-3 mb-4">
+                            <h:outputText value="#{backofficeFilaBean.atendimentoSelecionado.respostaN2}"
+                                          escape="false"/>
+                        </div>
+
+                        <div class="surface-50 p-3 border-round border-1 border-200 flex justify-content-between align-items-center">
+                            <div>
+                                <span class="block text-xs text-500">Analista Responsável</span>
+                                <span class="font-medium text-800">#{backofficeFilaBean.atendimentoSelecionado.responsavelN2.nome}</span>
+                            </div>
+                            <div class="text-right">
+                                <span class="block text-xs text-500">Concluído em</span>
+                                <span class="font-medium text-800">
+                            <h:outputText value="#{backofficeFilaBean.atendimentoSelecionado.dataFechamentoDemanda}">
+                                <f:convertDateTime pattern="dd/MM/yyyy HH:mm"/>
+                            </h:outputText>
+                        </span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <f:facet name="footer">
+                    <p:commandButton value="Fechar" onclick="PF('dlgVisualizar').hide()" type="button"
+                                     styleClass="ui-button-secondary ui-button-flat"/>
+                </f:facet>
+
+            </h:panelGroup>
+        </p:dialog>
+
+    </ui:define>
+</ui:composition>
