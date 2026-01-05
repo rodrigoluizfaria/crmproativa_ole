@@ -1,0 +1,262 @@
+<ui:fragment xmlns="http://www.w3.org/1999/xhtml"
+             xmlns:ui="http://java.sun.com/jsf/facelets"
+             xmlns:h="http://java.sun.com/jsf/html"
+             xmlns:f="http://java.sun.com/jsf/core"
+             xmlns:p="http://primefaces.org/ui">
+
+
+
+
+    <div class="flex flex-column md:flex-row justify-content-between align-items-center mb-5 gap-4">
+        <div>
+            <h1 class="text-3xl font-bold text-900 m-0">Dashboard</h1>
+            <span class="text-500 font-medium">Visão geral da operação</span>
+        </div>
+
+        <div class="surface-card p-2 shadow-1 border-round-2xl flex align-items-center gap-2">
+            <p:selectOneButton id="periodoSelector" value="#{inicialBean.periodoSelecionado}" unselectable="false">
+                <f:selectItem itemLabel="Hoje" itemValue="DIARIO"/>
+                <f:selectItem itemLabel="7 Dias" itemValue="SEMANAL"/>
+                <f:selectItem itemLabel="Mês" itemValue="MENSAL"/>
+                <f:selectItem itemLabel="Personalizado" itemValue="CUSTOM"/>
+                <p:ajax update="@form" process="@this" listener="#{inicialBean.atualizarDados()}"/>
+            </p:selectOneButton>
+
+            <h:panelGroup id="panelCustomDates" rendered="#{inicialBean.periodoSelecionado eq 'CUSTOM'}" styleClass="flex gap-2 ml-2 animate-fade-in">
+                <p:datePicker value="#{inicialBean.dataInicio}" pattern="dd/MM" showIcon="false" inputStyleClass="w-6rem text-center border-round-xl text-sm"/>
+                <span class="text-400 flex align-items-center">-</span>
+                <p:datePicker value="#{inicialBean.dataFim}" pattern="dd/MM" showIcon="false" inputStyleClass="w-6rem text-center border-round-xl text-sm">
+                    <p:ajax event="dateSelect" listener="#{inicialBean.atualizarDados()}" update="@form"/>
+                </p:datePicker>
+            </h:panelGroup>
+
+            <p:commandButton icon="pi pi-sync" actionListener="#{inicialBean.atualizarDados()}" update="@form"
+                             styleClass="ui-button-flat ui-button-secondary rounded-button w-3rem h-3rem ml-2"/>
+        </div>
+    </div>
+
+    <div class="grid mb-5">
+        <div class="col-12 sm:col-6 lg:col-2">
+            <div class="surface-card shadow-1 p-3 border-round-xl text-center h-full hover:shadow-3 transition-duration-200 cursor-pointer">
+                <div class="inline-flex align-items-center justify-content-center bg-green-50 text-green-600 border-circle w-3rem h-3rem mb-2">
+                    <i class="pi pi-users text-xl"></i>
+                </div>
+                <span class="block text-900 font-bold text-2xl mb-1">#{inicialBean.agentesOnline}</span>
+                <span class="text-500 text-sm font-medium">Online</span>
+            </div>
+        </div>
+
+        <div class="col-12 sm:col-6 lg:col-2">
+            <div class="surface-card shadow-1 p-3 border-round-xl text-center h-full hover:shadow-3 transition-duration-200">
+                <div class="inline-flex align-items-center justify-content-center bg-blue-50 text-blue-600 border-circle w-3rem h-3rem mb-2">
+                    <i class="pi pi-inbox text-xl"></i>
+                </div>
+                <span class="block text-900 font-bold text-2xl mb-1">#{inicialBean.totalAtendimentosAbertos}</span>
+                <span class="text-500 text-sm font-medium">Aguardando resolutiva</span>
+            </div>
+        </div>
+
+        <div class="col-12 sm:col-6 lg:col-2">
+            <div class="surface-card shadow-1 p-3 border-round-xl text-center h-full hover:shadow-3 transition-duration-200">
+                <div class="inline-flex align-items-center justify-content-center bg-indigo-50 text-indigo-600 border-circle w-3rem h-3rem mb-2">
+                    <i class="pi pi-clock text-xl"></i>
+                </div>
+                <span class="block text-900 font-bold text-2xl mb-1">#{inicialBean.tmaFormatado}</span>
+                <span class="text-500 text-sm font-medium">TMA</span>
+            </div>
+        </div>
+
+        <div class="col-12 sm:col-6 lg:col-2">
+            <div class="surface-card shadow-1 p-3 border-round-xl text-center h-full hover:shadow-3 transition-duration-200">
+                <div class="inline-flex align-items-center justify-content-center bg-orange-50 text-orange-600 border-circle w-3rem h-3rem mb-2">
+                    <i class="pi pi-check text-xl"></i>
+                </div>
+                <span class="block text-900 font-bold text-2xl mb-1">#{inicialBean.totalAtendimentosFinalizados}</span>
+                <span class="text-500 text-sm font-medium">Finalizados</span>
+            </div>
+        </div>
+
+        <div class="col-12 sm:col-6 lg:col-2">
+            <div class="surface-card shadow-1 p-3 border-round-xl text-center h-full hover:shadow-3 transition-duration-200">
+                <div class="inline-flex align-items-center justify-content-center bg-purple-50 text-purple-600 border-circle w-3rem h-3rem mb-2">
+                    <i class="pi pi-star text-xl"></i>
+                </div>
+                <span class="block text-900 font-bold text-2xl mb-1">#{inicialBean.totalFinalizadosN1}</span>
+                <span class="text-500 text-sm font-medium">Resolvido N1</span>
+            </div>
+        </div>
+
+        <div class="col-12 sm:col-6 lg:col-2">
+            <div class="surface-card shadow-1 p-3 border-round-xl text-center h-full hover:shadow-3 transition-duration-200">
+                <div class="inline-flex align-items-center justify-content-center bg-cyan-50 text-cyan-600 border-circle w-3rem h-3rem mb-2">
+                    <i class="pi pi-arrow-up-right text-xl"></i>
+                </div>
+                <span class="block text-900 font-bold text-2xl mb-1">#{inicialBean.totalDerivadosN2}</span>
+                <span class="text-500 text-sm font-medium">Encaminhados para N2</span>
+            </div>
+        </div>
+    </div>
+
+    <div class="grid">
+
+        <h:panelGroup id="dashMotivo" styleClass="col-12 lg:col-4" layout="block" >
+            <div class="surface-card shadow-1 border-round-2xl p-4 h-full flex flex-column">
+
+                <div class="flex justify-content-between align-items-center mb-4">
+                    <span class="text-900 font-bold text-lg">Motivos de Contato</span>
+                    <p:commandButton icon="pi pi-ellipsis-v" type="button"
+                                     styleClass="ui-button-flat ui-button-secondary rounded-circle w-2rem h-2rem"/>
+                </div>
+
+                <h:panelGroup rendered="#{not empty inicialBean.listMotivo}" styleClass="flex-grow-1 flex align-items-center justify-content-center">
+                    <p:donutChart model="#{inicialBean.donutModel}" style="width: 100%; height: 220px;"/>
+                </h:panelGroup>
+
+                <h:panelGroup rendered="#{empty inicialBean.listMotivo}"
+                              styleClass="flex-grow-1 flex flex-column align-items-center justify-content-center text-center p-3 animate-fade-in">
+
+                    <div class="bg-gray-50 border-circle w-5rem h-5rem flex align-items-center justify-content-center mb-3">
+                        <i class="pi pi-chart-pie text-4xl text-gray-300"></i>
+                    </div>
+
+                    <span class="text-900 font-medium text-lg mb-1">Sem dados no momento</span>
+                    <span class="text-500 text-sm">Nenhum motivo registrado para o período.</span>
+
+                </h:panelGroup>
+
+            </div>
+
+        </h:panelGroup>
+
+        <h:panelGroup id="dashStatus" styleClass="col-12 lg:col-4" layout="block" >
+            <div class="surface-card shadow-1 border-round-2xl p-4 h-full flex flex-column">
+
+                <div class="flex justify-content-between align-items-center mb-4">
+                    <span class="text-900 font-bold text-lg">Volume por Status</span>
+                    <p:commandButton icon="pi pi-ellipsis-v" type="button"
+                                     styleClass="ui-button-flat ui-button-secondary rounded-circle w-2rem h-2rem"/>
+                </div>
+
+                <h:panelGroup rendered="#{not empty inicialBean.listStatus}"
+                              styleClass="flex-grow-1 flex align-items-center justify-content-center">
+                    <p:barChart model="#{inicialBean.barModel}" style="width: 100%; height: 220px;" responsive="true"/>
+                </h:panelGroup>
+
+                <h:panelGroup rendered="#{empty inicialBean.listStatus}"
+                              styleClass="flex-grow-1 flex flex-column align-items-center justify-content-center text-center p-3 animate-fade-in">
+
+                    <div class="bg-gray-50 border-circle w-5rem h-5rem flex align-items-center justify-content-center mb-3">
+                        <i class="pi pi-chart-bar text-4xl text-gray-300"></i>
+                    </div>
+
+                    <span class="text-900 font-medium text-lg mb-1">Sem métricas</span>
+                    <span class="text-500 text-sm">Não há status para exibir agora.</span>
+
+                </h:panelGroup>
+
+            </div>
+        </h:panelGroup>
+
+        <h:panelGroup styleClass="col-12 lg:col-4" layout="block" >
+
+            <div class="surface-card shadow-1 border-round-2xl p-4 h-full flex flex-column">
+
+                <div class="flex align-items-center justify-content-between mb-3">
+                    <span class="text-900 font-bold text-lg">Top Performance</span>
+                    <h:panelGroup rendered="#{not empty inicialBean.periodoRank}">
+                          <span class="text-xs font-bold text-green-600 bg-green-100 px-2 py-1 border-round">
+                    #{inicialBean.periodoRank}
+                </span>
+                    </h:panelGroup>
+                </div>
+
+                <h:panelGroup rendered="#{not empty inicialBean.listaRanking}" styleClass="flex-grow-1">
+
+                    <p:dataTable value="#{inicialBean.listaRanking}" var="rank"
+                                 styleClass="ui-datatable-borderless ui-datatable-sm text-sm"
+                                 rowStyleClass="border-bottom-1 border-100"
+                                 emptyMessage="Sem dados.">
+
+                        <p:column width="15%">
+                            <div class="flex align-items-center justify-content-center">
+                                <i class="pi pi-trophy text-yellow-500 mr-2" rendered="#{rank[2] eq 1}"></i>
+
+                                <i class="pi pi-star-fill text-gray-400 mr-2" rendered="#{rank[2] eq 2}"></i>
+
+                                <i class="pi pi-star-fill text-orange-400 mr-2" rendered="#{rank[2] eq 3}"></i>
+
+                                <span class="text-500 font-medium font-bold">#{rank[2]}º</span>
+                            </div>
+                        </p:column>
+
+                        <p:column headerText="Agente">
+                            <div class="flex align-items-center gap-2">
+                                <p:avatar label="#{rank[0].substring(0,1)}" shape="circle"
+                                          styleClass="bg-blue-50 text-blue-600 text-xs w-2rem h-2rem font-bold"/>
+                                <span class="font-medium text-700">#{rank[0]}</span>
+                            </div>
+                        </p:column>
+
+                        <p:column headerText="Qtd" styleClass="text-right" width="20%">
+                    <span class="bg-gray-100 text-gray-800 px-2 py-1 border-round font-bold text-xs">
+                        #{rank[1]}
+                    </span>
+                        </p:column>
+                    </p:dataTable>
+                </h:panelGroup>
+
+                <h:panelGroup rendered="#{empty inicialBean.listaRanking}"
+                              styleClass="flex-grow-1 flex flex-column align-items-center justify-content-center text-center p-4 animate-fade-in">
+
+                    <div class="bg-gray-50 border-circle w-5rem h-5rem flex align-items-center justify-content-center mb-3">
+                        <i class="fa fa-solid fa-trophy text-4xl text-gray-300"></i>
+                    </div>
+
+                    <span class="text-900 font-medium text-lg mb-1">Ranking vazio</span>
+                    <span class="text-500 text-sm">Nenhum desempenho registrado neste período.</span>
+
+                </h:panelGroup>
+
+            </div>
+        </h:panelGroup>
+    </div>
+
+
+
+
+
+    <style>
+        /* Customizações para deixar os componentes do PrimeFaces mais 'flat' */
+        body .ui-selectonebutton .ui-button.ui-state-active {
+            background: #EFF6FF; /* blue-50 */
+            border-color: #EFF6FF;
+            color: #2563EB; /* blue-600 */
+            font-weight: 700;
+        }
+        body .ui-selectonebutton .ui-button {
+            background: transparent;
+            border: 1px solid transparent;
+            color: #64748b;
+            transition: all 0.2s;
+        }
+        body .ui-selectonebutton .ui-button:hover {
+            background: #f8fafc;
+            color: #334155;
+        }
+
+        /* Remove bordas da tabela para look 'clean' */
+        body .ui-datatable-borderless .ui-datatable-data > tr > td {
+            border-style: none;
+            padding: 0.75rem 0.5rem;
+        }
+        body .ui-datatable .ui-datatable-thead > tr > th {
+            background: transparent;
+            border: none;
+            color: #94a3b8;
+            font-size: 0.75rem;
+            text-transform: uppercase;
+            padding: 0.5rem;
+        }
+    </style>
+
+</ui:fragment>

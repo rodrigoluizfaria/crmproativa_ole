@@ -1,0 +1,110 @@
+<ui:fragment xmlns="http://www.w3.org/1999/xhtml"
+             xmlns:h="http://java.sun.com/jsf/html"
+             xmlns:f="http://java.sun.com/jsf/core"
+             xmlns:ui="http://java.sun.com/jsf/facelets"
+             xmlns:p="http://primefaces.org/ui">
+
+    <p:growl id="grl" widgetVar="grl" globalOnly="true" escape="false"
+             showSummary="false" life="5000" showDetail="true" sticky="false">
+        <p:autoUpdate/>
+    </p:growl>
+
+    <h:form id="formCadastro" prependId="false">
+
+        <div class="ui-fluid">
+
+            <div class="surface-card shadow-2 border-round p-4">
+
+                <div class="flex align-items-center mb-4 border-bottom-1 border-100 pb-3">
+                    <div class="bg-blue-100 border-circle w-3rem h-3rem flex align-items-center justify-content-center mr-2">
+                        <i class="pi pi-building text-blue-600 text-xl"></i>
+                    </div>
+                    <div>
+                        <span class="text-900 font-bold text-lg block">Cadastro de Departamento</span>
+                        <span class="text-500 text-sm">Cadastre e vincule usuarios no departamento.</span>
+                    </div>
+                </div>
+
+                <div class="grid formgrid">
+
+                    <div class="field col-12 md:col-8">
+                        <p:outputLabel for="inputCadastroDpo" value="Nome do Departamento" styleClass="font-bold mb-2 block"/>
+                        <div class="ui-inputgroup">
+                            <span class="ui-inputgroup-addon"><i class="pi pi-tag"></i></span>
+                            <p:inputText id="inputCadastroDpo" value="#{cadastroDepartamentoBean.departamento.descricao}"
+                                         required="true" requiredMessage="A descrição é obrigatória."
+                                         placeholder="Ex: Financeiro, TI, RH..."/>
+                        </div>
+                    </div>
+
+                    <div class="field col-12 md:col-4">
+                        <p:outputLabel for="selectOneAtivo" value="Status de Acesso" styleClass="font-bold mb-2 block"/>
+                        <div class="ui-inputgroup">
+                            <span class="ui-inputgroup-addon"><i class="pi pi-lock"></i></span>
+                            <p:selectOneMenu id="selectOneAtivo" value="#{cadastroDepartamentoBean.departamento.ativo}"
+                                             required="true" requiredMessage="Selecione o status de acesso.">
+                                <f:selectItem itemLabel="Selecione..." noSelectionOption="true"/>
+                                <f:selectItems value="#{cadastroDepartamentoBean.acessoEnum}" var="acesso"
+                                               itemLabel="#{acesso.constante}" itemValue="#{acesso}"/>
+                            </p:selectOneMenu>
+                        </div>
+                    </div>
+
+                    <div class="col-12">
+                        <p:divider styleClass="my-4" align="center">
+                            <span class="ui-tag bg-gray-100 text-gray-700 border-1 border-300">Associação de Usuários</span>
+                        </p:divider>
+                    </div>
+
+                    <div class="field col-12">
+
+                        <p:pickList id="pckListSuper" responsive="true"
+                                    value="#{cadastroDepartamentoBean.dualListModel}"
+                                    var="usr" itemLabel="#{usr.nome}" itemValue="#{usr}"
+                                    showSourceFilter="true" showTargetFilter="true" filterMatchMode="contains"
+                                    converter="converterUsuario"
+                                    transferOnCheckboxClick="true"
+                                    showSourceControls="false" showTargetControls="false">
+
+                            <f:facet name="sourceCaption">
+                                <div class="font-bold text-900 mb-2"><i class="pi pi-users mr-1 text-gray-500"></i>Disponíveis</div>
+
+                            </f:facet>
+
+                            <f:facet name="targetCaption">
+                                <div class="font-bold text-900 mb-2"><i class="pi pi-check-circle mr-1 text-green-500"></i>Associados</div>
+                            </f:facet>
+
+                            <p:column style="width:90%;">
+                                <div class="flex align-items-center">
+                                    <i class="pi pi-user mr-2 text-gray-400"></i>
+                                    <h:outputText value="#{usr.nome}" />
+                                </div>
+                            </p:column>
+                        </p:pickList>
+                        <small class="block text-500 mt-2 text-center">Arraste ou use os botões para mover os usuários.</small>
+                    </div>
+
+                </div>
+
+                <div class="flex justify-content-end gap-2 pt-3 border-top-1 border-100 mt-4">
+
+                    <p:commandButton value="Voltar" id="btnVoltar"
+                                     action="#{cadastroDepartamentoBean.voltar()}"
+                                     immediate="true" ajax="false"
+                                     icon="pi pi-arrow-left"
+                                     styleClass="ui-button-outlined ui-button-secondary font-bold px-4"/>
+
+                    <p:commandButton value="Salvar Dados" id="btnSalvar"
+                                     action="#{cadastroDepartamentoBean.salvar()}"
+                                     update="@form grl"
+                                     icon="pi pi-check"
+                                     styleClass="ui-button-primary font-bold px-4 shadow-1"/>
+                </div>
+
+            </div>
+        </div>
+
+    </h:form>
+
+</ui:fragment>

@@ -1405,10 +1405,12 @@ body .upload-default.ui-fileupload .ui-fileupload-content {
 }
 
 
+/*
 body .ui-selectcheckboxmenu .ui-selectcheckboxmenu-multiple-container.ui-inputfield {
     padding: 0px;
     padding-right: 2.357rem;
 }
+*/
 
 body .dialog-top .ui-dialog-titlebar {
     border-bottom: 2px solid #dee2e6;

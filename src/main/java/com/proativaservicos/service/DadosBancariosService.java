@@ -63,4 +63,8 @@ public class DadosBancariosService extends GenericProService<DadosBancarios> imp
     public void atualizarDadosBancarios(Long atendimento, InstituicaoFinanceiraEnum banco, String agencia, String conta) {
 		this.dao.atualizarDadosBancarios(atendimento,banco,agencia,conta);
     }
+
+    public List<DadosBancarios> pesquisarDadosBancariosPorCliente(Long idCliente) {
+		return  this.dao.pesquisarDadosBancariosPorCliente(idCliente);
+    }
 }

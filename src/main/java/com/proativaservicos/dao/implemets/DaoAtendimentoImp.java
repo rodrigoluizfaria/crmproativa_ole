@@ -829,46 +829,51 @@ public class DaoAtendimentoImp extends GenericDao<Atendimento> implements Serial
 
     public List<Object[]> pesquisarAtendimentosPorNomeCpf(String cpf, String nome, String adesao, String protocolo,
                                                           Long campanha, List<Long> equipes, List<Long> operador, List<Long> statusAtendimentos, Long statusContrato, Date dataInicio,
-                                                          Date dataAFim, Usuario usuario, Long produto, String tiket, Long idEmpresa) {
+                                                          Date dataAFim, Usuario usuario, Long produto, String tiket, Long idEmpresa, Long idMotivo, Long idSubmotivo) {
 
 
         StringBuilder query = new StringBuilder();
         query.append("SELECT ");
         query.append("    a.id, ");
-        query.append("    c.descricao as campanha_descricao, ");
-        query.append("    a.nome, ");
-        query.append("    a.cpf, ");
-        query.append("    s.descricao as status, ");
+        query.append("    c.descricao AS campanha_descricao, ");
+        query.append("    cl.nome, ");
+        query.append("    cl.cpf, ");
+        query.append("    s.descricao AS status, ");
         query.append("    a.data_alteracao, ");
-        query.append("    u.nome as operador, ");
-        query.append("    coalesce(a.adesao, array_to_string(a.adesoes, ', ')) as adesao, ");
+        query.append("    u.nome AS operador, ");
+        query.append("    COALESCE(a.adesao, array_to_string(a.adesoes, ', ')) AS adesao, ");
         query.append("    a.quantidade_parcelas, ");
         query.append("    a.valor_parcela, ");
         query.append("    a.valor_liberado, ");
         query.append("    a.protocolo, ");
-        query.append("\t  sc.descricao as status_contrato, ");
-        query.append("\t  a.valor_liberado_emp, ");
-        query.append("\t  a.entidade_principal, ");
-        query.append("\t  a.entidade_secundaria, ");
-        query.append("\t  a.orgao_principal, ");
-        query.append("\t  a.orgao_secundario, ");
-        query.append("\t  '\"'||a.outras_informacoes||'\"' ");
-        query.append("\t  , p.descricao ");
-        query.append("\t  , a.tempo_pos_atendimento ");
-        query.append("\t  , a.tiket, ");
-        query.append("\t\tto_char(a.data_nascimento, 'DD/MM/YYYY') as nascimento , ");
-        query.append("\t eq.nome as equipe  ");
+        query.append("    sc.descricao AS status_contrato, ");
+        query.append("    a.valor_liberado_emp, ");
+        query.append("    a.entidade_principal, ");
+        query.append("    a.entidade_secundaria, ");
+        query.append("    a.orgao_principal, ");
+        query.append("    a.orgao_secundario, ");
+        query.append("    '\"'||a.outras_informacoes||'\"' AS outras_informacoes, ");
+        query.append("    p.descricao AS produto, ");
+        query.append("    a.tempo_pos_atendimento, ");
+        query.append("    a.tiket, ");
+        query.append("    to_char(a.data_nascimento, 'DD/MM/YYYY') AS nascimento, ");
+        query.append("    eq.nome AS equipe, ");
+        query.append("    m.descricao AS motivo, ");
+        query.append("    sm.descricao AS submotivo ");
         query.append("FROM atendimento a ");
-        query.append("\t  inner join empresa e on a.empresa = e.id ");
-        query.append("    inner join campanha c on (c.id = a.campanha) ");
-        query.append("    left join status_atendimento s on (s.id = a.status) ");
-        query.append("    left join produto p on (p.id = a.produto) ");
-        query.append("    left join equipe eq on (eq.id = a.equipe) ");
-        query.append("    left join usuario u on (a.usuario_alteracao = u.id) ");
-        query.append("\t  left join contrato ct on a.contrato = ct.id ");
-        query.append("\t  left join status_contrato sc on ct.status_contrato = sc.id ");
-        query.append("where (e.id = :empresa or e.matriz = :empresa) ");
-        query.append("\tand a.status is not null ");
+        query.append("    INNER JOIN empresa e ON a.empresa = e.id ");
+        query.append("    INNER JOIN campanha c ON c.id = a.campanha ");
+        query.append("    INNER JOIN cliente cl ON cl.id = a.cliente ");
+        query.append("    LEFT JOIN status_atendimento s ON s.id = a.status ");
+        query.append("    LEFT JOIN motivo m ON m.id = a.motivo ");
+        query.append("    LEFT JOIN submotivo sm ON sm.id = a.submotivo ");
+        query.append("    LEFT JOIN produto p ON p.id = a.produto ");
+        query.append("    LEFT JOIN equipe eq ON eq.id = a.equipe ");
+        query.append("    LEFT JOIN usuario u ON a.usuario_alteracao = u.id ");
+        query.append("    LEFT JOIN contrato ct ON a.contrato = ct.id ");
+        query.append("    LEFT JOIN status_contrato sc ON ct.status_contrato = sc.id ");
+        query.append("WHERE (e.id = :empresa OR e.matriz = :empresa) ");
+        query.append("  AND a.status IS NOT NULL ");
         HashMap<String, Object> parametros = new HashMap<>();
         parametros.put("empresa", idEmpresa);
 
@@ -926,6 +931,16 @@ public class DaoAtendimentoImp extends GenericDao<Atendimento> implements Serial
             parametros.put("produto", produto);
         }
 
+        if (idMotivo != null) {
+            query.append("\tand a.motivo = :idMotivo ");
+            parametros.put("idMotivo", idMotivo);
+        }
+
+        if (idSubmotivo != null) {
+            query.append("\tand a.motivo = :idSubmotivo ");
+            parametros.put("idSubmotivo", idSubmotivo);
+        }
+
 
         if (CollectionUtils.isNotEmpty(equipes) && CollectionUtils.isEmpty(operador)) {
 
@@ -974,15 +989,15 @@ public class DaoAtendimentoImp extends GenericDao<Atendimento> implements Serial
 
     public List<Object[]> pesquisarAtendimentosPorNomeCpf(String cpf, String nome, String adesao, String protocolo,
                                                           Long campanha, Long equipe, Long operador, Long statusAtendimento, Long statusContrato, Date dataInicio,
-                                                          Date dataAFim, Usuario usuario, Long produto, Long idEmpresa) {
+                                                          Date dataAFim, Usuario usuario, Long produto, Long idEmpresa, Long idMotivo, Long idSubmotivo) {
 
 
         StringBuilder query = new StringBuilder();
         query.append("SELECT ");
         query.append("    a.id, ");
         query.append("    c.descricao as campanha_descricao, ");
-        query.append("    a.nome, ");
-        query.append("    a.cpf, ");
+        query.append("    cl.nome, ");
+        query.append("    cl.cpf, ");
         query.append("    s.descricao as status, ");
         query.append("    a.data_alteracao, ");
         query.append("    u.nome as operador, ");
@@ -991,26 +1006,31 @@ public class DaoAtendimentoImp extends GenericDao<Atendimento> implements Serial
         query.append("    a.valor_parcela, ");
         query.append("    a.valor_liberado, ");
         query.append("    a.protocolo, ");
-        query.append("\t  sc.descricao as status_contrato, ");
-        query.append("\t  a.valor_liberado_emp, ");
-        query.append("\t  a.entidade_principal, ");
-        query.append("\t  a.entidade_secundaria, ");
-        query.append("\t  a.orgao_principal, ");
-        query.append("\t  a.orgao_secundario, ");
-        query.append("\t  '\"'||a.outras_informacoes||'\"' ");
-        query.append("\t  , p.descricao ");
-        query.append("\t  , a.tempo_pos_atendimento ");
-        query.append("\t  , a.tiket  ");
+        query.append("    sc.descricao as status_contrato, ");
+        query.append("    a.valor_liberado_emp, ");
+        query.append("    a.entidade_principal, ");
+        query.append("    a.entidade_secundaria, ");
+        query.append("    a.orgao_principal, ");
+        query.append("    a.orgao_secundario, ");
+        query.append("    '\"'||a.outras_informacoes||'\"', ");
+        query.append("    p.descricao as produto_descricao, ");
+        query.append("    a.tempo_pos_atendimento, ");
+        query.append("    a.tiket, ");
+        query.append("    m.descricao as motivo, ");
+        query.append("    sm.descricao as submotivo ");
         query.append("FROM atendimento a ");
-        query.append("\t  inner join empresa e on a.empresa = e.id ");
+        query.append("    inner join empresa e on a.empresa = e.id ");
         query.append("    inner join campanha c on (c.id = a.campanha) ");
+        query.append("    inner join cliente cl on (cl.id = a.cliente) ");
         query.append("    left join status_atendimento s on (s.id = a.status) ");
+        query.append("    left join motivo m on (m.id = a.motivo) ");
+        query.append("    left join submotivo sm on (sm.id = a.submotivo) ");
         query.append("    left join produto p on (p.id = a.produto) ");
         query.append("    left join usuario u on (a.usuario_alteracao = u.id) ");
-        query.append("\t  left join contrato ct on a.contrato = ct.id ");
-        query.append("\t  left join status_contrato sc on ct.status_contrato = sc.id ");
-        query.append("where (e.id = :empresa or e.matriz = :empresa) ");
-        query.append("\tand a.status is not null ");
+        query.append("    left join contrato ct on a.contrato = ct.id ");
+        query.append("    left join status_contrato sc on ct.status_contrato = sc.id ");
+        query.append("WHERE (e.id = :empresa OR e.matriz = :empresa) ");
+        query.append("  AND a.status IS NOT NULL ");
         HashMap<String, Object> parametros = new HashMap<>();
         parametros.put("empresa", idEmpresa);
 
@@ -1042,8 +1062,9 @@ public class DaoAtendimentoImp extends GenericDao<Atendimento> implements Serial
 
         if (adesao != null && !adesao.isEmpty()) {
 
-            query.append("and (a.adesao = :adesao or a.adesoes @> ARRAY[:adesao]) ");
+            query.append("and (a.adesao = :adesao or a.adesoes @> ARRAY[:adesao] or a.protocolo = :protocolo ) ");
             parametros.put("adesao", adesao);
+            parametros.put("protocolo", adesao.trim());
 
         }
 
@@ -1062,12 +1083,10 @@ public class DaoAtendimentoImp extends GenericDao<Atendimento> implements Serial
             parametros.put("produto", produto);
         }
 
-
         if (equipe != null && operador == null) {
             query.append("\tand a.equipe = :equipe ");
             parametros.put("equipe", equipe);
         }
-
 
         if (operador != null) {
             query.append("and ( a.usuario_alteracao = :operador)");
@@ -1077,6 +1096,18 @@ public class DaoAtendimentoImp extends GenericDao<Atendimento> implements Serial
         if (statusAtendimento != null) {
             query.append("and a.status = :status ");
             parametros.put("status", statusAtendimento);
+        }
+
+        if (idMotivo != null) {
+            query.append(" and a.motivo = :motivo ");
+            parametros.put("motivo", idMotivo);
+
+        }
+
+        if (idSubmotivo != null) {
+            query.append(" and a.submotivo = :idSubmotivo ");
+            parametros.put("idSubmotivo", idSubmotivo);
+
         }
 
         if (statusContrato != null) {
@@ -1142,7 +1173,7 @@ public class DaoAtendimentoImp extends GenericDao<Atendimento> implements Serial
         Map<String, Object> parametros = new HashMap<>();
 
         String query = pesquisarAtendimentoLazy(cpf, nome, adesao, protocolo, campanha, equipes, operador, statusAtendimentos, statusContrato, dataInicio, dataAFim, usuario, produto, tiket, idEmpresa, filtro, isCount, parametros);
-        //  System.out.println(filtro.getFistResult()+" - "+filtro.getMaxResult());
+
         return searchEntidades(DaoEnum.NATIVE_OBJECT, query.toString(), parametros, Integer.valueOf(filtro.getFistResult()), Integer.valueOf(filtro.getMaxResult()));
 
     }
@@ -4543,11 +4574,18 @@ public class DaoAtendimentoImp extends GenericDao<Atendimento> implements Serial
         query.append(" join fetch a.campanha c ");
         query.append(" join fetch a.cliente cli ");
         query.append(" left join fetch a.status s ");
-        query.append(" join fetch a.motivo m ");
-        query.append(" join fetch a.subMotivo sm ");
-        query.append(" join fetch a.usuarioAlteracao u ");
+        query.append(" left join fetch a.motivo m ");
+        query.append(" left join fetch a.subMotivo sm ");
+        query.append(" left join fetch a.usuarioAlteracao u ");
         query.append(" left join fetch a.responsavelN2 n2 ");
+        query.append(" left join fetch a.usuarioOcupado o ");
+        query.append(" left join fetch a.formaPagamento tp ");
+        query.append(" left join fetch a.produto pe ");
+        query.append(" left join fetch a.departamentoDerivado dp ");
+        query.append(" left join fetch a.contrato ct ");
+        query.append(" left join fetch ct.statusContrato sc ");
         query.append(" where a.id = :id and c.tipoCampanha = 'SAC'");
+
 
         parametros.put("id", idAtendimento);
 
@@ -4584,7 +4622,7 @@ public class DaoAtendimentoImp extends GenericDao<Atendimento> implements Serial
         sql.append("WHERE cliente = :idCliente ");
         sql.append("AND motivo IS NULL ");
         sql.append("AND submotivo IS NULL ");
-        sql.append("AND protocolo = :protocolo");
+        sql.append("AND protocolo_pai = :protocolo");
 
         parametros.put("idCliente", idCliente);
         parametros.put("protocolo", protocolo);
@@ -4629,7 +4667,7 @@ public class DaoAtendimentoImp extends GenericDao<Atendimento> implements Serial
         return searchEntidades(DaoEnum.HQL_QUERRY, query.toString(), null);
     }
 
-    public List<Atendimento> pesquisarAtendimentosSacFiltros(String filtroProtocolo, String filtroCpf, Boolean encerrado) {
+    public List<Atendimento> pesquisarAtendimentosSacFiltros(String filtroProtocolo, String filtroCpf, Boolean encerrado, Long idDepartamento) {
         StringBuilder query = new StringBuilder();
         Map<String, Object> parametros = new HashMap<>();
 
@@ -4641,6 +4679,7 @@ public class DaoAtendimentoImp extends GenericDao<Atendimento> implements Serial
         query.append(" left join fetch a.motivo m ");
         query.append(" left join fetch a.subMotivo sm ");
         query.append(" left join fetch a.usuarioAlteracao u ");
+        query.append(" left join fetch a.departamentoDerivado dpo ");
         query.append(" where a.enviarN2 is not null and a.enviarN2 = true and c.tipoCampanha = 'SAC' ");
 
         if (StringUtils.isNotBlank(filtroProtocolo)) {
@@ -4651,6 +4690,11 @@ public class DaoAtendimentoImp extends GenericDao<Atendimento> implements Serial
         if (StringUtils.isNotBlank(filtroCpf)) {
             query.append(" and a.cpf = :cpf");
             parametros.put("cpf", StringUtils.leftPad(filtroCpf.trim(), 11, "0").replaceAll("\\D", ""));
+        }
+
+        if (idDepartamento != null) {
+            query.append(" and a.departamentoDerivado.id = :dpo ");
+            parametros.put("dpo", idDepartamento);
         }
 
         if (Boolean.FALSE.equals(encerrado)) {
@@ -4667,7 +4711,98 @@ public class DaoAtendimentoImp extends GenericDao<Atendimento> implements Serial
         return searchEntidades(DaoEnum.HQL_QUERRY, query.toString(), parametros);
     }
 
+    public List<Atendimento> pesquisarAtendimentosSacFiltros(String filtroProtocolo, String filtroCpf, List<Long> listDpo) {
+
+        StringBuilder query = new StringBuilder();
+        Map<String, Object> parametros = new HashMap<>();
+
+        query.append("select distinct a ");
+        query.append("from Atendimento a ");
+        query.append(" join fetch a.campanha c ");
+        query.append(" join fetch a.cliente cli ");
+        query.append(" join fetch a.motivo m ");
+        query.append(" join fetch a.subMotivo sm ");
+        query.append(" left join fetch a.status s ");
+        query.append(" left join fetch a.usuarioAlteracao u ");
+        query.append(" left join fetch a.responsavelN2 n2 ");
+        query.append(" left join fetch a.departamentoDerivado dpo ");
+        query.append(" where c.tipoCampanha = 'SAC' ");
+
+
+        if (StringUtils.isNotBlank(filtroProtocolo)) {
+            query.append(" and a.protocolo = :protocolo");
+            parametros.put("protocolo", filtroProtocolo);
+        }
+
+        if (StringUtils.isNotBlank(filtroCpf)) {
+            query.append(" and a.cpf = :cpf");
+            parametros.put("cpf", StringUtils.leftPad(filtroCpf.trim(), 11, "0").replaceAll("\\D", ""));
+        }
+
+        if (CollectionUtils.isNotEmpty(listDpo)) {
+            query.append(" and a.departamentoDerivado.id in  ").append(sqlFormatedList(listDpo));
+
+        }
+
+        query.append(" order by a.dataCadastro");
+
+        System.out.println(query.toString());
+
+        return searchEntidades(DaoEnum.HQL_QUERRY, query.toString(), parametros);
+    }
+
+    public List<Atendimento> pesquisarAtendimentosSacFiltrosDepartamentos(String filtroProtocolo, String filtroCpf, Boolean encerrado, List<Long> departamentos, Long idDepartamento) {
+
+        StringBuilder query = new StringBuilder();
+        Map<String, Object> parametros = new HashMap<>();
+
+        query.append("select distinct a ");
+        query.append("from Atendimento a ");
+        query.append(" join fetch a.campanha c ");
+        query.append(" join fetch a.cliente cli ");
+        query.append(" left join fetch a.status s ");
+        query.append(" left join fetch a.motivo m ");
+        query.append(" left join fetch a.subMotivo sm ");
+        query.append(" left join fetch a.usuarioAlteracao u ");
+        query.append(" left join fetch a.departamentoDerivado dpo ");
+        query.append(" where a.enviarN2 is not null and a.enviarN2 = true and c.tipoCampanha = 'SAC' ");
+
+        if (StringUtils.isNotBlank(filtroProtocolo)) {
+
+            query.append(" and a.protocolo = :protocolo");
+            parametros.put("protocolo", filtroProtocolo.trim());
+        }
+
+        if (StringUtils.isNotBlank(filtroCpf)) {
+
+            String cpfLimpo = filtroCpf.replaceAll("\\D", "");
+            query.append(" and a.cpf = :cpf");
+            parametros.put("cpf", cpfLimpo);
+        }
+
+
+        if (idDepartamento != null) {
+            query.append(" and a.departamentoDerivado.id = :idDepartamento ");
+            parametros.put("idDepartamento", idDepartamento);
+
+        } else if (CollectionUtils.isNotEmpty(departamentos)) {
+
+            query.append(" and a.departamentoDerivado.id in ").append(sqlFormatedList(departamentos));
+        }
+
+        if (Boolean.FALSE.equals(encerrado)) {
+            query.append(" and (a.demandaEncerrada is null or a.demandaEncerrada = false)");
+        } else if (Boolean.TRUE.equals(encerrado)) {
+            query.append(" and a.demandaEncerrada = true");
+        }
+
+        query.append(" order by a.dataCadastro");
+
+        return searchEntidades(DaoEnum.HQL_QUERRY, query.toString(), parametros);
+    }
+
     public List<?> listarQuantidadeResumoDerivadosSac(Date dataInicio, Date dataFim) {
+
         StringBuilder sql = new StringBuilder();
         Map<String, Object> parametros = new HashMap<>();
 
@@ -4713,6 +4848,30 @@ public class DaoAtendimentoImp extends GenericDao<Atendimento> implements Serial
         }
 
         sql.append("GROUP BY m.descricao,m.cor ");
+
+        List<Object[]> list = searchEntidades(DaoEnum.NATIVE_OBJECT, sql.toString(), parametros);
+        return CollectionUtils.isNotEmpty(list) ? list : Collections.emptyList();
+    }
+
+    public List<Object[]> buscarQuantidadePorSubMotivo(Date dataInicio, Date dataFim) {
+
+        StringBuilder sql = new StringBuilder();
+        Map<String, Object> parametros = new HashMap<>();
+
+        sql.append("SELECT m.descricao, m.cor, COUNT(a.id) ");
+        sql.append("FROM atendimento a ");
+        sql.append("JOIN campanha c ON a.campanha = c.id ");
+        sql.append("JOIN submotivo sm ON a.submotivo = sm.id ");
+
+        sql.append("WHERE c.tipo_campanha = 'SAC' ");
+
+        if (dataInicio != null && dataFim != null) {
+            sql.append("AND a.data_cadastro >= :dataInicio AND a.data_cadastro <= :dataFim ");
+            parametros.put("dataInicio", atStartOfDay(dataInicio));
+            parametros.put("dataFim", atEndOfDay(dataFim));
+        }
+
+        sql.append("GROUP BY sm.descricao,sm.cor ");
 
         List<Object[]> list = searchEntidades(DaoEnum.NATIVE_OBJECT, sql.toString(), parametros);
         return CollectionUtils.isNotEmpty(list) ? list : Collections.emptyList();
@@ -4799,4 +4958,67 @@ public class DaoAtendimentoImp extends GenericDao<Atendimento> implements Serial
         return CollectionUtils.isNotEmpty(list) ? list : Collections.emptyList();
     }
 
+    @Transactional
+    public void atualizarProtocoloDataFimAtendimento(Long idCliente, String protocoloPai, Date dataFim) {
+
+        if (idCliente == null || StringUtils.isBlank(protocoloPai) || dataFim == null) {
+            return;
+        }
+
+        String sql = "UPDATE atendimento " +
+                "SET data_fim_atendimento = :dataFim " +
+                "WHERE cliente = :clienteId AND protocolo = :protocoloPai";
+
+        Map<String, Object> parametros = new HashMap<>();
+        parametros.put("clienteId", idCliente);
+        parametros.put("dataFim", dataFim);
+        parametros.put("protocoloPai", protocoloPai);
+        executeSqlUpdate(DaoEnum.NATIVE_CLASSE, sql, parametros);
+    }
+
+    public Long pesquisarIdAtendimentoSacPorProtocolo(String protocolo) {
+
+        if (StringUtils.isBlank(protocolo)) {
+            return null;
+        }
+
+        String sql = "SELECT id FROM atendimento WHERE protocolo = :protocolo";
+
+        Map<String, Object> parametros = new HashMap<>();
+        parametros.put("protocolo", protocolo);
+
+        Number resultado = (Number) searchEntidade(DaoEnum.NATIVE_OBJECT, sql, parametros);
+
+        return (resultado == null) ? null : resultado.longValue();
+    }
+
+    public List<Atendimento> pesquisarAtendimentosFilhos(String protocoloPai) {
+
+        if(StringUtils.isBlank(protocoloPai))
+            return null;
+
+        StringBuilder query = new StringBuilder();
+        Map<String, Object> parametros = new HashMap<>();
+
+        query.append("select DISTINCT  a ");
+        query.append("from Atendimento a ");
+        query.append(" join fetch a.campanha c ");
+        query.append(" join fetch a.cliente cli ");
+        query.append(" left join fetch a.status s ");
+        query.append(" left join fetch a.motivo m ");
+        query.append(" left join fetch a.subMotivo sm ");
+        query.append(" left join fetch a.usuarioAlteracao u ");
+        query.append(" left join fetch a.responsavelN2 n2 ");
+        query.append(" left join fetch a.departamentoDerivado dpo ");
+        query.append(" where c.tipoCampanha = 'SAC' AND a.atendimentoPai = false");
+
+        query.append(" and a.protocoloPai = :protocoloPai");
+        parametros.put("protocoloPai", protocoloPai);
+
+        query.append(" order by a.dataCadastro");
+
+
+        return searchEntidades(DaoEnum.HQL_QUERRY, query.toString(), parametros);
+
+    }
 }

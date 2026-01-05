@@ -4,6 +4,7 @@ import com.proativaservicos.model.Equipe;
 import com.proativaservicos.model.Loja;
 import com.proativaservicos.model.Produto;
 import com.proativaservicos.model.Usuario;
+import com.proativaservicos.model.dto.ProdutividadeSacDto;
 import com.proativaservicos.service.*;
 import com.proativaservicos.util.constantes.MessagesEnum;
 import com.proativaservicos.util.constantes.PerfilUsuarioEnum;
@@ -16,7 +17,6 @@ import jakarta.inject.Named;
 import org.apache.commons.collections4.CollectionUtils;
 import org.omnifaces.util.Messages;
 
-import java.math.BigDecimal;
 import java.util.Arrays;
 import java.util.Date;
 import java.util.List;
@@ -45,7 +45,7 @@ public class ProdutividadeConsistenciaBean extends GenericBean {
     @Inject
     private AtendimentoBackofficeService serviceAtendimentoBackoffice;
 
-    private List<?> listAtendimentoProdutividade;
+    private List<ProdutividadeSacDto> listAtendimentoProdutividade;
 
     private Usuario usuarioLogado;
 
@@ -62,16 +62,21 @@ public class ProdutividadeConsistenciaBean extends GenericBean {
     private Long[] listEquipesSelecionadas;
     private Long[] listUsuariosSelecionadas;
 
-    private Double totalCpf;
+
     private Date dataInicio;
     private Date dataFim;
 
-    private Double totalAtendimento;
-    private Double totalPropostas;
+    private Long totalCpf;
+    private Long totalAtendimento;
 
-    private Double totalPago;
-    private Double totalVendido;
-    private Double totalContratos;
+    private Long totalResolvidoN1;
+    private Long totalResolvidoN2;
+
+    private Long totalDerivado;
+    private Long totalConcluida;
+    private Long totalNoPrazo;
+    private Long totalPrazoExcedido;
+    private Long totalAberto;
 
     private Long usuarioLong;
     private Long equipeLong;
@@ -89,34 +94,29 @@ public class ProdutividadeConsistenciaBean extends GenericBean {
 
     public void pesquisar() {
 
-        this.listAtendimentoProdutividade = this.serviceAtendimentoBackoffice.pesquisarProdutividadeAtendimento(this.listEquipesSelecionadas, this.listUsuariosSelecionadas, this.produtoLong, this.lojaLong, retornarUsuarioSessao(), this.dataInicio, this.dataFim, this.tipoVisualizacao);
+        this.listAtendimentoProdutividade = this.serviceAtendimentoBackoffice.pesquisarProdutividadeAtendimentoSac(this.listEquipesSelecionadas, this.listUsuariosSelecionadas, this.produtoLong, this.lojaLong, this.dataInicio, this.dataFim, this.tipoVisualizacao);
         somarTotaisFooter(listAtendimentoProdutividade);
     }
 
-    private void somarTotaisFooter(List<?> list) {
+    private void somarTotaisFooter(List<ProdutividadeSacDto> list) {
 
-        this.totalAtendimento = Double.valueOf(0.0D);
-        this.totalCpf = Double.valueOf(0.0D);
-        this.totalContratos = Double.valueOf(0.0D);
-        this.totalPago = Double.valueOf(0.0D);
-        this.totalPropostas = Double.valueOf(0.0D);
-        this.totalVendido = Double.valueOf(0.0D);
+        this.totalAtendimento = list.stream().mapToLong(obj -> safeLong(obj.getQtdeAtendimento())).sum();
+        this.totalCpf = list.stream().mapToLong(obj -> safeLong(obj.getQtdeCpf())).sum();
+        this.totalResolvidoN2 = list.stream().mapToLong(obj -> safeLong(obj.getQtdeResolvidoN2())).sum();
+        this.totalResolvidoN1 = list.stream().mapToLong(obj -> safeLong(obj.getQtdadeResolvidoN1())).sum();
+        this.totalDerivado = list.stream().mapToLong(obj -> safeLong(obj.getQtdeDerivado())).sum();
+        this.totalNoPrazo = list.stream().mapToLong(obj -> safeLong(obj.getQtdadeDemandaNoPrazo())).sum();
+        this.totalPrazoExcedido = list.stream().mapToLong(obj -> safeLong(obj.getQtdadeDemandaPrazoEstourado())).sum();
+        this.totalAberto = list.stream().mapToLong(obj -> safeLong(obj.getQtidadeEmAberto())).sum();
+        this.totalConcluida = this.totalResolvidoN1 + this.totalResolvidoN2;
+    }
 
-        if (list != null && !list.isEmpty()) {
+    public Long safeLong(Long cont) {
 
-            for (Object obj : list) {
+        if (cont == null)
+            return 0L;
 
-                this.totalAtendimento = Double.valueOf(this.totalAtendimento.doubleValue() + ((BigDecimal) ((Object[]) obj)[2]).doubleValue());
-                this.totalCpf = Double.valueOf(this.totalCpf.doubleValue() + ((BigDecimal) ((Object[]) obj)[1]).doubleValue());
-                this.totalPropostas = Double.valueOf(this.totalPropostas.doubleValue() + ((BigDecimal) ((Object[]) obj)[3]).doubleValue());
-                this.totalContratos = Double.valueOf(this.totalContratos.doubleValue() + ((BigDecimal) ((Object[]) obj)[4]).doubleValue());
-                this.totalVendido = Double.valueOf(this.totalVendido.doubleValue() + ((BigDecimal) ((Object[]) obj)[5]).doubleValue());
-                this.totalPago = Double.valueOf(this.totalPago.doubleValue() + ((BigDecimal) ((Object[]) obj)[6]).doubleValue());
-
-            }
-
-        }
-
+        return cont;
 
     }
 
@@ -225,12 +225,8 @@ public class ProdutividadeConsistenciaBean extends GenericBean {
         this.serviceAtendimentoBackoffice = serviceAtendimentoBackoffice;
     }
 
-    public List<?> getListAtendimentoProdutividade() {
+    public List<ProdutividadeSacDto> getListAtendimentoProdutividade() {
         return listAtendimentoProdutividade;
-    }
-
-    public void setListAtendimentoProdutividade(List<?> listAtendimentoProdutividade) {
-        this.listAtendimentoProdutividade = listAtendimentoProdutividade;
     }
 
     public Usuario getUsuarioLogado() {
@@ -302,13 +298,7 @@ public class ProdutividadeConsistenciaBean extends GenericBean {
         this.listUsuariosSelecionadas = listUsuariosSelecionadas;
     }
 
-    public Double getTotalCpf() {
-        return totalCpf;
-    }
 
-    public void setTotalCpf(Double totalCpf) {
-        this.totalCpf = totalCpf;
-    }
 
     public Date getDataInicio() {
         return dataInicio;
@@ -326,45 +316,10 @@ public class ProdutividadeConsistenciaBean extends GenericBean {
         this.dataFim = dataFim;
     }
 
-    public Double getTotalAtendimento() {
-        return totalAtendimento;
-    }
 
-    public void setTotalAtendimento(Double totalAtendimento) {
-        this.totalAtendimento = totalAtendimento;
-    }
 
-    public Double getTotalPropostas() {
-        return totalPropostas;
-    }
 
-    public void setTotalPropostas(Double totalPropostas) {
-        this.totalPropostas = totalPropostas;
-    }
 
-    public Double getTotalPago() {
-        return totalPago;
-    }
-
-    public void setTotalPago(Double totalPago) {
-        this.totalPago = totalPago;
-    }
-
-    public Double getTotalVendido() {
-        return totalVendido;
-    }
-
-    public void setTotalVendido(Double totalVendido) {
-        this.totalVendido = totalVendido;
-    }
-
-    public Double getTotalContratos() {
-        return totalContratos;
-    }
-
-    public void setTotalContratos(Double totalContratos) {
-        this.totalContratos = totalContratos;
-    }
 
     public Long getUsuarioLong() {
         return usuarioLong;
@@ -396,5 +351,81 @@ public class ProdutividadeConsistenciaBean extends GenericBean {
 
     public void setProdutoLong(Long produtoLong) {
         this.produtoLong = produtoLong;
+    }
+
+    public void setListAtendimentoProdutividade(List<ProdutividadeSacDto> listAtendimentoProdutividade) {
+        this.listAtendimentoProdutividade = listAtendimentoProdutividade;
+    }
+
+    public Long getTotalCpf() {
+        return totalCpf;
+    }
+
+    public void setTotalCpf(Long totalCpf) {
+        this.totalCpf = totalCpf;
+    }
+
+    public Long getTotalAtendimento() {
+        return totalAtendimento;
+    }
+
+    public void setTotalAtendimento(Long totalAtendimento) {
+        this.totalAtendimento = totalAtendimento;
+    }
+
+    public Long getTotalResolvidoN1() {
+        return totalResolvidoN1;
+    }
+
+    public void setTotalResolvidoN1(Long totalResolvidoN1) {
+        this.totalResolvidoN1 = totalResolvidoN1;
+    }
+
+    public Long getTotalResolvidoN2() {
+        return totalResolvidoN2;
+    }
+
+    public void setTotalResolvidoN2(Long totalResolvidoN2) {
+        this.totalResolvidoN2 = totalResolvidoN2;
+    }
+
+    public Long getTotalDerivado() {
+        return totalDerivado;
+    }
+
+    public void setTotalDerivado(Long totalDerivado) {
+        this.totalDerivado = totalDerivado;
+    }
+
+    public Long getTotalConcluida() {
+        return totalConcluida;
+    }
+
+    public void setTotalConcluida(Long totalConcluida) {
+        this.totalConcluida = totalConcluida;
+    }
+
+    public Long getTotalNoPrazo() {
+        return totalNoPrazo;
+    }
+
+    public void setTotalNoPrazo(Long totalNoPrazo) {
+        this.totalNoPrazo = totalNoPrazo;
+    }
+
+    public Long getTotalPrazoExcedido() {
+        return totalPrazoExcedido;
+    }
+
+    public void setTotalPrazoExcedido(Long totalPrazoExcedido) {
+        this.totalPrazoExcedido = totalPrazoExcedido;
+    }
+
+    public Long getTotalAberto() {
+        return totalAberto;
+    }
+
+    public void setTotalAberto(Long totalAberto) {
+        this.totalAberto = totalAberto;
     }
 }

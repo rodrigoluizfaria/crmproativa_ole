@@ -1,83 +1,93 @@
 <ui:fragment xmlns="http://www.w3.org/1999/xhtml"
              xmlns:h="http://java.sun.com/jsf/html"
              xmlns:f="http://java.sun.com/jsf/core"
-             xmlns:o="http://omnifaces.org/ui"
              xmlns:ui="http://java.sun.com/jsf/facelets"
              xmlns:p="http://primefaces.org/ui">
 
-    <!-- DLG MODAL -->
-    <p:dialog id="dlgSistemaPausa" widgetVar="dlgSistemaPausa" modal="true" draggable="false" resizable="false"
-              closable="true" visible="false" width="300px" header="Entre com o motivo Pausa" appendTo="@(body)">
+    <p:dialog id="dlgSistemaPausa" widgetVar="dlgSistemaPausa"
+              modal="true" draggable="false" resizable="false"
+              closable="true" closeOnEscape="true" responsive="true"
+              width="500" showEffect="fade" hideEffect="fade"
+              header="Registrar Pausa" appendTo="@(body)">
 
         <h:form id="formPausaSistema" prependId="false">
 
-            <div class="ui-fluid formgrid grid">
+            <div class="ui-fluid p-2">
 
-                <div class="field col-12 ">
+                <div class="field mb-4">
+                    <p:outputLabel value="Motivo da Pausa" for="selectPausaSistema"
+                                   styleClass="font-bold mb-2 block text-900"/>
 
-                    <p:outputLabel value="Motivo" for="selectPausaSistema"/>
+                    <div class="ui-inputgroup">
+                        <span class="ui-inputgroup-addon bg-gray-100"><i class="pi pi-clock text-600"></i></span>
+                        <p:selectOneMenu id="selectPausaSistema" value="#{sistemaBean.pausa}"
+                                         required="true" requiredMessage="O motivo é obrigatório."
+                                         filter="true" filterMatchMode="contains"
+                                         converter="omnifaces.SelectItemsConverter">
 
-                    <p:selectOneMenu id="selectPausaSistema" value="#{sistemaBean.pausa}" required="true"
-                                     requiredMessage="#{msg.requerido}" filter="true"
-                                     converter="omnifaces.SelectItemsConverter">
-
-                        <f:selectItem itemLabel="Selecione" itemValue=""/>
-
-                        <f:selectItems value="#{sistemaBean.listPausa}" var="pausa" itemLabel="#{pausa.descricao}"
-                                       itemValue="#{pausa}"/>
-
-                    </p:selectOneMenu>
-
+                            <f:selectItem itemLabel="Selecione o motivo..." itemValue="" noSelectionOption="true"/>
+                            <f:selectItems value="#{sistemaBean.listPausa}" var="pausa"
+                                           itemLabel="#{pausa.descricao}" itemValue="#{pausa}"/>
+                        </p:selectOneMenu>
+                    </div>
                 </div>
 
-                <h:panelGroup styleClass="field col-12 mt-3" rendered="#{not empty sistemaBean.intervaloList}">
+                <h:panelGroup layout="block" rendered="#{not empty sistemaBean.intervaloList}"
+                              styleClass="field mb-3 surface-50 p-3 border-round border-left-3 border-blue-500 shadow-1">
 
-                    <p:outputLabel value="Intevalo Discador 3C" for="selectPausa3c"/>
-
-                    <p:selectOneMenu id="selectPausa3c" value="#{sistemaBean.intervalo3c}" required="true" requiredMessage="#{msg.requerido}" filter="true" converter="omnifaces.SelectItemsConverter">
-
-                        <f:selectItem itemLabel="Selecione" itemValue=""/>
-
-                        <f:selectItems value="#{sistemaBean.intervaloList}" var="intervalo" itemLabel="#{intervalo.name}" itemValue="#{intervalo.id}"/>
-
-                    </p:selectOneMenu>
-
-                </h:panelGroup>
-
-
-                <h:panelGroup styleClass="field col-12 mt-3" rendered="#{not empty sistemaBean.intervaloListArgus}">
-
-                    <p:outputLabel value="Intevalo Discador Argus" for="selectPausaArgus"/>
-
-                    <p:selectOneMenu id="selectPausaArgus" value="#{sistemaBean.intervaloArgus}" required="true" requiredMessage="#{msg.requerido}" filter="true" converter="omnifaces.SelectItemsConverter">
-
-                        <f:selectItem itemLabel="Selecione" itemValue=""/>
-
-                        <f:selectItems value="#{sistemaBean.intervaloListArgus}" var="pausaItem" itemLabel="#{pausaItem.pausaDesc}" itemValue="#{pausaItem.idPausa}"/>
-
-                    </p:selectOneMenu>
-
-                </h:panelGroup>
-
-                <div class="field col-12 mt-5">
-
-                    <div class="div_btn_rigth">
-
-                        <p:commandButton value="Ok" icon="pi pi-check" id="btnOkPausaSistema"
-                                         styleClass="ui-button-raised mr-3" update="@form :formPausaSistema"
-                                         partialSubmit="true" process="@this selectPausaSistema selectPausa3c selectPausaArgus"
-                                         actionListener="#{sistemaBean.iniciarPausa()}"/>
-
-                        <p:commandButton value="Cancelar" icon="pi pi-times" id="btnCancelPausaSistema"
-                                         styleClass="ui-button-raised" onclick="PF('dlgSistemaPausa').hide();"
-                                         global="false" process="@this"/>
-
+                    <div class="flex align-items-center mb-2">
+                        <i class="pi pi-phone text-blue-600 mr-2"></i>
+                        <p:outputLabel value="Intervalo Discador 3C" for="selectPausa3c"
+                                       styleClass="font-bold text-blue-800"/>
                     </div>
 
-                </div>
+                    <p:selectOneMenu id="selectPausa3c" value="#{sistemaBean.intervalo3c}"
+                                     required="true" requiredMessage="Intervalo 3C é obrigatório."
+                                     filter="true" converter="omnifaces.SelectItemsConverter">
+
+                        <f:selectItem itemLabel="Selecione a pausa no discador..." itemValue="" noSelectionOption="true"/>
+                        <f:selectItems value="#{sistemaBean.intervaloList}" var="intervalo"
+                                       itemLabel="#{intervalo.name}" itemValue="#{intervalo.id}"/>
+                    </p:selectOneMenu>
+                </h:panelGroup>
+
+
+                <h:panelGroup layout="block" rendered="#{not empty sistemaBean.intervaloListArgus}"
+                              styleClass="field mb-3 surface-50 p-3 border-round border-left-3 border-indigo-500 shadow-1">
+
+                    <div class="flex align-items-center mb-2">
+                        <i class="pi pi-headphones text-indigo-600 mr-2"></i>
+                        <p:outputLabel value="Intervalo Discador Argus" for="selectPausaArgus"
+                                       styleClass="font-bold text-indigo-800"/>
+                    </div>
+
+                    <p:selectOneMenu id="selectPausaArgus" value="#{sistemaBean.intervaloArgus}"
+                                     required="true" requiredMessage="Intervalo Argus é obrigatório."
+                                     filter="true" converter="omnifaces.SelectItemsConverter">
+
+                        <f:selectItem itemLabel="Selecione a pausa no discador..." itemValue="" noSelectionOption="true"/>
+                        <f:selectItems value="#{sistemaBean.intervaloListArgus}" var="pausaItem"
+                                       itemLabel="#{pausaItem.pausaDesc}" itemValue="#{pausaItem.idPausa}"/>
+                    </p:selectOneMenu>
+                </h:panelGroup>
 
             </div>
 
+            <div class="flex justify-content-end gap-2 mt-3 pt-3 border-top-1 border-200">
+
+                <p:commandButton value="Cancelar" icon="pi pi-times"
+                                 type="button"
+                                 onclick="PF('dlgSistemaPausa').hide();"
+                                 styleClass="ui-button-outlined ui-button-secondary font-bold"/>
+
+                <p:commandButton value="Confirmar Pausa" icon="pi pi-check"
+                                 id="btnOkPausaSistema"
+                                 actionListener="#{sistemaBean.iniciarPausa()}"
+                                 update="@form"
+                                 oncomplete="if (!args.validationFailed) PF('dlgSistemaPausa').hide()"
+                                 process="@form"
+                                 styleClass="ui-button-raised ui-button-primary font-bold shadow-2 px-4"/>
+            </div>
 
         </h:form>
 

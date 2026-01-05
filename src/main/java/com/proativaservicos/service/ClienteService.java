@@ -23,6 +23,9 @@ public class ClienteService extends GenericProService<Cliente> {
     @Inject
     private EmailService emailService;
 
+    @Inject
+    private DadosBancariosService dadosBancariosService;
+
 
     @Inject
     private AtendimentoService atendimentoService;
@@ -69,6 +72,7 @@ public class ClienteService extends GenericProService<Cliente> {
             cli.setListEmails(
                     new ArrayList<>(this.emailService.pesquisarEmailPorCliente(cli.getId()))
             );
+            cli.setListDadosBancarios(this.dadosBancariosService.pesquisarDadosBancariosPorCliente(cli.getId()));
         }
 
         return cli;

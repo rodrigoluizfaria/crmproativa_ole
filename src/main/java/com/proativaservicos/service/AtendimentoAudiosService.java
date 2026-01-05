@@ -48,6 +48,11 @@ public class AtendimentoAudiosService extends GenericProService<AtendimentoAudio
 		return this.dao.pesquisarAtendimentoAudios(idAtendimento);
 	}
 
+	public List<AtendimentoAudios> pesquisarAtendimentoAudiosPorProtocolo(String protocolo) {
+
+		return this.dao.pesquisarAtendimentoAudiosPorProtocolo(protocolo);
+	}
+
 
 
 

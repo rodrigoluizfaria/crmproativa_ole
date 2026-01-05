@@ -75,7 +75,13 @@ public class MeusAtendimentosBean extends GenericBean {
     @Inject
     private UsuarioService serviceUsuario;
 
-    private GenericAtendimento atendimentoVisualizar;
+    @Inject
+    private MotivoService serviceMotivo;
+
+    @Inject
+    private SubMotivoService serviceSubMotivo;
+
+    private Atendimento atendimentoVisualizar;
 
     private GenericHistoricoAtendimento historicoAtendimento;
 
@@ -90,6 +96,11 @@ public class MeusAtendimentosBean extends GenericBean {
     @Inject
     private ConcilicarAudioAnexoService serviceConcilicarAudioAnexo;
 
+    private List<Motivo> listMotivos;
+
+    private List<SubMotivo> listSubMotivos;
+
+
     private Long equipe;
 
     private String cpf;
@@ -99,6 +110,8 @@ public class MeusAtendimentosBean extends GenericBean {
     private Long idAtendimento;
     private Long idHistorico;
     private Long idSatusAtendimento;
+    private Long idMotivo;
+    private Long idSubMotivo;
     private Long idStatusContrato;
     private Long idCampanha;
     private Date dataAgendamento;
@@ -136,6 +149,8 @@ public class MeusAtendimentosBean extends GenericBean {
             this.dataAFim = new Date();
 
             this.listStatusAtendimentos = this.serviceStatusAtendimento.pesquisarStatusAtendimentosPorEmpresa(this.empresa.getId(), TipoAcessoEnum.ATIVO);
+
+            this.listMotivos = this.serviceMotivo.pesquisarMotivosPorEmpresa(this.empresa.getId());
 
             this.listStatusContrato = this.serviceStatusContrato.pesquisarStatusContratoPorEmpresa(this.empresa.getId(), TipoStatusContratoEnum.HISTORICO, null, TipoAcessoEnum.ATIVO);
 
@@ -214,7 +229,7 @@ public class MeusAtendimentosBean extends GenericBean {
             this.listAtendimentos = this.serviceAtendimento.pesquisarAtendimentosPorNomeCpf(this.cpf, this.nome,
                     this.adesao, this.protocolo, null, null, this.usuario.getId(), this.idSatusAtendimento,
                     this.idStatusContrato, this.dataInicio, this.dataAFim, this.usuario, null,
-                    this.usuario.getEmpresa().getId());
+                    this.usuario.getEmpresa().getId(),idMotivo,idSubMotivo);
 
         } catch (Exception e) {
             // TODO: handle exception
@@ -292,12 +307,12 @@ public class MeusAtendimentosBean extends GenericBean {
 
         if (this.idAtendimento != null) {
 
-        //    if (this.atnPreditivo != null && Boolean.TRUE.equals(this.atnPreditivo)) {
+            //    if (this.atnPreditivo != null && Boolean.TRUE.equals(this.atnPreditivo)) {
 
-                Faces.setFlashAttribute("idAtendimento", this.idAtendimento);
-                Faces.setFlashAttribute("preditivo", Boolean.valueOf(true));
+            Faces.setFlashAttribute("idAtendimento", this.idAtendimento);
+            Faces.setFlashAttribute("preditivo", Boolean.valueOf(true));
 
-           // }
+            // }
 
             return this.fichaAtendimentoBean.adiantarAtendimento(this.idAtendimento);
 
@@ -416,7 +431,12 @@ public class MeusAtendimentosBean extends GenericBean {
 
     }
 
-    public void trocarData() {
+    public void trocarMotivo() {
+
+        this.listSubMotivos = new ArrayList<>();
+        if (idMotivo != null) {
+            this.listSubMotivos = this.serviceSubMotivo.pesquisarSubMotivosPorMotivo(this.idMotivo, null);
+        }
 
     }
 
@@ -482,7 +502,7 @@ public class MeusAtendimentosBean extends GenericBean {
 
         try {
 
-            this.atendimentoVisualizar = this.serviceAtendimento.pesquisarAtendimentoContrato(idAtendimento);
+            this.atendimentoVisualizar = this.serviceAtendimento.pesquisarAtendimentoSacPorCodigo(idAtendimento,true);
 
             if (this.atendimentoVisualizar.getListaHistoricos() != null && !this.atendimentoVisualizar.getListaHistoricos().isEmpty()) {
 
@@ -839,11 +859,11 @@ public class MeusAtendimentosBean extends GenericBean {
         this.listAnotacoes = listAnotacoes;
     }
 
-    public GenericAtendimento getAtendimentoVisualizar() {
+    public Atendimento getAtendimentoVisualizar() {
         return atendimentoVisualizar;
     }
 
-    public void setAtendimentoVisualizar(GenericAtendimento atendimentoVisualizar) {
+    public void setAtendimentoVisualizar(Atendimento atendimentoVisualizar) {
         this.atendimentoVisualizar = atendimentoVisualizar;
     }
 
@@ -905,4 +925,44 @@ public class MeusAtendimentosBean extends GenericBean {
         this.audios = audios;
     }
 
+
+    public Long getIdSubMotivo() {
+        return idSubMotivo;
+    }
+
+    public void setIdSubMotivo(Long idSubMotivo) {
+        this.idSubMotivo = idSubMotivo;
+    }
+
+    public Long getIdMotivo() {
+        return idMotivo;
+    }
+
+    public void setIdMotivo(Long idMotivo) {
+        this.idMotivo = idMotivo;
+    }
+
+    public Long getEquipe() {
+        return equipe;
+    }
+
+    public void setEquipe(Long equipe) {
+        this.equipe = equipe;
+    }
+
+    public List<SubMotivo> getListSubMotivos() {
+        return listSubMotivos;
+    }
+
+    public void setListSubMotivos(List<SubMotivo> listSubMotivos) {
+        this.listSubMotivos = listSubMotivos;
+    }
+
+    public List<Motivo> getListMotivos() {
+        return listMotivos;
+    }
+
+    public void setListMotivos(List<Motivo> listMotivos) {
+        this.listMotivos = listMotivos;
+    }
 }

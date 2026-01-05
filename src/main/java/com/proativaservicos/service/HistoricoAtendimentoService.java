@@ -41,6 +41,11 @@ public class HistoricoAtendimentoService extends GenericProService<HistoricoAten
         return dao.pesquisarHistoricoPorCpf(cpf, id);
     }
 
+    public List<Object[]> pesquisarHIstoricoSacPorCpf(String cpf, Long id) {
+
+        return dao.pesquisarHistoricoSacPorCpf(cpf, id);
+    }
+
 
     public List<?> pesquisarAgendamentos(Long idUsuario, Long idEquipe, Long idStatusAtendimento, String cpf, Date dataInicio, Date dataFim, Usuario usuario, Long empresa, boolean isGlobal) {
 
@@ -82,6 +87,10 @@ public class HistoricoAtendimentoService extends GenericProService<HistoricoAten
 
     public List<HistoricoAtendimento> pesquisarHistoricoSacPorCpf(String cpf) {
         return this.dao.pesquisarHistoricoSacPorCpf(cpf);
+    }
+
+    public List<HistoricoAtendimento> pesquisarHistoricoSacPorAtendimento(Long idAtendimento) {
+        return this.dao.pesquisarHistoricoSacPorAtendimento(idAtendimento);
     }
 
 

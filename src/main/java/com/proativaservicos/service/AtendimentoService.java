@@ -31,6 +31,9 @@ public class AtendimentoService extends GenericProService<Atendimento> implement
     private HistoricoAtendimentoService serviceHistorico;
 
     @Inject
+    private HistoricoAtividadeService serviceHistoricoAtividade;
+
+    @Inject
     private HistoricoContratoService serviceHistoricoContrato;
 
     @Inject
@@ -355,30 +358,26 @@ public class AtendimentoService extends GenericProService<Atendimento> implement
         return dao.validarProposta(idAtendimento, adesao, instituicaoFinanceiraEnum, idUsuario);
     }
 
-    /*
-     * public List<Object[]> pesquisarAtendimentosPorNomeCpf(String cpf, String
-     * nome, String adesao, String protocolo,Long campanha, Long equipe, Long[]
-     * operador, Long statusAtendimento, Long statusContrato, Date dataInicio, Date
-     * dataAFim, Usuario usuario,Long produto, String tiket,Long idEmpresa) {
-     *
-     * return this.dao.pesquisarAtendimentosPorNomeCpf(cpf, nome, adesao, protocolo,
-     * campanha, equipe, getLists(operador), statusAtendimento, statusContrato,
-     * dataInicio, dataAFim, usuario,produto,tiket, idEmpresa); }
-     */
 
-    public List<Object[]> pesquisarAtendimentosPorNomeCpf(String cpf, String nome, String adesao, String protocolo, Long campanha, Long[] equipes, Long[] operador, Long[] statusAtendimentos, Long statusContrato, Date dataInicio,
-                                                          Date dataAFim, Usuario usuario, Long produto, String tiket, Long idEmpresa) {
+    public List<Object[]> pesquisarAtendimentosPorNomeCpf(String cpf, String nome, String adesao, String protocolo,
+                                                          Long campanha, Long[] equipes, Long[] operador,
+                                                          Long[] statusAtendimentos, Long statusContrato, Date dataInicio,
+                                                          Date dataAFim, Usuario usuario, Long produto, String tiket,
+                                                          Long idEmpresa, Long idMotivo, Long idSubMotivo) {
 
-        return this.dao.pesquisarAtendimentosPorNomeCpf(cpf, nome, adesao, protocolo, campanha, getLists(equipes), getLists(operador),
-                getLists(statusAtendimentos), statusContrato, dataInicio, dataAFim, usuario, produto, tiket, idEmpresa);
+        return this.dao.pesquisarAtendimentosPorNomeCpf(cpf, nome, adesao, protocolo, campanha, getLists(equipes),
+                getLists(operador), getLists(statusAtendimentos), statusContrato, dataInicio, dataAFim,
+                usuario, produto, tiket, idEmpresa, idMotivo, idSubMotivo);
     }
 
 
-    public List<Object[]> pesquisarAtendimentosPorNomeCpf(String cpf, String nome, String adesao, String protocolo, Long campanha, Long equipe, Long operador, Long statusAtendimento, Long statusContrato, Date dataInicio,
-                                                          Date dataAFim, Usuario usuario, Long produto, Long idEmpresa) {
+    public List<Object[]> pesquisarAtendimentosPorNomeCpf(String cpf, String nome, String adesao, String protocolo,
+                                                          Long campanha, Long equipe, Long operador,
+                                                          Long statusAtendimento, Long statusContrato, Date dataInicio,
+                                                          Date dataAFim, Usuario usuario, Long produto, Long idEmpresa, Long idMotivo, Long idSubmotivo) {
 
         return this.dao.pesquisarAtendimentosPorNomeCpf(cpf, nome, adesao, protocolo, campanha, equipe, operador,
-                statusAtendimento, statusContrato, dataInicio, dataAFim, usuario, produto, idEmpresa);
+                statusAtendimento, statusContrato, dataInicio, dataAFim, usuario, produto, idEmpresa, idMotivo, idSubmotivo);
     }
 
     //PESQUISA QUANTIDADE PACOTE
@@ -722,6 +721,19 @@ public class AtendimentoService extends GenericProService<Atendimento> implement
     }
 
     public Atendimento pesquisarAtendimentoSacPorCodigo(Long idAtendimento) {
+        return pesquisarAtendimentoSacPorCodigo(idAtendimento, false);
+    }
+
+    public Atendimento pesquisarAtendimentoSacPorPrococolo(String protocolo) {
+        Long idAtendimento = this.dao.pesquisarIdAtendimentoSacPorProtocolo(protocolo);
+
+        if (idAtendimento != null)
+            return pesquisarAtendimentoSacPorCodigo(idAtendimento, true);
+
+        return null;
+    }
+
+    public Atendimento pesquisarAtendimentoSacPorCodigo(Long idAtendimento, boolean carregarListas) {
 
         Atendimento atendimento = this.dao.pesquisarAtendimentoSacPorCodigo(idAtendimento);
 
@@ -729,8 +741,42 @@ public class AtendimentoService extends GenericProService<Atendimento> implement
             atendimento.setCliente(this.serviceCliente.pesquisarClienteAtendimentoSacPorId(atendimento.getCliente().getId()));
         }
 
+        if (atendimento != null && carregarListas) {
+
+            carregarListasAtendimento(atendimento);
+
+            if (atendimento.getAtendimentoPai()) {
+
+                atendimento.setListAtendimentosFilhas(this.dao.pesquisarAtendimentosFilhos(atendimento.getProtocolo()));
+
+
+            } else {
+
+                Long atn = this.dao.pesquisarIdAtendimentoSacPorProtocolo(atendimento.getProtocoloPai());
+
+                if (atn != null) {
+                    atendimento.setAtendimentoPaiObj(this.dao.pesquisarAtendimentoSacPorCodigo(atn));
+                    // carregarListasAtendimento(atendimento.getAtendimentoPaiObj());
+                }
+            }
+        }
+
 
         return atendimento;
+    }
+
+    private void carregarListasAtendimento(Atendimento atendimento) {
+
+        if (atendimento != null && atendimento.getId() != null) {
+
+            atendimento.setListHistoricos(this.serviceHistorico.pesquisarHistoricoSacPorAtendimento(atendimento.getId()));
+
+            if (StringUtils.isNotBlank(atendimento.getProtocolo()))
+                atendimento.setListHistoricoAtividades(this.serviceHistoricoAtividade.pesquisarHistoricoAtividadePorProtocolo(atendimento.getProtocolo()));
+
+
+        }
+
     }
 
     public List<Atendimento> pesquisarAtendimentosSacPorCliente(Long codigoCliente) {
@@ -752,15 +798,24 @@ public class AtendimentoService extends GenericProService<Atendimento> implement
         return this.dao.pesquisarAtendimentosDerivados();
     }
 
-    public List<Atendimento> pesquisarAtendimentosSacFiltros(String filtroProtocolo, String filtroCpf, Boolean encerrado) {
-        return this.dao.pesquisarAtendimentosSacFiltros(filtroProtocolo,filtroCpf,encerrado);
+    public List<Atendimento> pesquisarAtendimentosSacFiltros(String filtroProtocolo, String filtroCpf, Boolean encerrado, Long idDepartamento) {
+        return this.dao.pesquisarAtendimentosSacFiltros(filtroProtocolo, filtroCpf, encerrado, idDepartamento);
+    }
+
+    public List<Atendimento> pesquisarAtendimentosSacFiltros(String filtroProtocolo, String filtroCpf, List<Long> listDpo) {
+        return this.dao.pesquisarAtendimentosSacFiltros(filtroProtocolo, filtroCpf, listDpo);
+    }
+
+    public List<Atendimento> pesquisarAtendimentosSacFiltrosDepartamento(String filtroProtocolo, String filtroCpf, Boolean encerrado, List<Long> departamentos, Long idDepartamento) {
+        return this.dao.pesquisarAtendimentosSacFiltrosDepartamentos(filtroProtocolo, filtroCpf, encerrado, departamentos, idDepartamento);
     }
 
     public List<?> listarQuantidadeResumoDerivadosSac(Date dataInicio, Date dataFim) {
 
-      return  this.dao.listarQuantidadeResumoDerivadosSac(dataInicio, dataFim);
+        return this.dao.listarQuantidadeResumoDerivadosSac(dataInicio, dataFim);
 
     }
+
     public List<Object[]> buscarQuantidadePorMotivo(Date dataInicio, Date dataFim) {
         return this.dao.buscarQuantidadePorMotivo(dataInicio, dataFim);
     }
@@ -774,11 +829,11 @@ public class AtendimentoService extends GenericProService<Atendimento> implement
     }
 
     public List<Object[]> buscarQuantidadePorStatus(Date dataInicio, Date dataFim) {
-       return this.dao.buscarQuantidadePorStatus(dataInicio, dataFim);
+        return this.dao.buscarQuantidadePorStatus(dataInicio, dataFim);
     }
 
 
-
-
-
+    public void atualizarProtocoloDataFimAtendimento(Long idCliente, String protocoloPai, Date dataFim) {
+        this.dao.atualizarProtocoloDataFimAtendimento(idCliente, protocoloPai, dataFim);
+    }
 }

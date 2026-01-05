@@ -6,135 +6,130 @@ import com.proativaservicos.util.constantes.SubMenuEnum;
 import jakarta.faces.event.PhaseEvent;
 import jakarta.faces.event.PhaseId;
 import jakarta.faces.event.PhaseListener;
-import jakarta.servlet.*;
-import jakarta.servlet.annotation.WebFilter;
+import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpSession;
 import org.omnifaces.util.Faces;
 import org.omnifaces.util.Messages;
-
 import java.io.IOException;
 
-@WebFilter(urlPatterns = {"/pages/*"})
-public class Filter implements PhaseListener, jakarta.servlet.Filter {
+// Nota: Registre esta classe no faces-config.xml
+public class Filter implements PhaseListener {
 
-    /**
-     *
-     */
     private static final long serialVersionUID = 1L;
 
-
     @Override
-    public void destroy() {
-        // TODO Auto-generated method stub
-
-    }
-
-    @Override
-    public void init(FilterConfig filterConfig) throws ServletException {
-        // TODO Auto-generated method stub
-
-    }
-
-    @Override
-    public void doFilter(ServletRequest servletRequest, ServletResponse servletResponse, FilterChain chain) throws IOException, ServletException {
-        // TODO Auto-generated method stub
-/*
-		HttpServletRequest request = (HttpServletRequest) servletRequest;
-		HttpServletResponse response = (HttpServletResponse) servletResponse;
-
-		request.setCharacterEncoding("UTF-8");
-		chain.doFilter((ServletRequest) request, (ServletResponse) response);*/
-        chain.doFilter(servletRequest, servletResponse);
-    }
-
-    @Override
-    public void afterPhase(PhaseEvent event) {
-
+    public PhaseId getPhaseId() {
+        return PhaseId.RESTORE_VIEW; // Roda logo no início do ciclo JSF
     }
 
     @Override
     public void beforePhase(PhaseEvent event) {
+        // Nada a fazer antes, validamos após restaurar a view ou usamos afterPhase
+        // Mas como seu código original usava beforePhase no RESTORE_VIEW, mantemos aqui
+        // pois é o momento onde a URL chega.
 
         try {
+            handleSecurityAndCleaning();
+        } catch (Exception e) {
+            e.printStackTrace(); // Idealmente use um Logger (SLF4J/Log4J)
+        }
+    }
 
-            HttpSession sessao = Faces.getSession(false);
+    @Override
+    public void afterPhase(PhaseEvent event) {
+        // Não utilizado
+    }
 
-            boolean isUsrSession = false;
+    private void handleSecurityAndCleaning() throws IOException, ServletException {
+        String page = Faces.getRequestURI();
+        HttpSession sessao = Faces.getSession(false);
+        boolean isUsrSession = (sessao != null && sessao.getAttribute("usuario") != null);
 
-            String page = Faces.getRequestURI();
+        // 1. Pular recursos estáticos ou páginas públicas
+        if (page.contains("consultaNumero.jsf") || page.contains("envioSms.jsf") || page.contains("javax.faces.resource")) {
+            return;
+        }
 
-            if (page.contains("consultaNumero.jsf") || page.contains("envioSms.jsf"))
+        // =================================================================================
+        // 2. LIMPEZA AUTOMÁTICA DE SESSÃO (GARBAGE COLLECTOR)
+        // =================================================================================
+        // Se a página atual NÃO for a ficha de atendimento, removemos os atributos da sessão.
+        // Isso resolve seu problema de "destruir o setAttribute quando sair da página".
+        if (!page.contains("/atendimento/fichaAtendimento")) { // Ajuste o caminho conforme seu XHTML
+            System.out.println("REMOVENDO ATN,,,,");
+         /*   if (sessao != null) {
+                sessao.removeAttribute("atendimento_iniciado");
+                sessao.removeAttribute("cpf_atn");
+                sessao.removeAttribute("protocolo_pai");
+                // System.out.println("Limpando dados de atendimento da sessão (Navegação detectada).");
+            }*/
+        }
+
+        // =================================================================================
+        // 3. LÓGICA DE LOGIN E SEGURANÇA
+        // =================================================================================
+        if (isUsrSession || page.contains("index.jsf")) {
+
+            // Se logado e tentar acessar login, joga para inicial
+            if (isUsrSession && (page.endsWith("/index.jsf") || page.endsWith("/crmproativa/"))) {
+                Faces.redirect(Faces.getRequestContextPath() + "/pages/home/inicial.jsf");
                 return;
-
-            if (sessao != null)
-                isUsrSession = sessao.getAttribute("usuario") != null;
-
-            if (isUsrSession || page.contains("index.jsf")) {
-
-                if (isUsrSession && (page.equals("/crmproativa/pages/home/index.jsf") || page.equals("/crmproativa/")))
-                    Faces.redirect(Faces.getRequestContextPath() + "/pages/home/inicial.jsf");
-
-
-                if (sessao != null && sessao.getAttribute("REMOVER_USR_SESSAO") != null) {
-
-                    Faces.logout();
-                    sessao.invalidate();
-                    Messages.addFlashGlobalError("Sua sessão expirou, favor logar novamente.");
-                    Faces.redirect(Faces.getRequestContextPath() + "/pages/home/index.jsf");
-
-                } else if (sessao != null && sessao.getAttribute("REMOVER_USR_SESSAO_EXPEDIENTE") != null) {
-
-                    Faces.logout();
-                    sessao.invalidate();
-                    Messages.addFlashGlobalError("Sua sessão expirou, fora do horário de expediente.");
-                    Faces.redirect(Faces.getRequestContextPath() + "/pages/home/index.jsf");
-
-                } else if (validarPermissaoUsuario() && !page.equals("/crmproativa/") && !page.equals("/crmproativa/index.jsf")) {
-
-                    Faces.redirect(Faces.getRequestContextPath() + "/pages/erro/access.jsf");
-                }
-
-
-            } else {
-
-                if (page.contains("/pages/"))
-                    Messages.addFlashGlobalError("Sessão inválida. por favor efetue login. ");
-
-                Faces.redirect(Faces.getRequestContextPath() + "/pages/home/index.jsf");
-
             }
 
-        } catch (Exception e) {
-            e.printStackTrace();
+            // Verifica Flags de Expiração Forçada
+            if (sessao != null) {
+                if (sessao.getAttribute("REMOVER_USR_SESSAO") != null) {
+                    realizarLogoutForcado(sessao, "Sua sessão expirou, favor logar novamente.");
+                    return;
+                } else if (sessao.getAttribute("REMOVER_USR_SESSAO_EXPEDIENTE") != null) {
+                    realizarLogoutForcado(sessao, "Sua sessão expirou, fora do horário de expediente.");
+                    return;
+                }
+            }
+
+            // Validação de Permissão (ACL)
+            if (isUsrSession && validarPermissaoUsuario() && !page.endsWith("/index.jsf")) {
+                Faces.redirect(Faces.getRequestContextPath() + "/pages/erro/access.jsf");
+            }
+
+        } else {
+            // Não logado tentando acessar páginas internas
+            if (page.contains("/pages/")) {
+                Messages.addFlashGlobalError("Sessão inválida. por favor efetue login.");
+                Faces.redirect(Faces.getRequestContextPath() + "/pages/home/index.jsf");
+            }
         }
+    }
+
+    private void realizarLogoutForcado(HttpSession sessao, String mensagem) throws IOException, ServletException {
+
+        Faces.logout();
+        sessao.invalidate(); // Mata a sessão
+        Messages.addFlashGlobalError(mensagem);
+        Faces.redirect(Faces.getRequestContextPath() + "/pages/home/index.jsf");
 
     }
 
     private boolean validarPermissaoUsuario() {
-
         Usuario usuario = (Usuario) Faces.getSessionAttribute("usuario");
-        boolean contemPermissao = false;
+        if (usuario == null) return false;
+
+        // Admin total
+        if (PerfilUsuarioEnum.ADMIN.equals(usuario.getPerfil())) return false;
+
         SubMenuEnum subMenuEnum = SubMenuEnum.getSubMenu(Faces.getRequestURI());
 
-        if (usuario != null && subMenuEnum != null) {
-
-            contemPermissao = (subMenuEnum.getMenu().getListPermicoes().contains(usuario.getPerfil()) && !subMenuEnum.getListPermecaoNegada().contains(usuario.getPerfil()));
+        // Se a página não está mapeada no Enum, talvez deva liberar ou bloquear (depende da regra)
+        if (subMenuEnum == null) {
+            String page = Faces.getRequestURI();
+            // Libera páginas padrão de erro e home
+            return !page.contains("/erro") && !page.contains("/home");
         }
 
-        String page = Faces.getRequestURI();
+        boolean temPermissaoExplicita = subMenuEnum.getMenu().getListPermicoes().contains(usuario.getPerfil());
+        boolean acessoNegadoExplicito = subMenuEnum.getListPermecaoNegada().contains(usuario.getPerfil());
 
-        if (usuario != null && usuario.getPerfil().equals(PerfilUsuarioEnum.ADMIN))
-            return false;
-
-        return (!page.contains("/erro") && !page.contains("/home") && usuario != null && !contemPermissao);
-
+        // Retorna TRUE se deve BLOQUEAR (Lógica inversa do seu código original)
+        return !(temPermissaoExplicita && !acessoNegadoExplicito);
     }
-
-    @Override
-    public PhaseId getPhaseId() {
-
-        return PhaseId.RESTORE_VIEW;
-
-    }
-
 }

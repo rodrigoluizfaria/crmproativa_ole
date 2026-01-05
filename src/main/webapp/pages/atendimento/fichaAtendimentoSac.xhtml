@@ -112,22 +112,7 @@
 
         <div class="p-grid justify-center">
 
-            <h:form id="formPst" prependId="false">
 
-                <p:growl id="grl" widgetVar="grl" globalOnly="true" showSummary="false" life="8000" showDetail="true">
-                    <p:autoUpdate/>
-                </p:growl>
-
-                <h:outputScript target="head" library="js" name="pstfone.js"/>
-                <script type="text/javascript">
-                    //<![CDATA[
-                    console.log("Iniciando scripts pst");
-                    var servidor = "#{fichaAtendimentoSacBean.usuario.pontoAtendimento.pabx.url}";
-                    var login = "#{fichaAtendimentoSacBean.usuario.pontoAtendimento.ramal}";
-                    iniciarPst(servidor, login);
-                    //]]>
-                </script>
-            </h:form>
 
             <div class="ui-fluid">
 
@@ -161,7 +146,7 @@
                                                    styleClass="mr-2 uppercase font-bold"/>
 
                                             <div class="surface-100 border-1 border-300 border-round px-3 py-2 flex align-items-center h-full">
-                                                <span class="text-600 font-bold text-xs mr-2 uppercase">Protocolo:</span>
+                                                <span class="text-600 font-bold text-xs mr-2 uppercase">Protocolo Principal: </span>
                                                 <span class="text-900 font-bold font-monospace select-all">#{fichaAtendimentoSacBean.cliente.protocolo}</span>
                                                 <p:commandLink title="Copiar Protocolo"
                                                                styleClass="ml-2 text-400 hover:text-primary"
@@ -1187,9 +1172,13 @@
 
                                                             <div class="col-12 md:col-6">
                                                                 <p:commandButton value="Direcionar ao N2"
-                                                                                 icon="pi pi-arrow-right" iconPos="right"
-                                                                                 type="button"
-                                                                                 onclick="PF('dlgDerivarN2').show()"
+                                                                                 icon="pi pi-arrow-right"
+                                                                                 iconPos="right"
+                                                                                 update="dlgDerivarN2"
+                                                                                 global="false"
+                                                                                 action="#{fichaAtendimentoSacBean.onBuscarDepartamentos()}"
+                                                                                 process="@this"
+                                                                                 oncomplete="PF('dlgDerivarN2').show()"
                                                                                  styleClass="ui-button-outlined ui-button-warning w-full border-round-lg font-bold py-3 bg-white surface-hover"/>
                                                             </div>
 
@@ -1223,7 +1212,7 @@
                         <!--  SEM ATENDIMENTO ESPERANDO...-->
                         <h:panelGroup rendered="#{fichaAtendimentoSacBean.atendimento eq null}">
 
-                            <p:remoteCommand name="enviarCpf" actionListener="#{fichaAtendimentoSacBean.onCliente}"
+                            <p:remoteCommand name="receberDadosChamada" actionListener="#{fichaAtendimentoSacBean.onCliente}"
                                              update="@form" oncomplete="tocarNotificacao();"/>
 
                             <div class="grid justify-content-center mt-4">
@@ -1244,21 +1233,28 @@
 
                                     <div class="surface-card shadow-2 border-round-xl p-3 mb-3 flex align-items-center justify-content-between border-left-3 border-blue-500">
                                         <div class="flex align-items-center">
-                                            <p:avatar icon="pi pi-user" styleClass="mr-3 bg-blue-100 text-blue-600" size="large" shape="circle" />
+                                            <p:avatar icon="pi pi-user" styleClass="mr-3 bg-blue-100 text-blue-600"
+                                                      size="large" shape="circle"/>
                                             <div>
-                                                <span class="text-900 font-bold block text-lg">#{agentCC.msg}</span>
+                                                <div id="statusMsg" class="text-sm text-500 mt-1">Conectando...</div>
+
                                                 <div class="flex align-items-center mt-1">
-                                                    <i class="pi pi-phone text-500 mr-1 text-sm"></i>
+                                                    <i class="pi pi-phone text-500 mr-1 text-sm" />
                                                     <span class="text-600 text-sm">Ramal:
-                                <span class="font-bold text-700">#{empty fichaAtendimentoSacBean.usuario.pontoAtendimento ? 'Sem Ramal' : fichaAtendimentoSacBean.usuario.pontoAtendimento.ramal}</span>
-                            </span>
+                    <span class="font-bold text-700">
+                        #{empty fichaAtendimentoSacBean.usuario.pontoAtendimento ? 'Sem Ramal' : fichaAtendimentoSacBean.usuario.pontoAtendimento.ramal}
+                    </span>
+                </span>
                                                 </div>
                                             </div>
                                         </div>
-                                        <p:tag severity="success" value="DISPONÍVEL" icon="pi pi-check-circle" rounded="true"/>
+
+                                        <p:tag id="statusTag" severity="info" value="AGUARDE..." icon="pi pi-spin pi-spinner"
+                                               styleClass="white-space-nowrap" rounded="true"/>
                                     </div>
 
-                                    <p:card id="cpfBox" styleClass="shadow-4 border-round-2xl border-none overflow-hidden">
+                                    <p:card id="cpfBox"
+                                            styleClass="shadow-4 border-round-2xl border-none overflow-hidden">
 
                                         <h:panelGroup rendered="#{empty fichaAtendimentoSacBean.cpf}" layout="block"
                                                       styleClass="text-center py-6 flex flex-column align-items-center justify-content-center">
@@ -1275,7 +1271,8 @@
                                                       styleClass="fadein animation-duration-500 surface-50 h-full">
 
                                             <div class="bg-blue-600 text-white p-3 flex align-items-center justify-content-between">
-                                                <span class="font-bold flex align-items-center"><i class="pi pi-phone-at-call mr-2 animate-pulse"></i> CHAMADA ENTRANDO</span>
+                                                <span class="font-bold flex align-items-center"><i
+                                                        class="pi pi-phone-at-call mr-2 animate-pulse"></i> CHAMADA ENTRANDO</span>
                                                 <span class="text-sm opacity-90">Identificando...</span>
                                             </div>
 
@@ -1291,7 +1288,8 @@
                                                     <div class="flex flex-column align-items-center justify-content-center">
                                                         <i class="pi pi-spin pi-spinner text-blue-600 text-3xl mb-2"></i>
                                                         <span class="text-700 font-medium">Carregando ficha...</span>
-                                                        <p:progressBar mode="indeterminate" styleClass="h-1rem w-10rem mt-2" />
+                                                        <p:progressBar mode="indeterminate"
+                                                                       styleClass="h-1rem w-10rem mt-2"/>
                                                     </div>
                                                 </div>
                                             </div>
@@ -1314,68 +1312,71 @@
                                   modal="true" responsive="true" width="500" showEffect="fade" hideEffect="fade"
                                   draggable="false" resizable="false" styleClass="border-round-xl">
 
-
                             <f:facet name="header">
                                 <div class="flex align-items-center">
                                     <div class="bg-green-100 border-circle w-2rem h-2rem flex align-items-center justify-content-center mr-2">
                                         <i class="pi pi-check text-green-600 text-lg"></i>
                                     </div>
-                                    <span class="text-xl font-bold ">Finalizar Atendimento</span>
+                                    <span class="text-xl font-bold">Finalizar Atendimento</span>
                                 </div>
                             </f:facet>
-                            <h:panelGroup id="pbpDlgFinalizar"
-                                          rendered="#{not empty fichaAtendimentoSacBean.atendimento}">
+
+                            <h:panelGroup id="pbpDlgFinalizar" rendered="#{not empty fichaAtendimentoSacBean.atendimento}">
                                 <div class="pt-2">
 
-                                    <div class="mb-4">
+                                    <div class="mb-3">
                                         <span class="text-500 block text-sm mb-1">Classificação Atual:</span>
                                         <div class="surface-100 p-2 border-round text-700 font-medium text-sm flex align-items-center">
                                             <i class="pi pi-tag mr-2 text-primary"></i>
-                                            <h:outputText
-                                                    value="#{fichaAtendimentoSacBean.motivoSelecionado.descricao} | #{fichaAtendimentoSacBean.subMotivoSelecionado.descricao}"/>
+                                            <h:outputText value="#{fichaAtendimentoSacBean.motivoSelecionado.descricao} | #{fichaAtendimentoSacBean.subMotivoSelecionado.descricao}"/>
+                                        </div>
+                                    </div>
+
+                                    <div class="mb-4">
+                                        <span class="text-500 block text-sm mb-1">Protocolo da demanda:</span>
+                                        <div class="surface-100 p-2 border-round flex align-items-center justify-content-between bg-blue-50 border-1 border-blue-100">
+                                            <div class="flex align-items-center">
+                                                <i class="pi pi-hashtag mr-2 text-blue-600"></i>
+                                                <h:outputText value="#{fichaAtendimentoSacBean.atendimento.protocolo}"
+                                                              styleClass="text-900 font-bold text-lg select-all"/>
+                                            </div>
+                                            <i class="pi pi-id-card text-blue-300"></i>
                                         </div>
                                     </div>
 
                                     <div class="field">
                                         <div class="flex align-items-center mb-2">
-                                            <p:outputLabel for="obsFinal" value="Observações do Atendimento:"
-                                                           styleClass="font-bold text-900 mr-2"/>
+                                            <p:outputLabel for="obsFinal" value="Considerações Finais:" styleClass="font-bold text-900 mr-2"/>
                                             <span class="text-red-500 font-bold mr-2">*</span>
-                                            <i class="pi pi-exclamation-circle text-orange-500"
-                                               title="Informação importante"></i>
                                         </div>
 
                                         <p:inputTextarea id="obsFinal"
                                                          value="#{fichaAtendimentoSacBean.atendimento.observacao}"
                                                          rows="4" styleClass="w-full bg-gray-50 border-round-lg"
-                                                         placeholder="Registre os detalhes do atendimento realizado (campo obrigatório)..."
+                                                         placeholder="Descreva a solução aplicada ou orientações passadas..."
                                                          required="true"
                                                          requiredMessage="A observação é obrigatória para finalizar."/>
 
-                                        <small class="text-600 block mt-1">Obrigatório: Descreva o que foi realizado no atendimento.</small>
+                                        <small class="text-600 block mt-1"><i class="pi pi-info-circle mr-1"></i>Obrigatório para registro histórico.</small>
                                         <p:message for="obsFinal" id="msgObs"/>
                                     </div>
 
                                 </div>
                             </h:panelGroup>
+
                             <f:facet name="footer">
-
-                                <div class="flex justify-content-between gap-2 pt-2">
-
+                                <div class="flex justify-content-end gap-2 pt-3 border-top-1 border-100">
                                     <p:commandButton value="Cancelar" icon="pi pi-times"
                                                      onclick="PF('dlgFinalizar').hide()" type="button"
-                                                     styleClass="ui-button-outlined ui-button-secondary w-6 border-round-lg font-bold"/>
+                                                     styleClass="ui-button-outlined ui-button-secondary font-bold"/>
 
-                                    <p:commandButton value="Confirmar Finalização" icon="pi pi-check"
+                                    <p:commandButton value="Confirmar" icon="pi pi-check"
                                                      actionListener="#{fichaAtendimentoSacBean.salvarSolicitacaoAtendimento()}"
                                                      update="msgObs pbpDlgFinalizar @form"
-
-                                                     process="@this obsFinal "
-
-                                                     styleClass="ui-button-success w-6 border-round-lg font-bold"/>
+                                                     process="@this obsFinal"
+                                                     styleClass="ui-button-success font-bold px-4"/>
                                 </div>
                             </f:facet>
-
 
                         </p:dialog>
 
@@ -1387,57 +1388,87 @@
                             <f:facet name="header">
                                 <div class="flex align-items-center">
                                     <div class="bg-orange-100 border-circle w-2rem h-2rem flex align-items-center justify-content-center mr-2">
-                                        <i class="pi pi-arrow-right text-orange-600 text-lg font-bold"></i>
+                                        <i class="pi pi-directions text-orange-600 text-lg font-bold"></i>
                                     </div>
-                                    <span class="text-xl font-bold text-900">Direcionar para Área N2</span>
+                                    <span class="text-xl font-bold text-900">Escalar para Nível 2</span>
                                 </div>
                             </f:facet>
 
                             <h:panelGroup rendered="#{not empty fichaAtendimentoSacBean.atendimento}" id="pnpDerivarN2">
+
                                 <div class="pt-2">
 
-                                    <div class="mb-4">
-                                        <span class="text-500 block text-sm mb-1">Classificação:</span>
-                                        <div class="text-700 font-medium text-sm flex align-items-center">
-                                            <h:outputText
-                                                    value="#{fichaAtendimentoSacBean.motivoSelecionado.descricao} | #{fichaAtendimentoSacBean.subMotivoSelecionado.descricao}"/>
+                                    <div class="mb-3">
+                                        <span class="text-500 block text-sm mb-1">Classificação Atual:</span>
+                                        <div class="surface-100 p-2 border-round text-700 font-medium text-sm flex align-items-center">
+                                            <i class="pi pi-tag mr-2 text-orange-500"></i>
+                                            <h:outputText value="#{fichaAtendimentoSacBean.motivoSelecionado.descricao} | #{fichaAtendimentoSacBean.subMotivoSelecionado.descricao}"/>
                                         </div>
                                     </div>
 
+                                    <div class="mb-4">
+                                        <span class="text-500 block text-sm mb-1">Protocolo da demanda:</span>
+                                        <div class="surface-100 p-2 border-round flex align-items-center justify-content-between bg-blue-50 border-1 border-blue-100">
+                                            <div class="flex align-items-center">
+                                                <i class="pi pi-hashtag mr-2 text-blue-600"></i>
+                                                <h:outputText value="#{fichaAtendimentoSacBean.atendimento.protocolo}"
+                                                              styleClass="text-900 font-bold text-lg select-all"/>
+                                            </div>
+                                            <i class="pi pi-id-card text-blue-300"></i>
+                                        </div>
+                                    </div>
+
+                                    <p:divider styleClass="mb-4" />
+
+                                    <div class="field mb-4">
+                                        <p:outputLabel value="Setor de Destino" for="selectDpo" styleClass="font-bold text-900 mb-2 block"/>
+                                        <div class="ui-inputgroup">
+                                            <span class="ui-inputgroup-addon"><i class="pi pi-sitemap text-orange-500"></i></span>
+                                            <p:selectOneMenu id="selectDpo" value="#{fichaAtendimentoSacBean.atendimento.departamentoDerivado}"
+                                                             converter="omnifaces.SelectItemsConverter"
+                                                             required="true" requiredMessage="Selecione o setor de destino."
+                                                             styleClass="w-full" autoWidth="false" filter="true" filterMatchMode="contains">
+
+                                                <f:selectItem itemLabel="Selecione o setor..." noSelectionOption="true" itemValue="#{null}"/>
+                                                <f:selectItems value="#{fichaAtendimentoSacBean.listDepartamentos}" var="dpo"
+                                                               itemLabel="#{dpo.descricao}" itemValue="#{dpo}"/>
+                                            </p:selectOneMenu>
+                                        </div>
+                                        <p:message for="selectDpo"/>
+                                    </div>
 
                                     <div class="field">
                                         <div class="flex align-items-center mb-2">
-                                            <p:outputLabel for="obsDerivacao" value="Observações da Derivação:"
-                                                           styleClass="font-bold text-900 mr-2"/>
-                                            <span class="text-red-500 font-bold mr-2">*</span>
-                                            <i class="pi pi-exclamation-circle text-orange-500"
-                                               title="Informação obrigatória"></i>
+                                            <p:outputLabel for="obsDerivacao" value="Justificativa da Escalação:" styleClass="font-bold text-900 mr-2"/>
+                                            <span class="text-red-500 font-bold">*</span>
                                         </div>
 
                                         <p:inputTextarea id="obsDerivacao"
                                                          value="#{fichaAtendimentoSacBean.atendimento.observacao}"
                                                          rows="4" styleClass="w-full bg-gray-50 border-round-lg"
-                                                         placeholder="Descreva o motivo da derivação e informações relevantes (campo obrigatório)..."
-                                                         required="true" requiredMessage="A observação é obrigatória."/>
+                                                         placeholder="Descreva tecnicamente o motivo do envio para N2..."
+                                                         required="true" requiredMessage="A justificativa é obrigatória."/>
 
-                                        <small class="text-600 block mt-1">Obrigatório: Explique o contexto da derivação para a área N2.</small>
+                                        <small class="text-600 block mt-1"><i class="pi pi-info-circle mr-1"></i>Obrigatório para análise do backoffice.</small>
                                         <p:message for="obsDerivacao"/>
                                     </div>
 
                                 </div>
                             </h:panelGroup>
+
                             <f:facet name="footer">
-                                <div class="flex justify-content-between gap-2 pt-2">
-                                    <p:commandButton value="Cancelar"
+                                <div class="flex justify-content-between gap-2 pt-3 border-top-1 border-100">
+
+                                    <p:commandButton value="Cancelar" icon="pi pi-times"
                                                      onclick="PF('dlgDerivarN2').hide()" type="button"
                                                      styleClass="ui-button-outlined ui-button-secondary w-6 border-round-lg font-bold"/>
 
-                                    <p:commandButton value="Confirmar Derivação" icon="pi pi-arrow-right"
+                                    <p:commandButton value="Confirmar Envio" icon="pi pi-send"
                                                      iconPos="right"
                                                      actionListener="#{fichaAtendimentoSacBean.derivarAtendimentoN2()}"
                                                      update="pnpDerivarN2 @form"
                                                      process="@this pnpDerivarN2"
-                                                     styleClass="ui-button-warning w-6 border-round-lg font-bold bg-orange-600 border-orange-600 hover:bg-orange-700"/>
+                                                     styleClass="ui-button-warning w-6 border-round-lg font-bold shadow-1"/>
                                 </div>
                             </f:facet>
 
@@ -1628,7 +1659,7 @@
                                                      styleClass="ui-button-outlined ui-button-secondary w-6 border-round-lg font-bold"/>
 
                                     <p:commandButton value="Iniciar Pausa" icon="pi pi-pause"
-                                                     actionListener="#{fichaAtendimentoSacBean.entrarEmPausaAtendimento()}"
+                                                     actionListener="#{fichaAtendimentoSacBean.iniciarPausaAtendimento()}"
                                                      update="grl msgPausa"
                                                      process="@this comboPausa"
                                                      oncomplete="if (!args.validationFailed) PF('dlgPausa').hide()"
@@ -1647,8 +1678,24 @@
 
             <ui:include src="/pages/atendimento/modalPainelPontoAtendimento.xhtml"/>
 
-
         </div>
+
+        <h:form id="formPst" prependId="false">
+
+            <p:growl id="grl" widgetVar="grl" globalOnly="true" showSummary="false" life="8000" showDetail="true">
+                <p:autoUpdate/>
+            </p:growl>
+
+            <h:outputScript   name="js/pstfone.js?v4" />
+            <script type="text/javascript">
+                //<![CDATA[
+                console.log("Iniciando scripts pst");
+                var servidor = "#{fichaAtendimentoSacBean.usuario.pontoAtendimento.pabx.url}";
+                var login = "#{fichaAtendimentoSacBean.usuario.pontoAtendimento.ramal}";
+                iniciarPst(servidor, login);
+                //]]>
+            </script>
+        </h:form>
 
         <script type="text/javascript">
             (function () {
@@ -1692,9 +1739,18 @@
         </script>
         <style>
             @keyframes pulse-blue {
-                0% { transform: scale(1); box-shadow: 0 0 0 0 rgba(59, 130, 246, 0.7); }
-                70% { transform: scale(1.1); box-shadow: 0 0 0 20px rgba(59, 130, 246, 0); }
-                100% { transform: scale(1); box-shadow: 0 0 0 0 rgba(59, 130, 246, 0); }
+                0% {
+                    transform: scale(1);
+                    box-shadow: 0 0 0 0 rgba(59, 130, 246, 0.7);
+                }
+                70% {
+                    transform: scale(1.1);
+                    box-shadow: 0 0 0 20px rgba(59, 130, 246, 0);
+                }
+                100% {
+                    transform: scale(1);
+                    box-shadow: 0 0 0 0 rgba(59, 130, 246, 0);
+                }
             }
 
             .waiting-icon {
@@ -1704,6 +1760,7 @@
                 background-color: #eff6ff; /* blue-50 */
                 color: #3b82f6; /* blue-500 */
             }
+
             .font-monospace {
                 font-family: 'Courier New', monospace;
                 letter-spacing: 1px;

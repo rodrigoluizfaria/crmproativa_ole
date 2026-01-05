@@ -1,192 +1,137 @@
 <ui:fragment xmlns="http://www.w3.org/1999/xhtml"
-	xmlns:h="http://java.sun.com/jsf/html"
-	xmlns:f="http://java.sun.com/jsf/core"
-	xmlns:o="http://omnifaces.org/ui"
-	xmlns:pe="http://primefaces.org/ui/extensions"
-	xmlns:ui="http://java.sun.com/jsf/facelets"
-	xmlns:p="http://primefaces.org/ui">
+			 xmlns:h="http://java.sun.com/jsf/html"
+			 xmlns:f="http://java.sun.com/jsf/core"
+			 xmlns:pe="http://primefaces.org/ui/extensions"
+			 xmlns:ui="http://java.sun.com/jsf/facelets"
+			 xmlns:p="http://primefaces.org/ui">
 
 	<h:form id="formAgendamento" prependId="false">
 
-		<div class="grid">
+		<div class="grid ui-fluid">
 
+			<div class="col-12 md:col-4 lg:col-3">
+				<div class="surface-card shadow-2 border-round p-4 h-full">
 
-			<div class="col-12 md:col-4 mt-5">
+					<div class="flex align-items-center mb-3 text-700">
+						<i class="pi pi-calendar mr-2 text-primary"></i>
+						<span class="font-bold">Selecione a Data</span>
+					</div>
 
-				<p:datePicker id="calendarAgendamento"	value="#{meusAtendimentosBean.dataAgendamento}" inline="true" placeholder="Data agendamento" title="Click para efetuar a pesquisa." pattern="dd/MM/yyyy"
-								showButtonBar="true">
+					<div class="flex justify-content-center">
+						<p:datePicker id="calendarAgendamento"
+									  value="#{meusAtendimentosBean.dataAgendamento}"
+									  inline="true"
+									  pattern="dd/MM/yyyy"
+									  showButtonBar="true"
+									  locale="pt">
+							<p:ajax event="dateSelect"
+									listener="#{meusAtendimentosBean.pesquisarAgendamentoData()}"
+									update="tableAgendamentos txtDataSelecionada" />
+						</p:datePicker>
+					</div>
 
-					<p:ajax event="dateSelect"	listener="#{meusAtendimentosBean.pesquisarAgendamentoData()}" update="tableAgendamentos" />
-
-				</p:datePicker>
-				
+					<div class="mt-3 text-center text-500 text-sm">
+						Clique em uma data para filtrar os atendimentos.
+					</div>
+				</div>
 			</div>
 
-			<div class="col-12 md:col-8">
+			<div class="col-12 md:col-8 lg:col-9">
+				<div class="surface-card shadow-2 border-round p-4 h-full">
 
-				<p:dataTable id="tableAgendamentos" var="agendamentos" rows="15"
-					paginator="true" paginatorPosition="bottom"
-					value="#{meusAtendimentosBean.listHistoricosAgendamentos}"
-					emptyMessage="#{msg.emptyMessage}"
-					currentPageReportTemplate="[#{msg.totalDeRegistros}: {totalRecords}]"
-					paginatorTemplate="{CurrentPageReport}  {FirstPageLink} {PreviousPageLink} {PageLinks} {NextPageLink} {LastPageLink} {Exporters}"
-					style="margin-top:25px"
-					styleClass="ui-datatable-sm ui-datatable-gridlines ui-datatable-striped">
+					<div class="flex justify-content-between align-items-center mb-3 border-bottom-1 border-100 pb-2">
+						<div>
+							<span class="text-900 font-bold text-lg"><i class="pi pi-list mr-2 text-blue-500"></i>Agendamentos</span>
+						</div>
+						<div class="surface-100 p-2 border-round text-sm">
+							<span class="text-600 mr-1">Filtro:</span>
+							<h:outputText id="txtDataSelecionada" value="#{meusAtendimentosBean.dataAgendamento}" styleClass="font-bold text-900">
+								<f:convertDateTime pattern="dd/MM/yyyy" />
+							</h:outputText>
+						</div>
+					</div>
 
-					<f:facet name="header">
-					
-				 Agendamentos | Data do Filtro:	
-				 	<p:outputLabel	value="#{meusAtendimentosBean.dataAgendamento}"	id="txtDataAgendamento">
+					<p:dataTable id="tableAgendamentos" var="agendamentos"
+								 value="#{meusAtendimentosBean.listHistoricosAgendamentos}"
+								 rows="10" paginator="true" paginatorPosition="bottom"
+								 emptyMessage="#{msg.emptyMessage}"
+								 rowKey="#{agendamentos[0]}"
+								 stripedRows="true" showGridlines="true" reflow="true" size="small"
+								 paginatorTemplate="{CurrentPageReport} {FirstPageLink} {PreviousPageLink} {PageLinks} {NextPageLink} {LastPageLink}"
+								 currentPageReportTemplate="{startRecord}-{endRecord} de {totalRecords}">
 
-							<f:convertDateTime pattern="dd/MM/yyyy" />
+						<p:column headerText="Data" width="120" styleClass="text-center">
+							<span class="p-column-title">Data:</span>
+							<h:outputText value="#{agendamentos[3]}">
+								<f:convertDateTime pattern="dd/MM/yyyy HH:mm" />
+							</h:outputText>
+						</p:column>
 
-						</p:outputLabel>
-						
-					</f:facet>
+						<p:column headerText="Campanha">
+							<span class="p-column-title">Campanha:</span>
+							<h:outputText value="#{agendamentos[8]}" styleClass="font-medium"/>
+						</p:column>
 
-					<p:column headerText="Data:" width="20%">
+						<p:column headerText="Cliente">
+							<span class="p-column-title">Nome:</span>
+							<h:outputText value="#{agendamentos[4]}" />
+						</p:column>
 
-						<h:outputLabel value="#{agendamentos[3]}">
+						<p:column headerText="CPF" width="120">
+							<span class="p-column-title">CPF:</span>
+							<h:outputText value="#{agendamentos[7]}" />
+						</p:column>
 
-							<f:convertDateTime pattern="dd/MM/yyyy HH:mm:ss" />
+						<p:column headerText="Status" width="120" styleClass="text-center">
+							<span class="p-column-title">Status:</span>
+							<span class="text-sm bg-gray-100 p-1 border-round font-bold text-700">#{agendamentos[5]}</span>
+						</p:column>
 
-						</h:outputLabel>
+						<p:column width="100" styleClass="text-center">
 
-					</p:column>
+							<p:commandButton icon="pi pi-eye"
+											 title="Visualizar"
+											 styleClass="rounded-button ui-button-outlined ui-button-secondary mr-1"
+											 onclick="PF('dlgVisualizarAtendimento').show();"
+											 update=":formVisualizar"
+											 action="#{meusAtendimentosBean.visualizarAtendimento(agendamentos[1])}" />
 
-					<p:column headerText="Campanha:" width="20%">
+							<p:commandButton icon="pi pi-clock"
+											 title="Antecipar / Iniciar Agora"
+											 styleClass="rounded-button ui-button-outlined ui-button-success"
+											 oncomplete="PF('dlgConfirmarAntecipacao').show();"
+											 global="false" update="@form">
+								<f:setPropertyActionListener value="#{agendamentos[0]}" target="#{meusAtendimentosBean.idHistorico}" />
+								<f:setPropertyActionListener value="#{agendamentos[1]}" target="#{meusAtendimentosBean.idAtendimento}" />
+							</p:commandButton>
 
-						<h:outputLabel value="#{agendamentos[8]}" />
+						</p:column>
 
-					</p:column>
-
-					<p:column headerText="Nome:" width="20%">
-
-						<h:outputLabel value="#{agendamentos[4]}" />
-
-					</p:column>
-
-					<p:column headerText="CPF:" width="10%">
-
-						<h:outputLabel value="#{agendamentos[7]}" />
-
-					</p:column>
-
-					<p:column headerText="Status:" width="20%">
-
-						<h:outputLabel value="#{agendamentos[5]}" />
-
-					</p:column>
-
-					<p:column width="10%" style="text-align: center;">
-					
-					<p:commandButton icon="fa fa-list-alt mr-2"	title="Visualizar Atendimento"	styleClass="rounded-button ui-button-flat"	onclick="PF('dlgVisualizarAtendimento').show();"
-							update="formVisualizar"	action="#{meusAtendimentosBean.visualizarAtendimento(agendamentos[1])}" />
-
-									
-									
-						<p:commandButton styleClass="rounded-button ui-button-flat" icon="pi pi-chevron-circle-right"	oncomplete="PF('dlgConfirmarAntecipacao').show();" global="false" title="Antecipar Atendimento" update="@form">
-
-							<f:setPropertyActionListener value="#{agendamentos[0]}"	target="#{meusAtendimentosBean.idHistorico}" />
-
-							<f:setPropertyActionListener value="#{agendamentos[1]}"	target="#{meusAtendimentosBean.idAtendimento}" />
-
-						</p:commandButton>	
-
-				</p:column>
-
-				</p:dataTable>
-
-		<p:separator></p:separator>
-						
-			
-			
-
-			<!-- 	<p:dataTable id="tablePendentes" var="pendentes" rows="15"
-					paginator="true" paginatorPosition="bottom"
-					value="#{meusAtendimentosBean.listAtendimentosPendentes}"
-					emptyMessage="#{msg.emptyMessage}"
-					currentPageReportTemplate="[#{msg.totalDeRegistros}: {totalRecords}]"
-					paginatorTemplate="{CurrentPageReport}  {FirstPageLink} {PreviousPageLink} {PageLinks} {NextPageLink} {LastPageLink} {Exporters}"
-					style="margin-top:25px"
-					styleClass="ui-datatable-sm ui-datatable-gridlines ui-datatable-striped">
-
-					<f:facet name="header">
-					
-				Atendimentos pendentes
-				 	
-						
-					</f:facet>
-
-					<p:column headerText="Data:" width="20%">
-
-						<h:outputLabel value="#{pendentes[4]}">
-							
-
-						</h:outputLabel>
-
-					</p:column>
-
-					<p:column headerText="Campanha:" width="20%">
-
-						<h:outputLabel value="#{pendentes[1]}" />
-
-					</p:column>
-
-					<p:column headerText="Nome:" width="20%">
-
-						<h:outputLabel value="#{pendentes[2]}" />
-
-					</p:column>
-
-					<p:column headerText="CPF:" width="10%">
-
-						<h:outputLabel value="#{pendentes[3]}" />
-
-					</p:column>
-				
-
-					<p:column width="10%">
-					
-					<p:commandButton icon="fa fa-list-alt p-mr-2"	title="Visualizar Atendimento"	styleClass="rounded-button text-button"	onclick="PF('dlgVisualizarAtendimento').show();"
-							update="formVisualizar"	action="#{meusAtendimentosBean.visualizarAtendimento(pendentes[0])}" />
-									
-						<p:commandButton styleClass="rounded-button text-button" icon="pi pi-chevron-circle-right"	oncomplete="PF('dlgConfirmarAntecipacaoPendente').show();" global="false" title="Iniciar Atendimento Pendente" update="@form">
-
-							
-							<f:setPropertyActionListener value="#{pendentes[0]}"	target="#{meusAtendimentosBean.idAtendimento}" />
-
-						</p:commandButton>	
-
-				</p:column>
-
-				</p:dataTable> -->
-
-		
-	</div>
-
-			<pe:tooltip global="true" myPosition="left center"	atPosition="right center" styleClass="qtip-default" />
-
+					</p:dataTable>
+				</div>
+			</div>
 		</div>
-		
-		<p:confirmDialog id="dlgConfirmarAntecipacao" responsive="true" widgetVar="dlgConfirmarAntecipacao" appendTo="@(body)"	message="Antecipar Atendimento?" header="Confirmar">
 
-			<p:commandButton id="simConfirma" value="Sim" icon="pi pi-check" action="#{meusAtendimentosBean.adiantarFichaAtendimento()}" oncomplete="PF('glgConfirmarAntecipacao').hide();" immediate="true" styleClass="ui-confirmdialog-yes"/>
-	
-			<p:commandButton id="naoConfirma" type="button" icon="pi pi-times"	value="Não" styleClass="ui-confirmdialog-no" onclick="PF('dlgConfirmarAntecipacao').hide();" />
+		<pe:tooltip global="true" myPosition="left center" atPosition="right center" />
 
+		<p:confirmDialog id="dlgConfirmarAntecipacao" widgetVar="dlgConfirmarAntecipacao"
+						 responsive="true" appendTo="@(body)"
+						 header="Iniciar Atendimento"
+						 message="Deseja antecipar e iniciar este atendimento agora?"
+						 icon="pi pi-question-circle">
+
+			<p:commandButton value="Sim, Iniciar" icon="pi pi-check"
+							 action="#{meusAtendimentosBean.adiantarFichaAtendimento()}"
+							 oncomplete="PF('dlgConfirmarAntecipacao').hide();"
+							 immediate="true"
+							 styleClass="ui-confirmdialog-yes ui-button-primary font-bold"/>
+
+			<p:commandButton value="Não" icon="pi pi-times"
+							 type="button"
+							 onclick="PF('dlgConfirmarAntecipacao').hide();"
+							 styleClass="ui-confirmdialog-no ui-button-secondary ui-button-flat"/>
 		</p:confirmDialog>
-		
-		
-		<!-- 	<p:confirmDialog id="dlgConfirmarAntecipacaoPendente" responsive="true" widgetVar="dlgConfirmarAntecipacaoPendente" appendTo="@(body)"	message="Iniciar Atendimento Pendente?" header="Confirmar">
 
-			<p:commandButton id="simConfirmaPendente" value="Sim" icon="pi pi-check" action="#{meusAtendimentosBean.adiantarFichaAtendimentoNaoTrabalado()}" oncomplete="PF('dlgConfirmarAntecipacaoPendente').hide();" immediate="true"
-							styleClass="ui-confirmdialog-yes"/>
-	
-			<p:commandButton id="naoConfirmaPendente" type="button" icon="pi pi-times"	onclick="PF('dlgConfirmarAntecipacaoPendente').hide();" value="Não" />
-
-		</p:confirmDialog>
- -->
 	</h:form>
 
 </ui:fragment>

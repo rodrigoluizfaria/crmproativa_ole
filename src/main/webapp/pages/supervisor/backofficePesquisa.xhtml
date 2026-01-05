@@ -1,371 +1,271 @@
 <ui:fragment xmlns="http://www.w3.org/1999/xhtml"
-	xmlns:h="http://java.sun.com/jsf/html"
-	xmlns:f="http://java.sun.com/jsf/core"
-	xmlns:o="http://omnifaces.org/ui"
-	xmlns:pe="http://primefaces.org/ui/extensions"
-	xmlns:ui="http://java.sun.com/jsf/facelets"
-	xmlns:matriz="http://java.sun.com/jsf/composite/componentes"
-	xmlns:p="http://primefaces.org/ui">
+             xmlns:h="http://java.sun.com/jsf/html"
+             xmlns:f="http://java.sun.com/jsf/core"
+             xmlns:pe="http://primefaces.org/ui/extensions"
+             xmlns:ui="http://java.sun.com/jsf/facelets"
+             xmlns:matriz="http://java.sun.com/jsf/composite/componentes"
+             xmlns:p="http://primefaces.org/ui">
+
+    <h:form id="formBackofficePesquisa" prependId="false">
+
+        <div class="ui-fluid">
+
+      <!--      <div class="flex align-items-center mb-4 text-700">
+                <i class="pi pi-filter mr-2"></i>
+                <span class="font-bold text-lg">Critérios de Supervisão</span>
+            </div>-->
+
+            <div class="grid formgrid">
+
+        <!--        <h:panelGroup layout="block" styleClass="field col-12 md:col-3" rendered="#{sessionScope['usuario'].empresa.possuiFiliais}">
+                    <p:outputLabel value="Empresa" styleClass="font-bold mb-2 block"/>
+                    <matriz:selectEmpresa id="cmpEmpresa" managedBean="#{supervisorBackofficeBean}"
+                                          value="#{supervisorBackofficeBean.empresa}" ajax="true" update="@form"
+                                          filter="true" exibirSelecione="true" selecioneItemLabel="Selecione" required="true"/>
+                </h:panelGroup>
+
+                <div class="field col-12 md:col-3">
+                    <p:outputLabel value="Campanha" for="selectCampanhaPesquisa" styleClass="font-bold mb-2 block"/>
+                    <p:selectOneMenu id="selectCampanhaPesquisa" value="#{supervisorBackofficeBean.campanhaPesquisa}"
+                                     filter="true" filterMatchMode="contains">
+                        <f:selectItem itemLabel="Todas" itemValue="" noSelectionOption="true"/>
+                        <f:selectItems value="#{supervisorBackofficeBean.listCampanha}" var="campanha" itemLabel="#{campanha.descricao}" itemValue="#{campanha.id}" />
+                    </p:selectOneMenu>
+                </div>
+-->
+           <!--     <div class="field col-12 md:col-3">
+                    <p:outputLabel value="Equipe" for="selectEquipe" styleClass="font-bold mb-2 block"/>
+                    <p:selectCheckboxMenu id="selectEquipe" label="Selecione..." multiple="true" filter="true" filterMatchMode="contains"
+                                          value="#{supervisorBackofficeBean.listIdsEquipes}" updateLabel="true">
+                        <f:selectItems value="#{supervisorBackofficeBean.listEquipes}" var="equipe" itemLabel="#{equipe.nome}" itemValue="#{equipe.id}" />
+                        <p:ajax process="@this" listener="#{supervisorBackofficeBean.onChangeEquipe()}" update="pnpAgent" global="false"/>
+                        <p:ajax process="@this" event="toggleSelect" listener="#{supervisorBackofficeBean.onChangeEquipe()}" update="pnpAgent" global="false"/>
+                    </p:selectCheckboxMenu>
+                </div>-->
+                <div class="field col-12 md:col-3">
+                    <p:outputLabel value="Protocolo" for="txtProtocoloPesquisa" styleClass="font-bold mb-2 block"/>
+                    <p:inputText id="txtProtocoloPesquisa" value="#{supervisorBackofficeBean.protocolo}" />
+                </div>
+
+              <!--  <h:panelGroup id="pnpAgent" styleClass="field col-12 md:col-3" layout="block">
+                    <p:outputLabel value="Operador" for="selectOperador" styleClass="font-bold mb-2 block"/>
+                    <p:selectCheckboxMenu id="selectOperador" label="Selecione..." multiple="true" filter="true" filterMatchMode="contains" styleClass="shadow-1"
+                                          value="#{supervisorBackofficeBean.listAgentes}" updateLabel="true">
+                        <f:selectItems value="#{supervisorBackofficeBean.listOperador}" var="operador" itemLabel="#{operador.nome}" itemValue="#{operador.id}" />
+                    </p:selectCheckboxMenu>
+                </h:panelGroup>-->
+
+                <div class="field col-12 md:col-3">
+                    <p:outputLabel value="CPF" for="txtCpfPesquisa" styleClass="font-bold mb-2 block"/>
+                    <div class="ui-inputgroup">
+                        <span class="ui-inputgroup-addon"><i class="pi pi-id-card"></i></span>
+                        <p:inputText id="txtCpfPesquisa" value="#{supervisorBackofficeBean.cpf}" placeholder="Apenas números"/>
+                    </div>
+                </div>
+
+
+
+           <!--     <div class="field col-12 md:col-3">
+                    <p:outputLabel value="Status" for="selectStatus" styleClass="font-bold mb-2 block"/>
+                    <p:selectCheckboxMenu id="selectStatus" label="Selecione..." multiple="true" filter="true" filterMatchMode="contains"
+                                          value="#{supervisorBackofficeBean.listIdsStatusAtendimentos}" updateLabel="true">
+                        <f:selectItems value="#{supervisorBackofficeBean.listStatusAtendimento}" var="status" itemLabel="#{status.descricao}" itemValue="#{status.id}" />
+                    </p:selectCheckboxMenu>
+                </div>-->
+
+                <div class="field col-12 md:col-3">
+                    <p:outputLabel value="Motivo" for="selectMotivo" styleClass="font-bold mb-2 block"/>
+                    <p:selectOneMenu id="selectMotivo" value="#{supervisorBackofficeBean.motivoAtendimento}" filter="true" filterMatchMode="contains">
+                        <f:selectItem itemLabel="Todos" itemValue="" noSelectionOption="true"/>
+                        <f:selectItems value="#{supervisorBackofficeBean.listMotivo}" var="m" itemLabel="#{m.descricao}" itemValue="#{m.id}"/>
+                        <p:ajax process="@this" listener="#{supervisorBackofficeBean.trocarMotivo()}" update="selectSubMotivo"/>
+                    </p:selectOneMenu>
+                </div>
+
+                <div class="field col-12 md:col-3">
+                    <p:outputLabel value="Submotivo" for="selectSubMotivo" styleClass="font-bold mb-2 block"/>
+                    <p:selectOneMenu id="selectSubMotivo" value="#{supervisorBackofficeBean.subMotivoAtendimento}" filter="true" filterMatchMode="contains">
+                        <f:selectItem itemLabel="Todos" itemValue="" noSelectionOption="true"/>
+                        <f:selectItems value="#{supervisorBackofficeBean.listSubMotivos}" var="s" itemLabel="#{s.descricao}" itemValue="#{s.id}"/>
+                    </p:selectOneMenu>
+                </div>
+
+          <!--      <div class="field col-12 md:col-3">
+                    <p:outputLabel value="Produto" for="selectProduto" styleClass="font-bold mb-2 block"/>
+                    <p:selectOneMenu id="selectProduto" value="#{supervisorBackofficeBean.produto}" filter="true" filterMatchMode="contains">
+                        <f:selectItem itemLabel="Todos" itemValue="" noSelectionOption="true"/>
+                        <f:selectItems value="#{supervisorBackofficeBean.listProdutos}" var="produto" itemLabel="#{produto.descricao}" itemValue="#{produto.id}" />
+                    </p:selectOneMenu>
+                </div>
+-->
+
+
 
-	<h:form id="formBackofficePesquisa" prependId="false">
 
-		<div class="grid col-12 tab-padding">
 
-			<div class="col-12">
-			
-				<p:spacer height="20" />
-				
-			</div>
-			
-			<h:panelGroup   layout="block" rendered="#{sessionScope['usuario'].empresa.possuiFiliais}">
-	
-				<matriz:selectEmpresa id="cmpEmpresa" managedBean="#{supervisorBackofficeBean}"	value="#{supervisorBackofficeBean.empresa}" ajax="true" update="@form"	filter="true" exibirSelecione="true"
-								selecioneItemLabel="Selecione" required="true" style="col-12 md:col-3"  />
-			</h:panelGroup>
-			
-			<div class="field col-12 md:col-2">
-
-				<p:outputLabel value="Campanha:" />
-
-				<p:selectOneMenu id="selectCampanhaPesquisa"	value="#{supervisorBackofficeBean.campanhaPesquisa}"  filter="true" filterMatchMode="contains" autoWidth="false">
-
-					<f:selectItem itemLabel="Selecione" itemValue="" />
-
-					<f:selectItems value="#{supervisorBackofficeBean.listCampanha}"	var="campanha" itemLabel="#{campanha.descricao}" itemValue="#{campanha.id}" />
-
-				</p:selectOneMenu>
-
-			</div>
-			
-			<div class="field col-12 md:col-2">
-
-				<p:outputLabel value="Equipe:" />
-<!-- 
-				<p:selectOneMenu id="selectEquipe"	value="#{supervisorBackofficeBean.equipe}"  filter="true" filterMatchMode="contains" autoWidth="false">
-
-					<f:selectItem itemLabel="Selecione" itemValue="" />
-
-					<f:selectItems value="#{supervisorBackofficeBean.listEquipes}"	var="equipe" itemLabel="#{equipe.nome}" itemValue="#{equipe.id}" />
-					<p:ajax listener="#{supervisorBackofficeBean.onChangeEquipe(supervisorBackofficeBean.equipe)}" update="pnpAgent" global="false"/>
-
-				</p:selectOneMenu> -->
-				
-				<p:selectCheckboxMenu id="selectEquipe" emptyLabel="Selecione" label="Selecione" multiple="true"  showHeader="true" dynamic="true"	value="#{supervisorBackofficeBean.listIdsEquipes}"  filter="true" filterMatchMode="contains" autoWidth="false">
-
-					<f:selectItems value="#{supervisorBackofficeBean.listEquipes}"	var="equipe" itemLabel="#{equipe.nome}" itemValue="#{equipe.id}" />
-					<p:ajax process="@this" listener="#{supervisorBackofficeBean.onChangeEquipe()}" update="pnpAgent" global="false"/>
-					<p:ajax process="@this" event="toggleSelect" listener="#{supervisorBackofficeBean.onChangeEquipe()}" update="pnpAgent" global="false"/>
-					<p:ajax process="@this" event="itemUnselect" listener="#{supervisorBackofficeBean.onChangeEquipe()}" update="pnpAgent" global="false"/>
-					
-				</p:selectCheckboxMenu>
-
-			</div>
-			
-			<h:panelGroup styleClass="field col-12 md:col-2" layout="block" id="pnpAgent">
-
-				<p:outputLabel value="Operador:" />
-				
-				<!--   (<p:selectBooleanCheckbox  itemLabel="Exibir inativos" style="margin-left: 10px; height:auto; width:auto; padding-top: 3px" />) -->
-
-			<!-- 	<p:selectOneMenu id="selectOperador"	value="#{supervisorBackofficeBean.operador}" filter="true" filterMatchMode="contains" autoWidth="false" >
-
-					<f:selectItem itemLabel="Selecione" itemValue="" />
-
-					<f:selectItems value="#{supervisorBackofficeBean.listOperador}"	var="operador" itemLabel="#{operador.nome}" itemValue="#{operador.id}"  />
-
-				</p:selectOneMenu> -->
-				
-				<p:selectCheckboxMenu id="selectOperador"	label="Selecione"	multiple="true" value="#{supervisorBackofficeBean.listAgentes}" filter="true" filterMatchMode="contains" autoWidth="false" >
-				
-					<f:selectItems value="#{supervisorBackofficeBean.listOperador}"	var="operador" itemLabel="#{operador.nome}" itemValue="#{operador.id}"  />
-
-				</p:selectCheckboxMenu>
-
-		
-	</h:panelGroup>
-			
-			<div class="field col-12 md:col-2">
-
-				<p:outputLabel value="Status: " />
-
-		<!--		<p:selectOneMenu id="selectStatus"	value="#{supervisorBackofficeBean.statusAtendimento}"  filter="true" filterMatchMode="contains" autoWidth="false">
-
-					<f:selectItem itemLabel="Selecione" itemValue="" />
-
-					<f:selectItems value="#{supervisorBackofficeBean.listStatusAtendimento}" var="status" itemLabel="#{status.descricao}" itemValue="#{status.id}" />
-
-				</p:selectOneMenu>-->
-
-
-				<p:selectCheckboxMenu id="selectStatus" emptyLabel="Selecione" label="Selecione" multiple="true"  	value="#{supervisorBackofficeBean.listIdsStatusAtendimentos}"  filter="true" filterMatchMode="contains" autoWidth="false">
-
-					<f:selectItems value="#{supervisorBackofficeBean.listStatusAtendimento}"	var="status" itemLabel="#{status.descricao}" itemValue="#{status.id}" />
-
-				</p:selectCheckboxMenu>
-
-
-			</div>
-			
-			<div class="field col-12 md:col-2">
-
-				<p:outputLabel value="Produto: " />
-
-				<p:selectOneMenu id="selectProduto"	value="#{supervisorBackofficeBean.produto}"  filter="true" filterMatchMode="contains" autoWidth="false">
-
-					<f:selectItem itemLabel="Selecione" itemValue="" />
-
-					<f:selectItems value="#{supervisorBackofficeBean.listProdutos}" var="produto" itemLabel="#{produto.descricao}" itemValue="#{produto.id}" />
-
-				</p:selectOneMenu>
-
-			</div>
-
-			<div class="field col-12 md:col-2">
-
-				<p:outputLabel value="CPF:" />
-
-				<p:inputText id="txtCpfPesquisa" value="#{supervisorBackofficeBean.cpf}" />
-
-			</div>
-
-			<div class="field col-12 md:col-2">
-
-				<p:outputLabel value="Nome:" />
-
-				<p:inputText id="txtNomePesquisa"	value="#{supervisorBackofficeBean.nome}" />
-
-			</div>
-
-			<div class="field col-12 md:col-2">
-
-				<p:outputLabel value="Adesão:" />
-
-				<p:inputText id="txtAdesaoPesquisa" value="#{supervisorBackofficeBean.adesao}" />
-
-			</div>
-			
-			<div class="field col-12 md:col-2">
-
-				<p:outputLabel value="Tiket:" />
-
-				<p:inputText id="txtTiketPesquisa" value="#{supervisorBackofficeBean.tiket}" />
-
-			</div>
-			
-			<div class="field col-12 md:col-2">
-
-				<p:outputLabel value="Protocolo:" />
-
-				<p:inputText id="txtProtocoloPesquisa" value="#{supervisorBackofficeBean.protocolo}" />
-
-			</div>
-
-			<div class="field col-12 md:col-2">
-
-				<p:outputLabel value="Data inicio:" />
-
-				<p:datePicker id="calendarDataInicioPesquisa" value="#{supervisorBackofficeBean.dataInicio}" showButtonBar="true" showIcon="true" monthNavigator="true" yearNavigator="true" showWeek="true"  pattern="dd/MM/yyyy" />
-
-			</div>
-
-			<div class="field col-12 md:col-2">
-
-				<p:outputLabel value="Data fim:" />
-
-				<p:datePicker id="calendarDataFimPesquisa"	value="#{supervisorBackofficeBean.dataFim}" showButtonBar="true" monthNavigator="true" yearNavigator="true" showWeek="true"  showIcon="true"  pattern="dd/MM/yyyy" />
-
-			</div>
-
-			<div class="field col-12 ">
-
-				<p:outputLabel value="&#160;&#160;" id="txtPesquisaEspaco" />
-
-				<div>
-				
-					<p:commandButton value="Pesquisar" icon="pi pi-search" styleClass="ui-button-raised mr-3" actionListener="#{supervisorBackofficeBean.pesquisarAtendimentosCount()}" update="@form" />
-				
-					<p:menuButton  style="width:auto" id="btnExportarPesquisa"  value="#{msg.exportar}" styleClass="ui-button-secondary ui-button-raised" disabled="#{supervisorBackofficeBean.listModel.rowCount eq 0}"	 rendered="#{sessionScope['usuario'].permissaoExportar}">
-
-           				 <p:menuitem value="Exportar simples"  icon="pi pi-download" ajax="false" disabled="#{supervisorBackofficeBean.listModel.rowCount eq 0}"  >
-           					 <p:fileDownload value="#{supervisorBackofficeBean.fileSimples}"  />
-           				 </p:menuitem> 
-
-					 	<p:menuitem value="Exportar completo" ajax="false" icon="fa fa-download"  onclick="PF('progressAjax').start();PF('statusDialogBack').show();" update="statusDialogBack" global="false">
-							
-							<p:fileDownload value="#{supervisorBackofficeBean.file}"  />
-						
-						</p:menuitem>
-						
-					 	<p:menuitem value="Exportar Manifesto" ajax="false" icon="fa fa-download"  onclick="PF('progressAjax').start();PF('statusDialogBack').show();" update="statusDialogBack" global="false">
-							
-							<p:fileDownload value="#{supervisorBackofficeBean.fileManifesto}"  />
-						
-						</p:menuitem>
-
-					</p:menuButton>
-					
-				</div>
-
-			</div>
-			
-			<style type="text/css">
-				.ui-datatable-header {
-				height: 50px
-			}
-			</style>
-
-
-			<div class="mt-4 ">
-
-				<p:dataTable id="tableAtendimentos" var="atendimento" rows="10"	paginator="true" paginatorPosition="bottom"	value="#{supervisorBackofficeBean.listModel}"  reflow="true"
-					emptyMessage="#{supervisorBackofficeBean.listModel eq null? '' : msg.emptyMessage}"	currentPageReportTemplate="[#{msg.totalDeRegistros}: {totalRecords}]"
-					paginatorTemplate="{CurrentPageReport}  {FirstPageLink} {PreviousPageLink} {PageLinks} {NextPageLink} {LastPageLink} {Exporters}" styleClass="ui-datatable-sm ui-datatable-striped  ui-datatable-gridlines" style="zoom: 90%;">
-
-					<p:ajax event="page" global="false"  onstart="PF('blockUIWidget2').block()" oncomplete="PF('blockUIWidget2').unblock()" />
-
-					<p:ajax event="sort" global="false"  onstart="PF('blockUIWidget2').block()" oncomplete="PF('blockUIWidget2').unblock()"/>
-
-					<f:facet name="header">
-        
-<!--  			<div class="  ui-toolbar-group-right">
-			
-			<p:commandButton id="toggler" type="button" value="Colunas" 	 icon="pi pi-align-justify" />
-						<p:columnToggler datasource="tableAtendimentos" trigger="toggler" />
-						
-			
-			</div> -->
-        				
-					</f:facet>
-
-					<p:column headerText="Data" sortBy="#{atendimento[5]}" width="10%" >
-
-						<h:outputLabel value="#{atendimento[5]}">
-
-							<f:convertDateTime pattern="dd/MM/yyyy HH:mm:ss" />
-
-						</h:outputLabel>
-							<f:facet name="footer" >
-						
-						<h:outputLabel value="TOTAL: " >
-								
-							</h:outputLabel>
-							</f:facet>
-
-					</p:column>
-
-					<p:column headerText="Campanha" sortBy="#{atendimento[1]}"	width="12%">
-
-						<h:outputLabel value="#{atendimento[1]}" />
-
-					</p:column>
-
-					<p:column headerText="Cliente" sortBy="#{atendimento[2]}" width="15%">
-
-						<h:outputLabel value="#{atendimento[2]}" />
-
-					</p:column>
-
-					<p:column headerText="CPF" sortBy="#{atendimento[3]}" width="9%">
-
-						<h:outputLabel value="#{atendimento[3]}" />
-
-					</p:column>
-					
-					
-					<p:column headerText="Agente" sortBy="#{atendimento[6]}" width="10%">
-
-						<h:outputLabel value="#{atendimento[6]}" />
-
-					</p:column>
-
-					<p:column headerText="Adesão" sortBy="#{atendimento[7]}" width="5%">
-
-						<h:outputLabel value="#{atendimento[7]}" />
-
-					</p:column>
-
-			<!-- 		<p:column headerText="Protocolo" sortBy="#{atendimento[11]}" width="10%">
-
-						<h:outputLabel value="#{atendimento[11]}" />
-
-					</p:column> -->
-
-					<p:column headerText="Status" sortBy="#{atendimento[4]}" width="10%">
-
-						<h:outputLabel value="#{atendimento[4]}" />
-
-					</p:column>
-					
-					<p:column headerText="Produto" sortBy="#{atendimento[19]}" width="10%">
-
-						<h:outputLabel value="#{atendimento[19]}" />
-
-					</p:column>
-					
-					<p:column headerText="Tempo pós Atn" sortBy="#{atendimento[20]}" width="8%">
-
-						<h:outputLabel value="#{atendimento[20]} #{atendimento[20] eq null ? '':'s'}"  />
-
-					</p:column>
-
-		<!-- 		<p:column headerText="Qtdade Parcelas" sortBy="#{atendimento[8]}" width="5%">
-
-						<h:outputLabel value="#{atendimento[8]}" />
-
-					</p:column>
-
-					<p:column headerText="Valor Parcelas" sortBy="#{atendimento[9]}" width="5%">
-
-						<h:outputLabel value="#{atendimento[9]}" >
-							<f:convertNumber type="currency" locale="pt-br" currencySymbol="R$"/>
-						</h:outputLabel>
-
-					</p:column> -->
-
-					<p:column headerText="Valor Liberado" sortBy="#{atendimento[10]}"	width="5%" >
-
-						<h:outputLabel value="#{atendimento[10]}" >
-							<f:convertNumber type="currency" locale="pt-br" currencySymbol="R$"/>
-						</h:outputLabel>
-						
-
-						<f:facet name="footer" >
-						
-            					<h:outputLabel value="#{supervisorBackofficeBean.total}" >
-									<f:convertNumber type="currency" locale="pt-br" currencySymbol="R$"/>
-							</h:outputLabel>
-      					  </f:facet>
-
-					</p:column>
-
-					<p:column width="7%" exportable="false" toggleable="false">
-
-						<p:commandButton styleClass="rounded-button ui-button-flat" icon="fa fa-list-alt" onclick="PF('dlgVisualizarAtendimento').show()" update=":formVisualizar" title="Visualizar" immediate="true" action="#{supervisorBackofficeBean.visualizarAtendimento(atendimento[0])}"/>
-					
-						<p:commandButton styleClass="rounded-button ui-button-flat" icon="fa fa-fw fa-edit" onclick="topFunction();PF('dlgVisualizarEditar').show();" update="editarAtendimento:formEditarAtendimentor" title="Editar"  immediate="true"  action="#{supervisorBackofficeBean.visualizarAtendimento(atendimento[0])}"/>
-						
-						<p:commandButton styleClass="rounded-button ui-button-flat" icon="fa fa-headphones"  update="dlgAudio" title="Visualizar áudios" immediate="true"  action="#{supervisorBackofficeBean.onConciliar(atendimento[0],atendimento[2])}"/>
-						
-				</p:column>
-				
-
-				</p:dataTable>
-				
-		
-        
-        <pe:blockUI target="tableAtendimentos" content="blockUIContent" widgetVar="blockUIWidget2"/>
-
-			</div>
-
-		</div>
-	
-	<h:panelGrid id="blockUIContent" columns="2" style="display:none;table-layout:auto;background-color:#fff">
-  		
-  			<i class="pi pi-spin pi-spinner" style="font-size: 3rem" />
-  		  <h:outputText value="Aguarde, processando....." style="white-space: nowrap;"/>
-	</h:panelGrid>
-
-	</h:form>
-	
+          <!--      <div class="field col-12 md:col-2">
+                    <p:outputLabel value="Adesão" for="txtAdesaoPesquisa" styleClass="font-bold mb-2 block"/>
+                    <p:inputText id="txtAdesaoPesquisa" value="#{supervisorBackofficeBean.adesao}" />
+                </div>
+                <div class="field col-12 md:col-2">
+                    <p:outputLabel value="Ticket" for="txtTiketPesquisa" styleClass="font-bold mb-2 block"/>
+                    <p:inputText id="txtTiketPesquisa" value="#{supervisorBaFPrckofficeBean.tiket}" />
+                </div>-->
+
+                <div class="field col-12 md:col-3">
+                    <p:outputLabel value="Data Início" for="calendarDataInicioPesquisa" styleClass="font-bold mb-2 block"/>
+                    <p:datePicker id="calendarDataInicioPesquisa" value="#{supervisorBackofficeBean.dataInicio}"
+                                  showIcon="true" pattern="dd/MM/yyyy" locale="pt_BR" placeholder="dd/mm/aaaa"/>
+                </div>
+
+                <div class="field col-12 md:col-3">
+                    <p:outputLabel value="Data Fim" for="calendarDataFimPesquisa" styleClass="font-bold mb-2 block"/>
+                    <p:datePicker id="calendarDataFimPesquisa" value="#{supervisorBackofficeBean.dataFim}"
+                                  showIcon="true" pattern="dd/MM/yyyy" locale="pt_BR" placeholder="dd/mm/aaaa"/>
+                </div>
+
+                <div class="field col-12 md:col-6 flex align-items-end justify-content-end gap-2">
+                    <p:commandButton value="Pesquisar" icon="pi pi-search"
+                                     actionListener="#{supervisorBackofficeBean.pesquisarAtendimentos()}"
+                                     update="@form"
+                                     styleClass="ui-button-primary font-bold px-4 shadow-1"/>
+
+                    <p:menuButton value="Exportar" icon="pi pi-download"
+                                  styleClass="ui-button-outlined ui-button-success font-bold"
+                                  rendered="#{sessionScope['usuario'].permissaoExportar}"
+                                  disabled="#{supervisorBackofficeBean.listModel.rowCount eq 0}">
+
+                        <p:menuitem value="Simples (XLS)" icon="pi pi-file-excel" ajax="false">
+                            <p:fileDownload value="#{supervisorBackofficeBean.fileSimples}" />
+                        </p:menuitem>
+
+                        <p:menuitem value="Completo (XLS)" icon="pi pi-file-excel" ajax="false"
+                                    onclick="PF('progressAjax').start();PF('statusDialogBack').show();"
+                                    update="statusDialogBack">
+                            <p:fileDownload value="#{supervisorBackofficeBean.file}" />
+                        </p:menuitem>
+
+                        <p:menuitem value="Manifesto" icon="pi pi-file-o" ajax="false"
+                                    onclick="PF('progressAjax').start();PF('statusDialogBack').show();"
+                                    update="statusDialogBack">
+                            <p:fileDownload value="#{supervisorBackofficeBean.fileManifesto}" />
+                        </p:menuitem>
+                    </p:menuButton>
+                </div>
+
+            </div>
+
+            <p:divider styleClass="my-3"/>
+
+            <div class="mt-2">
+
+                <p:dataTable id="tableAtendimentos" var="atendimento"
+                             value="#{supervisorBackofficeBean.listAtendimentos}"
+                             rows="10" paginator="true" paginatorPosition="bottom"
+                             emptyMessage="#{supervisorBackofficeBean.listModel eq null ? '' : msg.emptyMessage}"
+                             stripedRows="true" showGridlines="true" reflow="true" size="small"
+                             rowKey="#{atendimento[0]}"
+                             paginatorTemplate="{CurrentPageReport} {FirstPageLink} {PreviousPageLink} {PageLinks} {NextPageLink} {LastPageLink} {Exporters}"
+                             currentPageReportTemplate="{startRecord}-{endRecord} de {totalRecords}">
+
+                    <p:ajax event="page" global="false" onstart="PF('blockUIWidget2').block()" oncomplete="PF('blockUIWidget2').unblock()" />
+                    <p:ajax event="sort" global="false" onstart="PF('blockUIWidget2').block()" oncomplete="PF('blockUIWidget2').unblock()"/>
+
+                    <p:column headerText="Data" sortBy="#{atendimento[5]}" width="110" styleClass="text-center">
+                        <h:outputText value="#{atendimento[5]}">
+                            <f:convertDateTime pattern="dd/MM/yyyy HH:mm" />
+                        </h:outputText>
+                        <f:facet name="footer">TOTAL:</f:facet>
+                    </p:column>
+
+                    <p:column headerText="Campanha" sortBy="#{atendimento[1]}" width="120">
+                        <h:outputText value="#{atendimento[1]}" styleClass="font-medium"/>
+                    </p:column>
+
+                    <p:column headerText="Cliente" sortBy="#{atendimento[2]}">
+                        <h:outputText value="#{atendimento[2]}" />
+                    </p:column>
+
+                    <p:column headerText="CPF" sortBy="#{atendimento[3]}" width="110">
+                        <h:outputText value="#{atendimento[3]}" />
+                    </p:column>
+
+                    <p:column headerText="Agente" sortBy="#{atendimento[6]}" width="110">
+                        <div class="flex align-items-center">
+                            <i class="pi pi-headset mr-2 text-gray-400"></i>
+                            <h:outputText value="#{atendimento[6]}" />
+                        </div>
+                    </p:column>
+
+                    <p:column headerText="Adesão" sortBy="#{atendimento[7]}" width="80" styleClass="text-center">
+                        <h:outputText value="#{atendimento[7]}" />
+                    </p:column>
+
+                    <p:column headerText="Protocolo" sortBy="#{atendimento[11]}" width="100" styleClass="text-center">
+                        <span class="bg-gray-100 px-2 border-round text-sm font-bold text-700">#{atendimento[11]}</span>
+                    </p:column>
+
+                    <p:column headerText="Status" sortBy="#{atendimento[4]}" width="110">
+                        <h:outputText value="#{atendimento[4]}" />
+                    </p:column>
+
+                    <p:column headerText="Motivo / Detalhe" sortBy="#{atendimento[24]}" width="180">
+                        <div class="flex flex-column">
+                            <span class="font-medium text-900 mb-1">#{atendimento[24]}</span>
+                            <div class="flex align-items-center text-500">
+                                <i class="pi pi-angle-right text-xs mr-1"></i>
+                                <span class="text-sm">#{atendimento[25]}</span>
+                            </div>
+                        </div>
+                    </p:column>
+
+                    <p:column headerText="Produto" sortBy="#{atendimento[19]}" width="100">
+                        <h:outputText value="#{atendimento[19]}" />
+                    </p:column>
+
+                    <p:column headerText="T. Pós" sortBy="#{atendimento[20]}" width="70" styleClass="text-center">
+                        <h:outputText value="#{atendimento[20]} #{atendimento[20] eq null ? '':'s'}" />
+                    </p:column>
+
+                    <p:column headerText="Liberado" sortBy="#{atendimento[10]}" width="100" styleClass="text-right font-bold text-green-600">
+                        <h:outputText value="#{atendimento[10]}">
+                            <f:convertNumber type="currency" locale="pt-br" currencySymbol="R$"/>
+                        </h:outputText>
+                        <f:facet name="footer">
+                            <h:outputText value="#{supervisorBackofficeBean.total}">
+                                <f:convertNumber type="currency" locale="pt-br" currencySymbol="R$"/>
+                            </h:outputText>
+                        </f:facet>
+                    </p:column>
+
+                    <p:column width="120" styleClass="text-center" exportable="false">
+                        <p:commandButton icon="pi pi-eye" title="Visualizar"
+                                         styleClass="rounded-button ui-button-flat ui-button-secondary mr-1"
+                                         onclick="PF('dlgVisualizarAtendimento').show()" update=":formVisualizar"
+                                         immediate="true" action="#{supervisorBackofficeBean.visualizarAtendimento(atendimento[0])}"/>
+
+                        <p:commandButton icon="pi pi-pencil" title="Editar" disabled="true"
+                                         styleClass="rounded-button ui-button-flat ui-button-warning mr-1"
+                                         onclick="topFunction();PF('dlgVisualizarEditar').show();" update="editarAtendimento:formEditarAtendimentor"
+                                         immediate="true" action="#{supervisorBackofficeBean.visualizarAtendimentoEdit(atendimento[0])}"/>
+
+                        <p:commandButton icon="pi pi-volume-up" title="Áudios"
+                                         styleClass="rounded-button ui-button-flat ui-button-info"
+                                         update="dlgAudio" immediate="true"
+                                         action="#{supervisorBackofficeBean.onConciliar(atendimento[0],atendimento[2])}"/>
+                    </p:column>
+
+                </p:dataTable>
+
+                <pe:blockUI target="tableAtendimentos" content="blockUIContent" widgetVar="blockUIWidget2"/>
+            </div>
+
+            <h:panelGrid id="blockUIContent" columns="2" style="display:none;table-layout:auto;background-color:#fff; padding: 10px; border-radius: 5px; box-shadow: 0 2px 5px rgba(0,0,0,0.2);">
+                <i class="pi pi-spin pi-spinner text-blue-500" style="font-size: 2rem" />
+                <h:outputText value="Processando..." style="white-space: nowrap; margin-left: 10px; font-weight: bold; color: #555;"/>
+            </h:panelGrid>
+
+        </div>
+    </h:form>
 
 </ui:fragment>

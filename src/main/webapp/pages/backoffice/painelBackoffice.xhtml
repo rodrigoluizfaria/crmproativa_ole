@@ -2,437 +2,320 @@
                 xmlns:h="http://java.sun.com/jsf/html"
                 xmlns:f="http://java.sun.com/jsf/core"
                 xmlns:ui="http://java.sun.com/jsf/facelets"
-                xmlns:p="http://primefaces.org/ui" template="/WEB-INF/template.xhtml">
-
+                xmlns:p="http://primefaces.org/ui"
+                template="/WEB-INF/template.xhtml">
 
     <ui:define name="viewname">
         <div class="bcca-breadcrumb">
             <div class="bcca-breadcrumb-item bg-primary-500 hover:bg-primary-700">
                 <p:link outcome="/pages/backoffice/acompanhamentoConsistencias"
-                        style="text-decoration: none">PAINEL BACKOFFICE</p:link>
+                        style="text-decoration: none" styleClass="text-white font-medium">PAINEL BACKOFFICE</p:link>
             </div>
-            <div class="bcca-breadcrumb-item ">BACKOFFICE</div>
+            <div class="bcca-breadcrumb-item uppercase font-bold">DASHBOARD</div>
         </div>
-
     </ui:define>
 
     <ui:define name="content">
 
-        <p:growl id="grl" widgetVar="grl" globalOnly="true" escape="false" showSummary="false" life="8000"
-                 showDetail="true" sticky="false">
-
+        <p:growl id="grl" globalOnly="true" showDetail="true" life="5000">
             <p:autoUpdate/>
-
         </p:growl>
 
-        <p:growl id="grlNo" widgetVar="grl" escape="false" showSummary="false" life="8000" showDetail="true"
-                 sticky="false"/>
+        <h:form id="formDashboard" prependId="false">
 
-        <h:form prependId="false" id="principal">
+            <div class="surface-ground px-4 py-6 md:px-6 lg:px-8">
 
-            <div class="card">
-
-                <div class="p-grid col-12 ">
-
-
-                    <div class="col-12">
-
-                        <div class="ui-toolbar ui-widget ui-widget-header ui-corner-all mb-4 "
-                             style="display: flex;align-items: center;justify-content: space-between;flex-wrap: wrap;   ">
-
-                            <div class=" ui-toolbar-group-left"
-                                 style="    align-items: center; display: flex; flex-wrap: wrap;">
-
-                                <div class="card mr-3">
-                                    Qtde. Atendimentos:
-                                    <h:outputText value="#{monitorBackofficeBean.totalAtendimento}"
-                                                  style="font-weight: bold" styleClass="p-ml-3">
-                                        <f:convertNumber type="number"/>
-
-                                    </h:outputText>
-                                </div>
-                                <div class="card mr-3" style="     margin-bottom: auto;">
-                                    Qtde. Propostas solucionadas:
-                                    <h:outputText value="#{monitorBackofficeBean.totalPropostas}"
-                                                  style="font-weight: bold" styleClass="p-ml-3">
-                                        <f:convertNumber type="number"/>
-
-                                    </h:outputText>
-                                </div>
-                                <div class="card mr-3 ">
-
-                                    Vlr. Realizado:
-                                    <h:outputText value="#{monitorBackofficeBean.totalVendido}"
-                                                  style="font-weight: bold" styleClass="p-ml-3">
-                                        <f:convertNumber type="currency" locale="pt-br" currencySymbol="R$"/>
-                                    </h:outputText>
-                                </div>
-
-                                <div class="card mr-3"
-                                     style="margin-bottom: auto;border-left: 3px solid #28a745!important">
-                                    Vlr Concluído: <h:outputText value="#{monitorBackofficeBean.totalPago}"
-                                                                 style="font-weight: bold" styleClass="p-ml-3">
-
-                                    <f:convertNumber type="currency" locale="pt-br" currencySymbol="R$"/>
-
-                                </h:outputText>
-                                </div>
-                            </div>
-
-
-                            <div class=" ui-toolbar-group-right"
-                                 style="    display: flex; align-items: center; flex-wrap: wrap;">
-
-                                <div class="grid col-12 ">
-
-                                    <div class="p-field col-12 md:col-2">
-                                        Périodo:
-
-                                        <p:selectOneMenu id="selectOneUsuario" value="#{monitorBackofficeBean.periodo}"
-                                                         label="FILTRO" styleClass="p-ml-3">
-
-                                            <f:selectItem itemLabel="Diário" itemValue="DIA"/>
-                                            <f:selectItem itemLabel="Mensal" itemValue="MES"/>
-                                            <f:selectItem itemLabel="Semanal" itemValue="SEMANA"/>
-                                            <p:ajax listener="#{monitorBackofficeBean.onAtualizarPanel}" update="@form"
-                                                    process="@this"/>
-
-                                        </p:selectOneMenu>
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
+                <div class="flex flex-column md:flex-row md:align-items-center justify-content-end mb-5 gap-3">
+                    <div class="flex align-items-center gap-2 surface-card p-2 border-round shadow-1">
+                        <i class="pi pi-calendar text-blue-500 text-lg ml-2"></i>
+                        <span class="font-medium text-600 white-space-nowrap">Período:</span>
+                        <p:selectOneMenu id="selectPeriodo" value="#{monitorBackofficeBean.periodo}"
+                                         autoWidth="false" styleClass="w-full md:w-12rem border-none shadow-none">
+                            <f:selectItem itemLabel="Diário" itemValue="DIA"/>
+                            <f:selectItem itemLabel="Semanal" itemValue="SEMANA"/>
+                            <f:selectItem itemLabel="Mensal" itemValue="MES"/>
+                            <f:selectItem itemLabel="Personalizado" itemValue="CUSTOM"/>
+                            <p:ajax listener="#{monitorBackofficeBean.onAtualizarPanel}" update="@form"/>
+                        </p:selectOneMenu>
                     </div>
 
-
-                    <div class="col-12 mt-3">
-
-                        <div class="layout-dashboard">
-
-                            <div class="grid">
-
-                                <div class="col-4">
-
-                                    <div id="order-tabs-container col-4" class="grid order-tabs">
-
-                                        <div class=" col-12 " data-label="New Orders" data-index="0"
-                                             data-stroke="#BBDEFB" data-fill="rgba(100, 181, 246, 0.2)">
-
-                                            <span class="order-label">Status Atendimento</span>
-
-                                        </div>
-
-                                    </div>
-
-                                    <div class="col-12 md:col-6">
-
-                                        <div class="overview-chart">
-                                            <p:donutChart model="#{monitorBackofficeBean.donutModelStatusAtendimento}"
-                                                          style="width:1080px; height: 420px" zoom="true"/>
-                                        </div>
-                                    </div>
-
-                                    <p:dataTable id="tableBkoPendenciaStatus" var="status" rows="15"
-                                                 paginator="true" paginatorPosition="bottom"
-                                                 value="#{monitorBackofficeBean.listStatusPainel}"
-                                                 emptyMessage="#{monitorBackofficeBean.listStatusPainel eq null? '' : msg.emptyMessage}"
-                                                 currentPageReportTemplate="[#{msg.totalDeRegistros}: {totalRecords}]"
-                                                 styleClass="ui-datatable-sm ui-datatable-striped p-mt-5  "
-                                                 paginatorTemplate="{CurrentPageReport}  {FirstPageLink} {PreviousPageLink} {PageLinks} {NextPageLink} {LastPageLink} {Exporters}">
-
-
-                                        <p:column width="5%">
-
-                                            <div style="background-color: #{status[3]}; width: 40px;height: 14px;">
-                                            </div>
-
-                                        </p:column>
-
-                                        <p:column headerText="Status" sortBy="#{status[2]}" width="15%">
-
-                                            <h:outputLabel value="#{status[2]}">
-                                            </h:outputLabel>
-
-                                        </p:column>
-
-                                        <p:column headerText="Quantidade" sortBy="#{status[1]}" width="15%">
-
-                                            <h:outputLabel value="#{status[1]}"/>
-
-                                            <f:facet name="footer">
-
-                                                <!-- <h:outputLabel	value="#{monitorBackofficeBean.retornarQuantidadeTotalFooter(monitorBackofficeBean.listStatusPainel)}">
-
-                                                </h:outputLabel> -->
-
-                                            </f:facet>
-
-                                        </p:column>
-
-
-                                        <p:column headerText="Valor" sortBy="#{status[0]}" width="15%">
-
-                                            <h:outputLabel value="#{status[0]}">
-
-                                                <f:convertNumber type="currency" locale="pt-br" currencySymbol="R$"/>
-
-                                            </h:outputLabel>
-
-                                            <f:facet name="footer">
-
-                                                <!-- <h:outputLabel value="#{monitorBackofficeBean.retornarTotalFooter(monitorBackofficeBean.listStatusPainel)}">
-                                                    <f:convertNumber type="currency" locale="pt-br"	currencySymbol="R$" />
-                                                </h:outputLabel>
-         -->
-                                            </f:facet>
-
-                                        </p:column>
-
-                                    </p:dataTable>
-
-                                </div>
-
-                                <!-- 	 Motivo -->
-
-                                <div class="col-4 ">
-
-                                    <div id="order-tabs-container" class="p-grid order-tabs">
-
-                                        <div class=" col-12 " data-label="New Orders" data-index="0"
-                                             data-stroke="#BBDEFB" data-fill="rgba(100, 181, 246, 0.2)">
-
-                                            <span class="order-label">Motivo</span>
-
-                                        </div>
-
-                                    </div>
-
-                                    <div class="col-12 md:col-6">
-
-                                        <div class="overview-chart">
-
-                                            <p:donutChart model="#{monitorBackofficeBean.donutModelMotivo}"
-                                                          style="width:1080px; height: 420px" zoom="true"/>
-
-                                        </div>
-                                    </div>
-
-                                    <p:dataTable id="tableBkoPendenciaMotivo" var="sub" rows="5"
-                                                 paginator="true" paginatorPosition="bottom"
-                                                 value="#{monitorBackofficeBean.listMotioPainel}"
-                                                 emptyMessage="#{monitorBackofficeBean.listMotioPainel eq null? '' : msg.emptyMessage}"
-                                                 currentPageReportTemplate="[#{msg.totalDeRegistros}: {totalRecords}]"
-                                                 styleClass="ui-datatable-sm ui-datatable-striped   p-mt-5 centeralizarColum"
-                                                 paginatorTemplate="{CurrentPageReport}  {FirstPageLink} {PreviousPageLink} {PageLinks} {NextPageLink} {LastPageLink} {Exporters}">
-
-                                        <p:column width="5%">
-
-                                            <div
-                                                    style="background-color: #{sub[3]}; width: 40px;height: 14px;">
-                                            </div>
-
-                                        </p:column>
-
-                                        <p:column headerText="Motivo" sortBy="#{sub[2]}" width="15%">
-
-                                            <h:outputLabel value="#{sub[2]}">
-                                            </h:outputLabel>
-
-                                        </p:column>
-
-                                        <p:column headerText="Quantidade" sortBy="#{sub[1]}" width="15%">
-
-                                            <h:outputLabel value="#{sub[1]}"/>
-
-                                            <f:facet name="footer">
-
-                                                <!-- 	<h:outputLabel value="#{monitorBackofficeBean.retornarQuantidadeTotalFooter(monitorBackofficeBean.listMotioPainel)}">
-
-                                                    </h:outputLabel>-->
-                                            </f:facet>
-
-
-                                        </p:column>
-
-
-                                        <p:column headerText="Valor" sortBy="#{sub[0]}" width="15%">
-
-                                            <h:outputLabel value="#{sub[0]}">
-
-                                                <f:convertNumber type="currency" locale="pt-br" currencySymbol="R$"/>
-
-                                            </h:outputLabel>
-
-                                            <f:facet name="footer">
-
-                                                <!-- 	<h:outputLabel
-                                                        value="#{monitorBackofficeBean.retornarTotalFooter(monitorBackofficeBean.listMotioPainel)}">
-                                                        <f:convertNumber type="currency" locale="pt-br"
-                                                            currencySymbol="R$" />
-                                                    </h:outputLabel>
-                                                     -->
-                                            </f:facet>
-                                        </p:column>
-
-                                    </p:dataTable>
-                                </div>
-
-                                <!-- 	 SUBMOTIVO -->
-
-                                <div class="col-4">
-
-                                    <div id="order-tabs-container" class="p-grid order-tabs">
-
-                                        <div class=" p-col-12 " data-label="New Orders" data-index="0"
-                                             data-stroke="#BBDEFB" data-fill="rgba(100, 181, 246, 0.2)">
-
-                                            <span class="order-label">Submotivo</span>
-
-                                        </div>
-
-                                    </div>
-
-                                    <div class="col-12 md:col-6">
-
-                                        <div class="overview-chart">
-
-                                            <p:donutChart model="#{monitorBackofficeBean.donutSubmodelMotivo}"
-                                                          style="width:1080px; height: 420px" zoom="true"/>
-
-                                        </div>
-
-                                    </div>
-
-                                    <p:dataTable id="tableBkoPendenciaSubMotivo" var="motivo"
-                                                 rows="5" paginator="true" paginatorPosition="bottom"
-                                                 value="#{monitorBackofficeBean.listSubmotioPainel}"
-                                                 emptyMessage="#{monitorBackofficeBean.listSubmotioPainel eq null? '' : msg.emptyMessage}"
-                                                 currentPageReportTemplate="[#{msg.totalDeRegistros}: {totalRecords}]"
-                                                 styleClass="ui-datatable-sm ui-datatable-striped  p-mt-5 centeralizarColum"
-                                                 paginatorTemplate="{CurrentPageReport}  {FirstPageLink} {PreviousPageLink} {PageLinks} {NextPageLink} {LastPageLink} {Exporters}">
-
-                                        <p:column headerText="" width="5%">
-
-                                            <div
-                                                    style="background-color: #{sub[3]}; width: 40px;height: 14px;">
-                                            </div>
-
-                                        </p:column>
-
-                                        <p:column headerText="Submotivo" width="15%">
-
-                                            <h:outputLabel value="#{sub[2]}">
-                                            </h:outputLabel>
-
-                                        </p:column>
-
-                                        <p:column headerText="Quantidade" sortBy="#{sub[1]}" width="15%">
-
-                                            <h:outputLabel value="#{sub[1]}"/>
-
-                                            <f:facet name="footer">
-
-                                                <!-- 		<h:outputLabel	value="#{monitorBackofficeBean.retornarQuantidadeTotalFooter(monitorBackofficeBean.listSubmotioPainel)}">
-
-                                                        </h:outputLabel> -->
-                                            </f:facet>
-
-                                        </p:column>
-
-                                        <p:column headerText="Valor" sortBy="#{sub[0]}" width="15%">
-
-                                            <h:outputLabel value="#{sub[0]}">
-                                                <f:convertNumber type="currency" locale="pt-br" currencySymbol="R$"/>
-                                            </h:outputLabel>
-
-                                            <f:facet name="footer">
-
-                                                <!-- 			<h:outputLabel	value="#{monitorBackofficeBean.retornarTotalFooter(monitorBackofficeBean.listSubmotioPainel)}">
-
-                                                                <f:convertNumber type="currency" locale="pt-br"	currencySymbol="R$" />
-
-                                                            </h:outputLabel> -->
-
-                                            </f:facet>
-
-                                        </p:column>
-
-                                    </p:dataTable>
-                                </div>
-
-                                <div class="col-6 mt-5">
-
-                                    <div class="overview-chart">
-                                        <p:barChart model="#{monitorBackofficeBean.stackedBarModelConsistencia}"
-                                                    style="width:1080px; height: 420px" zoom="true"/>
-                                    </div>
-                                </div>
-
-                                <div class="col-6 mt-5">
-
-
-                                    <p:dataTable id="tableBkoPendenciaConsistencia" var="consistencia"
-                                                 rows="5" paginator="true" paginatorPosition="bottom"
-                                                 value="#{monitorBackofficeBean.listQuantidadeConsistencia}"
-                                                 emptyMessage="#{monitorBackofficeBean.listQuantidadeConsistencia eq null? '' : msg.emptyMessage}"
-                                                 currentPageReportTemplate="[#{msg.totalDeRegistros}: {totalRecords}]"
-                                                 styleClass="ui-datatable-sm ui-datatable-striped  p-mt-5 centeralizarColum"
-                                                 paginatorTemplate="{CurrentPageReport}  {FirstPageLink} {PreviousPageLink} {PageLinks} {NextPageLink} {LastPageLink} {Exporters}">
-
-
-                                        <p:column headerText="Código" sortBy="#{consistencia[0]}" width="8%">
-
-                                            <h:outputLabel value="#{consistencia[0]}">
-                                            </h:outputLabel>
-
-                                        </p:column>
-
-                                        <p:column headerText="Descrição" sortBy="#{consistencia[1]}" width="30%">
-
-                                            <h:outputLabel value="#{consistencia[1]}">
-                                            </h:outputLabel>
-
-                                        </p:column>
-
-
-                                        <p:column headerText="Valor. tratadas" sortBy="#{consistencia[3]}" width="15%">
-
-                                            <h:outputLabel value="#{consistencia[3]}">
-                                                <f:convertNumber type="currency" locale="pt-br" currencySymbol="R$"/>
-                                            </h:outputLabel>
-
-                                        </p:column>
-
-                                        <p:column headerText="Qtd. Tratadas" sortBy="#{consistencia[4]}" width="10%">
-
-                                            <h:outputLabel value="#{consistencia[4]}">
-                                            </h:outputLabel>
-
-                                        </p:column>
-
-                                        <p:column headerText="Qtd. Não Tratadas" sortBy="#{consistencia[5]}"
-                                                  width="10%">
-
-                                            <h:outputLabel value="#{consistencia[5]}">
-                                            </h:outputLabel>
-
-                                        </p:column>
-
-                                    </p:dataTable>
-
-                                </div>
-
-                            </div>
-
-                        </div>
-
-                    </div>
-
+                    <h:panelGroup id="pnlDatasCustom">
+                        <h:panelGroup rendered="#{monitorBackofficeBean.periodo eq 'CUSTOM'}"
+                                      styleClass="flex align-items-center gap-2 fadein animation-duration-300 surface-card p-2 border-round shadow-1">
+                            <p:datePicker value="#{monitorBackofficeBean.dataInicioPanel}" showIcon="false"
+                                          placeholder="Início" pattern="dd/MM/yyyy"
+                                          inputStyleClass="w-7rem text-center border-none shadow-none text-sm font-bold text-blue-600">
+                                <p:ajax event="dateSelect" listener="#{monitorBackofficeBean.onAtualizarPanel}" update="@form"/>
+                            </p:datePicker>
+                            <span class="text-400 pi pi-arrow-right text-xs"></span>
+                            <p:datePicker value="#{monitorBackofficeBean.dataFimPanel}" showIcon="false"
+                                          placeholder="Fim" pattern="dd/MM/yyyy"
+                                          inputStyleClass="w-7rem text-center border-none shadow-none text-sm font-bold text-blue-600">
+                                <p:ajax event="dateSelect" listener="#{monitorBackofficeBean.onAtualizarPanel}" update="@form"/>
+                            </p:datePicker>
+                        </h:panelGroup>
+                    </h:panelGroup>
                 </div>
+
+                <div class="grid mb-4">
+                    <div class="col-12 md:col-6 lg:col">
+                        <div class="surface-card shadow-1 p-3 border-round-xl h-full flex align-items-center justify-content-between hover:surface-50 transition-duration-200">
+                            <div>
+                                <span class="block text-500 font-medium text-sm mb-1">Clientes</span>
+                                <div class="text-900 font-bold text-2xl">#{monitorBackofficeBean.totalCpf}</div>
+                            </div>
+                            <div class="flex align-items-center justify-content-center bg-blue-50 border-circle w-3rem h-3rem">
+                                <i class="pi pi-users text-blue-500 text-xl"/>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-12 md:col-6 lg:col">
+                        <div class="surface-card shadow-1 p-3 border-round-xl h-full flex align-items-center justify-content-between hover:surface-50 transition-duration-200">
+                            <div>
+                                <span class="block text-500 font-medium text-sm mb-1">Atendimentos</span>
+                                <div class="text-900 font-bold text-2xl">#{monitorBackofficeBean.totalAtendimento}</div>
+                            </div>
+                            <div class="flex align-items-center justify-content-center bg-indigo-50 border-circle w-3rem h-3rem">
+                                <i class="pi pi-list text-indigo-500 text-xl"/>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-12 md:col-6 lg:col">
+                        <div class="surface-card shadow-1 p-3 border-round-xl h-full flex align-items-center justify-content-between hover:surface-50 transition-duration-200">
+                            <div>
+                                <span class="block text-500 font-medium text-sm mb-1">No Prazo</span>
+                                <div class="text-900 font-bold text-2xl">#{monitorBackofficeBean.totalPrazo}</div>
+                            </div>
+                            <div class="flex align-items-center justify-content-center bg-green-50 border-circle w-3rem h-3rem">
+                                <i class="pi pi-clock text-green-500 text-xl"/>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-12 md:col-6 lg:col">
+                        <div class="surface-card shadow-1 p-3 border-round-xl h-full flex align-items-center justify-content-between hover:surface-50 transition-duration-200">
+                            <div>
+                                <span class="block text-500 font-medium text-sm mb-1">Excedido</span>
+                                <div class="text-pink-600 font-bold text-2xl">
+                                    <h:outputText value="#{monitorBackofficeBean.totalPrazoExcedido}"/>
+                                </div>
+                            </div>
+                            <div class="flex align-items-center justify-content-center bg-pink-50 border-circle w-3rem h-3rem">
+                                <i class="pi pi-exclamation-circle text-pink-500 text-xl"/>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-12 md:col-6 lg:col">
+                        <div class="surface-card shadow-1 p-3 border-round-xl h-full flex align-items-center justify-content-between hover:surface-50 transition-duration-200">
+                            <div>
+                                <span class="block text-500 font-medium text-sm mb-1">Total Concluído</span>
+                                <div class="text-teal-600 font-bold text-2xl">
+                                    <h:outputText value="#{monitorBackofficeBean.totalFinalizado}"/>
+                                </div>
+                            </div>
+                            <div class="flex align-items-center justify-content-center bg-teal-50 border-circle w-3rem h-3rem">
+                                <i class="pi pi-check-circle text-teal-500 text-xl"/>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="grid">
+
+                    <div class="col-12 xl:col-4">
+                        <div class="surface-card shadow-1 border-round-xl p-4 h-full flex flex-column">
+                            <div class="flex align-items-center justify-content-between mb-3 border-bottom-1 border-100 pb-2">
+                                <span class="text-900 font-bold text-lg">Status Atendimento</span>
+                            </div>
+
+                            <h:panelGroup rendered="#{not empty monitorBackofficeBean.listStatusPainel}">
+                                <div class="flex align-items-center gap-2 h-full">
+                                    <div class="w-5 flex align-items-center justify-content-center">
+                                        <p:donutChart model="#{monitorBackofficeBean.donutModelStatusAtendimento}"
+                                                      style="width: 100%; height: 140px;"/>
+                                    </div>
+
+                                    <div class="w-7">
+                                        <p:dataTable value="#{monitorBackofficeBean.listStatusPainel}" var="status"
+                                                     rows="4" paginator="false"
+                                                     styleClass="ui-datatable-sm ui-datatable-borderless text-xs" reflow="true">
+
+                                            <p:column width="15%">
+                                                <span class="block border-circle w-1rem h-1rem shadow-1" style="background-color: #{status.cor};"></span>
+                                            </p:column>
+
+                                            <p:column headerText="Status">
+                                                <span class="text-700 white-space-nowrap text-overflow-ellipsis overflow-hidden block" style="max-width: 85px;" title="#{status.visualizacao}">
+                                                    #{status.visualizacao}
+                                                </span>
+                                            </p:column>
+
+                                            <p:column headerText="Qtd" styleClass="font-bold text-right">
+                                                #{status.qtdeAtendimento}
+                                            </p:column>
+                                        </p:dataTable>
+                                    </div>
+                                </div>
+                            </h:panelGroup>
+
+                            <h:panelGroup rendered="#{empty monitorBackofficeBean.listStatusPainel}"
+                                          styleClass="flex flex-column align-items-center justify-content-center flex-grow-1 text-center py-5">
+                                <div class="bg-gray-50 border-circle w-4rem h-4rem flex align-items-center justify-content-center mb-2">
+                                    <i class="pi pi-chart-pie text-gray-300 text-3xl"></i>
+                                </div>
+                                <span class="text-600 text-sm font-medium">Sem dados de Status</span>
+                            </h:panelGroup>
+                        </div>
+                    </div>
+
+                    <div class="col-12 xl:col-4">
+                        <div class="surface-card shadow-1 border-round-xl p-4 h-full flex flex-column">
+                            <div class="flex align-items-center justify-content-between mb-3 border-bottom-1 border-100 pb-2">
+                                <span class="text-900 font-bold text-lg">Motivos</span>
+                            </div>
+
+                            <h:panelGroup rendered="#{not empty monitorBackofficeBean.listMotioPainel}">
+                                <div class="flex align-items-center gap-2 h-full">
+                                    <div class="w-5 flex align-items-center justify-content-center">
+                                        <p:donutChart model="#{monitorBackofficeBean.donutModelMotivo}"
+                                                      style="width: 100%; height: 140px;"/>
+                                    </div>
+                                    <div class="w-7">
+                                        <p:dataTable value="#{monitorBackofficeBean.listMotioPainel}" var="motivo"
+                                                     rows="4" paginator="false"
+                                                     styleClass="ui-datatable-sm ui-datatable-borderless text-xs" reflow="true">
+
+                                            <p:column width="15%">
+                                                <span class="block border-circle w-1rem h-1rem shadow-1" style="background-color: #{motivo.cor};"></span>
+                                            </p:column>
+
+                                            <p:column headerText="Motivo">
+                                                <span class="text-700 white-space-nowrap text-overflow-ellipsis overflow-hidden block" style="max-width: 85px;" title="#{motivo.visualizacao}">
+                                                    #{motivo.visualizacao}
+                                                </span>
+                                            </p:column>
+
+                                            <p:column headerText="Qtd" styleClass="font-bold text-right">
+                                                #{motivo.qtdeAtendimento}
+                                            </p:column>
+                                        </p:dataTable>
+                                    </div>
+                                </div>
+                            </h:panelGroup>
+
+                            <h:panelGroup rendered="#{empty monitorBackofficeBean.listMotioPainel}"
+                                          styleClass="flex flex-column align-items-center justify-content-center flex-grow-1 text-center py-5">
+                                <div class="bg-gray-50 border-circle w-4rem h-4rem flex align-items-center justify-content-center mb-2">
+                                    <i class="pi pi-tag text-gray-300 text-3xl"></i>
+                                </div>
+                                <span class="text-600 text-sm font-medium">Sem dados de Motivos</span>
+                            </h:panelGroup>
+                        </div>
+                    </div>
+
+                    <div class="col-12 xl:col-4">
+                        <div class="surface-card shadow-1 border-round-xl p-4 h-full flex flex-column">
+                            <div class="flex align-items-center justify-content-between mb-3 border-bottom-1 border-100 pb-2">
+                                <span class="text-900 font-bold text-lg">Submotivos</span>
+                            </div>
+
+                            <h:panelGroup rendered="#{not empty monitorBackofficeBean.listSubmotioPainel}">
+                                <div class="flex align-items-center gap-2 h-full">
+                                    <div class="w-5 flex align-items-center justify-content-center">
+                                        <p:donutChart model="#{monitorBackofficeBean.donutSubmodelMotivo}"
+                                                      style="width: 100%; height: 140px;"/>
+                                    </div>
+                                    <div class="w-7">
+                                        <p:dataTable value="#{monitorBackofficeBean.listSubmotioPainel}" var="sub"
+                                                     rows="4" paginator="false"
+                                                     styleClass="ui-datatable-sm ui-datatable-borderless text-xs" reflow="true">
+
+                                            <p:column width="15%">
+                                                <span class="block border-circle w-1rem h-1rem shadow-1" style="background-color: #{sub.cor};"></span>
+                                            </p:column>
+
+                                            <p:column headerText="Submotivo">
+                                                <span class="text-700 white-space-nowrap text-overflow-ellipsis overflow-hidden block" style="max-width: 85px;" title="#{sub.visualizacao}">
+                                                    #{sub.visualizacao}
+                                                </span>
+                                            </p:column>
+
+                                            <p:column headerText="Qtd" styleClass="font-bold text-right">
+                                                #{sub.qtdeAtendimento}
+                                            </p:column>
+                                        </p:dataTable>
+                                    </div>
+                                </div>
+                            </h:panelGroup>
+
+                            <h:panelGroup rendered="#{empty monitorBackofficeBean.listSubmotioPainel}"
+                                          styleClass="flex flex-column align-items-center justify-content-center flex-grow-1 text-center py-5">
+                                <div class="bg-gray-50 border-circle w-4rem h-4rem flex align-items-center justify-content-center mb-2">
+                                    <i class="pi pi-tags text-gray-300 text-3xl"></i>
+                                </div>
+                                <span class="text-600 text-sm font-medium">Sem dados de Submotivos</span>
+                            </h:panelGroup>
+                        </div>
+                    </div>
+                </div>
+
+                <h:panelGroup rendered="#{not empty monitorBackofficeBean.listTotal}">
+                    <div class="grid mt-4">
+
+                        <div class="col-12 lg:col-6">
+                            <div class="surface-card shadow-1 border-round-xl p-4 h-full flex flex-column">
+                <span class="text-900 font-bold text-lg block mb-4 border-bottom-1 border-100 pb-2">
+                    Atendimentos Concluídos x Em Aberto
+                </span>
+
+                                <div class="flex align-items-center justify-content-center flex-grow-1">
+                                    <p:polarAreaChart model="#{monitorBackofficeBean.polarAreaModelConsistencia}"
+                                                style="width: 100%; height: 180px;"/> </div>
+                            </div>
+                        </div>
+
+                        <div class="col-12 lg:col-6">
+                            <div class="surface-card shadow-1 border-round-xl p-4 h-full">
+                <span class="text-900 font-bold text-lg block mb-4 border-bottom-1 border-100 pb-2">
+                    Detalhamento Geral
+                </span>
+
+                                <p:dataTable value="#{monitorBackofficeBean.listTotal}" var="t"
+                                             rows="8" paginator="true" paginatorPosition="bottom"
+                                             styleClass="ui-datatable-sm ui-datatable-striped" stripedRows="true" reflow="true"
+                                             paginatorTemplate="{CurrentPageReport} {FirstPageLink} {PreviousPageLink} {NextPageLink} {LastPageLink}">
+
+                                    <p:column headerText="Clientes" sortBy="#{t.qtdeCpf}" styleClass="text-center">
+                                        <h:outputText value="#{t.qtdeCpf}"/>
+                                    </p:column>
+                                    <p:column headerText="Atendimentos" sortBy="#{t.qtdeAtendimento}" styleClass="text-center">
+                                        <span class="font-bold text-blue-600">#{t.qtdeAtendimento}</span>
+                                    </p:column>
+                                    <p:column headerText="No Prazo" sortBy="#{t.qtdadeDemandaNoPrazo}" styleClass="text-center">
+                                        <span class="inline-block border-round px-2 py-1 bg-green-100 text-green-700 text-sm font-bold">#{t.qtdadeDemandaNoPrazo}</span>
+                                    </p:column>
+                                    <p:column headerText="Excedido" sortBy="#{t.qtdadeDemandaPrazoEstourado}" styleClass="text-center">
+                                        <span class="inline-block border-round px-2 py-1 bg-pink-100 text-pink-700 text-sm font-bold">#{t.qtdadeDemandaPrazoEstourado}</span>
+                                    </p:column>
+                                    <p:column headerText="Em Aberto" sortBy="#{t.qtidadeEmAberto}" styleClass="text-center">
+                                        <h:outputText value="#{t.qtidadeEmAberto}" styleClass="text-500"/>
+                                    </p:column>
+                                </p:dataTable>
+                            </div>
+                        </div>
+                    </div>
+                </h:panelGroup>
+
+                <h:panelGroup rendered="#{empty monitorBackofficeBean.listTotal}" styleClass="block mt-4">
+                    <div class="surface-card shadow-1 border-round-xl p-6 text-center">
+                        <div class="bg-blue-50 border-circle w-6rem h-6rem flex align-items-center justify-content-center mx-auto mb-4">
+                            <i class="pi pi-search text-blue-500 text-5xl"></i>
+                        </div>
+                        <span class="text-900 font-bold text-2xl block mb-2">Sem resultados</span>
+                        <span class="text-600 text-lg">Não encontramos dados para o período selecionado.</span>
+                    </div>
+                </h:panelGroup>
 
             </div>
         </h:form>
-
     </ui:define>
-
 </ui:composition>

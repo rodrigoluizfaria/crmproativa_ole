@@ -52,7 +52,7 @@ public class SupervisorBackofficeBean extends GenericBean implements Serializabl
     private Usuario usuario;
     private GenericHistoricoAtendimento historicoAtendimento;
     private GenericAtendimento atendimento;
-    private GenericAtendimento atendimentoVisualizar;
+    private Atendimento atendimentoVisualizar;
 
     private TipoCampanhaEnum tipoCampanha;
 
@@ -68,6 +68,8 @@ public class SupervisorBackofficeBean extends GenericBean implements Serializabl
     private Long equipePendencia;
     private Long equipePausa;
     private Long statusAtendimento;
+    private Long motivoAtendimento;
+    private Long subMotivoAtendimento;
     private Long statusAtendimentoAgendamento;
     private Long statusCampanha;
     private Long controlePausa;
@@ -94,6 +96,8 @@ public class SupervisorBackofficeBean extends GenericBean implements Serializabl
 
     private List<StatusAtendimento> listStatusAtendimento;
     private List<StatusAtendimento> listStatusAtendimentoAgendados;
+    private List<Motivo> listMotivo;
+    private List<SubMotivo> listSubMotivos;
     private List<Equipe> listEquipes;
     private List<Usuario> listOperador;
 
@@ -127,6 +131,12 @@ public class SupervisorBackofficeBean extends GenericBean implements Serializabl
 
     @Inject
     private EquipeService serviceEquipe;
+
+    @Inject
+    private MotivoService serviceMotivo;
+
+    @Inject
+    private SubMotivoService subMotivoService;
 
     @Inject
     private PacoteArquivosService servicePacote;
@@ -209,6 +219,7 @@ public class SupervisorBackofficeBean extends GenericBean implements Serializabl
 
     @Inject
     private IntegracaoWs integracaoWs3c;
+
     private List<AtendimentoAudios> listAudiosAtendimentos;
 
     private List<ConciliarAudioAnexo> listConciliar;
@@ -230,7 +241,9 @@ public class SupervisorBackofficeBean extends GenericBean implements Serializabl
 
     private Long idFormulario;
 
-    private LazyDataModel<Object[]> listModel;
+//    private LazyDataModel<Object[]> listModel;
+
+    private List<Object[]> listModel;
 
     private boolean init;
 
@@ -259,56 +272,7 @@ public class SupervisorBackofficeBean extends GenericBean implements Serializabl
 
     private TipoIntegracaoEnum tipoConsultaIntegracaoEnum;
 
-    public SupervisorBackofficeBean() {
 
-        this.listModel = new LazyDataModel<Object[]>() {
-            @Override
-            public Spliterator<Object[]> spliterator() {
-                return super.spliterator();
-            }
-
-            @Override
-            public int count(Map<String, FilterMeta> map) {
-
-                List<Object[]> list = null;
-
-                if (!init)
-                    list = pesquisarAtendimentosCount();
-
-                if (CollectionUtils.isNotEmpty(list))
-                    return ((BigInteger) list.get(0)[0]).intValue();
-
-                return 0;
-            }
-
-            @Override
-            public List<Object[]> load(int offset, int pageSize, Map<String, SortMeta> sortBy, Map<String, FilterMeta> filterBy) {
-
-                FiltroModel filtro = new FiltroModel();
-                filtro.setFistResult(offset);
-                filtro.setMaxResult(pageSize);
-                filtro.setFistResult(offset);
-                filtro.setMaxResult(pageSize);
-
-                sortBy.forEach((k, v) -> {
-                    filtro.setAscendente(SortOrder.ASCENDING.equals(v.getOrder()));
-                    filtro.setPropriedadeOrdenacao(retornarSortBy(v.getSortBy().getExpressionString().replaceAll("\\#\\{", "").replaceAll("\\}", "")));
-
-                });
-                List<Object[]> listObj = null;
-
-                if (!init)
-                    listObj = pesquisarAtendimentosFiltro(filtro);
-
-
-                setInit(false);
-                setPesquisar(false);
-                return listObj;
-
-            }
-        };
-
-    }
 
     @PostConstruct
     public void init() {
@@ -426,7 +390,9 @@ public class SupervisorBackofficeBean extends GenericBean implements Serializabl
 
             this.total = null;
 
-            this.listAtendimentos = this.serviceAtendimento.pesquisarAtendimentosPorNomeCpf(this.cpf, this.nome, this.adesao, this.protocolo, this.campanhaPesquisa, this.listIdsEquipes, this.listAgentes, this.listIdsStatusAtendimentos, null, this.dataInicio, this.dataFim, this.usuario, this.produto, this.tiket, getEmpresa().getId());
+            this.listAtendimentos = this.serviceAtendimento.pesquisarAtendimentosPorNomeCpf(this.cpf, this.nome, this.adesao,
+                    this.protocolo, this.campanhaPesquisa, this.listIdsEquipes, this.listAgentes, this.listIdsStatusAtendimentos,
+                    null, this.dataInicio, this.dataFim, this.usuario, this.produto, this.tiket, getEmpresa().getId(),motivoAtendimento,subMotivoAtendimento);
 
             gerarFooterTotal();
 
@@ -434,7 +400,7 @@ public class SupervisorBackofficeBean extends GenericBean implements Serializabl
 
         } catch (Exception e) {
             e.printStackTrace();
-            Messages.addGlobalError(MessagesEnum.ERRO_INERPERADO.constante, new Object[0]);
+            Messages.addGlobalError(MessagesEnum.ERRO_INERPERADO.constante);
         }
 
     }
@@ -477,39 +443,6 @@ public class SupervisorBackofficeBean extends GenericBean implements Serializabl
 
     }
 
-    public List<Object[]> pesquisarAtendimentosCount() {
-
-
-        try {
-
-            this.total = null;
-
-            List<Object[]> totalRow = this.serviceAtendimento.pesquisarQuantidadeAtendimentosPorNomeCpfFiltro(this.cpf, this.nome, this.adesao, this.protocolo, this.campanhaPesquisa, this.listIdsEquipes, this.listAgentes, this.listIdsStatusAtendimentos, null, this.dataInicio, this.dataFim, this.usuario, this.produto, this.tiket, getEmpresa().getId());
-
-
-            if (totalRow != null) {
-
-                if (totalRow.get(0)[0] != null)
-                    this.listModel.setRowCount(((BigInteger) totalRow.get(0)[0]).intValue());
-
-                if (totalRow.get(0)[1] != null)
-                    this.total = (BigDecimal) totalRow.get(0)[1];
-
-            } else {
-
-                this.listModel.setRowCount(0);
-            }
-
-            this.formularioQuestionarioController.cleanEntidades();
-
-            return totalRow;
-
-        } catch (Exception e) {
-            e.printStackTrace();
-            Messages.addGlobalError(MessagesEnum.ERRO_INERPERADO.constante);
-        }
-        return null;
-    }
 
     public void gerarFooterTotal() {
 
@@ -586,7 +519,40 @@ public class SupervisorBackofficeBean extends GenericBean implements Serializabl
 
             this.listHistoricosAtendimentos = new ArrayList<>();
 
-            this.atendimentoVisualizar = this.serviceAtendimento.pesquisarAtendimentoContrato(id);
+            this.atendimentoVisualizar = this.serviceAtendimento.pesquisarAtendimentoSacPorCodigo(id,true);
+
+            this.listConciliar = this.serviceConciliarAudioAnexo.pesquisarPorAtendimento(id);
+
+            this.integracaoAmbec = this.serviceIntegracao.pesquisarIntegracoes(TipoIntegracaoEnum.AMBEC, this.retornarEmpresaUsuarioSessao().getId(), TipoAcessoEnum.ATIVO);
+
+            // QUESTIONARIO
+            this.formularioQuestionarioController.cleanEntidades();
+
+            this.idFormulario = this.serviceQuestionario.pesquisarQuestionarioRespodido(this.atendimentoVisualizar.getId());
+
+            if (this.idFormulario != null) {
+
+                this.formularioQuestionarioController.init(this.idFormulario, atendimentoVisualizar);
+                this.formularioQuestionarioController.setCodQuestionario(this.idFormulario);
+            }
+
+
+        } catch (Exception e) {
+            // TODO: handle exception
+            e.printStackTrace();
+            Messages.addGlobalError(MessagesEnum.ERRO_INERPERADO.constante);
+        }
+
+    }
+
+
+    public void visualizarAtendimentoEdit(Long id) {
+
+        try {
+
+            this.listHistoricosAtendimentos = new ArrayList<>();
+
+            this.atendimentoVisualizar = this.serviceAtendimento.pesquisarAtendimentoSacPorCodigo(id,true);
 
             this.listConciliar = this.serviceConciliarAudioAnexo.pesquisarPorAtendimento(id);
 
@@ -712,6 +678,7 @@ public class SupervisorBackofficeBean extends GenericBean implements Serializabl
     }
 
 
+
     public void abrirModalConciliarAudio() {
 
         this.listConciliar = this.serviceConciliarAudioAnexo.pesquisarPorAtendimento(this.atendimentoVisualizar.getId());
@@ -739,7 +706,7 @@ public class SupervisorBackofficeBean extends GenericBean implements Serializabl
 
             validarCpf();
 
-            this.listHistoricosAtendimentos = this.serviceHistorico.pesquisarHIstoricoPorCpf(this.atendimentoVisualizar.getCpf().trim(), retornarEmpresaUsuarioSessao().getId());
+            this.listHistoricosAtendimentos = this.serviceHistorico.pesquisarHIstoricoSacPorCpf(this.atendimentoVisualizar.getCpf().trim(), retornarEmpresaUsuarioSessao().getId());
 
         } catch (ProativaException e) {
 
@@ -1120,7 +1087,7 @@ public class SupervisorBackofficeBean extends GenericBean implements Serializabl
             if (this.atendimentoVisualizar != null) {
 
                 salvarAtendimento(atendimentoVisualizar, this.historicoAtendimento, this.usuario, false);
-                pesquisarAtendimentosCount();
+
                 iniciarAtendimento();
                 PrimeFaces.current().executeScript("PF('dlgVisualizarEditar').hide();");
 
@@ -1141,20 +1108,20 @@ public class SupervisorBackofficeBean extends GenericBean implements Serializabl
 
     public void onExportarCsv() {
 
-        System.out.println("EXPORTANDO ATENDIMENTOS: [ " + this.usuario.getNome() + " ] | TOTAL: " + (this.listModel != null ? this.listModel.getRowCount() : " 0 "));
+       // System.out.println("EXPORTANDO ATENDIMENTOS: [ " + this.usuario.getNome() + " ] | TOTAL: " + (this.listModel != null ? this.listModel.getRowCount() : " 0 "));
         exportarAtendimentos(true);
     }
 
     public void onExportarCsvSimples() {
 
-        System.out.println("EXPORTANDO ATENDIMENTOS: [ " + this.usuario.getNome() + " ] | TOTAL: " + (this.listModel != null ? this.listModel.getRowCount() : " 0 "));
+      //  System.out.println("EXPORTANDO ATENDIMENTOS: [ " + this.usuario.getNome() + " ] | TOTAL: " + (this.listModel != null ? this.listModel.getRowCount() : " 0 "));
         pesquisarAtendimentos();
         exportarAtendimentosSimples();
     }
 
     public void onExportarCsvSimplesManivesto() {
 
-        System.out.println("EXPORTANDO ATENDIMENTOS: [ " + this.usuario.getNome() + " ] | TOTAL: " + (this.listModel != null ? this.listModel.getRowCount() : " 0 "));
+      //  System.out.println("EXPORTANDO ATENDIMENTOS: [ " + this.usuario.getNome() + " ] | TOTAL: " + (this.listModel != null ? this.listModel.getRowCount() : " 0 "));
         pesquisarAtendimentos();
         exportarAtendimentosSimplesManifesto();
     }
@@ -2025,6 +1992,16 @@ public class SupervisorBackofficeBean extends GenericBean implements Serializabl
     }
 
 
+    public void trocarMotivo() {
+
+        this.listSubMotivos = new ArrayList<>();
+
+        if (motivoAtendimento != null) {
+            this.listSubMotivos = this.subMotivoService.pesquisarSubMotivosPorMotivo(this.motivoAtendimento, null);
+        }
+
+    }
+
     public Long getCampanha() {
         return campanha;
     }
@@ -2241,11 +2218,11 @@ public class SupervisorBackofficeBean extends GenericBean implements Serializabl
         this.dataFimAgendamento = dataFimAgendamento;
     }
 
-    public GenericAtendimento getAtendimentoVisualizar() {
+    public Atendimento getAtendimentoVisualizar() {
         return atendimentoVisualizar;
     }
 
-    public void setAtendimentoVisualizar(GenericAtendimento atendimentoVisualizar) {
+    public void setAtendimentoVisualizar(Atendimento atendimentoVisualizar) {
         this.atendimentoVisualizar = atendimentoVisualizar;
     }
 
@@ -2936,7 +2913,7 @@ public class SupervisorBackofficeBean extends GenericBean implements Serializabl
 
     public StreamedContent getFile() {
 
-        System.out.println("EXPORTANDO ATENDIMENTOS: [ " + this.usuario.getNome() + " ] | TOTAL: " + (this.listModel != null ? this.listModel.getRowCount() : " 0 "));
+      //  System.out.println("EXPORTANDO ATENDIMENTOS: [ " + this.usuario.getNome() + " ] | TOTAL: " + (this.listModel != null ? this.listModel.getRowCount() : " 0 "));
         gerarStreamedArquivo();
 
         return file;
@@ -2944,7 +2921,7 @@ public class SupervisorBackofficeBean extends GenericBean implements Serializabl
 
     public StreamedContent getFileManifesto() {
 
-        System.out.println("EXPORTANDO ATENDIMENTOS: [ " + this.usuario.getNome() + " ] | TOTAL: " + (this.listModel != null ? this.listModel.getRowCount() : " 0 "));
+      //  System.out.println("EXPORTANDO ATENDIMENTOS: [ " + this.usuario.getNome() + " ] | TOTAL: " + (this.listModel != null ? this.listModel.getRowCount() : " 0 "));
         gerarStreamedArquivoManifesto();
 
         return fileManifesto;
@@ -2952,7 +2929,7 @@ public class SupervisorBackofficeBean extends GenericBean implements Serializabl
 
     public StreamedContent getFileSimples() {
 
-        System.out.println("EXPORTANDO ATENDIMENTOS: [ " + this.usuario.getNome() + " ] | TOTAL: " + (this.listModel != null ? this.listModel.getRowCount() : " 0 "));
+      //  System.out.println("EXPORTANDO ATENDIMENTOS: [ " + this.usuario.getNome() + " ] | TOTAL: " + (this.listModel != null ? this.listModel.getRowCount() : " 0 "));
         gerarStreamedArquivoSimples();
         return fileSimples;
     }
@@ -2969,9 +2946,43 @@ public class SupervisorBackofficeBean extends GenericBean implements Serializabl
         return formularioQuestionarioController;
     }
 
+    public Long getMotivoAtendimento() {
+        return motivoAtendimento;
+    }
+
+    public void setMotivoAtendimento(Long motivoAtendimento) {
+        this.motivoAtendimento = motivoAtendimento;
+    }
+
+    public List<SubMotivo> getListSubMotivos() {
+        return listSubMotivos;
+    }
+
+    public void setListSubMotivos(List<SubMotivo> listSubMotivos) {
+        this.listSubMotivos = listSubMotivos;
+    }
+
+    public List<Motivo> getListMotivo() {
+        return listMotivo;
+    }
+
+    public void setListMotivo(List<Motivo> listMotivo) {
+        this.listMotivo = listMotivo;
+    }
+
+    public Long getSubMotivoAtendimento() {
+        return subMotivoAtendimento;
+    }
+
+    public void setSubMotivoAtendimento(Long subMotivoAtendimento) {
+        this.subMotivoAtendimento = subMotivoAtendimento;
+    }
+
     /**
      * @param formularioQuestionarioController the formularioQuestionarioController to set
      */
+
+
     public void setFormularioQuestionarioController(FormularioControler formularioQuestionarioController) {
         this.formularioQuestionarioController = formularioQuestionarioController;
     }
@@ -2985,11 +2996,11 @@ public class SupervisorBackofficeBean extends GenericBean implements Serializabl
     }
 
 
-    public LazyDataModel<Object[]> getListModel() {
+    public List<Object[]> getListModel() {
         return listModel;
     }
 
-    public void setListModel(LazyDataModel<Object[]> listModel) {
+    public void setListModel(List<Object[]> listModel) {
         this.listModel = listModel;
     }
 

@@ -375,9 +375,13 @@ public class UsuarioService extends GenericProService<Usuario> {
 		
 		return usuario.getEquipe().getId();
 	}
-	
 
 
-	
+    public void atualizarPontoAtendimento(Long idPonto,Long idUsuario) {
+		if(idPonto == null)
+			return;
 
+		this.dao.atualizarPontoAtendimento(idPonto,idUsuario);
+
+    }
 }

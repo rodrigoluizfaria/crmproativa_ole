@@ -1,94 +1,108 @@
 <ui:fragment xmlns="http://www.w3.org/1999/xhtml"
-	xmlns:h="http://java.sun.com/jsf/html"
-	xmlns:f="http://java.sun.com/jsf/core"
-	xmlns:o="http://omnifaces.org/ui"
-	xmlns:pe="http://primefaces.org/ui/extensions"
-	xmlns:ui="http://java.sun.com/jsf/facelets"
-	xmlns:p="http://primefaces.org/ui">
+             xmlns:h="http://java.sun.com/jsf/html"
+             xmlns:f="http://java.sun.com/jsf/core"
+             xmlns:pe="http://primefaces.org/ui/extensions"
+             xmlns:ui="http://java.sun.com/jsf/facelets"
+             xmlns:p="http://primefaces.org/ui">
 
-	<h:form id="formPendente" prependId="false">
+    <h:form id="formPendente" prependId="false">
 
-		<div class="p-grid">
+        <div class="grid ui-fluid">
 
+            <div class="col-12">
+                <div class="surface-card shadow-2 border-round p-4 h-full border-left-3 border-orange-500">
 
-			<div class="col-12 md:col-10">
+                    <div class="flex justify-content-between align-items-center mb-3 border-bottom-1 border-100 pb-2">
+                        <div class="flex align-items-center">
+                            <div class="bg-orange-100 text-orange-600 border-circle w-2rem h-2rem flex align-items-center justify-content-center mr-2">
+                                <i class="pi pi-clock text-lg"></i>
+                            </div>
+                            <span class="text-900 font-bold text-lg">Atendimento  Pendentes</span>
+                        </div>
+                        <span class="text-sm text-500">
+                            Total: <span class="font-bold text-orange-600">#{meusAtendimentosBean.listAtendimentosPendentes.size()}</span>
+                        </span>
+                    </div>
 
-				<p:dataTable id="tablePendentes" var="pendentes" rows="20"
-					paginator="true" paginatorPosition="bottom"
-					value="#{meusAtendimentosBean.listAtendimentosPendentes}"
-					emptyMessage="#{msg.emptyMessage}"
-					currentPageReportTemplate="[#{msg.totalDeRegistros}: {totalRecords}]"
-					paginatorTemplate="{CurrentPageReport}  {FirstPageLink} {PreviousPageLink} {PageLinks} {NextPageLink} {LastPageLink} {Exporters}"
-					style="margin-top:25px"
-					styleClass="ui-datatable-sm ui-datatable-striped ui-datatable-sm">
+                    <p:dataTable id="tablePendentes" var="pendentes"
+                                 value="#{meusAtendimentosBean.listAtendimentosPendentes}"
+                                 rows="10" paginator="true" paginatorPosition="bottom"
+                                 emptyMessage="#{msg.emptyMessage}"
+                                 stripedRows="true" showGridlines="true" reflow="true" size="small"
+                                 rowKey="#{pendentes[0]}"
+                                 paginatorTemplate="{CurrentPageReport} {FirstPageLink} {PreviousPageLink} {PageLinks} {NextPageLink} {LastPageLink}"
+                                 currentPageReportTemplate="{startRecord}-{endRecord} de {totalRecords}">
 
-					<f:facet name="header">
-					
-				Atendimentos pendentes
-				 	
-						
-					</f:facet>
+                        <p:column headerText="Data" width="120" styleClass="text-center">
+                            <span class="p-column-title">Data:</span>
+                            <h:outputText value="#{pendentes[4]}">
+                                <f:convertDateTime pattern="dd/MM/yyyy HH:mm" />
+                            </h:outputText>
+                        </p:column>
 
-					<p:column headerText="Data:" width="20%">
+                        <p:column headerText="Campanha">
+                            <span class="p-column-title">Campanha:</span>
+                            <h:outputText value="#{pendentes[1]}" styleClass="font-medium"/>
+                        </p:column>
 
-						<h:outputLabel value="#{pendentes[4]}">
-							
+                        <p:column headerText="Cliente">
+                            <span class="p-column-title">Nome:</span>
+                            <h:outputText value="#{pendentes[2]}" />
+                        </p:column>
 
-						</h:outputLabel>
+                        <p:column headerText="CPF" width="130">
+                            <span class="p-column-title">CPF:</span>
+                            <div class="flex align-items-center">
+                                <i class="pi pi-id-card mr-2 text-gray-400"></i>
+                                <h:outputText value="#{pendentes[3]}" />
+                            </div>
+                        </p:column>
 
-					</p:column>
+                        <p:column width="100" styleClass="text-center">
 
-					<p:column headerText="Campanha:" width="20%">
+                            <p:commandButton icon="pi pi-eye"
+                                             title="Visualizar Detalhes"
+                                             styleClass="rounded-button ui-button-outlined ui-button-secondary mr-1"
+                                             onclick="PF('dlgVisualizarAtendimento').show();"
+                                             update=":formVisualizar"
+                                             action="#{meusAtendimentosBean.visualizarAtendimento(pendentes[0])}" />
 
-						<h:outputLabel value="#{pendentes[1]}" />
+                            <p:commandButton icon="pi pi-play"
+                                             title="Iniciar Atendimento"
+                                             styleClass="rounded-button ui-button-outlined ui-button-success"
+                                             oncomplete="PF('dlgConfirmarAntecipacaoPendente').show();"
+                                             global="false" update="@form">
+                                <f:setPropertyActionListener value="#{pendentes[0]}" target="#{meusAtendimentosBean.idAtendimento}" />
+                            </p:commandButton>
 
-					</p:column>
+                        </p:column>
 
-					<p:column headerText="Nome:" width="20%">
+                    </p:dataTable>
+                </div>
+            </div>
+        </div>
 
-						<h:outputLabel value="#{pendentes[2]}" />
+        <pe:tooltip global="true" myPosition="left center" atPosition="right center" styleClass="qtip-default" />
 
-					</p:column>
+        <p:confirmDialog id="dlgConfirmarAntecipacaoPendente" widgetVar="dlgConfirmarAntecipacaoPendente"
+                         responsive="true" appendTo="@(body)"
+                         header="Retomar Atendimento"
+                         message="Deseja iniciar este atendimento pendente agora?"
+                         icon="pi pi-exclamation-triangle text-orange-500">
 
-					<p:column headerText="CPF:" width="10%">
+            <p:commandButton id="simConfirmaPendente" value="Sim, Iniciar" icon="pi pi-check"
+                             action="#{meusAtendimentosBean.adiantarFichaAtendimentoNaoTrabalado()}"
+                             oncomplete="PF('dlgConfirmarAntecipacaoPendente').hide();"
+                             immediate="true"
+                             styleClass="ui-confirmdialog-yes ui-button-success font-bold"/>
 
-						<h:outputLabel value="#{pendentes[3]}" />
+            <p:commandButton id="naoConfirmaPendente" value="Não" icon="pi pi-times"
+                             type="button"
+                             onclick="PF('dlgConfirmarAntecipacaoPendente').hide();"
+                             styleClass="ui-confirmdialog-no ui-button-secondary ui-button-flat" />
 
-					</p:column>
-				
+        </p:confirmDialog>
 
-					<p:column width="10%">
-					
-					<p:commandButton icon="fa fa-list-alt p-mr-2"	title="Visualizar Atendimento"	styleClass="rounded-button ui-button-flat"	onclick="PF('dlgVisualizarAtendimento').show();"
-							update="formVisualizar"	action="#{meusAtendimentosBean.visualizarAtendimento(pendentes[0])}" />
-									
-						<p:commandButton styleClass="rounded-button ui-button-flat" icon="pi pi-chevron-circle-right"	oncomplete="PF('dlgConfirmarAntecipacaoPendente').show();" global="false" title="Iniciar Atendimento Pendente" update="@form">
-
-							
-							<f:setPropertyActionListener value="#{pendentes[0]}"	target="#{meusAtendimentosBean.idAtendimento}" />
-
-						</p:commandButton>	
-
-				</p:column>
-
-				</p:dataTable>
-
-		
-		</div>
-
-			<pe:tooltip global="true" myPosition="left center"	atPosition="right center" styleClass="qtip-default" />
-
-		</div>
-			
-		
-		<p:confirmDialog id="dlgConfirmarAntecipacaoPendente" responsive="true" widgetVar="dlgConfirmarAntecipacaoPendente" appendTo="@(body)"	message="Iniciar Atendimento Pendente?" header="Confirmar">
-
-			<p:commandButton id="simConfirmaPendente" value="Sim" icon="pi pi-check" action="#{meusAtendimentosBean.adiantarFichaAtendimentoNaoTrabalado()}" oncomplete="PF('dlgConfirmarAntecipacaoPendente').hide();" immediate="true" styleClass="ui-confirmdialog-yes"/>
-	
-			<p:commandButton id="naoConfirmaPendente" type="button" icon="pi pi-times"	onclick="PF('dlgConfirmarAntecipacaoPendente').hide();" value="Não" />
-
-		</p:confirmDialog>
-
-	</h:form>
+    </h:form>
 
 </ui:fragment>

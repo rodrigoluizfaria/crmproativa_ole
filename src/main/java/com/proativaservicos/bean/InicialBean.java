@@ -1,18 +1,27 @@
 package com.proativaservicos.bean;
 
 
+import com.proativaservicos.exception.ProativaException;
+import com.proativaservicos.model.ControlePausa;
+import com.proativaservicos.model.Pausa;
+import com.proativaservicos.model.Usuario;
 import com.proativaservicos.service.AtendimentoService;
+import com.proativaservicos.service.ControlePausaService;
 import com.proativaservicos.service.DashboardRepository;
 import com.proativaservicos.service.UsuarioLogadoService;
 import com.proativaservicos.util.ColorUtil;
 import com.proativaservicos.util.DateUtil;
+import com.proativaservicos.util.TresCPlusServiceUtil;
 import com.proativaservicos.util.constantes.DataEnum;
+import com.proativaservicos.util.constantes.MessagesEnum;
+import com.proativaservicos.util.constantes.TipoPabxEnum;
 import jakarta.annotation.PostConstruct;
 import jakarta.faces.view.ViewScoped;
 import jakarta.inject.Inject;
 import jakarta.inject.Named;
 import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.lang3.StringUtils;
+import org.omnifaces.util.Messages;
 import org.primefaces.model.charts.ChartData;
 import org.primefaces.model.charts.bar.BarChartDataSet;
 import org.primefaces.model.charts.bar.BarChartModel;
@@ -26,7 +35,7 @@ import java.util.*;
 
 @Named
 @ViewScoped
-public class DashboardBean extends GenericBean implements Serializable {
+public class InicialBean extends GenericBean implements Serializable {
 
     private DashboardRepository repository = new DashboardRepository();
 
@@ -34,7 +43,17 @@ public class DashboardBean extends GenericBean implements Serializable {
     private AtendimentoService serviceAtendimento;
 
     @Inject
+    private ControlePausaService serviceControlePausa;
+
+    @Inject
     private UsuarioLogadoService usuarioLogadoService;
+
+    @Inject
+    private TresCPlusServiceUtil tresCPlusServiceUtil;
+
+
+    private List<Pausa> listPausas;
+
     // Filtros
     private String periodoSelecionado = "DIARIO";
     private Date dataInicio = new Date();
@@ -59,12 +78,27 @@ public class DashboardBean extends GenericBean implements Serializable {
 
     private String periodoRank;
 
+    private Usuario usuario;
+
+    private ControlePausa controlePausa;
+
+    private String tempoPausa;
+
+    private boolean usuarioEmPausa;
+
+    private  List<Object[]> listMotivo;
+
+    private  List<Object[]> listStatus;
+
     @PostConstruct
     public void init() {
 
+        this.usuario = retornarUsuarioSessao();
+
+        this.controlePausa = this.serviceControlePausa.pesquisarControlePausaPorUsuario(this.usuario, new Date(System.currentTimeMillis()));
+        onRefreshPausa();
+
         periodoRank = "Hoje";
-
-
         atualizarDados();
 
     }
@@ -103,14 +137,13 @@ public class DashboardBean extends GenericBean implements Serializable {
 
         List<?> listResumo = this.serviceAtendimento.listarQuantidadeResumoDerivadosSac(this.dataInicio, this.dataFim);
 
-        List<Object[]> listMotivo = this.serviceAtendimento.buscarQuantidadePorMotivo(this.dataInicio, this.dataFim);
+        this.listMotivo = this.serviceAtendimento.buscarQuantidadePorMotivo(this.dataInicio, this.dataFim);
 
         this.listaRanking = serviceAtendimento.buscarTop10Usuarios(this.dataInicio, this.dataFim);
 
         this.tmaFormatado = this.serviceAtendimento.buscarTmaAtendimentosSac(this.dataInicio, this.dataFim);
 
-
-        List<Object[]> listStatus = this.serviceAtendimento.buscarQuantidadePorStatus(this.dataInicio, this.dataFim);
+         this.listStatus = this.serviceAtendimento.buscarQuantidadePorStatus(this.dataInicio, this.dataFim);
 
         if (CollectionUtils.isNotEmpty(listResumo)) {
 
@@ -159,6 +192,20 @@ public class DashboardBean extends GenericBean implements Serializable {
         createBarModel(listStatus);
     }
 
+    public void onRefreshPausa() {
+
+        if (this.usuario != null && this.controlePausa != null) {
+
+            this.tempoPausa = "";
+
+            DateUtil.builder(this.controlePausa.getDataCadastro()).calcularDiferencaDatas(DataEnum.SEGUNDO);
+
+            this.tempoPausa = DateUtil.builder(this.controlePausa.getDataCadastro(), new Date()).retornarDiferencaEntreDatasScala().getDataTexto();
+
+
+        }
+    }
+
     private String retornarPeridoRankString(){
 
 
@@ -168,7 +215,6 @@ public class DashboardBean extends GenericBean implements Serializable {
             String fim = DateUtil.builder(this.dataFim).formatarDataParaString("dd/MM/yyyy").getDataTexto();
 
             return inicio+" - "+fim;
-
 
         }
 
@@ -186,15 +232,14 @@ public class DashboardBean extends GenericBean implements Serializable {
 
     private void createDonutModel(List<Object[]> listMotivo) {
 
-
-        donutModel = new DonutChartModel();
-        ChartData data = new ChartData();
-        DonutChartDataSet dataSet = new DonutChartDataSet();
-
-        Map<String, Number> dados = new HashMap<>();
-        List<String> bgColors = new ArrayList<>();
-
         if (CollectionUtils.isNotEmpty(listMotivo)) {
+
+            donutModel = new DonutChartModel();
+            ChartData data = new ChartData();
+            DonutChartDataSet dataSet = new DonutChartDataSet();
+
+            Map<String, Number> dados = new HashMap<>();
+            List<String> bgColors = new ArrayList<>();
 
             for (Object[] objects : listMotivo) {
 
@@ -258,6 +303,36 @@ public class DashboardBean extends GenericBean implements Serializable {
             data.setLabels(labels);
             barModel.setData(data);
         }
+    }
+
+    public void removerPausa() {
+
+        if (this.usuario != null && this.controlePausa != null) {
+
+            try {
+
+                this.controlePausa.setDataRetorno(new Date());
+                alterarGenerico((Serializable) this.controlePausa);
+
+                this.controlePausa = null;
+                Messages.addGlobalInfo("Pausa removida com sucess.");
+                this.usuario.setPausaVonix(null);
+
+                if (this.usuario.getPontoAtendimento() != null && this.usuario.getPontoAtendimento().getPabx() != null && this.usuario.getPontoAtendimento().getPabx().getTipo().equals(TipoPabxEnum.TRES_CPLUS) && StringUtils.isNotBlank(this.usuario.getPontoAtendimento().getApiToken()))
+                    this.tresCPlusServiceUtil.sairPausa(this.usuario.getPontoAtendimento().getPabx().getUrl(), this.usuario.getPontoAtendimento().getApiToken());
+
+            } catch (ProativaException e){
+
+                System.err.println(e.getMessage());
+
+            } catch (Exception e) {
+
+                e.printStackTrace();
+                Messages.addGlobalError(MessagesEnum.ERRO_INERPERADO.constante);
+            }
+
+        }
+
     }
 
     // Getters e Setters obrigatórios para o JSF funcionar
@@ -327,5 +402,17 @@ public class DashboardBean extends GenericBean implements Serializable {
 
     public String getPeriodoRank() {
         return periodoRank;
+    }
+
+    public ControlePausa getControlePausa() {
+        return controlePausa;
+    }
+
+    public List<Object[]> getListStatus() {
+        return listStatus;
+    }
+
+    public List<Object[]> getListMotivo() {
+        return listMotivo;
     }
 }

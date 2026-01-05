@@ -1,0 +1,111 @@
+<ui:fragment xmlns="http://www.w3.org/1999/xhtml"
+             xmlns:h="http://java.sun.com/jsf/html"
+             xmlns:f="http://java.sun.com/jsf/core"
+             xmlns:ui="http://java.sun.com/jsf/facelets"
+             xmlns:p="http://primefaces.org/ui"
+             template="/WEB-INF/template.xhtml">
+
+    <p:growl id="grl" widgetVar="grl" globalOnly="true" escape="false" showSummary="false" life="5000" showDetail="true" sticky="false">
+        <p:autoUpdate/>
+    </p:growl>
+
+    <h:form id="pesqProduto" prependId="false">
+
+        <div class="ui-fluid">
+
+            <div class="surface-card shadow-2 border-round p-4 mb-4 border-left-3 border-blue-500">
+
+                <div class="flex align-items-center mb-4 border-bottom-1 border-100 pb-3">
+                    <i class="pi pi-search text-blue-500 text-xl mr-2"></i>
+                    <span class="text-900 font-bold text-lg">Pesquisa de Departamentos</span>
+                </div>
+
+                <div class="grid formgrid">
+
+                    <div class="field col-12 md:col-6">
+                        <p:outputLabel for="inputDpo" value="Nome / Descrição" styleClass="font-bold mb-2 block"/>
+                        <div class="ui-inputgroup">
+                            <span class="ui-inputgroup-addon"><i class="pi pi-tag"></i></span>
+                            <p:inputText id="inputDpo" value="#{cadastroDepartamentoBean.descricao}" placeholder="Digite para buscar..."/>
+                        </div>
+                    </div>
+
+                    <div class="field col-12 md:col-3">
+                        <p:outputLabel for="selectOneAtivo" value="Status de Acesso" styleClass="font-bold mb-2 block"/>
+                        <div class="ui-inputgroup">
+                            <span class="ui-inputgroup-addon"><i class="pi pi-lock"></i></span>
+                            <p:selectOneMenu id="selectOneAtivo" value="#{cadastroDepartamentoBean.acesso}">
+                                <f:selectItem itemLabel="Todos" noSelectionOption="true"/>
+                                <f:selectItems value="#{cadastroDepartamentoBean.acessoEnum}" var="acesso"
+                                               itemLabel="#{acesso.constante}" itemValue="#{acesso}"/>
+                            </p:selectOneMenu>
+                        </div>
+                    </div>
+
+                    <div class="field col-12 md:col-3 flex align-items-end justify-content-end gap-2">
+
+                        <p:commandButton value="Pesquisar" id="btnPesquisar"
+                                         action="#{cadastroDepartamentoBean.pesquisar()}" update="@form"
+                                         icon="pi pi-search"
+                                         styleClass="ui-button-primary font-bold shadow-1"/>
+
+                        <p:commandButton value="Novo" id="btnNovo"
+                                         actionListener="#{cadastroDepartamentoBean.novo()}" ajax="false"
+                                         icon="pi pi-plus"
+                                         styleClass="ui-button-success font-bold shadow-1"/>
+                    </div>
+                </div>
+
+                <div class="flex justify-content-end mt-2">
+                    <p:commandButton id="btnExportar" value="Exportar Lista" icon="pi pi-file-excel"
+                                     ajax="false"
+                                     rendered="#{sessionScope['usuario'].permissaoExportar}"
+                                     disabled="#{empty cadastroDepartamentoBean.listDepartamentos}"
+                                     immediate="true"
+                                     styleClass="ui-button-outlined ui-button-secondary text-sm">
+                        <p:dataExporter target="tableDpo" type="xls" fileName="relatorio_departamentos"/>
+                    </p:commandButton>
+                </div>
+
+            </div>
+
+            <div class="surface-card shadow-2 border-round p-0 overflow-hidden">
+
+                <p:dataTable id="tableDpo" value="#{cadastroDepartamentoBean.listDepartamentos}" var="depo"
+                             paginator="true" rows="10" paginatorPosition="bottom"
+                             emptyMessage="#{msg.emptyMessage}"
+                             stripedRows="true" showGridlines="true" reflow="true" size="small"
+                             rowKey="#{depo.id}"
+                             paginatorTemplate="{CurrentPageReport} {FirstPageLink} {PreviousPageLink} {PageLinks} {NextPageLink} {LastPageLink}"
+                             currentPageReportTemplate="{startRecord}-{endRecord} de {totalRecords}">
+
+                    <p:column headerText="Descrição" sortBy="#{depo.descricao}">
+                        <h:outputText value="#{depo.descricao}" styleClass="font-medium text-900"/>
+                    </p:column>
+
+                    <p:column headerText="Acesso" sortBy="#{depo.ativo.constante}" width="150" styleClass="text-center" exportValue="#{depo.ativo.constante}">
+                        <p:tag value="#{depo.ativo.constante}"
+                               severity="#{depo.ativo.constante eq 'ATIVO' ? 'success' : 'warning'}"
+                               rounded="true"/>
+                    </p:column>
+
+                    <p:column headerText="Usuários" sortBy="#{depo.listUsuariosDepartamento.size()}" width="120" styleClass="text-center" exportValue="#{depo.listUsuariosDepartamento.size()}">
+                        <span class="bg-blue-50 text-blue-600 border-circle w-2rem h-2rem flex align-items-center justify-content-center font-bold mx-auto">
+                            #{depo.listUsuariosDepartamento.size()}
+                        </span>
+                    </p:column>
+
+                    <p:column width="80" styleClass="text-center" exportable="false">
+                        <p:commandButton icon="pi pi-pencil" title="Editar"
+                                         styleClass="rounded-button ui-button-flat ui-button-secondary"
+                                         action="#{cadastroDepartamentoBean.editar(depo.id)}" ajax="false"/>
+                    </p:column>
+
+                </p:dataTable>
+
+            </div>
+        </div>
+
+    </h:form>
+
+</ui:fragment>

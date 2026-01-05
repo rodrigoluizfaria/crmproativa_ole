@@ -15,6 +15,8 @@ public class ProtocoloDTO {
     private String descricao;
     private Date dataAbertura;
     private Date dataPrazo;
+    private String usuarioN1;
+    private String usuarioN2;
 
     public ProtocoloDTO() {
     }
@@ -94,5 +96,21 @@ public class ProtocoloDTO {
 
     public void setIdAtendimento(Long idAtendimento) {
         this.idAtendimento = idAtendimento;
+    }
+
+    public String getUsuarioN1() {
+        return usuarioN1;
+    }
+
+    public void setUsuarioN1(String usuarioN1) {
+        this.usuarioN1 = usuarioN1;
+    }
+
+    public String getUsuarioN2() {
+        return usuarioN2;
+    }
+
+    public void setUsuarioN2(String usuarioN2) {
+        this.usuarioN2 = usuarioN2;
     }
 }

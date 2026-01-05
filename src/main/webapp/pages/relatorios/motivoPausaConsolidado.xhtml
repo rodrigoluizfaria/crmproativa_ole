@@ -3,187 +3,168 @@
                 xmlns:f="http://java.sun.com/jsf/core"
                 xmlns:ui="http://java.sun.com/jsf/facelets"
                 xmlns:comboempresa="http://java.sun.com/jsf/composite/componentes"
-                xmlns:p="http://primefaces.org/ui" template="/WEB-INF/template.xhtml">
+                xmlns:p="http://primefaces.org/ui"
+                template="/WEB-INF/template.xhtml">
 
 
     <ui:define name="viewname">
-
         <div class="bcca-breadcrumb">
             <div class="bcca-breadcrumb-item bg-primary-500 hover:bg-primary-700">
-                <p:link outcome="/pages/relatorios/motivoPausaConsolidado" styleClass="uppercase"
+                <p:link outcome="/pages/relatorios/motivoPausaConsolidado" styleClass="uppercase text-white"
                         style="text-decoration: none">MOTIVOS PAUSA CONSOLIDADO</p:link>
             </div>
             <div class="bcca-breadcrumb-item uppercase">RELATÓRIOS</div>
         </div>
-
     </ui:define>
 
     <ui:define name="content">
 
         <h:form id="formConteudo" prependId="false">
+            <p:growl id="grl" showDetail="true" life="5000" />
 
-            <div class="p-grid p-justify-center ">
+            <div class="surface-ground px-4 py-5 md:px-6 lg:px-8">
 
+                <div class="surface-card shadow-1 border-round p-4 mb-4">
+                    <span class="text-900 font-bold block border-bottom-1 border-100 pb-3 mb-4">
+                        <i class="pi pi-filter mr-2 text-primary"></i>Filtros de Pesquisa
+                    </span>
 
-                <p:growl id="grl" widgetVar="grl" globalOnly="true" escape="false" showSummary="false" life="8000"
-                         showDetail="true" sticky="false">
-
-                    <p:autoUpdate/>
-
-                </p:growl>
-
-
-                <div class="card">
-
-                    <div id="pamelPausa" class="ui-fluid formgrid grid">
-
-                        <comboempresa:selectEmpresa id="cmpEmpresa"
-                                                    managedBean="#{relatoriosMotivosPausaConsolidado}"
-                                                    value="#{relatoriosMotivosPausaConsolidado.empresa}" ajax="true"
-                                                    update=":formConteudo:selectOneEquipe :formConteudo:selectOneUsuarios"
-                                                    filter="false" style="md:col-3"/>
+                    <div class="ui-fluid formgrid grid">
 
                         <div class="field col-12 md:col-3">
+                            <label class="font-bold mb-2 block">Empresa</label>
+                            <comboempresa:selectEmpresa id="cmpEmpresa"
+                                                        managedBean="#{relatoriosMotivosPausaConsolidado}"
+                                                        value="#{relatoriosMotivosPausaConsolidado.empresa}"
+                                                        ajax="true"
+                                                        update=":formConteudo:selectOneEquipe :formConteudo:selectOneUsuarios"
+                                                        filter="true"/>
+                        </div>
 
-                            <p:outputLabel value="Equipe " for="selectOneEquipe"/>
-
-                            <p:selectOneMenu id="selectOneEquipe"
+                        <div class="field col-12 md:col-3">
+                            <p:outputLabel value="Equipe" for="selectOneEquipe" styleClass="font-bold mb-2 block"/>
+                            <p:selectOneMenu id="selectOneEquipe" styleClass="shadow-1"
                                              value="#{relatoriosMotivosPausaConsolidado.idEquipe}"
-                                             converter="omnifaces.SelectItemsConverter" filter="true"
-                                             filterMatchMode="contains" autoWidth="false">
-
-                                <f:selectItem itemLabel="Selecione" noSelectionOption="true" itemValue="#{null}"/>
-
+                                             converter="omnifaces.SelectItemsConverter"
+                                             filter="true" filterMatchMode="contains">
+                                <f:selectItem itemLabel="Todas" noSelectionOption="true" itemValue="#{null}"/>
                                 <f:selectItems value="#{relatoriosMotivosPausaConsolidado.listEquipes}" var="equipe"
                                                itemLabel="#{equipe.nome}" itemValue="#{equipe.id}"/>
-
                             </p:selectOneMenu>
-
                         </div>
 
                         <div class="field col-12 md:col-3">
+                            <p:outputLabel value="Operadores" for="selectOneUsuarios" styleClass="font-bold mb-2 block"/>
 
-                            <p:outputLabel value="Operadores " for="selectOneUsuarios"/>
-
-                            <p:selectCheckboxMenu id="selectOneUsuarios" multiple="true" label="Selecione"
+                            <p:selectCheckboxMenu id="selectOneUsuarios" multiple="true" label="Selecione..." styleClass="shadow-1"
                                                   value="#{relatoriosMotivosPausaConsolidado.listIdsOperadores}"
-                                                  filter="true" filterMatchMode="contains" autoWidth="false">
-
-
+                                                  filter="true" filterMatchMode="contains"
+                                                  updateLabel="true">
                                 <f:selectItems value="#{relatoriosMotivosPausaConsolidado.listOperadores}"
-                                               var="operador" itemLabel="#{operador.nome}"
-                                               itemValue="#{operador.id}"/>
-
+                                               var="operador" itemLabel="#{operador.nome}" itemValue="#{operador.id}"/>
                             </p:selectCheckboxMenu>
-
-                        </div>
-
-
-                        <div class="field col-12 md:col-3">
-
-                            <p:outputLabel value="Data inicio"/>
-
-                            <p:datePicker id="calendarDataInicioPesquisa"
-                                          value="#{relatoriosMotivosPausaConsolidado.dataInicio}"
-                                          showButtonBar="true" showIcon="true" readonlyInput="true"
-                                          pattern="dd/MM/yyyy" locale="pt_BR"/>
-
                         </div>
 
                         <div class="field col-12 md:col-3">
+                            <p:outputLabel value="Período" for="calendarDataInicioPesquisa" styleClass="font-bold mb-2 block"/>
+                            <div class="flex gap-2">
+                                <p:datePicker id="calendarDataInicioPesquisa"
+                                              value="#{relatoriosMotivosPausaConsolidado.dataInicio}"
+                                              showIcon="true" readonlyInput="true" placeholder="Início"
+                                              pattern="dd/MM/yyyy" locale="pt_BR" styleClass="w-full"/>
 
-                            <p:outputLabel value="Data fim"/>
+                                <span class="flex align-items-center text-500">-</span>
 
-                            <p:datePicker id="calendarDataFimPesquisa"
-                                          value="#{relatoriosMotivosPausaConsolidado.dataFinal}"
-                                          showButtonBar="true" showIcon="true" readonlyInput="true"
-                                          pattern="dd/MM/yyyy" locale="pt_BR"/>
-
+                                <p:datePicker id="calendarDataFimPesquisa"
+                                              value="#{relatoriosMotivosPausaConsolidado.dataFinal}"
+                                              showIcon="true" readonlyInput="true" placeholder="Fim"
+                                              pattern="dd/MM/yyyy" locale="pt_BR" styleClass="w-full"/>
+                            </div>
                         </div>
+
                     </div>
-                    <div class="  mt-5">
 
-                        <p:commandButton styleClass="mr-3 ui-button-raised"
+                    <div class="flex justify-content-end gap-2 pt-3 border-top-1 border-100 mt-2">
+                        <p:commandButton value="Pesquisar" id="btnPesquisar"
                                          actionListener="#{relatoriosMotivosPausaConsolidado.pesquisar()}"
-                                         value="Pesquisar" id="btnPesquisar" icon="pi pi-search"
-                                         update="@form"/>
+                                         icon="pi pi-search" update="@form"
+                                         styleClass="ui-button-primary font-bold px-4"/>
 
-                        <p:commandButton id="btnExportarPesquisa" icon="pi pi-upload"
-                                         styleClass="ui-button-outlined" value="#{msg.exportar}" ajax="false"
+                        <p:commandButton value="Exportar Excel" id="btnExportarPesquisa"
+                                         icon="pi pi-file-excel" ajax="false"
+                                         styleClass="ui-button-outlined ui-button-success font-bold"
                                          disabled="#{empty relatoriosMotivosPausaConsolidado.listTablePausaColunas}"
-                                         immediate="true"
                                          rendered="#{sessionScope['usuario'].permissaoExportar}">
-
-                            <p:dataExporter target="tablePausas" type="xls" fileName="relatorioPausa"/>
-
+                            <p:dataExporter target="tablePausas" type="xls" fileName="relatorio_pausas"/>
                         </p:commandButton>
-
                     </div>
-
-
                 </div>
 
-                <div class="mt-3">
+                <h:panelGroup layout="block" id="panelResultados" rendered="#{not empty relatoriosMotivosPausaConsolidado.mapPausaTotal}">
 
-                    <h:panelGroup class="card" layout="block">
+                    <div class="surface-card shadow-1 border-round p-4">
+                        <div class="flex justify-content-between align-items-center mb-3">
+                            <span class="text-xl font-bold text-900">Resultados Consolidados</span>
+                            <span class="text-sm text-500">Total de registros: #{relatoriosMotivosPausaConsolidado.listTablePausaColunas.size()}</span>
+                        </div>
 
-                        <h:outputText
-                                value="#{relatoriosMotivosPausaConsolidado.listTablePausaColunas eq null or not empty relatoriosMotivosPausaConsolidado.mapPausaTotal ? '' : msg.emptyMessage}"
-                                style="padding: 20px;"/>
-
-                        <p:dataTable id="tablePausas" var="relatorio" rows="50"
-                                     rendered="#{not empty relatoriosMotivosPausaConsolidado.mapPausaTotal}"
-                                     paginator="true" paginatorPosition="bottom" rowIndexVar="indice"
+                        <p:dataTable id="tablePausas" var="relatorio"
                                      value="#{relatoriosMotivosPausaConsolidado.listTablePausaColunas}"
-                                     emptyMessage="#{relatoriosMotivosPausaConsolidado.listTablePausaColunas eq null? '' : msg.emptyMessage}"
-                                     currentPageReportTemplate="[#{msg.totalDeRegistros}: {totalRecords}]"
-                                     paginatorTemplate="{CurrentPageReport}  {FirstPageLink} {PreviousPageLink} {PageLinks} {NextPageLink} {LastPageLink} {Exporters}"
-                                     styleClass="default">
+                                     rows="50" paginator="true" paginatorPosition="bottom"
+                                     rowIndexVar="indice"
+                                     stripedRows="true" showGridlines="true" size="small"
+                                     emptyMessage="#{msg.emptyMessage}"
+                                     paginatorTemplate="{CurrentPageReport} {FirstPageLink} {PreviousPageLink} {PageLinks} {NextPageLink} {LastPageLink}"
+                                     currentPageReportTemplate="{startRecord}-{endRecord} de {totalRecords}"
+                                     styleClass="mb-4">
 
-                            <p:ajax event="page" global="false"/>
-
-                            <p:ajax event="sort" global="false"/>
-
-                            <p:columns var="su"
+                            <p:columns var="su" value="#{relatoriosMotivosPausaConsolidado.titleColuns}"
+                                       headerText="#{su.header}"
+                                       sortBy="#{relatorio[su.indice]}"
                                        footerText="#{relatoriosMotivosPausaConsolidado.retornoFooter(su.header)}"
-                                       value="#{relatoriosMotivosPausaConsolidado.titleColuns}"
-                                       sortBy="#{relatorio[su.indice]}" headerText="#{su.header}" width="#{su.percent}">
+                                       width="#{su.percent}">
 
-                                <p:commandLink value="#{relatorio[su.indice]}" id="btnChartLabel" rendered="#{su.name}"
-                                               global="false"
-                                               actionListener="#{relatoriosMotivosPausaConsolidado.onModalCharts(indice)}"
-                                               update="chart"/>
+                                <h:panelGroup rendered="#{su.name}">
+                                    <p:commandLink value="#{relatorio[su.indice]}" id="btnChartLabel"
+                                                   styleClass="text-blue-600 font-bold no-underline hover:underline"
+                                                   actionListener="#{relatoriosMotivosPausaConsolidado.onModalCharts(indice)}"
+                                                   update="panelChartContent"
+                                                   process="@this"/>
 
-                                <p:overlayPanel id="panelChart" for="btnChartLabel" hideEffect="fade"
-                                                showCloseIcon="true">
+                                    <p:overlayPanel for="btnChartLabel" hideEffect="fade" showCloseIcon="true"
+                                                    dynamic="true" style="width: 450px;">
+                                        <h:panelGroup id="panelChartContent" layout="block">
+                                            <p:pieChart model="#{relatoriosMotivosPausaConsolidado.pieModel}"
+                                                        style="width: 100%; height: 300px;" />
+                                        </h:panelGroup>
+                                    </p:overlayPanel>
+                                </h:panelGroup>
 
-                                    <p:pieChart model="#{relatoriosMotivosPausaConsolidado.pieModel}"
-                                                style="width: 100%; height: 400px;" id="chart"/>
-
-
-                                </p:overlayPanel>
-
-                                <p:outputLabel value="#{relatorio[su.indice]}" rendered="#{su.name eq false}"/>
-
+                                <h:outputText value="#{relatorio[su.indice]}" rendered="#{not su.name}"/>
 
                             </p:columns>
 
-
                         </p:dataTable>
 
-                        <div class="col-12">
+                        <div class="border-top-1 border-200 pt-4 mt-4">
+                            <h4 class="text-900 m-0 mb-3">Visão Gráfica Geral</h4>
                             <p:barChart model="#{relatoriosMotivosPausaConsolidado.stackedBarModel}"
-                                        style="width: 100%; height: 500px;margin-top:60px"
-                                        rendered="#{not empty relatoriosMotivosPausaConsolidado.mapPausaTotal}"/>
+                                        style="width: 100%; height: 400px;"
+                                        responsive="true"/>
                         </div>
-                    </h:panelGroup>
+                    </div>
+                </h:panelGroup>
 
-                </div>
-
+                <h:panelGroup rendered="#{relatoriosMotivosPausaConsolidado.listTablePausaColunas eq null and not empty relatoriosMotivosPausaConsolidado.mapPausaTotal}"
+                              styleClass="block text-center mt-4">
+                    <div class="surface-card shadow-1 border-round p-5">
+                        <i class="pi pi-inbox text-5xl text-gray-400 mb-3"></i>
+                        <span class="block text-xl font-medium text-700">#{msg.emptyMessage}</span>
+                    </div>
+                </h:panelGroup>
 
             </div>
         </h:form>
-
 
     </ui:define>
 

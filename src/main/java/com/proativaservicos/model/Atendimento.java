@@ -56,6 +56,20 @@ public class Atendimento extends GenericAtendimento implements Serializable {
     @NotFound(action = NotFoundAction.IGNORE)
     private List<Portabilidade> listPortabilidades;
 
+    @Transient
+    private List<HistoricoAtividade> listHistoricoAtividades;
+
+    @Transient
+    private List<Atendimento> listAtendimentosFilhas;
+
+    @Transient
+    private Atendimento atendimentoPaiObj;
+
+    @Transient
+    private List<AtendimentoAudios> listaAudios;
+
+
+
     public Atendimento() {
 
         setPesoDiscagem(Integer.valueOf(0));
@@ -390,6 +404,22 @@ public class Atendimento extends GenericAtendimento implements Serializable {
         return builder.toString();
     }
 
+    public String getEnderecoCidadeUf() {
+
+        if (CollectionUtils.isEmpty(listEnderecos))
+            return null;
+
+        Endereco endereco = listEnderecos.get(0);
+
+        StringBuilder builder = new StringBuilder();
+
+
+        builder.append(endereco.getCidade()).append(" / ").append(endereco.getUf());
+
+
+        return builder.toString();
+    }
+
     public String getTelefoneResumido() {
 
         if (CollectionUtils.isEmpty(listTelefones))
@@ -448,5 +478,38 @@ public class Atendimento extends GenericAtendimento implements Serializable {
 
         // 3. Retorna TRUE se a data de comparação for DEPOIS do prazo
         return dataComparacao.after(getPrazoPrazoDemanda());
+    }
+
+    public List<HistoricoAtividade> getListHistoricoAtividades() {
+        return listHistoricoAtividades;
+    }
+
+    public void setListHistoricoAtividades(List<HistoricoAtividade> listHistoricoAtividades) {
+        this.listHistoricoAtividades = listHistoricoAtividades;
+    }
+
+
+    public List<Atendimento> getListAtendimentosFilhas() {
+        return listAtendimentosFilhas;
+    }
+
+    public void setListAtendimentosFilhas(List<Atendimento> listAtendimentosFilhas) {
+        this.listAtendimentosFilhas = listAtendimentosFilhas;
+    }
+
+    public Atendimento getAtendimentoPaiObj() {
+        return atendimentoPaiObj;
+    }
+
+    public void setAtendimentoPaiObj(Atendimento atendimentoPaiObj) {
+        this.atendimentoPaiObj = atendimentoPaiObj;
+    }
+
+    public List<AtendimentoAudios> getListaAudios() {
+        return listaAudios;
+    }
+
+    public void setListaAudios(List<AtendimentoAudios> listaAudios) {
+        this.listaAudios = listaAudios;
     }
 }

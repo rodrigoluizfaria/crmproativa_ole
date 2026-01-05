@@ -60,7 +60,7 @@ public class TratativaBackofficeBean extends GenericBean {
             this.atendimento.setResponsavelN2(retornarUsuarioSessao());
             this.atendimento.setUsuarioAlteracao(retornarUsuarioSessao());
             this.atendimento.setDataAlteracao(new Date());
-            this.atendimento.setDemandaEncerrada(Boolean.TRUE);
+           // this.atendimento.setDemandaEncerrada(Boolean.TRUE);
 
             aplicarRegraDevolucao(this.atendimento);
 
@@ -82,6 +82,7 @@ public class TratativaBackofficeBean extends GenericBean {
 
         if (atendimento.getStatus().getAcao().equals(AcaoStatusAtendimentoEnum.DEVOLVER) || atendimento.getStatus().getAcao().equals(AcaoStatusAtendimentoEnum.EM_ANALISE)) {
             atendimento.setDemandaEncerrada(Boolean.FALSE);
+            atendimento.setAtendimentoFinalizado(Boolean.FALSE);
 
         }
     }
@@ -100,6 +101,12 @@ public class TratativaBackofficeBean extends GenericBean {
 
         if (!erros.isEmpty()) {
             throw new ProativaException(String.join("; ", erros));
+        }
+
+        if(this.atendimento.getStatus().getAcao().equals(AcaoStatusAtendimentoEnum.CONCLUIR)) {
+            this.atendimento.setDemandaEncerrada(Boolean.TRUE);
+            this.atendimento.setAtendimentoFinalizado(Boolean.TRUE);
+
         }
 
 

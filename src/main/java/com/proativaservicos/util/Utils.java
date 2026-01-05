@@ -482,12 +482,9 @@ public class Utils {
 
 
     public static String getNumeroRandomico(){
+
         SecureRandom random = new SecureRandom();
-
-
         int numero = random.nextInt(100);
-
-
         String numeroFormatado = String.format("%02d", numero);
 
         return numeroFormatado;

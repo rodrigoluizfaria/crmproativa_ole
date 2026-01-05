@@ -31,7 +31,7 @@ public class DaoRegistroSistemaDiarioImp extends GenericDao<RegistroSistemaDiari
         query.append(" \tregistro_sistema_diario rs ");
         query.append(" \tJOIN usuario u ON u.ID = rs.usuario ");
         query.append(" \tLEFT join equipe_supervisor es on es.equipe  = u.equipe ");
-        query.append(" \tjoin equipe e on e.id = u.equipe ");
+        query.append(" \tLEFT join equipe e on e.id = u.equipe ");
         query.append(" \tJOIN usuario_logado ul on ul.usuario = rs.usuario ");
         query.append(" \tLEFT JOIN ponto_atendimento p on p.id = u.ponto_atendimento ");
         query.append(" \tWHERE ");
@@ -55,7 +55,7 @@ public class DaoRegistroSistemaDiarioImp extends GenericDao<RegistroSistemaDiari
         query.append(" ORDER BY ");
         query.append(" rs.data_cadastro DESC ");
 
-
+        System.out.println(query.toString());
         return searchEntidades(DaoEnum.NATIVE_OBJECT, query.toString(), parametros);
 
     }

@@ -1,6 +1,7 @@
 package com.proativaservicos.model;
 
 import com.google.common.collect.ComparisonChain;
+import com.proativaservicos.util.DateUtil;
 import com.proativaservicos.util.constantes.EstadoCivilEnum;
 import com.proativaservicos.util.constantes.TipoClienteEnum;
 import jakarta.persistence.*;
@@ -488,6 +489,22 @@ public class Cliente extends GenericControle {
         return builder.toString();
     }
 
+    public String getEnderecoCidadeUf() {
+
+        if (CollectionUtils.isEmpty(listEnderecos))
+            return null;
+
+        Endereco endereco = listEnderecos.get(0);
+
+        StringBuilder builder = new StringBuilder();
+
+
+        builder.append(endereco.getCidade()).append(" / ").append(endereco.getUf());
+
+
+        return builder.toString();
+    }
+
     public CartaoCredito getCartaoCreditoPrincipal() {
 
         if (CollectionUtils.isEmpty(listCartoesCreditos))
@@ -499,4 +516,15 @@ public class Cliente extends GenericControle {
 
 
     }
+
+    public Integer getIdade() {
+
+        if ( this.dataNascimento != null) {
+
+            return DateUtil.builder(this.dataNascimento).calcularIdade();
+
+        }
+        return null;
+    }
+
 }

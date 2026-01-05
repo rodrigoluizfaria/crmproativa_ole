@@ -423,5 +423,62 @@ public class DaoHistoricoAtendimentoImp extends GenericDao<HistoricoAtendimento>
         return searchEntidades(DaoEnum.HQL_QUERRY, jpql, parametros);
     }
 
+    public List<HistoricoAtendimento> pesquisarHistoricoSacPorAtendimento(Long idAtendimento) {
 
+        if (idAtendimento == null ) {
+            return Collections.emptyList();
+        }
+
+        String jpql = "select distinct h from HistoricoAtendimento h "
+                + " join fetch h.atendimento a "
+                + " join fetch a.cliente c "
+                + " join fetch h.usuario u "
+                + " join fetch h.motivo m "
+                + " join fetch h.subMotivo sb "
+                + " left join fetch h.statusAtendimento sa "
+                + " where a.id = :idAtendimento "
+                + "   and a.campanha.tipoCampanha = 'SAC'";
+
+        Map<String, Object> parametros = new HashMap<>();
+
+        parametros.put("idAtendimento", idAtendimento);
+
+        return searchEntidades(DaoEnum.HQL_QUERRY, jpql, parametros);
+    }
+
+    public List<Object[]> pesquisarHistoricoSacPorCpf(String cpf, Long idEmpresa) {
+
+        // TODO Auto-generated method stub
+
+        StringBuilder query = new StringBuilder();
+        query.append("select * from ( ");
+        query.append("select c.descricao as campanha, ");
+        query.append("\t   \t a.id as atendimento, ");
+        query.append("       u.nome as usuario, ");
+        query.append("       s.descricao as status, ");
+        query.append("       h.data_cadastro, ");
+        query.append("       h.agendamento, ");
+        query.append("       h.observacao, ");
+        query.append("       a.data_inicio_atendimento, ");
+        query.append("       a.data_fim_atendimento ");
+        query.append("from atendimento a ");
+        query.append("\t  join empresa e on a.empresa = e.id ");
+        query.append("\t  join cliente cl on a.cliente = cl.id ");
+        query.append("\t  join campanha c on a.campanha = c.id ");
+        query.append("\t  join historico_atendimento h on h.atendimento = a.id ");
+        query.append("    join status_atendimento s on h.status_atendimento = s.id ");
+        query.append("    join usuario u on h.usuario = u.id ");
+        query.append("where a.cpf = :cpf ");
+        query.append("\tand (e.id = :empresa or e.matriz = :empresa) ");
+        query.append("\tand a.status is not null ) a ");
+        query.append("order by a.data_cadastro desc ");
+
+        Map<String, Object> parametros = new HashMap<>();
+        parametros.put("cpf", cpf.replaceAll("\\D+", "").replaceAll(" ", ""));
+        parametros.put("empresa", idEmpresa);
+
+
+        return searchEntidades(DaoEnum.NATIVE_OBJECT, query.toString(), parametros);
+
+    }
 }

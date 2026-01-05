@@ -98,10 +98,10 @@ public class SupervisorMonitorAtividadeBean extends GenericBean implements Seria
 
     public void pesquisar() {
 
-        this.emAtendimento = null;
-        this.aguardando = null;
-        this.outros = null;
-        this.emPausa = null;
+        this.emAtendimento = 0;
+        this.aguardando = 0;
+        this.outros = 0;
+        this.emPausa = 0;
 
         if (this.usuario.getPerfil().equals(PerfilUsuarioEnum.SUPERVISOR)) {
 
@@ -133,7 +133,10 @@ public class SupervisorMonitorAtividadeBean extends GenericBean implements Seria
 
                 mapValues.get(idUsuario)[10] = DateUtil.builder((Date) ob[3], new Date()).calcularDiferencaDatas(DataEnum.SEGUNDO).getDataNumerico();
 
-                mapValues.get(idUsuario)[2] = EnumUtils.getEnum(TipoEventoEnum.class, (String) ob[2]);
+                TipoEventoEnum tipoEventoEnum = EnumUtils.getEnum(TipoEventoEnum.class, (String) ob[2]);
+
+                mapValues.get(idUsuario)[2] = tipoEventoEnum;
+
 
             }
 
@@ -154,7 +157,9 @@ public class SupervisorMonitorAtividadeBean extends GenericBean implements Seria
             values[2] = (String) ob[5];
             values[3] = (String) ob[6];
 
+
             String msgTempo = "";
+            contarDash(tipoEvento);
 
             if (tipoEvento.equals(TipoEventoEnum.INICIOU_ATENDIMENTO) || tipoEvento.equals(TipoEventoEnum.ENCERROU_ATENDIMENTO)) {
 
@@ -211,6 +216,34 @@ public class SupervisorMonitorAtividadeBean extends GenericBean implements Seria
             this.listaMonitorAgente.add(values);
 
         }
+        System.out.println("EM ATENDIMENTO: "+emAtendimento);
+    }
+
+    private void contarDash(TipoEventoEnum tipo) {
+
+        if (tipo == null)
+            return;
+
+        System.out.println(tipo.name());
+
+        switch (tipo) {
+            case INICIO_ATENDIMENTO:
+            case INICIOU_ATENDIMENTO:
+                this.emAtendimento += 1;
+                break;
+
+            case PAUSA:
+                emPausa += 1;
+                break;
+
+            case AGUARDANDO_ATENDIMENTO:
+                aguardando += 1;
+                break;
+
+            default:
+                outros++;
+                break;
+        }
 
     }
 
@@ -262,8 +295,6 @@ public class SupervisorMonitorAtividadeBean extends GenericBean implements Seria
 
         if (tipoEvento.equals(TipoEventoEnum.INICIOU_ATENDIMENTO)) {
 
-            this.emAtendimento = (this.emAtendimento == null) ? Integer.valueOf(0) : (this.emAtendimento + 1);
-
             String desc[] = evento.split("[|]");
 
             if (desc.length > 2)
@@ -278,12 +309,10 @@ public class SupervisorMonitorAtividadeBean extends GenericBean implements Seria
 
         } else if (tipoEvento.equals(TipoEventoEnum.PAUSA)) {
 
-            this.emPausa = (this.emPausa == null) ? Integer.valueOf(0) : (this.emPausa + 1);
             return "PAUSA: " + evento;
 
         } else if (tipoEvento.equals(TipoEventoEnum.AGUARDANDO_ATENDIMENTO)) {
 
-            this.aguardando = (this.aguardando == null) ? Integer.valueOf(0) : (this.aguardando + 1);
 
         } else if (tipoEvento.equals(TipoEventoEnum.LOGIN)) {
 
@@ -296,9 +325,6 @@ public class SupervisorMonitorAtividadeBean extends GenericBean implements Seria
 
             return "ACESSOU MEUS ATENDIMENTOS.";
 
-        } else {
-
-            this.outros = (this.outros == null) ? Integer.valueOf(0) : (this.outros + 1);
         }
 
         return evento;
@@ -308,14 +334,6 @@ public class SupervisorMonitorAtividadeBean extends GenericBean implements Seria
     public void onDeslogar(Long id) {
 
         invalidSession(id);
-    }
-
-    public void alterarVizualizacao() {
-
-        if (this.vizualizacao.equals("GRID"))
-            this.vizualizacao = "TABLE";
-        else
-            this.vizualizacao = "GRID";
     }
 
 
@@ -333,6 +351,46 @@ public class SupervisorMonitorAtividadeBean extends GenericBean implements Seria
 
 
     }
+
+
+    public String getEventoIcon(String evento) {
+
+
+        if (StringUtils.isBlank(evento))
+            return "pi pi-tag";
+
+        if (evento.equalsIgnoreCase("ATENDIMENTO INICIADO") || evento.toLowerCase().contains("atendimento iniciado"))
+            return "pi pi-phone";
+
+        if (evento.toLowerCase().contains("pausa"))
+            return "pi pi-clock";
+
+        if (evento.toLowerCase().equalsIgnoreCase("AGUARDANDO ATENDIMENTO"))
+            return "pi pi-check-circle";
+
+
+        return "pi pi-tag";
+    }
+
+    public String getEventoCss(String evento) {
+
+
+        if (StringUtils.isBlank(evento))
+            return "surface-100 text-600";
+
+        if (evento.equalsIgnoreCase("ATENDIMENTO INICIADO") || evento.toLowerCase().contains("atendimento iniciado"))
+            return "bg-green-100 text-green-700";
+
+        if (evento.toLowerCase().contains("pausa"))
+            return "bg-orange-100 text-orange-700";
+
+        if (evento.toLowerCase().equalsIgnoreCase("AGUARDANDO ATENDIMENTO"))
+            return "bg-blue-100 text-blue-700";
+
+
+        return "surface-100 text-600";
+    }
+
 
     public List<Equipe> getListEquipes() {
         return listEquipes;

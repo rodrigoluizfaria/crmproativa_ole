@@ -1,108 +1,112 @@
 <ui:composition xmlns="http://www.w3.org/1999/xhtml"
                 xmlns:ui="http://java.sun.com/jsf/facelets"
-                xmlns:p="http://primefaces.org/ui" template="/WEB-INF/template.xhtml">
-
+                xmlns:h="http://java.sun.com/jsf/html"
+                xmlns:f="http://java.sun.com/jsf/core"
+                xmlns:p="http://primefaces.org/ui"
+                template="/WEB-INF/template.xhtml">
 
     <ui:define name="viewname">
-
         <div class="bcca-breadcrumb">
-
             <div class="bcca-breadcrumb-item bg-primary-500 hover:bg-primary-700">
-
-                <p:link outcome="/pages/atendimento/meusAtendimentos" style="text-decoration: none">MEUS ATENDIMENTOS</p:link>
-
+                <p:link outcome="/pages/atendimento/meusAtendimentos" style="text-decoration: none" styleClass="text-white font-bold">
+                    MEUS ATENDIMENTOS
+                </p:link>
             </div>
-
-            <div class="bcca-breadcrumb-item ">ATENDIMENTO</div>
-
+            <div class="bcca-breadcrumb-item font-medium">ATENDIMENTO</div>
         </div>
-
     </ui:define>
 
     <ui:define name="content">
 
-        <p:growl id="grl" widgetVar="grl" globalOnly="true" escape="false" showSummary="false" life="8000"  showDetail="true" sticky="false">
-
+        <p:growl id="grl" widgetVar="grl" globalOnly="true" escape="false" showSummary="false" life="8000" showDetail="true" sticky="false">
             <p:autoUpdate/>
-
         </p:growl>
+        <p:growl id="grlNo" widgetVar="grlNo" escape="false" showSummary="false" life="8000" showDetail="true" sticky="false"/>
 
-        <p:growl id="grlNo" widgetVar="grl" escape="false" showSummary="false" life="8000" showDetail="true" sticky="false"/>
+        <div class="surface-ground px-4 py-5 md:px-6 lg:px-8">
 
-        <div class="card">
+            <div class="surface-card shadow-2 border-round border-left-3 border-primary-500 p-0">
 
-            <div class="ui-fluid formgrid grid">
+                <div class="ui-fluid">
 
-                <p:tabView style="width:100%" id="tabView" widgetVar="tabView">
+                    <p:tabView id="tabView" widgetVar="tabView" styleClass="border-none">
 
-                    <p:tab title="Agendamentos">
+                        <p:tab title="Agendamentos">
+                            <f:facet name="title">
+                                <i class="pi pi-calendar-plus mr-2"></i>Agendamentos
+                            </f:facet>
 
-                        <ui:include src="/pages/atendimento/meusAtendimentoAgendados.xhtml"/>
+                            <h:panelGroup layout="block" styleClass="p-3">
+                                <ui:include src="/pages/atendimento/meusAtendimentoAgendados.xhtml"/>
+                            </h:panelGroup>
+                        </p:tab>
 
-                    </p:tab>
+                        <p:tab title="Pendentes" titleStyleClass="#{meusAtendimentosBean.listAtendimentosPendentes eq null ? '' : 'tab_pendente text-red-500 font-bold'}">
+                            <f:facet name="title">
+                                <i class="pi pi-exclamation-circle mr-2 #{meusAtendimentosBean.listAtendimentosPendentes ne null ? 'text-red-500' : ''}"></i>Pendentes
+                            </f:facet>
 
-                    <p:tab title="Pendentes" titleStyleClass="#{meusAtendimentosBean.listAtendimentosPendentes eq null ? '' : 'tab_pendente'}">
+                            <h:panelGroup layout="block" styleClass="p-3">
+                                <ui:include src="/pages/atendimento/meusAtendimentoPendentes.xhtml"/>
+                            </h:panelGroup>
+                        </p:tab>
 
-                        <ui:include src="/pages/atendimento/meusAtendimentoPendentes.xhtml"/>
+                        <p:tab title="Pesquisa">
+                            <f:facet name="title">
+                                <i class="pi pi-search mr-2"></i>Pesquisa
+                            </f:facet>
 
-                    </p:tab>
+                            <h:panelGroup layout="block" styleClass="p-3">
+                                <ui:include src="/pages/atendimento/meusAtendimentoPesquisa.xhtml"/>
+                            </h:panelGroup>
+                        </p:tab>
 
-                    <p:tab title="Pesquisa">
+                        <p:tab title="Agenda" id="tabAgenda">
+                            <f:facet name="title">
+                                <i class="pi pi-calendar mr-2"></i>Agenda
+                            </f:facet>
 
-                        <p:fieldset style="border-style: none;">
+                            <h:panelGroup layout="block" styleClass="p-3">
+                                <ui:include src="/pages/atendimento/meusAtendimentoAgenda.xhtml"/>
+                            </h:panelGroup>
+                        </p:tab>
 
-                            <ui:include src="/pages/atendimento/meusAtendimentoPesquisa.xhtml"/>
+                        <p:tab title="Selecionar Campanha" rendered="#{sessionScope['usuario'].empresa.parametroUsuarioCampanha}">
+                            <f:facet name="title">
+                                <i class="pi pi-megaphone mr-2"></i>Campanha
+                            </f:facet>
 
-                        </p:fieldset>
+                            <h:panelGroup layout="block" styleClass="p-3">
+                                <ui:include src="/pages/atendimento/meusAtendimentoCampanha.xhtml"/>
+                            </h:panelGroup>
+                        </p:tab>
 
-                    </p:tab>
+                        <p:tab title="Adiantar Ficha" rendered="#{sessionScope['usuario'].empresa.parametroPermitirAntenciparAtendimento}">
+                            <f:facet name="title">
+                                <i class="pi pi-fast-forward mr-2"></i>Adiantar Ficha
+                            </f:facet>
 
-                    <p:tab title="Agenda" id="tabAgenda">
+                            <h:panelGroup layout="block" styleClass="p-3">
+                                <ui:include src="/pages/atendimento/meusAtendimentosAdiantar.xhtml"/>
+                            </h:panelGroup>
+                        </p:tab>
 
-                        <p:fieldset style="border-style: none;">
+                        <p:tab title="Histórico" rendered="#{sessionScope['usuario'].empresa.parametroHistoricoAtendimento}">
+                            <f:facet name="title">
+                                <i class="pi pi-history mr-2"></i>Histórico
+                            </f:facet>
 
-                            <ui:include src="/pages/atendimento/meusAtendimentoAgenda.xhtml"/>
+                            <h:panelGroup layout="block" styleClass="p-3">
+                                <ui:include src="/pages/atendimento/meusAtendimentoHistorico.xhtml"/>
+                            </h:panelGroup>
+                        </p:tab>
 
-                        </p:fieldset>
-
-                    </p:tab>
-
-                    <p:tab title="Selecionar Campanha" rendered="#{sessionScope['usuario'].empresa.parametroUsuarioCampanha}">
-
-                        <p:fieldset style="border-style: none;">
-
-                            <ui:include src="/pages/atendimento/meusAtendimentoCampanha.xhtml"/>
-
-                        </p:fieldset>
-
-                    </p:tab>
-
-                    <p:tab title="Adiantar Ficha de Atendimento" rendered="#{sessionScope['usuario'].empresa.parametroPermitirAntenciparAtendimento}">
-
-                        <p:fieldset style="border-style: none;">
-
-                            <ui:include src="/pages/atendimento/meusAtendimentosAdiantar.xhtml"/>
-
-                        </p:fieldset>
-
-                    </p:tab>
-
-                    <p:tab title="Histórico Ficha de Atendimento" rendered="#{sessionScope['usuario'].empresa.parametroHistoricoAtendimento}">
-
-                        <p:fieldset style="border-style: none;">
-
-                            <ui:include src="/pages/atendimento/meusAtendimentoHistorico.xhtml"/>
-
-                        </p:fieldset>
-
-                    </p:tab>
-
-                </p:tabView>
-
-                <ui:include src="/pages/atendimento/modalAgenda.xhtml"/>
-                <ui:include src="/pages/atendimento/atendimentoVisualizar.xhtml"/>
-
+                    </p:tabView>
+                </div>
             </div>
+
+            <ui:include src="/pages/atendimento/modalAgenda.xhtml"/>
+            <ui:include src="/pages/atendimento/atendimentoVisualizar.xhtml"/>
 
         </div>
 

@@ -1,12 +1,11 @@
 package com.proativaservicos.bean;
 
-import com.proativaservicos.model.Atendimento;
-import com.proativaservicos.model.GenericAtendimento;
-import com.proativaservicos.model.Motivo;
-import com.proativaservicos.model.Usuario;
+import com.proativaservicos.model.*;
 import com.proativaservicos.service.AtendimentoService;
+import com.proativaservicos.service.DepartamentoService;
 import com.proativaservicos.service.asynchronous.produtoseguros.TipoPagamento;
 import com.proativaservicos.util.constantes.AcaoStatusAtendimentoEnum;
+import com.proativaservicos.util.constantes.PerfilUsuarioEnum;
 import com.proativaservicos.util.constantes.TipoPaginaEnum;
 import jakarta.annotation.PostConstruct;
 import jakarta.faces.view.ViewScoped;
@@ -16,10 +15,8 @@ import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.lang3.StringUtils;
 
 import java.io.Serializable;
-import java.util.ArrayList;
-import java.util.Calendar;
-import java.util.Date;
-import java.util.List;
+import java.util.*;
+import java.util.stream.Collectors;
 
 @Named
 @ViewScoped
@@ -27,6 +24,9 @@ public class BackofficeFilaBean extends GenericBean implements Serializable {
 
     @Inject
     private AtendimentoService atendimentoService;
+
+    @Inject
+    private DepartamentoService departamentoService;
 
     private long idAtendimento;
 
@@ -40,6 +40,9 @@ public class BackofficeFilaBean extends GenericBean implements Serializable {
 
     private Atendimento atendimento;
 
+    private List<Departamento> listDepartamentosAssociados;
+
+
     private Usuario usuario;
 
     private TipoPaginaEnum tipoPaginaEnum;
@@ -47,16 +50,30 @@ public class BackofficeFilaBean extends GenericBean implements Serializable {
     private Atendimento atendimentoSelecionado;
 
     private String filtroProtocolo;
+
     private String filtroCpf;
+
     private String filtroStatus;
+
+    private Long idDepartamento;
 
     @PostConstruct
     public void init() {
 
         this.usuario = retornarUsuarioSessao();
-        this.tipoPaginaEnum = TipoPaginaEnum.PESQUISA;
-        carregarMocadaFila();
 
+        if (this.usuario.getPerfil().equals(PerfilUsuarioEnum.OPERADOR_BACKOFFICE)) {
+
+            this.listDepartamentosAssociados = this.departamentoService.pesquisarDepartamentosAssociadosPorUsuario(this.usuario.getId());
+
+        } else {
+
+            this.listDepartamentosAssociados = this.departamentoService.listarDepartamentosAtivos(null);
+        }
+
+        //  carregarMocadaFila();
+        pesquisar();
+        this.tipoPaginaEnum = TipoPaginaEnum.PESQUISA;
 
     }
 
@@ -68,11 +85,25 @@ public class BackofficeFilaBean extends GenericBean implements Serializable {
             encerrado = filtroStatus.equalsIgnoreCase("CONCLUIDO");
         }
 
-        this.listaAtendimentos = atendimentoService.pesquisarAtendimentosSacFiltros(
-                filtroProtocolo,
-                filtroCpf,
-                encerrado
-        );
+        if (!this.usuario.getPerfil().equals(PerfilUsuarioEnum.OPERADOR_BACKOFFICE)) {
+
+            this.listaAtendimentos = atendimentoService.pesquisarAtendimentosSacFiltros(
+                    filtroProtocolo,
+                    filtroCpf,
+                    encerrado,
+                    idDepartamento
+            );
+
+        } else if (CollectionUtils.isNotEmpty(listaAtendimentos)) {
+
+            List<Long> ids = listDepartamentosAssociados.stream().filter(Objects::nonNull).map(Departamento::getId).collect(Collectors.toList());
+            this.listaAtendimentos = atendimentoService.pesquisarAtendimentosSacFiltrosDepartamento(
+                    filtroProtocolo,
+                    filtroCpf,
+                    encerrado, ids, idDepartamento
+            );
+
+        }
 
         calcularKpis();
     }
@@ -264,5 +295,17 @@ public class BackofficeFilaBean extends GenericBean implements Serializable {
 
     public void setFiltroStatus(String filtroStatus) {
         this.filtroStatus = filtroStatus;
+    }
+
+    public List<Departamento> getListDepartamentosAssociados() {
+        return listDepartamentosAssociados;
+    }
+
+    public Long getIdDepartamento() {
+        return idDepartamento;
+    }
+
+    public void setIdDepartamento(Long idDepartamento) {
+        this.idDepartamento = idDepartamento;
     }
 }

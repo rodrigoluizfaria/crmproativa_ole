@@ -13,15 +13,15 @@
 		<meta name="viewport"
 			content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=0" />
 		<meta name="apple-mobile-web-app-capable" content="yes" />
-		
+
 		  <link rel="shortcut icon" href="#{request.contextPath}/resources/img/favicon.ico" type="image/x-icon" />
             <link rel="icon" href="#{request.contextPath}/resources/img/favicon.ico" type="image/x-icon" />
-		
+
 	</f:facet>
-	
-	
+
+
 	<title>Proatend</title>
-	
+
 </h:head>
 
 <h:body styleClass="login-body"	style="min-height: auto;">
@@ -42,14 +42,14 @@
 		<h:panelGroup id="pngLoginPanel" layout="block"	styleClass="login-panel p-grid">
 
 			<div class="p-col-12 logo-container">
-			
-				
-			 <p:graphicImage name="img/logos/logo_login.png"  styleClass="logo" /> 
-			 
+
+
+			 <p:graphicImage name="img/logos/logo_login.png"  styleClass="logo" />
+
 			<p:graphicImage name="img/login/icon-login.png"	 styleClass="login-icon" />
-				
+
 				<h2></h2>
-				
+
 			</div>
 
 			<div class="p-col-12">
@@ -63,9 +63,9 @@
 					<i class="pi pi-user" />
 
 				</div>
-				
+
 				<p:message for="username" />
-				
+
 			</div>
 
 			<div class="p-col-12">
@@ -88,11 +88,11 @@
 			</div>
 
 			<div class="p-col-12 chkbox-container">
-				
+
 			<div class="p-grid">
-				
+
 				<div class="p-col-12" style="padding: 10px 12px;">
-				
+
 <!--
 				    <p:selectBooleanCheckbox value="#{loginBean.manterConectado}" id="manterConectado"  /> Manter-me logado
 -->
@@ -101,9 +101,9 @@
 						                                Resetar senha.
                             </h:outputLink> -->
 					</div>
-					
+
 				</div>
-				
+
 			</div>
 
 			<div class="p-col-12 button-container">
@@ -115,21 +115,24 @@
 
 
 				</p:commandButton>
+                <div class="text-right mt-4">
+                    <span class="text-300 text-sm">2.35.1-ps</span>
+                </div>
 
 			</div>
-			
+
 		</h:panelGroup>
 
        <pe:blockUI widgetVar="blockUIWidget" target="pngLoginPanel"	id="blockUIWidget" css="{backgroundColor: '#fff'}">
-	
+
 					<h:panelGrid columns="2">
-			
+
 						<i class="pi pi-spin pi-spinner" style="font-size: 2rem" />
-			
+
 						<h:outputText value="Aguarde..." style="white-space: nowrap;" />
-			
+
 					</h:panelGrid>
-			
+
 			</pe:blockUI>
 	</h:form>
 
@@ -144,18 +147,18 @@
 				resetar sua senha, solicite o suporte.</span>
 			<p></p>
 		</div>
-		
+
 	</p:dialog>
 
 	<pe:blockUI target="dlgAlterarSenha" widgetVar="blockUIWidget1" css="{backgroundColor: '#fff'}">
-	
+
 		<h:panelGrid columns="2">
-		
+
 			<h:graphicImage library="img" name="ajax-loader.gif"	style="margin-right: 12px; vertical-align: middle;" />
 			<h:outputText value="Aguarde..." style="white-space: nowrap;" />
-		
+
 		</h:panelGrid>
-		
+
 	</pe:blockUI>
 
 

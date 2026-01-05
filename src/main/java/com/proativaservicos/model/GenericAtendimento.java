@@ -355,6 +355,11 @@ public abstract class GenericAtendimento extends GenericControle {
     @Column(name = "atendimento_finalizado")
     private Boolean atendimentoFinalizado;
 
+    @Column(name = "atendimento_pai")
+    private Boolean atendimentoPai;
+
+    @Column(name = "protocolo_pai")
+    private String protocoloPai;
 
     @Column(name = "fluxo_esteira")
     @Enumerated(EnumType.STRING)
@@ -437,6 +442,10 @@ public abstract class GenericAtendimento extends GenericControle {
     @JoinColumn(name = "responsaveln2")
     @ManyToOne(fetch = FetchType.LAZY)
     private Usuario responsavelN2;
+
+    @JoinColumn(name = "departamento_derivado")
+    @ManyToOne(fetch = FetchType.LAZY)
+    private Departamento departamentoDerivado;
 
     @Transient
     private Map<String, String> listInformacoesComplementares;
@@ -1808,6 +1817,30 @@ public abstract class GenericAtendimento extends GenericControle {
 
     public void setCliente(Cliente cliente) {
         this.cliente = cliente;
+    }
+
+    public Boolean getAtendimentoPai() {
+        return atendimentoPai;
+    }
+
+    public void setAtendimentoPai(Boolean atendimentoPai) {
+        this.atendimentoPai = atendimentoPai;
+    }
+
+    public String getProtocoloPai() {
+        return protocoloPai;
+    }
+
+    public void setProtocoloPai(String protocoloPai) {
+        this.protocoloPai = protocoloPai;
+    }
+
+    public Departamento getDepartamentoDerivado() {
+        return departamentoDerivado;
+    }
+
+    public void setDepartamentoDerivado(Departamento departamentoDerivado) {
+        this.departamentoDerivado = departamentoDerivado;
     }
 
     public String getDescricaoCliente() {

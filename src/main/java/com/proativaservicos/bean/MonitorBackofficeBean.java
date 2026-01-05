@@ -1,18 +1,21 @@
 package com.proativaservicos.bean;
 
 import java.math.BigDecimal;
-import java.math.BigInteger;
-import java.util.ArrayList;
-import java.util.Date;
-import java.util.List;
+import java.util.*;
 
 
+import com.proativaservicos.exception.ProativaException;
+import com.proativaservicos.model.Departamento;
+import com.proativaservicos.model.dto.ProdutividadeSacDto;
+import com.proativaservicos.service.AtendimentoService;
+import com.proativaservicos.service.DepartamentoService;
 import jakarta.annotation.PostConstruct;
 import jakarta.faces.view.ViewScoped;
 import jakarta.inject.Inject;
 import jakarta.inject.Named;
 import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.lang3.StringUtils;
+import org.omnifaces.util.Messages;
 import org.primefaces.model.charts.ChartData;
 import org.primefaces.model.charts.axes.cartesian.CartesianScales;
 import org.primefaces.model.charts.axes.cartesian.linear.CartesianLinearAxes;
@@ -34,630 +37,520 @@ import com.proativaservicos.util.ColorUtil;
 import com.proativaservicos.util.DateUtil;
 import com.proativaservicos.util.constantes.PerfilUsuarioEnum;
 import com.proativaservicos.util.constantes.TipoVisualizacaoEnum;
+import org.primefaces.model.charts.pie.PieChartDataSet;
+import org.primefaces.model.charts.pie.PieChartModel;
+import org.primefaces.model.charts.pie.PieChartOptions;
+import org.primefaces.model.charts.polar.PolarAreaChartDataSet;
+import org.primefaces.model.charts.polar.PolarAreaChartModel;
+import org.primefaces.model.charts.polar.PolarAreaChartOptions;
 
 @Named
 @ViewScoped
-public class MonitorBackofficeBean extends GenericBean{
-	
-	/**
-	 * 
-	 */
-	private static final long serialVersionUID = 1L;
-	
-	@Inject
-	private EquipeService equipeService;
-
-	@Inject
-	private AtendimentoBackofficeService serviceAtendimentoBackoffice;
-	
-	private Date dataInicioPanel;
-	
-	private Date dataFimPanel;
-	
-	private String periodo;
-
-	private DonutChartModel donutModelStatusAtendimento;
-
-	private DonutChartModel donutModelMotivo;
-	
-	private DonutChartModel donutSubmodelMotivo;
-	
-	private List<?> listStatusPainel;
-	
-	private List<?> listMotioPainel;
-	
-	private List<?> listSubmotioPainel;
-	
-	private List<?> listQuantidadeConsistencia;
-
-	private BarChartModel stackedBarModelConsistencia;
-	
-	private Long totalAtendimentos;
-	
-	private List<Equipe> listEquipes;
-	
-	private Usuario usuarioLogado;
-	
-
-
-	private List<?> listProdutividade;
-	
-	private Double totalAtendimento;
-	private Double totalPropostas;
-	
-	private Double totalPago;
-	private Double totalVendido;
-	private Double totalContratos;
-	private Double totalCpf;
-	
-	private Object[] produtividade;
-	
-	@PostConstruct
-	public void init() {
-		
-		this.usuarioLogado = retornarUsuarioSessao();
-		this.periodo = "DIA";
-		this.dataInicioPanel = new Date();
-		this.dataFimPanel  = new Date();
-		
-		criarDash();
-		pesquisarQuantidadeConsistencia();
-		
-	}
-	
-	
-	private void criarDash() {
-		
-		if(this.usuarioLogado.getPerfil().equals(PerfilUsuarioEnum.SUPERVISOR)) {
-			
-			this.listStatusPainel = this.serviceAtendimentoBackoffice.pesquisarRelatorioStatusAtendimentoPorSupervisor(this.usuarioLogado.getId(), this.dataInicioPanel, this.dataFimPanel, null);
-			this.listMotioPainel = this.serviceAtendimentoBackoffice.pesquisarRelatorioMotivoPorSupervisor(this.usuarioLogado.getId(),this.dataInicioPanel, this.dataFimPanel, null);
-			this.listSubmotioPainel = this.serviceAtendimentoBackoffice.pesquisarRelatorioSubmotivoPorSupervisor(this.usuarioLogado.getId(), this.dataInicioPanel, this.dataFimPanel, null);
-			
-		}else {
-					
-			this.listStatusPainel = this.serviceAtendimentoBackoffice.pesquisarRelatorioStatusAtendimentoPorUsuario(null, this.dataInicioPanel, this.dataFimPanel, null);
-			this.listMotioPainel = this.serviceAtendimentoBackoffice.pesquisarRelatorioMotivoPorUsuario(null,this.dataInicioPanel, this.dataFimPanel, null);
-			this.listSubmotioPainel = this.serviceAtendimentoBackoffice.pesquisarRelatorioSubmotivoPorUsuario(null, this.dataInicioPanel, this.dataFimPanel, null);
-			
-		}
-		
-		criarCharts(listStatusPainel, "Status Atendimento");
-		criarChatsMotivo();
-		criarChatsSubmotivo();
-				
-		
-	}
-	
-	private void pesquisarQuantidadeConsistencia() {
-		
-		this.listQuantidadeConsistencia = null;
-	
-		this.listProdutividade = null;
-					
-		if(usuarioLogado.getPerfil().equals(PerfilUsuarioEnum.SUPERVISOR)) {
-			
-			List<Long> ids =	this.equipeService.pesquisarCodEquipesPorSupervisor(usuarioLogado.getId());
-			
-			if(ids!=null) {
-				
-				this.listProdutividade =	this.serviceAtendimentoBackoffice.pesquisarProdutividadeAtendimento(ids.toArray(Long[]::new), null,  null, null,	retornarUsuarioSessao(), this.dataInicioPanel, this.dataFimPanel, TipoVisualizacaoEnum.EQUIPE);
-			
-			}else {
-				
-				this.listProdutividade = null;
-			}
-			
-			this.listQuantidadeConsistencia = this.serviceAtendimentoBackoffice.pesquisarQuantidadeConsistenciaSupervisor(retornarUsuarioSessao().getId(),this.dataInicioPanel,this.dataFimPanel);
-
-			
-		}else {
-			
-			this.listProdutividade =	this.serviceAtendimentoBackoffice.pesquisarProdutividadeAtendimento(null, null,  null, null,	retornarUsuarioSessao(), this.dataInicioPanel, this.dataFimPanel, TipoVisualizacaoEnum.EQUIPE);
-			this.listQuantidadeConsistencia = this.serviceAtendimentoBackoffice.pesquisarQuantidadeConsistencia(null,this.dataInicioPanel,this.dataFimPanel);
-
-		}
-		
-		somarTotaisFooter(listProdutividade);
-		criarDashConsistencia();
-	}
-	
-		
-	
-	
-	private void somarTotaisFooter(List<?> list) {
-		
-		this.totalAtendimento = Double.valueOf(0.0D);
-		this.totalCpf = Double.valueOf(0.0D);
-		this.totalContratos = Double.valueOf(0.0D);
-		this.totalPago = Double.valueOf(0.0D);
-		this.totalPropostas = Double.valueOf(0.0D);
-		this.totalVendido = Double.valueOf(0.0D);
-		
-		if(list!=null&&!list.isEmpty()) {
-		
-			for (Object obj : list) {
-				
-			this.totalAtendimento = Double.valueOf(this.totalAtendimento.doubleValue() + ((BigDecimal) ((Object[])obj)[2]).doubleValue());
-			this.totalCpf = Double.valueOf(this.totalCpf.doubleValue() + ((BigDecimal) ((Object[])obj)[1]).doubleValue());
-			this.totalPropostas = Double.valueOf(this.totalPropostas.doubleValue() + ((BigDecimal) ((Object[])obj)[3]).doubleValue());
-			this.totalContratos = Double.valueOf(this.totalContratos.doubleValue() + ((BigDecimal) ((Object[])obj)[4]).doubleValue());
-			this.totalVendido = Double.valueOf(this.totalVendido.doubleValue() + ((BigDecimal) ((Object[])obj)[5]).doubleValue());
-			this.totalPago = Double.valueOf(this.totalPago.doubleValue() + ((BigDecimal) ((Object[])obj)[6]).doubleValue());
-			
-			}
-			
-		}
-		
-		
-		
-	}
-	
-	
-	private void criarCharts(List<?> list, String title) {
-
-		this.donutModelStatusAtendimento = new DonutChartModel();
-
-		ChartData data = new ChartData();
-
-		DonutChartDataSet dataSet = new DonutChartDataSet();
-
-		List<Number> values = new ArrayList<>();
-		List<String> labels = new ArrayList<>();
-		List<String> bgColors = new ArrayList<>();
-
-		for (Object linhaOb : list) {
-
-			Object[] row = (Object[]) linhaOb;
-
-			if (row[0] != null)
-				values.add((BigDecimal) row[0]);
-			else
-				values.add(0);
-
-			labels.add((String) row[2]);
-			String cor = ColorUtil.getColorDinamic();
-			bgColors.add(cor);
-			row[3] = cor;
-		}
-
-		dataSet.setData(values);
-		dataSet.setBackgroundColor(bgColors);
-		data.addChartDataSet(dataSet);
-		data.setLabels(labels);
-
-		Legend legend = new Legend();
-		legend.setDisplay(false);
-
-		Title tile = new Title();
-		tile.setText(title);
-
-		DonutChartOptions op = new DonutChartOptions();
-		op.setLegend(legend);
-		op.setTitle(tile);
-
-		this.donutModelStatusAtendimento.setOptions(op);
-
-		this.donutModelStatusAtendimento.setData(data);
-
-	}
-	
-	private void criarChatsMotivo() {
-
-		ChartData data = criarDataSet(this.listMotioPainel);
-
-		DonutChartOptions op = new DonutChartOptions();
-		Legend legend = new Legend();
-		legend.setDisplay(false);
-
-		op.setLegend(legend);
-
-		this.donutModelMotivo = new DonutChartModel();
-		this.donutModelMotivo.setOptions(op);
-		this.donutModelMotivo.setData(data);
-
-	}
-
-	private void criarChatsSubmotivo() {
-
-		ChartData data = criarDataSet(this.listSubmotioPainel);
-
-		DonutChartOptions op = new DonutChartOptions();
-		Legend legend = new Legend();
-		legend.setDisplay(false);
-
-		op.setLegend(legend);
-
-		this.donutSubmodelMotivo = new DonutChartModel();
-		this.donutSubmodelMotivo.setOptions(op);
-		this.donutSubmodelMotivo.setData(data);
-
-	}
-
-	private ChartData criarDataSet(List<?> list) {
-
-		ChartData data = new ChartData();
-
-		DonutChartDataSet dataSet = new DonutChartDataSet();
-
-		List<Number> values = new ArrayList<>();
-		List<String> labels = new ArrayList<>();
-		List<String> bgColors = new ArrayList<>();
-
-		for (Object linhaOb : list) {
-
-			Object[] row = (Object[]) linhaOb;
-
-			if (row[0] != null)
-				values.add((BigDecimal) row[0]);
-			else
-				values.add(0);
-
-			labels.add((String) row[2]);
-			String cor = ColorUtil.getColorDinamic();
-			bgColors.add(cor);
-			row[3] = cor;
-		}
-
-		dataSet.setData(values);
-		dataSet.setBackgroundColor(bgColors);
-		data.addChartDataSet(dataSet);
-		data.setLabels(labels);
-
-		return data;
-
-	}
-	
-	private void criarDashConsistencia() {
-		
-		this.stackedBarModelConsistencia = new BarChartModel();
-		ChartData data = new ChartData();
-		
-	    List<String> labels = new ArrayList<>();
-		 
-	    BarChartDataSet barDataSetTratada= new BarChartDataSet();
-	    BarChartDataSet barDataSetNaoTratada= new BarChartDataSet();
-	    
-	    barDataSetTratada.setLabel("Tratada");
-	    barDataSetTratada.setBackgroundColor("rgb(75, 192, 192)");
-	    
-	    barDataSetNaoTratada.setLabel("Não tratadas");
-	    barDataSetNaoTratada.setBackgroundColor("rgb(255, 99, 132)");
-	    List<Number> dataSetTratada = new ArrayList<>();
-	    List<Number> dataSetNaoTratada = new ArrayList<>();
-	    
-	    for (Object objects : this.listQuantidadeConsistencia) {
-		    	
-	    	Object [] row = (Object[]) objects;
-			
-			labels.add(String.valueOf(row[0].toString()+" - "+StringUtils.abbreviate(row[1].toString(), 20) ));
-				
-	        dataSetTratada.add((Integer) row[4]);
-	       
-	        dataSetNaoTratada.add((Integer) row[5]);
-	       
-		}
-	    
-	    barDataSetNaoTratada.setData(dataSetNaoTratada);
-	    
-	    barDataSetTratada.setData(dataSetTratada);
-	    data.addChartDataSet(barDataSetTratada);
-	    data.addChartDataSet(barDataSetNaoTratada);
-	    BarChartOptions options = new BarChartOptions();
-        CartesianScales cScales = new CartesianScales();
-        CartesianLinearAxes linearAxes = new CartesianLinearAxes();
-        linearAxes.setStacked(true);
-        linearAxes.setOffset(true);
-        cScales.addXAxesData(linearAxes);
-        cScales.addYAxesData(linearAxes);
-        options.setScales(cScales);
-
-        Title title = new Title();
-        title.setDisplay(true);
-        title.setText("Consistência ");
-        options.setTitle(title);
-
-        Tooltip tooltip = new Tooltip();
-        tooltip.setMode("index");
-        tooltip.setIntersect(false);
-        options.setTooltip(tooltip);
-		data.setLabels(labels);
-		this.stackedBarModelConsistencia.setOptions(options);
-		this.stackedBarModelConsistencia.setData(data);
-		
-	}
-
-	public void onAtualizarPanel() {
-
-		this.produtividade = null;
-		this.listProdutividade = null;
-		
-		switch (periodo) {
-
-		case "DIA":
-
-			this.dataInicioPanel = new Date();
-			this.dataFimPanel = new Date();
-			break;
-
-		case "MES":
-
-			this.dataInicioPanel = DateUtil.builder(new Date()).retornarDataPrimeiroDiaMes().retornarDataComHoraInicial().getData();
-			this.dataFimPanel = DateUtil.builder(new Date()).retornarDataUltimoDiaMes().retornarDataComHoraFinal().getData();
-			break;
-
-		case "SEMANA":
-
-			this.dataInicioPanel = DateUtil.builder(new Date()).retornarDataPrimeiroDiaSemana().retornarDataComHoraInicial().getData();
-			this.dataFimPanel = DateUtil.builder(new Date()).retornarDataUltimoDiaSemana().retornarDataComHoraFinal().getData();
-
-			break;
-
-		default:
-			
-			this.dataInicioPanel = DateUtil.builder(new Date()).retornarDataComHoraInicial().getData();
-			this.dataFimPanel =  DateUtil.builder(new Date()).retornarDataComHoraFinal().getData();
-			break;
-		}
-		
-		criarDash();
-		pesquisarQuantidadeConsistencia();
-
-	}
-	
-	
-	public Long retornarTotalFooter(List<?> list) {
-
-		if (CollectionUtils.isNotEmpty(list)) {
-
-			BigDecimal decimal = BigDecimal.ZERO;
-
-			for (Object linhaOb : list) {
-
-				Object[] row = (Object[]) linhaOb;
-
-				if (row[0] != null)
-					decimal = decimal.add((BigDecimal) row[0]);
-
-			}
-			
-			
-			return decimal.longValue();
-
-		}
+public class MonitorBackofficeBean extends GenericBean {
 
-		return null;
-	}
+    /**
+     *
+     */
+    private static final long serialVersionUID = 1L;
 
-	public Integer retornarQuantidadeTotalFooter(List<?> list) {
+    @Inject
+    private EquipeService equipeService;
 
-		if (CollectionUtils.isNotEmpty(list)) {
+    @Inject
+    private AtendimentoBackofficeService serviceAtendimentoBackoffice;
 
-			BigInteger total = BigInteger.ZERO;
+    @Inject
+    private AtendimentoService serviceAtendimento;
 
-			for (Object linhaOb : list) {
+    @Inject
+    private DepartamentoService seviceDepartamento;
 
-				Object[] row = (Object[]) linhaOb;
+    private Date dataInicioPanel;
 
-				if (row[1] != null)
-					total = total.add((BigInteger) row[1]);
+    private Date dataFimPanel;
 
-			}
-			
-			
-			return total.intValue();
-		}
+    private String periodo;
 
-		return null;
-	}
-	public Date getDataInicioPanel() {
-		return dataInicioPanel;
-	}
+    private DonutChartModel donutModelStatusAtendimento;
 
+    private DonutChartModel donutModelMotivo;
 
-	public void setDataInicioPanel(Date dataInicioPanel) {
-		this.dataInicioPanel = dataInicioPanel;
-	}
+    private DonutChartModel donutSubmodelMotivo;
 
+    private List<ProdutividadeSacDto> listStatusPainel;
 
-	public Date getDataFimPanel() {
-		return dataFimPanel;
-	}
+    private List<ProdutividadeSacDto> listMotioPainel;
 
+    private List<ProdutividadeSacDto> listSubmotioPainel;
 
-	public void setDataFimPanel(Date dataFimPanel) {
-		this.dataFimPanel = dataFimPanel;
-	}
+    private List<ProdutividadeSacDto> listTotal;
 
 
-	public String getPeriodo() {
-		return periodo;
-	}
+   private PolarAreaChartModel polarAreaModelConsistencia;
 
 
-	public void setPeriodo(String periodo) {
-		this.periodo = periodo;
-	}
+    private List<Equipe> listEquipes;
 
+    private List<Departamento> listDepartamentos;
 
-	public DonutChartModel getDonutModelStatusAtendimento() {
-		return donutModelStatusAtendimento;
-	}
+    private Usuario usuarioLogado;
 
 
-	public void setDonutModelStatusAtendimento(DonutChartModel donutModelStatusAtendimento) {
-		this.donutModelStatusAtendimento = donutModelStatusAtendimento;
-	}
+    private Long totalAtendimento;
+    private Long totalFinalizado;
+    private Long totalPrazo;
+    private Long totalPrazoExcedido;
+    private Long totalCpf;
 
+    private Object[] produtividade;
 
-	public DonutChartModel getDonutModelMotivo() {
-		return donutModelMotivo;
-	}
+    @PostConstruct
+    public void init() {
 
+        this.usuarioLogado = retornarUsuarioSessao();
+        this.periodo = "DIA";
+        this.dataInicioPanel = new Date();
+        this.dataFimPanel = new Date();
+        inicializarModelosVazios();
+        criarDash();
 
-	public void setDonutModelMotivo(DonutChartModel donutModelMotivo) {
-		this.donutModelMotivo = donutModelMotivo;
-	}
 
+    }
 
-	public DonutChartModel getDonutSubmodelMotivo() {
-		return donutSubmodelMotivo;
-	}
 
+    private void criarDash() {
 
-	public void setDonutSubmodelMotivo(DonutChartModel donutSubmodelMotivo) {
-		this.donutSubmodelMotivo = donutSubmodelMotivo;
-	}
 
+        this.listStatusPainel = this.serviceAtendimentoBackoffice.pesquisarProdutividadeAtendimentoSac(null, null, null, null, this.dataInicioPanel, this.dataFimPanel, TipoVisualizacaoEnum.STATUS);
+        this.listMotioPainel = this.serviceAtendimentoBackoffice.pesquisarProdutividadeAtendimentoSac(null, null, null, null, this.dataInicioPanel, this.dataFimPanel, TipoVisualizacaoEnum.MOTIVO);
+        this.listSubmotioPainel = this.serviceAtendimentoBackoffice.pesquisarProdutividadeAtendimentoSac(null, null, null, null, this.dataInicioPanel, this.dataFimPanel, TipoVisualizacaoEnum.SUBMOTIVO);
 
-	public List<?> getListStatusPainel() {
-		return listStatusPainel;
-	}
+        criarCharts(listStatusPainel, "Status Atendimento");
+        criarChatsMotivo();
+        criarChatsSubmotivo();
 
+        pesquisarQuantidadeTotal();
 
-	public void setListStatusPainel(List<?> listStatusPainel) {
-		this.listStatusPainel = listStatusPainel;
-	}
 
+    }
 
-	public List<?> getListMotioPainel() {
-		return listMotioPainel;
-	}
+    private void pesquisarQuantidadeTotal() {
 
 
-	public void setListMotioPainel(List<?> listMotioPainel) {
-		this.listMotioPainel = listMotioPainel;
-	}
+        this.listTotal = this.serviceAtendimentoBackoffice.pesquisarProdutividadeAtendimentoSacTotal(null, null, null, null, this.dataInicioPanel, this.dataFimPanel);
 
+        somarTotaisFooter(listTotal);
+        criarDashConsistencia();
+    }
 
-	public List<?> getListSubmotioPainel() {
-		return listSubmotioPainel;
-	}
 
+    private void somarTotaisFooter(List<ProdutividadeSacDto> list) {
 
-	public void setListSubmotioPainel(List<?> listSubmotioPainel) {
-		this.listSubmotioPainel = listSubmotioPainel;
-	}
+        this.totalAtendimento = 0L;
+        this.totalCpf = 0L;
+        this.totalPrazo = 0L;
+        this.totalPrazoExcedido = 0L;
+        this.totalFinalizado = 0L;
 
+        if (CollectionUtils.isNotEmpty(list)) {
 
-	public List<?> getListQuantidadeConsistencia() {
-		return listQuantidadeConsistencia;
-	}
+            for (ProdutividadeSacDto obj : list) {
 
+                this.totalAtendimento = this.totalAtendimento + safeLong(obj.getQtdeAtendimento());
+                this.totalCpf = this.totalCpf + safeLong(obj.getQtdeCpf());
+                this.totalPrazo = totalPrazo + safeLong(obj.getQtdadeDemandaNoPrazo());
+                this.totalPrazoExcedido = totalPrazoExcedido + safeLong(obj.getQtdadeDemandaPrazoEstourado());
+                this.totalFinalizado = totalFinalizado + safeLong(obj.getQtdadeConcluido());
 
-	public void setListQuantidadeConsistencia(List<?> listQuantidadeConsistencia) {
-		this.listQuantidadeConsistencia = listQuantidadeConsistencia;
-	}
+                System.out.print(this.totalAtendimento);
+                System.out.print(" - " + this.totalCpf);
+                System.out.print(" - " + this.totalPrazo);
+                System.out.print(" - " + this.totalPrazoExcedido);
+                System.out.println(" - " + this.totalFinalizado);
 
 
-	public BarChartModel getStackedBarModelConsistencia() {
-		return stackedBarModelConsistencia;
-	}
+            }
 
+        }
 
-	public void setStackedBarModelConsistencia(BarChartModel stackedBarModelConsistencia) {
-		this.stackedBarModelConsistencia = stackedBarModelConsistencia;
-	}
 
+    }
 
-	public Long getTotalAtendimentos() {
-		return totalAtendimentos;
-	}
 
+    private void criarCharts(List<ProdutividadeSacDto> list, String title) {
 
-	public void setTotalAtendimentos(Long totalAtendimentos) {
-		this.totalAtendimentos = totalAtendimentos;
-	}
+        if (CollectionUtils.isNotEmpty(list)) {
 
+            this.donutModelStatusAtendimento = new DonutChartModel();
 
-	public List<Equipe> getListEquipes() {
-		return listEquipes;
-	}
+            ChartData data = new ChartData();
 
+            DonutChartDataSet dataSet = new DonutChartDataSet();
 
-	public void setListEquipes(List<Equipe> listEquipes) {
-		this.listEquipes = listEquipes;
-	}
+            List<Number> values = new ArrayList<>();
+            List<String> labels = new ArrayList<>();
+            List<String> bgColors = new ArrayList<>();
 
+            for (ProdutividadeSacDto linhaOb : list) {
 
-	public List<?> getListProdutividade() {
-		return listProdutividade;
-	}
+                values.add(safeLong(linhaOb.getQtdeAtendimento()));
+                labels.add(linhaOb.getVisualizacao());
+                String cor = ColorUtil.getColorDinamic();
+                linhaOb.setCor(cor);
+                bgColors.add(cor);
 
+            }
 
-	public void setListProdutividade(List<?> listProdutividade) {
-		this.listProdutividade = listProdutividade;
-	}
+            dataSet.setData(values);
+            dataSet.setBackgroundColor(bgColors);
+            data.addChartDataSet(dataSet);
+            data.setLabels(labels);
 
+            Legend legend = new Legend();
+            legend.setDisplay(false);
 
-	public Double getTotalAtendimento() {
-		return totalAtendimento;
-	}
+            Title tile = new Title();
+            tile.setText(title);
 
+            DonutChartOptions op = new DonutChartOptions();
+            op.setLegend(legend);
+            op.setTitle(tile);
 
-	public void setTotalAtendimento(Double totalAtendimento) {
-		this.totalAtendimento = totalAtendimento;
-	}
+            this.donutModelStatusAtendimento.setOptions(op);
+            this.donutModelStatusAtendimento.setData(data);
+        }
+    }
 
+    private long safeLong(Long l) {
+        if (l == null) {
+            return 0;
+        }
+        return l;
+    }
 
-	public Double getTotalPropostas() {
-		return totalPropostas;
-	}
+    private void criarChatsMotivo() {
 
+        if (CollectionUtils.isNotEmpty(this.listMotioPainel)) {
 
-	public void setTotalPropostas(Double totalPropostas) {
-		this.totalPropostas = totalPropostas;
-	}
+            ChartData data = criarDataSet(this.listMotioPainel);
 
+            DonutChartOptions op = new DonutChartOptions();
+            Legend legend = new Legend();
+            legend.setDisplay(false);
 
-	public Double getTotalPago() {
-		return totalPago;
-	}
+            op.setLegend(legend);
 
+            this.donutModelMotivo = new DonutChartModel();
+            this.donutModelMotivo.setOptions(op);
+            this.donutModelMotivo.setData(data);
+        }
+    }
 
-	public void setTotalPago(Double totalPago) {
-		this.totalPago = totalPago;
-	}
+    private void criarChatsSubmotivo() {
 
+        if (CollectionUtils.isNotEmpty(this.listMotioPainel)) {
 
-	public Double getTotalVendido() {
-		return totalVendido;
-	}
+            ChartData data = criarDataSet(this.listSubmotioPainel);
 
+            DonutChartOptions op = new DonutChartOptions();
+            Legend legend = new Legend();
+            legend.setDisplay(false);
 
-	public void setTotalVendido(Double totalVendido) {
-		this.totalVendido = totalVendido;
-	}
+            op.setLegend(legend);
 
+            this.donutSubmodelMotivo = new DonutChartModel();
+            this.donutSubmodelMotivo.setOptions(op);
+            this.donutSubmodelMotivo.setData(data);
+        }
+    }
 
-	public Double getTotalContratos() {
-		return totalContratos;
-	}
+    private ChartData criarDataSet(List<ProdutividadeSacDto> list) {
 
+        ChartData data = new ChartData();
 
-	public void setTotalContratos(Double totalContratos) {
-		this.totalContratos = totalContratos;
-	}
+        DonutChartDataSet dataSet = new DonutChartDataSet();
 
+        List<Number> values = new ArrayList<>();
+        List<String> labels = new ArrayList<>();
+        List<String> bgColors = new ArrayList<>();
 
-	public Double getTotalCpf() {
-		return totalCpf;
-	}
+        for (ProdutividadeSacDto linhaOb : list) {
 
+            values.add(safeLong(linhaOb.getQtdeAtendimento()));
+            labels.add(linhaOb.getVisualizacao());
+            String cor = ColorUtil.getColorDinamic();
 
-	public void setTotalCpf(Double totalCpf) {
-		this.totalCpf = totalCpf;
-	}
+            if (StringUtils.isNotBlank(linhaOb.getCor()))
+                bgColors.add(linhaOb.getCor());
+            else
+                bgColors.add(cor);
 
+        }
 
-	public Object[] getProdutividade() {
-		return produtividade;
-	}
+        dataSet.setData(values);
+        dataSet.setBackgroundColor(bgColors);
+        data.addChartDataSet(dataSet);
+        data.setLabels(labels);
 
+        return data;
 
-	public void setProdutividade(Object[] produtividade) {
-		this.produtividade = produtividade;
-	}
+    }
 
+    private void criarDashConsistencia() {
 
+        this.polarAreaModelConsistencia = new PolarAreaChartModel(); // agora é Polar Area Chart
+
+        if (CollectionUtils.isNotEmpty(this.listTotal)) {
+            ChartData data = new ChartData();
+            List<String> labels = new ArrayList<>();
+
+            PolarAreaChartDataSet polarDataSet = new PolarAreaChartDataSet();
+
+            // cores para cada setor
+            polarDataSet.setBackgroundColor(List.of("rgb(75, 192, 192)", "rgb(255, 99, 132)"));
+
+            List<Number> valores = new ArrayList<>();
+            valores.add(safeLong(this.listTotal.get(0).getQtdadeConcluido()));   // concluídas
+            valores.add(safeLong(this.listTotal.get(0).getQtidadeEmAberto()));   // em aberto
+
+            labels.add("Concluídas");
+            labels.add("Em Aberto");
+
+            polarDataSet.setData(valores);
+            data.addChartDataSet(polarDataSet);
+            data.setLabels(labels);
+
+            Title title = new Title();
+            title.setDisplay(true);
+            title.setText("Atendimentos Concluídos x Em Aberto");
+
+            PolarAreaChartOptions options = new PolarAreaChartOptions();
+            options.setTitle(title);
+
+            this.polarAreaModelConsistencia.setOptions(options);
+            this.polarAreaModelConsistencia.setData(data);
+        }
+    }
+
+    public void onAtualizarPanel() {
+        try {
+
+
+            this.produtividade = null;
+            this.listTotal = null;
+
+            switch (periodo) {
+
+                case "DIA":
+
+                    this.dataInicioPanel = new Date();
+                    this.dataFimPanel = new Date();
+                    break;
+
+                case "MES":
+
+                    this.dataInicioPanel = DateUtil.builder(new Date()).retornarDataPrimeiroDiaMes().retornarDataComHoraInicial().getData();
+                    this.dataFimPanel = DateUtil.builder(new Date()).retornarDataUltimoDiaMes().retornarDataComHoraFinal().getData();
+                    break;
+
+                case "SEMANA":
+
+                    this.dataInicioPanel = DateUtil.builder(new Date()).retornarDataPrimeiroDiaSemana().retornarDataComHoraInicial().getData();
+                    this.dataFimPanel = DateUtil.builder(new Date()).retornarDataUltimoDiaSemana().retornarDataComHoraFinal().getData();
+                    break;
+
+                case "CUSTOM":
+                    if (this.dataInicioPanel == null || this.dataFimPanel == null) {
+
+                        throw new ProativaException("Informe o período");
+                    }
+                    break;
+
+                default:
+                    this.dataInicioPanel = DateUtil.builder(new Date()).retornarDataComHoraInicial().getData();
+                    this.dataFimPanel = DateUtil.builder(new Date()).retornarDataComHoraFinal().getData();
+                    break;
+            }
+
+            criarDash();
+
+
+        } catch (ProativaException e) {
+            Messages.addGlobalError(e.getMessage());
+        }
+
+    }
+
+    private void inicializarModelosVazios() {
+        // Crie instâncias vazias. O PrimeFaces precisa do objeto e do ChartData instanciados.
+
+        // 1. Status
+        donutModelStatusAtendimento = new DonutChartModel();
+        donutModelStatusAtendimento.setData(new ChartData()); // Importante: Data não pode ser null
+
+        // 2. Motivo
+        donutModelMotivo = new DonutChartModel();
+        donutModelMotivo.setData(new ChartData());
+
+        // 3. Submotivo
+        donutSubmodelMotivo = new DonutChartModel();
+        donutSubmodelMotivo.setData(new ChartData());
+
+        // 4. Bar Chart
+        polarAreaModelConsistencia = new PolarAreaChartModel();
+        polarAreaModelConsistencia.setData(new ChartData());
+    }
+
+
+    public Date getDataInicioPanel() {
+        return dataInicioPanel;
+    }
+
+
+    public void setDataInicioPanel(Date dataInicioPanel) {
+        this.dataInicioPanel = dataInicioPanel;
+    }
+
+
+    public Date getDataFimPanel() {
+        return dataFimPanel;
+    }
+
+
+    public void setDataFimPanel(Date dataFimPanel) {
+        this.dataFimPanel = dataFimPanel;
+    }
+
+
+    public String getPeriodo() {
+        return periodo;
+    }
+
+
+    public void setPeriodo(String periodo) {
+        this.periodo = periodo;
+    }
+
+
+    public DonutChartModel getDonutModelStatusAtendimento() {
+        return donutModelStatusAtendimento;
+    }
+
+
+    public void setDonutModelStatusAtendimento(DonutChartModel donutModelStatusAtendimento) {
+        this.donutModelStatusAtendimento = donutModelStatusAtendimento;
+    }
+
+
+    public DonutChartModel getDonutModelMotivo() {
+        return donutModelMotivo;
+    }
+
+
+    public void setDonutModelMotivo(DonutChartModel donutModelMotivo) {
+        this.donutModelMotivo = donutModelMotivo;
+    }
+
+
+    public DonutChartModel getDonutSubmodelMotivo() {
+        return donutSubmodelMotivo;
+    }
+
+
+    public void setDonutSubmodelMotivo(DonutChartModel donutSubmodelMotivo) {
+        this.donutSubmodelMotivo = donutSubmodelMotivo;
+    }
+
+
+    public List<ProdutividadeSacDto> getListStatusPainel() {
+        return listStatusPainel;
+    }
+
+
+    public void setListStatusPainel(List<ProdutividadeSacDto> listStatusPainel) {
+        this.listStatusPainel = listStatusPainel;
+    }
+
+
+    public List<ProdutividadeSacDto> getListMotioPainel() {
+        return listMotioPainel;
+    }
+
+
+    public void setListMotioPainel(List<ProdutividadeSacDto> listMotioPainel) {
+        this.listMotioPainel = listMotioPainel;
+    }
+
+
+    public List<ProdutividadeSacDto> getListSubmotioPainel() {
+        return listSubmotioPainel;
+    }
+
+
+    public void setListSubmotioPainel(List<ProdutividadeSacDto> listSubmotioPainel) {
+        this.listSubmotioPainel = listSubmotioPainel;
+    }
+
+
+    public PolarAreaChartModel getPolarAreaModelConsistencia() {
+        return polarAreaModelConsistencia;
+    }
+
+    public void setPolarAreaModelConsistencia(PolarAreaChartModel polarAreaModelConsistencia) {
+        this.polarAreaModelConsistencia = polarAreaModelConsistencia;
+    }
+
+    public List<Equipe> getListEquipes() {
+        return listEquipes;
+    }
+
+
+    public void setListEquipes(List<Equipe> listEquipes) {
+        this.listEquipes = listEquipes;
+    }
+
+
+    public Long getTotalFinalizado() {
+        return totalFinalizado;
+    }
+
+    public void setTotalFinalizado(Long totalFinalizado) {
+        this.totalFinalizado = totalFinalizado;
+    }
+
+    public Long getTotalPrazo() {
+        return totalPrazo;
+    }
+
+    public void setTotalPrazo(Long totalPrazo) {
+        this.totalPrazo = totalPrazo;
+    }
+
+    public Long getTotalPrazoExcedido() {
+        return totalPrazoExcedido;
+    }
+
+    public void setTotalPrazoExcedido(Long totalPrazoExcedido) {
+        this.totalPrazoExcedido = totalPrazoExcedido;
+    }
+
+    public Long getTotalCpf() {
+        return totalCpf;
+    }
+
+    public void setTotalCpf(Long totalCpf) {
+        this.totalCpf = totalCpf;
+    }
+
+    public List<ProdutividadeSacDto> getListTotal() {
+        return listTotal;
+    }
+
+    public void setListTotal(List<ProdutividadeSacDto> listTotal) {
+        this.listTotal = listTotal;
+    }
+
+    public Long getTotalAtendimento() {
+        return totalAtendimento;
+    }
 }

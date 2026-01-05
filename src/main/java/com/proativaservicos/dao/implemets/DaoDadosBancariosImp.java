@@ -8,6 +8,7 @@ import jakarta.enterprise.context.Dependent;
 import jakarta.inject.Named;
 
 import java.io.Serializable;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -111,5 +112,19 @@ public class DaoDadosBancariosImp extends GenericDao<DadosBancarios> implements 
         parametros.put("atendimento", atendimento);
 
         executarSql(DaoEnum.NATIVE_OBJECT, query, parametros);
+    }
+
+    public List<DadosBancarios> pesquisarDadosBancariosPorCliente(Long idCliente) {
+
+        if (idCliente == null) {
+            return Collections.emptyList();
+        }
+
+        String jpql = "select d from DadosBancarios d where d.cliente.id = :idCliente";
+
+        Map<String, Object> parametros = new HashMap<>();
+        parametros.put("idCliente", idCliente);
+
+        return searchEntidades(DaoEnum.HQL_QUERRY, jpql, parametros, 0, 5);
     }
 }
