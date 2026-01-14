@@ -279,7 +279,7 @@ public class Utils {
             e.printStackTrace();
             throw new ProativaException("Ops, Ocorreu um erro inesperado.");
         }
-        System.out.println("RETORNANDO O ZIP:  "+zip.getAbsolutePath());
+        System.out.println("RETORNANDO O ZIP:  " + zip.getAbsolutePath());
         return zip;
 
     }
@@ -460,28 +460,33 @@ public class Utils {
 
     }
 
-    public static void main(String[] args) throws InterruptedException {
-
-        System.out.println(StringUtils.trimToEmpty(removerAcentos("LEDA DA SILVA VIEIRA                                        ")).replaceAll("\\t", ""));
-        System.out.println(acertarCodificacaoString("Limite cartÃ£o nÃ£o disponive"));
-        System.out.println(validaCPF("00000000005"));
-
-        File a = new File("C:\\Users\\Rodrigo\\Downloads\\LIF_39540_12340000_43275516787_20250712164031_1_1.mp3");
-        File b = new File("C:\\Users\\Rodrigo\\Downloads\\SEG_39540_03355454249_20250712161526_1_1_222221111.mp3");
-        File c = new File("C:\\Users\\Rodrigo\\Downloads\\SEG_39540_07462852721_20250712161030_1_1_87745.mp3");
-        List<File> lista = new ArrayList<File>();
-        lista.add(a);
-        lista.add(b);
-        lista.add(c);
-        try {
-            File zip = compactarArquivoZip(lista,new File("C:\\Users\\Rodrigo\\Downloads"),"20250582.zip");
-        } catch (ProativaException e) {
-            throw new RuntimeException(e);
+    /**
+     * Valida se o telefone é válido (apenas dígitos e tamanho entre 10 e 11).
+     * Exemplo: (31) 91234-5678 → 31912345678
+     */
+    public static boolean isTelefoneValido(String telefone) {
+        if (telefone == null) {
+            return false;
         }
+
+        // Remove tudo que não for dígito
+        String apenasNumeros = telefone.replaceAll("\\D", "");
+
+        // Telefone no Brasil geralmente tem 10 ou 11 dígitos (com DDD)
+        return apenasNumeros.length() == 10 || apenasNumeros.length() == 11;
     }
 
+    /**
+     * Normaliza o telefone para apenas números.
+     */
+    public static String normalizarTelefone(String telefone) {
+        if (telefone == null) {
+            return null;
+        }
+        return telefone.replaceAll("\\D", "");
+    }
 
-    public static String getNumeroRandomico(){
+    public static String getNumeroRandomico() {
 
         SecureRandom random = new SecureRandom();
         int numero = random.nextInt(100);
@@ -489,5 +494,18 @@ public class Utils {
 
         return numeroFormatado;
     }
+
+    public static void main(String[] args) throws InterruptedException {
+
+        String telefone = "31999631311";
+
+        System.out.println(isTelefoneValido(telefone));
+
+        String ddd = telefone.substring(0,2);
+        String numero = telefone.substring(2);
+        System.out.println(ddd+" - "+numero);
+    }
+
+
 
 }

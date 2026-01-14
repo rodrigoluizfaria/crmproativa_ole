@@ -43,7 +43,7 @@
                                               noSelectionOption="true"/>
                                 <f:selectItems value="#{fichaAtendimentoSacBean.listPontoAtendimento}"
                                                var="ponto"
-                                               itemLabel="#{ponto.descricao} (#{ponto.pabx.tipo.constante})"
+                                               itemLabel="#{ponto.descricao} - #{ponto.ramal} (#{ponto.pabx.tipo.constante})"
                                                itemValue="#{ponto}"/>
                             </p:selectOneMenu>
                         </div>

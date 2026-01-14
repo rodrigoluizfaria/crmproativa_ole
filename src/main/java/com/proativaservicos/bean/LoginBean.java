@@ -175,7 +175,13 @@ public class LoginBean extends GenericBean implements Serializable {
                         Faces.setSessionMaxInactiveInterval(retornarSegundos(usuario.getEmpresa().getSessionTime()));
                     }
 
-                    if (usuario.getPerfil().equals(PerfilUsuarioEnum.USUARIO_CONSULTA)) {
+                    //SAC
+                    if (usuario.getPerfil().equals(PerfilUsuarioEnum.OPERADOR)) {
+
+                        System.out.println("REDIRECIONAR:: redirecionarSac");
+                        PrimeFaces.current().ajax().addCallbackParam("status", "redirecionarSac");
+
+                    } else if (usuario.getPerfil().equals(PerfilUsuarioEnum.USUARIO_CONSULTA)) {
 
                         PrimeFaces.current().ajax().addCallbackParam("status", "consulta");
 

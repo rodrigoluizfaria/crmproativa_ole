@@ -6,10 +6,7 @@ import com.proativaservicos.model.pwd.CampanhaRetornoDiscagem;
 import com.proativaservicos.model.trescplus.ResponseMailing;
 import com.proativaservicos.service.IntegracaoService;
 import com.proativaservicos.service.VonixService;
-import com.proativaservicos.util.constantes.PerfilUsuarioEnum;
-import com.proativaservicos.util.constantes.TipoAcessoEnum;
-import com.proativaservicos.util.constantes.TipoCampanhaEnum;
-import com.proativaservicos.util.constantes.TipoIntegracaoEnum;
+import com.proativaservicos.util.constantes.*;
 import jakarta.inject.Inject;
 import jakarta.inject.Named;
 import org.apache.commons.lang3.StringUtils;
@@ -82,7 +79,7 @@ public class DiscadorUtil implements Serializable {
             if (integra == null)
                 return "Nenhum serviço de integração 3C+ ativo.";
 
-            printar(listAtendimentos.size(),"3C+", new ArrayList<>(listAtendimentos).get(0).getImportacao().getNomeArquivo());
+            printar(listAtendimentos.size(), "3C+", new ArrayList<>(listAtendimentos).get(0).getImportacao().getNomeArquivo());
 
             return this.tresCPlusServiceUtil.alimentarDiscador(integra, campanha, new ArrayList<Atendimento>(listAtendimentos));
 
@@ -93,7 +90,7 @@ public class DiscadorUtil implements Serializable {
             if (integra == null)
                 return "Nenhum serviço de integração Argus ativo.";
 
-            printar(listAtendimentos.size(),"Argus", new ArrayList<>(listAtendimentos).get(0).getImportacao().getNomeArquivo());
+            printar(listAtendimentos.size(), "Argus", new ArrayList<>(listAtendimentos).get(0).getImportacao().getNomeArquivo());
 
             return this.argusService.alimentarDiscador(integra, campanha, new ArrayList<Atendimento>(listAtendimentos));
 
@@ -103,14 +100,25 @@ public class DiscadorUtil implements Serializable {
 
     }
 
-    public void printar(int quantidade, String discador,String nomeArquivo){
+    public void printar(int quantidade, String discador, String nomeArquivo) {
 
 
-        System.out.println("enviado atendimentos discador "+discador+": "+ quantidade);
-        System.out.println("ARQUIVO: "+nomeArquivo);
+        System.out.println("enviado atendimentos discador " + discador + ": " + quantidade);
+        System.out.println("ARQUIVO: " + nomeArquivo);
     }
 
     public void entrarEmPausa(Usuario usuario, Pausa pausa, boolean isEntrarPausa) throws ProativaException {
+
+
+        if (usuario.getPontoAtendimento() != null && usuario.getPontoAtendimento().getPabx() != null && usuario.getPontoAtendimento().getPabx().getTipo().equals(TipoPabxEnum.PST_PHONE)) {
+
+           String retor= PabxUtil.entarEmPausaPstPhone(usuario.getPontoAtendimento().getPabx().getUrl(),
+                    usuario.getPontoAtendimento().getRamal(), pausa.getDescricao(),
+                    pausa.getCodigoInterno() == null ? 1 : pausa.getCodigoInterno());
+
+            System.out.println("Retorno pausa: "+retor);
+        }
+
 
         if (usuario != null && usuario.getEmpresa() != null) {
 
@@ -263,7 +271,15 @@ public class DiscadorUtil implements Serializable {
         if (usuario.getEmpresa() == null)
             return;
 
-        if (usuario != null && usuario.getEmpresa() != null) {
+
+        if (usuario.getPontoAtendimento() != null && usuario.getPontoAtendimento().getPabx() != null && usuario.getPontoAtendimento().getPabx().getTipo().equals(TipoPabxEnum.PST_PHONE)) {
+
+            PabxUtil.logoutPstPhone(usuario.getPontoAtendimento().getPabx().getUrl(), usuario.getPontoAtendimento().getRamal());
+
+        }
+
+
+        if (usuario.getEmpresa() != null) {
 
             IntegracaoWs integracao = this.serviceIntegracao.pesquisaIngracaoDiscador(usuario.getEmpresa().getId());
 

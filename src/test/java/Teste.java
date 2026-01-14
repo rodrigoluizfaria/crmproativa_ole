@@ -13,6 +13,8 @@ import java.util.stream.Stream;
 
 import javax.xml.rpc.ServiceException;
 
+import com.fasterxml.jackson.databind.ObjectMapper;
+import com.proativaservicos.util.*;
 import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.lang3.StringUtils;
 
@@ -29,11 +31,6 @@ import com.proativaservicos.service.asynchronous.bmg.saquecomplementar.DadosCart
 import com.proativaservicos.service.asynchronous.bmg.saquecomplementar.LimiteSaqueRetorno;
 import com.proativaservicos.service.asynchronous.bmg.saquecomplementar.SaqueComplementarWebService;
 import com.proativaservicos.service.asynchronous.bmg.saquecomplementar.SaqueComplementarWebServiceServiceLocator;
-import com.proativaservicos.util.ArquivoUtil;
-import com.proativaservicos.util.DateUtil;
-import com.proativaservicos.util.Util;
-import com.proativaservicos.util.Utils;
-import com.proativaservicos.util.VerificarLinkUtil;
 
 public class Teste {
 
@@ -142,6 +139,22 @@ public class Teste {
 
 		System.out.println(formatoData + "-" + uuidCurto + "-" + numeroRandomico + "-");
 
+
+		try {
+
+			Map<String, Object> dados = new HashMap<>();
+			dados.put("ramal", "9020");
+			dados.put("destino", "31999631311");
+
+			ObjectMapper mapper = new ObjectMapper();
+			String json = mapper.writeValueAsString(dados);
+
+			System.out.println(json);
+			HttpPostUtil.enviarPostUrl("http://localhost:8180/profone/agent/logar", null, json, false);
+
+		}catch (Exception e){
+
+		}
 
 	}
 

@@ -82,4 +82,8 @@ public class TelefoneService extends GenericProService<Telefone> implements Seri
 
         return this.dao.pesquisarTelefonesPorCpf(cpf, fist, max);
     }
+
+    public void inserirTelefoneCliente(Long idCliente, Short ddd, String numero,Long idUsuario) {
+        this.dao.inserirTelefoneCliente(idCliente,ddd,numero,idUsuario);
+    }
 }

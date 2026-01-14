@@ -7,6 +7,7 @@ import jakarta.persistence.Transient;
 import jakarta.transaction.Transactional;
 import org.apache.commons.lang3.StringUtils;
 
+import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -47,16 +48,25 @@ public class DaoCliente extends GenericDao<Cliente> {
 
 
     @Transactional
-    public void atualizarNomeCliente(String nome, Long idCliente) {
+    public void atualizarNomeCliente(String nome, String nomeMae, String nomePai, Date dataNascimento, Long idCliente) {
 
-        StringBuilder query = new StringBuilder();
+        StringBuilder query = new StringBuilder("update cliente set ");
         Map<String, Object> parametros = new HashMap<>();
 
-        query.append("update cliente set nome = :nome where id = :idCliente");
-
+        query.append("nome = :nome, nome_mae = :nomeMae, nome_pai = :nomePai");
         parametros.put("nome", nome);
+        parametros.put("nomeMae", nomeMae);
+        parametros.put("nomePai", nomePai);
+
+        if (dataNascimento != null) {
+            query.append(", data_nascimento = :dataNascimento");
+            parametros.put("dataNascimento", dataNascimento);
+        }
+
+        query.append(" where id = :idCliente");
         parametros.put("idCliente", idCliente);
 
         executeSqlUpdate(DaoEnum.NATIVE_CLASSE, query.toString(), parametros);
     }
+
 }

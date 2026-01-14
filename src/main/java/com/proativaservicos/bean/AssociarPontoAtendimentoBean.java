@@ -209,7 +209,7 @@ public class AssociarPontoAtendimentoBean extends GenericBean {
 
                 } else if (this.pontoAtendimento.getPabx().getTipo().equals(TipoPabxEnum.PST_PHONE)) {
 
-                    if (StringUtils.isBlank(this.pontoAtendimento.getRamal()) || StringUtils.isBlank(this.ramalConfirm.trim()) || !this.ramalConfirm.trim().contains(this.pontoAtendimento.getRamal())) {
+                    if (StringUtils.isBlank(this.pontoAtendimento.getRamal())) {
                         throw new ProativaException("Não foi possivel associar o ponto atendimento. numero informado foi inválido.");
                     }
 
@@ -246,7 +246,8 @@ public class AssociarPontoAtendimentoBean extends GenericBean {
             Messages.addGlobalError(e.getMessage(), new Object[0]);
 
         } catch (Exception e) {
-            Messages.addGlobalError(MessagesEnum.ERRO_INERPERADO.constante, new Object[0]);
+            e.printStackTrace();
+            Messages.addGlobalError(MessagesEnum.ERRO_INERPERADO.constante);
         }
     }
 
@@ -268,7 +269,7 @@ public class AssociarPontoAtendimentoBean extends GenericBean {
 
                     boolean isVonix = this.pabx.getTipo().equals(TipoPabxEnum.VONIX );
 
-                    if (isVonix || this.pabx.getTipo().equals(TipoPabxEnum.TRES_CPLUS ) || this.pabx.getTipo().equals(TipoPabxEnum.ARGUS )) {
+                    if (isVonix || this.pabx.getTipo().equals(TipoPabxEnum.TRES_CPLUS ) || this.pabx.getTipo().equals(TipoPabxEnum.ARGUS )  || this.pabx.getTipo().equals(TipoPabxEnum.PST_PHONE )) {
 
                         this.exibirBtnVerificar = false;
                         this.exibirPainelConfirm = false;
@@ -286,10 +287,11 @@ public class AssociarPontoAtendimentoBean extends GenericBean {
 
         } catch (ProativaException e) {
 
-            Messages.addGlobalError(e.getMessage(), new Object[0]);
+            Messages.addGlobalError(e.getMessage());
 
         } catch (Exception e) {
-            Messages.addGlobalError(MessagesEnum.ERRO_INERPERADO.constante, new Object[0]);
+            e.printStackTrace();
+            Messages.addGlobalError(MessagesEnum.ERRO_INERPERADO.constante);
         }
 
     }
@@ -327,10 +329,10 @@ public class AssociarPontoAtendimentoBean extends GenericBean {
 
         } catch (ProativaException e) {
 
-            Messages.addGlobalError(e.getMessage(), new Object[0]);
+            Messages.addGlobalError(e.getMessage());
 
         } catch (Exception e) {
-
+            e.printStackTrace();
             Messages.addGlobalError(MessagesEnum.ERRO_INERPERADO.constante, new Object[0]);
 
         }

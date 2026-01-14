@@ -69,6 +69,7 @@ public class CadastroMotivoBean extends GenericBean {
             if (this.motivo.getId() == null) {
 
                 this.motivo.setUsuarioCadastro(retornarUsuarioSessao());
+                this.motivo.setEmpresa(retornarEmpresaUsuarioSessao());
                 this.motivo.setDataCadastro(new Date());
                 inserir(this.motivo, true);
                 this.motivo = new Motivo();

@@ -33,8 +33,8 @@ public enum SubMenuEnum {
 
 
     /*MENU CADASTRO*/
-    CADASTRO_EMPRESA("empresa", "empresa", MenuEnum.CADASTRO, null, new PerfilUsuarioEnum[0]),
-    CADASTRO_CAMPANHA("campanha", "campanha", MenuEnum.CADASTRO, null, new PerfilUsuarioEnum[0]),
+    CADASTRO_EMPRESA("empresa", "empresa", MenuEnum.CADASTRO, null,PerfilUsuarioEnum.COORDENADOR),
+    CADASTRO_CAMPANHA("campanha", "campanha", MenuEnum.CADASTRO, null, PerfilUsuarioEnum.COORDENADOR),
     CADASTRO_USUARIO("usuario", "usuario", MenuEnum.CADASTRO, null, new PerfilUsuarioEnum[0]),
     CADASTRO_EQUIPE("equipe", "equipe", MenuEnum.CADASTRO, null, new PerfilUsuarioEnum[0]),
     CADASTRO_DEPARTAMENTO("departamento", "departamento", MenuEnum.CADASTRO, null, new PerfilUsuarioEnum[0]),
@@ -49,18 +49,19 @@ public enum SubMenuEnum {
     CADASTRO_PAUSA("pausa", "pausa", MenuEnum.CADASTRO, null, new PerfilUsuarioEnum[0]),
     CADASTRO_FORMA_PAGAMENTO("formaPagamento", "formaPagamento", MenuEnum.CADASTRO, null, new PerfilUsuarioEnum[0]),
     CADASTRO_PONTO_ATENDIMENTO("pontoAtendimento", "pontoAtendimento", MenuEnum.CADASTRO, null, new PerfilUsuarioEnum[0]),
-    CADASTRO_INTEGRACAO("integracao", "integracao", MenuEnum.CADASTRO, null, new PerfilUsuarioEnum[0]),
-    CADASTRO_PABX("pabxIp", "pabxIp", MenuEnum.CADASTRO, null, new PerfilUsuarioEnum[0]),
+    CADASTRO_INTEGRACAO("integracao", "integracao", MenuEnum.CADASTRO, null, PerfilUsuarioEnum.COORDENADOR),
+    CADASTRO_PABX("pabxIp", "pabxIp", MenuEnum.CADASTRO, null, PerfilUsuarioEnum.COORDENADOR),
     CADASTRO_PESQUISA("pesquisaSatisfacao", "pesquisaSatisfacao", MenuEnum.CADASTRO, null, new PerfilUsuarioEnum[0]),
     CADASTRO_FAQ_GRUPO_PERGUNTA("faqChat", "faqChat", MenuEnum.CADASTRO, null, new PerfilUsuarioEnum[0]),
 
   /*  MEU ATENDIMENTO*/
-    ATENDIMENTO_MEUS_ATENDIMENTOS("meusAtendimentos", "meusAtendimentos", MenuEnum.ATENDIMENTO, null, new PerfilUsuarioEnum[]{PerfilUsuarioEnum.USUARIO_CONSULTA}),
+    ATENDIMENTO_MEUS_ATENDIMENTOS("meusAtendimentos", "meusAtendimentos", MenuEnum.ATENDIMENTO, null, PerfilUsuarioEnum.USUARIO_CONSULTA,PerfilUsuarioEnum.OPERADOR),
     ATENDIMENTO_PONTO_ATENDIMENTO("pontoAtendimento", "associarPontoAtendimento", MenuEnum.ATENDIMENTO, null, new PerfilUsuarioEnum[]{PerfilUsuarioEnum.USUARIO_CONSULTA}),
-    ATENDIMENTO_ATIVO("fichaAtendimento", "fichaAtendimento2", MenuEnum.ATENDIMENTO, null, new PerfilUsuarioEnum[]{PerfilUsuarioEnum.USUARIO_CONSULTA}),
-    ATENDIMENTO_PREDITIVO("fichaAtendimentoPreditivo", "fichaAtendimentoPreditivo", MenuEnum.ATENDIMENTO, null, new PerfilUsuarioEnum[]{PerfilUsuarioEnum.USUARIO_CONSULTA}),
-    ATENDIMENTO_PROSPECT("fichaAtendimentoProspect", "fichaAtendimentoProspect", MenuEnum.ATENDIMENTO, null, new PerfilUsuarioEnum[]{PerfilUsuarioEnum.USUARIO_CONSULTA}),
+    ATENDIMENTO_ATIVO("fichaAtendimento", "fichaAtendimento2", MenuEnum.ATENDIMENTO, null, PerfilUsuarioEnum.USUARIO_CONSULTA,PerfilUsuarioEnum.OPERADOR),
+    ATENDIMENTO_PREDITIVO("fichaAtendimentoPreditivo", "fichaAtendimentoPreditivo", MenuEnum.ATENDIMENTO, null, PerfilUsuarioEnum.USUARIO_CONSULTA,PerfilUsuarioEnum.OPERADOR),
+    ATENDIMENTO_PROSPECT("fichaAtendimentoProspect", "fichaAtendimentoProspect", MenuEnum.ATENDIMENTO, null, PerfilUsuarioEnum.USUARIO_CONSULTA,PerfilUsuarioEnum.OPERADOR),
     ATENDIMENTO_SAC("fichaAtendimentoSac", "fichaAtendimentoSac", MenuEnum.ATENDIMENTO, null, new PerfilUsuarioEnum[]{PerfilUsuarioEnum.USUARIO_CONSULTA}),
+
     /*CONSULTA_INTEGRACAO("consultaIntegracao", "consultaIntegracao", MenuEnum.ATENDIMENTO, null, new PerfilUsuarioEnum[0]),*/
 
 	/*

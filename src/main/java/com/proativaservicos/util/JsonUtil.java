@@ -7,7 +7,9 @@ import com.proativaservicos.model.bancoMaster.ConsultaLimitesPorCpfResponse;
 import org.json.JSONArray;
 import org.json.JSONObject;
 
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 public class JsonUtil {
 
@@ -25,7 +27,6 @@ public class JsonUtil {
 
         }
     }
-
 
 
     public static <T> List<T> fromJsonArray(String json, Class<T> clazz) {
@@ -64,5 +65,31 @@ public class JsonUtil {
             return false;
         }
     }
+
+    public static String criarJson(String status, String mensagem) {
+        try {
+            ObjectMapper mapper = new ObjectMapper();
+
+
+            Map<String, String> resposta = new HashMap<>();
+            resposta.put("status", status);
+            resposta.put("mensagem", mensagem);
+            return mapper.writeValueAsString(resposta);
+        } catch (Exception e) {
+            e.printStackTrace();
+            return null;
+        }
+    }
+
+    public static String criarJson(Map<String, Object> dados) {
+        try {
+            ObjectMapper mapper = new ObjectMapper();
+            return mapper.writeValueAsString(dados);
+        } catch (Exception e) {
+            e.printStackTrace();
+            return null;
+        }
+    }
+
 
 }

@@ -155,6 +155,15 @@ public class Cliente extends GenericControle {
         return dataNascimento;
     }
 
+    public String getDataNascimentoFormatado() {
+        if(dataNascimento != null) {
+            return DateUtil.builder(this.dataNascimento).formatarDataParaString("ddd/MM/yyyy").getDataTexto();
+        }
+
+        return null;
+    }
+
+
     public void setDataNascimento(Date dataNascimento) {
         this.dataNascimento = dataNascimento;
     }

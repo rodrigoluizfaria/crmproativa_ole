@@ -4,13 +4,14 @@
              xmlns:f="http://java.sun.com/jsf/core"
              xmlns:p="http://primefaces.org/ui">
 
-
-
-
     <div class="flex flex-column md:flex-row justify-content-between align-items-center mb-5 gap-4">
         <div>
-            <h1 class="text-3xl font-bold text-900 m-0">Dashboard</h1>
-            <span class="text-500 font-medium">Visão geral da operação</span>
+            <h3 class="text-2xl font-bold text-700 m-0">
+                #{inicialBean.usuario.perfil eq 'OPERADOR' ? inicialBean.usuario.saudacao : 'Dashboard Gerencial'}
+            </h3>
+            <span class="text-500 text-sm">
+                 #{inicialBean.usuario.perfil eq 'OPERADOR' ? 'Seu desempenho individual' : 'Visão geral da operação'}
+            </span>
         </div>
 
         <div class="surface-card p-2 shadow-1 border-round-2xl flex align-items-center gap-2">
@@ -22,10 +23,13 @@
                 <p:ajax update="@form" process="@this" listener="#{inicialBean.atualizarDados()}"/>
             </p:selectOneButton>
 
-            <h:panelGroup id="panelCustomDates" rendered="#{inicialBean.periodoSelecionado eq 'CUSTOM'}" styleClass="flex gap-2 ml-2 animate-fade-in">
-                <p:datePicker value="#{inicialBean.dataInicio}" pattern="dd/MM" showIcon="false" inputStyleClass="w-6rem text-center border-round-xl text-sm"/>
+            <h:panelGroup id="panelCustomDates" rendered="#{inicialBean.periodoSelecionado eq 'CUSTOM'}"
+                          styleClass="flex gap-2 ml-2 animate-fade-in">
+                <p:datePicker value="#{inicialBean.dataInicio}" pattern="dd/MM" showIcon="false"
+                              inputStyleClass="w-6rem text-center border-round-xl text-sm"/>
                 <span class="text-400 flex align-items-center">-</span>
-                <p:datePicker value="#{inicialBean.dataFim}" pattern="dd/MM" showIcon="false" inputStyleClass="w-6rem text-center border-round-xl text-sm">
+                <p:datePicker value="#{inicialBean.dataFim}" pattern="dd/MM" showIcon="false"
+                              inputStyleClass="w-6rem text-center border-round-xl text-sm">
                     <p:ajax event="dateSelect" listener="#{inicialBean.atualizarDados()}" update="@form"/>
                 </p:datePicker>
             </h:panelGroup>
@@ -35,220 +39,404 @@
         </div>
     </div>
 
+    <div class="mb-5">
+
+        <h:panelGroup styleClass="text-900 font-bold text-lg block mb-3" rendered="#{inicialBean.usuario.perfil eq 'OPERADOR'}" >Acesso Rápido</h:panelGroup>
+
+        <div class="grid">
+
+            <ui:fragment rendered="#{inicialBean.usuario.perfil eq 'OPERADOR'}">
+
+            <div class="col-12 sm:col-6 md:col-4 lg:col-3">
+
+                <p:link outcome="/pages/atendimento/fichaAtendimentoSac" styleClass="no-underline block h-full">
+
+                    <div class="surface-card shadow-1 p-3 border-round-xl flex align-items-center hover:shadow-3 transition-duration-200 cursor-pointer h-full border-left-3 border-purple-500">
+                        <div class="bg-purple-50 text-purple-600 border-circle w-3rem h-3rem flex align-items-center justify-content-center mr-3">
+                            <i class="pi pi-phone text-xl"/>
+                        </div>
+                        <div class="flex flex-column">
+                            <span class="text-900 font-medium">Atendimento</span>
+                            <span class="text-500 text-xs mt-1">Ir para Atendimento</span>
+                        </div>
+                    </div>
+
+                </p:link>
+            </div>
+            </ui:fragment>
+
+        <!--    <ui:fragment rendered="#{inicialBean.usuario.perfil ne 'OPERADOR'}">
+
+                <div class="col-12 sm:col-6 md:col-4 lg:col-3">
+
+                    <p:link outcome="/pages/backoffice/consultaAtendimentoBackoffice" styleClass="no-underline block h-full">
+
+                        <div class="surface-card shadow-1 p-3 border-round-xl flex align-items-center hover:shadow-3 transition-duration-200 cursor-pointer h-full border-left-3 border-purple-500">
+                            <div class="bg-purple-50 text-purple-600 border-circle w-3rem h-3rem flex align-items-center justify-content-center mr-3">
+                                <i class="pi pi-search text-xl"/>
+                            </div>
+                            <div class="flex flex-column">
+                                <span class="text-900 font-medium">Consultar Cliente</span>
+                                <span class="text-500 text-xs mt-1">Busca e histórico</span>
+                            </div>
+                        </div>
+
+                    </p:link>
+                </div>
+            </ui:fragment>-->
+
+  <!--          <div class="col-12 sm:col-6 md:col-4 lg:col-3">
+                <p:commandLink action="#{inicialBean.consultarCliente}" styleClass="no-underline block h-full">
+                    <div class="surface-card shadow-1 p-3 border-round-xl flex align-items-center hover:shadow-3 transition-duration-200 cursor-pointer h-full border-left-3 border-indigo-500">
+                        <div class="bg-indigo-50 text-indigo-600 border-circle w-3rem h-3rem flex align-items-center justify-content-center mr-3">
+                            <i class="pi pi-search text-xl"/>
+                        </div>
+                        <div class="flex flex-column">
+                            <span class="text-900 font-medium">Consultar Cliente</span>
+                            <span class="text-500 text-xs mt-1">Busca e histórico</span>
+                        </div>
+                    </div>
+                </p:commandLink>
+            </div>-->
+
+           <!-- <ui:fragment rendered="#{inicialBean.usuario.perfil ne 'OPERADOR'}">
+                <div class="col-12 sm:col-6 md:col-4 lg:col-3">
+                    <p:commandLink action="#{inicialBean.exportarRelatorio}" styleClass="no-underline block h-full">
+                        <div class="surface-card shadow-1 p-3 border-round-xl flex align-items-center hover:shadow-3 transition-duration-200 cursor-pointer h-full border-left-3 border-green-500">
+                            <div class="bg-green-50 text-green-600 border-circle w-3rem h-3rem flex align-items-center justify-content-center mr-3">
+                                <i class="pi pi-file-excel text-xl"/>
+                            </div>
+                            <div class="flex flex-column">
+                                <span class="text-900 font-medium">Relatórios</span>
+                                <span class="text-500 text-xs mt-1">Exportar dados</span>
+                            </div>
+                        </div>
+                    </p:commandLink>
+                </div>
+
+                <div class="col-12 sm:col-6 md:col-4 lg:col-3">
+                    <p:commandLink action="#{inicialBean.monitoriaTempoReal}" styleClass="no-underline block h-full">
+                        <div class="surface-card shadow-1 p-3 border-round-xl flex align-items-center hover:shadow-3 transition-duration-200 cursor-pointer h-full border-left-3 border-orange-500">
+                            <div class="bg-orange-50 text-orange-600 border-circle w-3rem h-3rem flex align-items-center justify-content-center mr-3">
+                                <i class="pi pi-chart-line text-xl"/>
+                            </div>
+                            <div class="flex flex-column">
+                                <span class="text-900 font-medium">Monitoria</span>
+                                <span class="text-500 text-xs mt-1">Visão em tempo real</span>
+                            </div>
+                        </div>
+                    </p:commandLink>
+                </div>
+            </ui:fragment>-->
+
+          <!--  <ui:fragment rendered="#{inicialBean.usuario.perfil eq 'OPERADOR'}">
+                <div class="col-12 sm:col-6 md:col-4 lg:col-3">
+                    <p:commandLink action="#{inicialBean.meusAgendamentos}" styleClass="no-underline block h-full">
+                        <div class="surface-card shadow-1 p-3 border-round-xl flex align-items-center hover:shadow-3 transition-duration-200 cursor-pointer h-full border-left-3 border-purple-500">
+                            <div class="bg-purple-50 text-purple-600 border-circle w-3rem h-3rem flex align-items-center justify-content-center mr-3">
+                                <i class="pi pi-calendar text-xl"/>
+                            </div>
+                            <div class="flex flex-column">
+                                <span class="text-900 font-medium">Minha Agenda</span>
+                                <span class="text-500 text-xs mt-1">Ver compromissos</span>
+                            </div>
+                        </div>
+                    </p:commandLink>
+                </div>
+            </ui:fragment>-->
+
+        </div>
+    </div>
+
     <div class="grid mb-5">
-        <div class="col-12 sm:col-6 lg:col-2">
-            <div class="surface-card shadow-1 p-3 border-round-xl text-center h-full hover:shadow-3 transition-duration-200 cursor-pointer">
-                <div class="inline-flex align-items-center justify-content-center bg-green-50 text-green-600 border-circle w-3rem h-3rem mb-2">
-                    <i class="pi pi-users text-xl"></i>
-                </div>
-                <span class="block text-900 font-bold text-2xl mb-1">#{inicialBean.agentesOnline}</span>
-                <span class="text-500 text-sm font-medium">Online</span>
-            </div>
-        </div>
 
-        <div class="col-12 sm:col-6 lg:col-2">
-            <div class="surface-card shadow-1 p-3 border-round-xl text-center h-full hover:shadow-3 transition-duration-200">
-                <div class="inline-flex align-items-center justify-content-center bg-blue-50 text-blue-600 border-circle w-3rem h-3rem mb-2">
-                    <i class="pi pi-inbox text-xl"></i>
-                </div>
-                <span class="block text-900 font-bold text-2xl mb-1">#{inicialBean.totalAtendimentosAbertos}</span>
-                <span class="text-500 text-sm font-medium">Aguardando resolutiva</span>
-            </div>
-        </div>
+        <h:panelGroup rendered="#{inicialBean.usuario.perfil ne 'OPERADOR'}" layout="block" styleClass="grid col-12">
 
-        <div class="col-12 sm:col-6 lg:col-2">
-            <div class="surface-card shadow-1 p-3 border-round-xl text-center h-full hover:shadow-3 transition-duration-200">
-                <div class="inline-flex align-items-center justify-content-center bg-indigo-50 text-indigo-600 border-circle w-3rem h-3rem mb-2">
-                    <i class="pi pi-clock text-xl"></i>
+            <div class="col-12 sm:col-6 lg:col-2">
+                <div class="surface-card shadow-1 p-3 border-round-xl text-center h-full hover:shadow-3 transition-duration-200 cursor-pointer">
+                    <div class="inline-flex align-items-center justify-content-center bg-green-50 text-green-600 border-circle w-3rem h-3rem mb-2">
+                        <i class="pi pi-users text-xl"></i>
+                    </div>
+                    <span class="block text-900 font-bold text-2xl mb-1">#{inicialBean.agentesOnline}</span>
+                    <span class="text-500 text-sm font-medium">Agentes Online</span>
                 </div>
-                <span class="block text-900 font-bold text-2xl mb-1">#{inicialBean.tmaFormatado}</span>
-                <span class="text-500 text-sm font-medium">TMA</span>
             </div>
-        </div>
 
-        <div class="col-12 sm:col-6 lg:col-2">
-            <div class="surface-card shadow-1 p-3 border-round-xl text-center h-full hover:shadow-3 transition-duration-200">
-                <div class="inline-flex align-items-center justify-content-center bg-orange-50 text-orange-600 border-circle w-3rem h-3rem mb-2">
-                    <i class="pi pi-check text-xl"></i>
+            <div class="col-12 sm:col-6 lg:col-2">
+                <div class="surface-card shadow-1 p-3 border-round-xl text-center h-full hover:shadow-3 transition-duration-200">
+                    <div class="inline-flex align-items-center justify-content-center bg-blue-50 text-blue-600 border-circle w-3rem h-3rem mb-2">
+                        <i class="pi pi-inbox text-xl"></i>
+                    </div>
+                    <span class="block text-900 font-bold text-2xl mb-1">#{inicialBean.totalAtendimentosAbertos}</span>
+                    <span class="text-500 text-sm font-medium">Fila Geral</span>
                 </div>
-                <span class="block text-900 font-bold text-2xl mb-1">#{inicialBean.totalAtendimentosFinalizados}</span>
-                <span class="text-500 text-sm font-medium">Finalizados</span>
             </div>
-        </div>
 
-        <div class="col-12 sm:col-6 lg:col-2">
-            <div class="surface-card shadow-1 p-3 border-round-xl text-center h-full hover:shadow-3 transition-duration-200">
-                <div class="inline-flex align-items-center justify-content-center bg-purple-50 text-purple-600 border-circle w-3rem h-3rem mb-2">
-                    <i class="pi pi-star text-xl"></i>
+            <div class="col-12 sm:col-6 lg:col-2">
+                <div class="surface-card shadow-1 p-3 border-round-xl text-center h-full hover:shadow-3 transition-duration-200">
+                    <div class="inline-flex align-items-center justify-content-center bg-indigo-50 text-indigo-600 border-circle w-3rem h-3rem mb-2">
+                        <i class="pi pi-clock text-xl"></i>
+                    </div>
+                    <span class="block text-900 font-bold text-2xl mb-1">#{inicialBean.tmaFormatado}</span>
+                    <span class="text-500 text-sm font-medium">TMA Geral</span>
                 </div>
-                <span class="block text-900 font-bold text-2xl mb-1">#{inicialBean.totalFinalizadosN1}</span>
-                <span class="text-500 text-sm font-medium">Resolvido N1</span>
             </div>
-        </div>
 
-        <div class="col-12 sm:col-6 lg:col-2">
-            <div class="surface-card shadow-1 p-3 border-round-xl text-center h-full hover:shadow-3 transition-duration-200">
-                <div class="inline-flex align-items-center justify-content-center bg-cyan-50 text-cyan-600 border-circle w-3rem h-3rem mb-2">
-                    <i class="pi pi-arrow-up-right text-xl"></i>
+            <div class="col-12 sm:col-6 lg:col-2">
+                <div class="surface-card shadow-1 p-3 border-round-xl text-center h-full hover:shadow-3 transition-duration-200">
+                    <div class="inline-flex align-items-center justify-content-center bg-orange-50 text-orange-600 border-circle w-3rem h-3rem mb-2">
+                        <i class="pi pi-check text-xl"></i>
+                    </div>
+                    <span class="block text-900 font-bold text-2xl mb-1">#{inicialBean.totalAtendimentosFinalizados}</span>
+                    <span class="text-500 text-sm font-medium">Finalizados</span>
                 </div>
-                <span class="block text-900 font-bold text-2xl mb-1">#{inicialBean.totalDerivadosN2}</span>
-                <span class="text-500 text-sm font-medium">Encaminhados para N2</span>
             </div>
-        </div>
+
+            <div class="col-12 sm:col-6 lg:col-2">
+                <div class="surface-card shadow-1 p-3 border-round-xl text-center h-full hover:shadow-3 transition-duration-200">
+                    <div class="inline-flex align-items-center justify-content-center bg-purple-50 text-purple-600 border-circle w-3rem h-3rem mb-2">
+                        <i class="pi pi-star text-xl"></i>
+                    </div>
+                    <span class="block text-900 font-bold text-2xl mb-1">#{inicialBean.totalFinalizadosN1}</span>
+                    <span class="text-500 text-sm font-medium">Resolvido N1</span>
+                </div>
+            </div>
+
+            <div class="col-12 sm:col-6 lg:col-2">
+                <div class="surface-card shadow-1 p-3 border-round-xl text-center h-full hover:shadow-3 transition-duration-200">
+                    <div class="inline-flex align-items-center justify-content-center bg-cyan-50 text-cyan-600 border-circle w-3rem h-3rem mb-2">
+                        <i class="pi pi-arrow-up-right text-xl"></i>
+                    </div>
+                    <span class="block text-900 font-bold text-2xl mb-1">#{inicialBean.totalDerivadosN2}</span>
+                    <span class="text-500 text-sm font-medium">Encaminhados N2</span>
+                </div>
+            </div>
+        </h:panelGroup>
+
+        <h:panelGroup rendered="#{inicialBean.usuario.perfil eq 'OPERADOR'}" layout="block" styleClass="grid col-12">
+
+            <div class="col-12 md:col-4">
+                <div class="surface-card shadow-1 p-4 border-round-xl flex justify-content-between align-items-center h-full border-left-3 border-blue-500">
+                    <div>
+                        <span class="block text-500 font-medium mb-1">Meus Pendentes</span>
+                        <span class="text-900 font-bold text-3xl">#{inicialBean.meusAtendimentosAbertos}</span>
+                    </div>
+                    <div class="flex align-items-center justify-content-center bg-blue-100 border-circle w-3rem h-3rem">
+                        <i class="pi pi-briefcase text-blue-600 text-xl"/>
+                    </div>
+                </div>
+            </div>
+
+            <div class="col-12 md:col-4">
+                <div class="surface-card shadow-1 p-4 border-round-xl flex justify-content-between align-items-center h-full border-left-3 border-indigo-500">
+                    <div>
+                        <span class="block text-500 font-medium mb-1">Meu Tempo Médio</span>
+                        <span class="text-900 font-bold text-3xl">#{inicialBean.tmaFormatado}</span>
+                    </div>
+                    <div class="flex align-items-center justify-content-center bg-indigo-100 border-circle w-3rem h-3rem">
+                        <i class="pi pi-stopwatch text-indigo-600 text-xl"/>
+                    </div>
+                </div>
+            </div>
+
+            <div class="col-12 md:col-4">
+                <div class="surface-card shadow-1 p-4 border-round-xl flex justify-content-between align-items-center h-full border-left-3 border-green-500">
+                    <div>
+                        <span class="block text-500 font-medium mb-1">Minhas Finalizações</span>
+                        <span class="text-900 font-bold text-3xl">#{inicialBean.meusFinalizados}</span>
+                    </div>
+                    <div class="flex align-items-center justify-content-center bg-green-100 border-circle w-3rem h-3rem">
+                        <i class="pi pi-check-circle text-green-600 text-xl"/>
+                    </div>
+                </div>
+            </div>
+
+        </h:panelGroup>
+
     </div>
 
     <div class="grid">
 
-        <h:panelGroup id="dashMotivo" styleClass="col-12 lg:col-4" layout="block" >
+        <h:panelGroup id="dashMotivo" styleClass="col-12 lg:col-4" layout="block">
             <div class="surface-card shadow-1 border-round-2xl p-4 h-full flex flex-column">
-
                 <div class="flex justify-content-between align-items-center mb-4">
-                    <span class="text-900 font-bold text-lg">Motivos de Contato</span>
+                    <span class="text-900 font-bold text-lg">
+                        #{inicialBean.usuario.perfil eq 'OPERADOR' ? 'Meus Motivos' : 'Motivos da Operação'}
+                    </span>
                     <p:commandButton icon="pi pi-ellipsis-v" type="button"
                                      styleClass="ui-button-flat ui-button-secondary rounded-circle w-2rem h-2rem"/>
                 </div>
 
-                <h:panelGroup rendered="#{not empty inicialBean.listMotivo}" styleClass="flex-grow-1 flex align-items-center justify-content-center">
+                <h:panelGroup rendered="#{not empty inicialBean.listMotivo}"
+                              styleClass="flex-grow-1 flex align-items-center justify-content-center">
                     <p:donutChart model="#{inicialBean.donutModel}" style="width: 100%; height: 220px;"/>
                 </h:panelGroup>
 
                 <h:panelGroup rendered="#{empty inicialBean.listMotivo}"
                               styleClass="flex-grow-1 flex flex-column align-items-center justify-content-center text-center p-3 animate-fade-in">
-
                     <div class="bg-gray-50 border-circle w-5rem h-5rem flex align-items-center justify-content-center mb-3">
                         <i class="pi pi-chart-pie text-4xl text-gray-300"></i>
                     </div>
-
-                    <span class="text-900 font-medium text-lg mb-1">Sem dados no momento</span>
-                    <span class="text-500 text-sm">Nenhum motivo registrado para o período.</span>
-
+                    <span class="text-900 font-medium text-lg mb-1">Sem dados</span>
+                    <span class="text-500 text-sm">Nenhum motivo registrado.</span>
                 </h:panelGroup>
-
             </div>
-
         </h:panelGroup>
 
-        <h:panelGroup id="dashStatus" styleClass="col-12 lg:col-4" layout="block" >
+        <h:panelGroup id="dashStatus" styleClass="col-12 lg:col-4" layout="block">
             <div class="surface-card shadow-1 border-round-2xl p-4 h-full flex flex-column">
 
-                <div class="flex justify-content-between align-items-center mb-4">
-                    <span class="text-900 font-bold text-lg">Volume por Status</span>
-                    <p:commandButton icon="pi pi-ellipsis-v" type="button"
-                                     styleClass="ui-button-flat ui-button-secondary rounded-circle w-2rem h-2rem"/>
-                </div>
-
-                <h:panelGroup rendered="#{not empty inicialBean.listStatus}"
-                              styleClass="flex-grow-1 flex align-items-center justify-content-center">
-                    <p:barChart model="#{inicialBean.barModel}" style="width: 100%; height: 220px;" responsive="true"/>
+                <h:panelGroup rendered="#{inicialBean.usuario.perfil ne 'OPERADOR'}">
+                    <div class="flex justify-content-between align-items-center mb-4">
+                        <span class="text-900 font-bold text-lg">Volume por Status</span>
+                    </div>
+                    <h:panelGroup rendered="#{not empty inicialBean.listStatus}"
+                                  styleClass="flex-grow-1 flex align-items-center justify-content-center">
+                        <p:barChart model="#{inicialBean.barModel}" style="width: 100%; height: 220px;"
+                                    responsive="true"/>
+                    </h:panelGroup>
+                    <h:panelGroup rendered="#{empty inicialBean.listStatus}"
+                                  styleClass="flex-grow-1 flex flex-column align-items-center justify-content-center text-center p-3 animate-fade-in">
+                        <div class="bg-gray-50 border-circle w-5rem h-5rem flex align-items-center justify-content-center mb-3">
+                            <i class="pi pi-chart-bar text-4xl text-gray-300"></i>
+                        </div>
+                        <span class="text-900 font-medium text-lg mb-1">Sem métricas</span>
+                    </h:panelGroup>
                 </h:panelGroup>
 
-                <h:panelGroup rendered="#{empty inicialBean.listStatus}"
-                              styleClass="flex-grow-1 flex flex-column align-items-center justify-content-center text-center p-3 animate-fade-in">
-
-                    <div class="bg-gray-50 border-circle w-5rem h-5rem flex align-items-center justify-content-center mb-3">
-                        <i class="pi pi-chart-bar text-4xl text-gray-300"></i>
+                <h:panelGroup rendered="#{inicialBean.usuario.perfil eq 'OPERADOR'}" styleClass="h-full">
+                    <div class="flex justify-content-between align-items-center mb-3">
+                        <span class="text-900 font-bold text-lg">Atendimentos Pendentes</span>
+                        <p:badge value="#{inicialBean.listPendentes.size()}" severity="warning"/>
                     </div>
 
-                    <span class="text-900 font-medium text-lg mb-1">Sem métricas</span>
-                    <span class="text-500 text-sm">Não há status para exibir agora.</span>
+                    <div class="flex flex-column gap-3 overflow-y-auto" style="max-height: 250px;">
 
+                        <ui:repeat value="#{inicialBean.listPendentes}" var="p">
+                            <div class="surface-50 p-2 border-round border-left-2 border-yellow-500 flex align-items-center">
+                                <i class="pi pi-calendar mr-3 text-yellow-600"></i>
+                                <div class="flex flex-column">
+                                    <span class="font-bold text-sm">Cliente: #{p[2]}</span>
+                                    <span class="font-bold text-sm">Protocolo: #{p[5]}</span>
+                                    <span class="text-xs text-500">Data: #{p[4]}</span>
+                                </div>
+                            </div>
+                        </ui:repeat>
+
+                        <h:outputText value="Sem atendimentos pendentes."
+                                      rendered="#{empty inicialBean.listPendentes}"
+                                      styleClass="text-center text-500 text-sm block mt-4"/>
+                    </div>
                 </h:panelGroup>
 
             </div>
         </h:panelGroup>
 
-        <h:panelGroup styleClass="col-12 lg:col-4" layout="block" >
-
+        <h:panelGroup styleClass="col-12 lg:col-4" layout="block">
             <div class="surface-card shadow-1 border-round-2xl p-4 h-full flex flex-column">
 
-                <div class="flex align-items-center justify-content-between mb-3">
-                    <span class="text-900 font-bold text-lg">Top Performance</span>
-                    <h:panelGroup rendered="#{not empty inicialBean.periodoRank}">
-                          <span class="text-xs font-bold text-green-600 bg-green-100 px-2 py-1 border-round">
-                    #{inicialBean.periodoRank}
-                </span>
+                <h:panelGroup rendered="#{inicialBean.usuario.perfil ne 'OPERADOR'}"
+                              styleClass="h-full flex flex-column">
+                    <div class="flex align-items-center justify-content-between mb-3">
+                        <span class="text-900 font-bold text-lg">Top Performance</span>
+                        <h:panelGroup rendered="#{not empty inicialBean.periodoRank}">
+                            <span class="text-xs font-bold text-green-600 bg-green-100 px-2 py-1 border-round">#{inicialBean.periodoRank}</span>
+                        </h:panelGroup>
+                    </div>
+
+                    <h:panelGroup rendered="#{not empty inicialBean.listaRanking}"
+                                  styleClass="flex-grow-1 overflow-y-auto">
+                        <p:dataTable value="#{inicialBean.listaRanking}" var="rank"
+                                     styleClass="ui-datatable-borderless ui-datatable-sm text-sm"
+                                     rowStyleClass="border-bottom-1 border-100"
+                                     emptyMessage="Sem dados.">
+                            <p:column width="15%">
+                                <div class="flex align-items-center justify-content-center">
+                                    <h:panelGroup rendered="#{rank[2] eq 1}">
+                                        <i class="pi pi-trophy text-yellow-500 mr-2"></i>
+                                    </h:panelGroup>
+                                    <h:panelGroup rendered="#{rank[2] eq 2}">
+                                        <i class="pi pi-star-fill text-gray-400 mr-2"></i>
+                                    </h:panelGroup>
+                                    <h:panelGroup rendered="#{rank[2] eq 3}">
+                                        <i class="pi pi-star-fill text-orange-400 mr-2"></i>
+                                    </h:panelGroup>
+                                    <span class="text-500 font-medium font-bold">#{rank[2]}º</span>
+                                </div>
+                            </p:column>
+                            <p:column headerText="Agente">
+                                <span class="font-medium text-700">#{rank[0]}</span>
+                            </p:column>
+                            <p:column headerText="Qtd" styleClass="text-right" width="20%">
+                                <span class="bg-gray-100 text-gray-800 px-2 py-1 border-round font-bold text-xs">#{rank[1]}</span>
+                            </p:column>
+                        </p:dataTable>
                     </h:panelGroup>
-                </div>
+                    <h:panelGroup rendered="#{empty inicialBean.listaRanking}"
+                                  styleClass="flex-grow-1 flex flex-column align-items-center justify-content-center text-center p-4">
+                        <span class="text-500 text-sm">Ranking vazio.</span>
+                    </h:panelGroup>
+                </h:panelGroup>
 
-                <h:panelGroup rendered="#{not empty inicialBean.listaRanking}" styleClass="flex-grow-1">
+                <h:panelGroup rendered="#{inicialBean.usuario.perfil eq 'OPERADOR'}"
+                              styleClass="h-full flex flex-column">
+                    <div class="flex align-items-center justify-content-between mb-3">
+                        <span class="text-900 font-bold text-lg">Meus Últimos atendimentos</span>
+                        <p:commandButton icon="pi pi-arrow-right"
+                                         styleClass="rounded-button ui-button-flat ui-button-sm" title="Ver todos"/>
+                    </div>
 
-                    <p:dataTable value="#{inicialBean.listaRanking}" var="rank"
+                    <p:dataTable value="#{inicialBean.listUltimosAtendimentos}" var="atend"
                                  styleClass="ui-datatable-borderless ui-datatable-sm text-sm"
                                  rowStyleClass="border-bottom-1 border-100"
-                                 emptyMessage="Sem dados.">
+                                 emptyMessage="Nenhum atendimento recente.">
 
-                        <p:column width="15%">
-                            <div class="flex align-items-center justify-content-center">
-                                <i class="pi pi-trophy text-yellow-500 mr-2" rendered="#{rank[2] eq 1}"></i>
-
-                                <i class="pi pi-star-fill text-gray-400 mr-2" rendered="#{rank[2] eq 2}"></i>
-
-                                <i class="pi pi-star-fill text-orange-400 mr-2" rendered="#{rank[2] eq 3}"></i>
-
-                                <span class="text-500 font-medium font-bold">#{rank[2]}º</span>
-                            </div>
+                        <p:column headerText="Protocolo">
+                            <span class="font-medium text-700">#{atend[5]}</span>
                         </p:column>
 
-                        <p:column headerText="Agente">
-                            <div class="flex align-items-center gap-2">
-                                <p:avatar label="#{rank[0].substring(0,1)}" shape="circle"
-                                          styleClass="bg-blue-50 text-blue-600 text-xs w-2rem h-2rem font-bold"/>
-                                <span class="font-medium text-700">#{rank[0]}</span>
-                            </div>
+                        <p:column headerText="Status">
+                            <p:tag value="#{atend[6]}"
+                                   severity="#{(atend[6] eq 'CONCLUIR' or atend[6] eq 'CONCLUIR_N1') ? 'success' : 'info'}"
+                                   rounded="true" styleClass="text-xs"/>
                         </p:column>
 
-                        <p:column headerText="Qtd" styleClass="text-right" width="20%">
-                    <span class="bg-gray-100 text-gray-800 px-2 py-1 border-round font-bold text-xs">
-                        #{rank[1]}
-                    </span>
+                        <p:column headerText="Tempo" styleClass="text-right">
+                            <span class="text-500 text-xs">#{atend[7]}</span>
                         </p:column>
                     </p:dataTable>
                 </h:panelGroup>
 
-                <h:panelGroup rendered="#{empty inicialBean.listaRanking}"
-                              styleClass="flex-grow-1 flex flex-column align-items-center justify-content-center text-center p-4 animate-fade-in">
-
-                    <div class="bg-gray-50 border-circle w-5rem h-5rem flex align-items-center justify-content-center mb-3">
-                        <i class="fa fa-solid fa-trophy text-4xl text-gray-300"></i>
-                    </div>
-
-                    <span class="text-900 font-medium text-lg mb-1">Ranking vazio</span>
-                    <span class="text-500 text-sm">Nenhum desempenho registrado neste período.</span>
-
-                </h:panelGroup>
-
             </div>
         </h:panelGroup>
+
     </div>
 
-
-
-
-
     <style>
-        /* Customizações para deixar os componentes do PrimeFaces mais 'flat' */
         body .ui-selectonebutton .ui-button.ui-state-active {
-            background: #EFF6FF; /* blue-50 */
-            border-color: #EFF6FF;
-            color: #2563EB; /* blue-600 */
+            background: #EFF6FF !important;
+            border-color: #EFF6FF !important;
+            color: #2563EB !important;
             font-weight: 700;
         }
+
         body .ui-selectonebutton .ui-button {
             background: transparent;
             border: 1px solid transparent;
             color: #64748b;
             transition: all 0.2s;
         }
+
         body .ui-selectonebutton .ui-button:hover {
             background: #f8fafc;
             color: #334155;
         }
 
-        /* Remove bordas da tabela para look 'clean' */
         body .ui-datatable-borderless .ui-datatable-data > tr > td {
             border-style: none;
             padding: 0.75rem 0.5rem;
         }
+
         body .ui-datatable .ui-datatable-thead > tr > th {
             background: transparent;
             border: none;

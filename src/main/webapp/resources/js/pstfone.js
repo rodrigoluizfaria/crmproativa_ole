@@ -165,12 +165,13 @@ function conectar(servidor,login) {
                 }
             }
 
-            // --- CENÁRIO 2: DADOS DA CHAMADA (CPF, Áudio, Número) ---
+            // DADOS DA CHAMADA (CPF, Áudio, Número) ---
             else if (data.type === "CHAMADA_ATIVA") {
                 console.log(">>> DADOS DA CHAMADA RECEBIDOS ");
                 console.log("CPF:", data.cpf);
                 console.log("Audio:", data.audioId);
                 console.log("Numero:", data.numero);
+                console.log("Opcao:", data.opcao);
 
                 // Chama o método no Bean via p:remoteCommand
                 // Certifique-se que o remoteCommand na página tem esse nome
@@ -179,7 +180,8 @@ function conectar(servidor,login) {
                     receberDadosChamada([
                         {name: 'cpf', value: data.cpf},
                         {name: 'audioId', value: data.audioId},
-                        {name: 'numero', value: data.numero}
+                        {name: 'numero', value: data.numero},
+                        {name: 'opcao', value: data.opcao}
                     ]);
 
                 } else {

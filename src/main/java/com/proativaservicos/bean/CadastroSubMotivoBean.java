@@ -86,6 +86,7 @@ public class CadastroSubMotivoBean extends GenericBean {
 
                 this.subMotivo.setDataCadastro(new Date());
                 this.subMotivo.setUsuarioCadastro(retornarUsuarioSessao());
+                this.subMotivo.setEmpresa(retornarEmpresaUsuarioSessao());
                 inserir(this.subMotivo);
                 this.subMotivo = new SubMotivo();
 

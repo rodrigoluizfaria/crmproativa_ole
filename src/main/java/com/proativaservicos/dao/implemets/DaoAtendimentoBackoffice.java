@@ -1355,10 +1355,10 @@ public class DaoAtendimentoBackoffice extends GenericDao<AtendimentoBackoffice> 
             join = "JOIN equipe e ON a.equipe = e.id JOIN submotivo sm ON a.submotivo = sm.id";
             selectViw = "a.visualizacao, a.cor,";
         } else if (TipoVisualizacaoEnum.USUARIO.equals(tipoVisualizacao)) {
-            fieldSelect = "u.nome AS visualizacao, sm.descricao AS cor";
-            fieldGroup  = "u.nome, sm.descricao";
+            fieldSelect = "u.nome AS visualizacao";
+            fieldGroup  = "u.nome";
             join = "JOIN usuario u ON a.usuario_cadastro = u.id JOIN submotivo sm ON a.submotivo = sm.id";
-            selectViw = "a.visualizacao, a.cor,";
+            selectViw = "a.visualizacao, ";
         } else if (TipoVisualizacaoEnum.PRODUTO.equals(tipoVisualizacao)) {
             fieldSelect = "p.descricao AS visualizacao, sm.descricao AS cor";
             fieldGroup  = "p.descricao, sm.descricao";

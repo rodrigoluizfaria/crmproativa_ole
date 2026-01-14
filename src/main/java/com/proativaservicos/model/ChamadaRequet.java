@@ -4,11 +4,11 @@ public class ChamadaRequet {
 	
 	
 
-	private String context;
+	private String exten;
 	
-    private String exten;
+    private String destino;
 	   
-	private String channel;
+	private String ramal;
 	
 	private String callerId;
 	
@@ -19,21 +19,29 @@ public class ChamadaRequet {
 		
 	}
 
-	public ChamadaRequet(String context, String exten, String channel, String callerId,boolean async) {
+	public ChamadaRequet(String context, String exten, String ramal, String callerId,boolean async) {
 		
-		this.context = context;
-		this.exten = exten;
-		this.channel = channel;
+		this.ramal = context;
+		this.destino = exten;
+		this.ramal = ramal;
 		this.callerId = callerId;
 		this.async = async;
 	}
 
-	public String getContext() {
-		return context;
+	public String getDestino() {
+		return destino;
 	}
 
-	public void setContext(String context) {
-		this.context = context;
+	public void setDestino(String destino) {
+		this.destino = destino;
+	}
+
+	public String getRamal() {
+		return ramal;
+	}
+
+	public void setRamal(String ramal) {
+		this.ramal = ramal;
 	}
 
 	public String getExten() {
@@ -42,14 +50,6 @@ public class ChamadaRequet {
 
 	public void setExten(String exten) {
 		this.exten = exten;
-	}
-
-	public String getChannel() {
-		return channel;
-	}
-
-	public void setChannel(String channel) {
-		this.channel = channel;
 	}
 
 	public String getCallerId() {
@@ -68,15 +68,5 @@ public class ChamadaRequet {
 		this.async = async;
 	}
 
-	@Override
-	public String toString() {
-		return "ChamadaRequet [context=" + context + ", exten=" + exten + ", channel=" + channel + ", callerId="
-				+ callerId + ", async=" + async + "]";
-	}
-	
-	
-	
-	
-	
 
 }

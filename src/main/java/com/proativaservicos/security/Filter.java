@@ -56,7 +56,7 @@ public class Filter implements PhaseListener {
         // Se a página atual NÃO for a ficha de atendimento, removemos os atributos da sessão.
         // Isso resolve seu problema de "destruir o setAttribute quando sair da página".
         if (!page.contains("/atendimento/fichaAtendimento")) { // Ajuste o caminho conforme seu XHTML
-            System.out.println("REMOVENDO ATN,,,,");
+           // System.out.println("REMOVENDO ATN,,,,");
          /*   if (sessao != null) {
                 sessao.removeAttribute("atendimento_iniciado");
                 sessao.removeAttribute("cpf_atn");

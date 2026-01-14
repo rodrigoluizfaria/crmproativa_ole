@@ -39,6 +39,10 @@ function loginRetorno(xhr, status, args) {
 
         redirecionarLoginSucesso();
 
+    }  else if (args.status == 'redirecionarSac') {
+
+        redirecionarSac();
+
     } else if (args.status == 'consulta') {
         console.log("CONSULTA")
         redirecionarConsulta();

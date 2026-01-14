@@ -1,6 +1,8 @@
 package com.proativaservicos.bean;
 
 
+import com.fasterxml.jackson.databind.JsonNode;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import com.proativaservicos.exception.ProativaException;
 import com.proativaservicos.model.ControlePausa;
 import com.proativaservicos.model.Pausa;
@@ -11,9 +13,11 @@ import com.proativaservicos.service.DashboardRepository;
 import com.proativaservicos.service.UsuarioLogadoService;
 import com.proativaservicos.util.ColorUtil;
 import com.proativaservicos.util.DateUtil;
+import com.proativaservicos.util.PabxUtil;
 import com.proativaservicos.util.TresCPlusServiceUtil;
 import com.proativaservicos.util.constantes.DataEnum;
 import com.proativaservicos.util.constantes.MessagesEnum;
+import com.proativaservicos.util.constantes.PerfilUsuarioEnum;
 import com.proativaservicos.util.constantes.TipoPabxEnum;
 import jakarta.annotation.PostConstruct;
 import jakarta.faces.view.ViewScoped;
@@ -21,6 +25,7 @@ import jakarta.inject.Inject;
 import jakarta.inject.Named;
 import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.lang3.StringUtils;
+import org.omnifaces.util.Faces;
 import org.omnifaces.util.Messages;
 import org.primefaces.model.charts.ChartData;
 import org.primefaces.model.charts.bar.BarChartDataSet;
@@ -67,6 +72,10 @@ public class InicialBean extends GenericBean implements Serializable {
     private Long totalFinalizadosN1;
     private Long totalFinalizadosN2;
 
+    private Long meusAtendimentosAbertos;
+    private Long meuTmaFormatado;
+    private Long meusFinalizados;
+
     // Métricas Formatadas
     private String valorTotalVendasFormatado;
     private String tmaFormatado;
@@ -86,14 +95,22 @@ public class InicialBean extends GenericBean implements Serializable {
 
     private boolean usuarioEmPausa;
 
-    private  List<Object[]> listMotivo;
+    private List<Object[]> listMotivo;
 
-    private  List<Object[]> listStatus;
+    private List<Object[]> listStatus;
+
+    private Long codUsuario;
+
+    List<Object[]> listPendentes;
+    List<Object[]> listUltimosAtendimentos;
 
     @PostConstruct
     public void init() {
 
         this.usuario = retornarUsuarioSessao();
+        this.codUsuario = null;
+
+        atualizarDadosOperador();
 
         this.controlePausa = this.serviceControlePausa.pesquisarControlePausaPorUsuario(this.usuario, new Date(System.currentTimeMillis()));
         onRefreshPausa();
@@ -103,9 +120,8 @@ public class InicialBean extends GenericBean implements Serializable {
 
     }
 
-    public void atualizarDados() {
-
-        System.out.println(periodoSelecionado+" "+dataInicio+" "+dataFim);
+    private void atualizarData() {
+        System.out.println(periodoSelecionado + " " + dataInicio + " " + dataFim);
 
         if (StringUtils.isNotBlank(periodoSelecionado)) {
 
@@ -131,27 +147,46 @@ public class InicialBean extends GenericBean implements Serializable {
 
             }
         }
+    }
 
-        // Simula busca no banco (Repository Mock)
-        this.agentesOnline = (long) this.usuarioLogadoService.pesquisarQuantidadeUsuariosLogados(retornarEmpresaUsuarioSessao().getId());
+    private void atualizarDadosOperador() {
 
-        List<?> listResumo = this.serviceAtendimento.listarQuantidadeResumoDerivadosSac(this.dataInicio, this.dataFim);
+        if (this.usuario.getPerfil().equals(PerfilUsuarioEnum.OPERADOR)) {
 
-        this.listMotivo = this.serviceAtendimento.buscarQuantidadePorMotivo(this.dataInicio, this.dataFim);
+            this.codUsuario = usuario.getId();
+            this.listPendentes = this.serviceAtendimento.pesquisarAtendimentosPendentesSac(this.codUsuario, null, null);
+            this.listUltimosAtendimentos = this.serviceAtendimento.pesquisarUltimosAtendimentosSac(this.codUsuario, this.dataInicio, this.dataFim);
 
-        this.listaRanking = serviceAtendimento.buscarTop10Usuarios(this.dataInicio, this.dataFim);
+            this.meusAtendimentosAbertos = CollectionUtils.isEmpty(this.listPendentes) ? 0L : this.listPendentes.size();
+            this.meusFinalizados = this.serviceAtendimento.pesquisarQuantidadeFinalizadosGeral(this.codUsuario, dataInicio, dataFim);
 
-        this.tmaFormatado = this.serviceAtendimento.buscarTmaAtendimentosSac(this.dataInicio, this.dataFim);
+        }
 
-         this.listStatus = this.serviceAtendimento.buscarQuantidadePorStatus(this.dataInicio, this.dataFim);
+    }
+
+    public void atualizarDados() {
+
+        atualizarData();
+        atualizarDadosOperador();
+
+
+        if (this.codUsuario == null)
+            this.agentesOnline = (long) this.usuarioLogadoService.pesquisarQuantidadeUsuariosLogados(retornarEmpresaUsuarioSessao().getId());
+
+        List<?> listResumo = this.serviceAtendimento.listarQuantidadeResumoDerivadosSac(this.dataInicio, this.dataFim, codUsuario);
+
+        this.listMotivo = this.serviceAtendimento.buscarQuantidadePorMotivo(this.dataInicio, this.dataFim, codUsuario);
+
+        if (this.codUsuario == null)
+            this.listaRanking = serviceAtendimento.buscarTop10Usuarios(this.dataInicio, this.dataFim);
+
+        this.tmaFormatado = this.serviceAtendimento.buscarTmaAtendimentosSac(this.dataInicio, this.dataFim, codUsuario);
+
+        this.listStatus = this.serviceAtendimento.buscarQuantidadePorStatus(this.dataInicio, this.dataFim, codUsuario);
 
         if (CollectionUtils.isNotEmpty(listResumo)) {
 
             Object[] linha = (Object[]) listResumo.get(0);
-
-            for (Object o : linha) {
-                System.out.println("Linha: " + o);
-            }
 
             this.totalAtendimentosFinalizados = safeLong(linha[0]);
             this.totalDerivadosN2 = safeLong(linha[1]);
@@ -168,26 +203,9 @@ public class InicialBean extends GenericBean implements Serializable {
             this.totalFinalizadosN2 = 0L;
         }
 
-
-        for (Object objects : listResumo) {
-            System.out.println(objects.getClass().getSimpleName());
-
-        }
-
-    /*    this.totalAtendimentosAbertos = repository.contarAtendimentos("ABERTO");
-        this.totalAtendimentosFinalizados = repository.contarAtendimentos("FINALIZADO");
-        this.totalDerivadosN2 = repository.contarAtendimentos("N2");
-        this.totalFinalizadosN1 = repository.contarAtendimentos("VIP") / 10; // Só um pouco
-*/
-        // Formata Moeda
         BigDecimal vendas = repository.somarValorVendas();
         this.valorTotalVendasFormatado = NumberFormat.getCurrencyInstance(new Locale("pt", "BR")).format(vendas);
 
-
-        // Carrega Listas
-
-
-        // Monta Gráficos
         createDonutModel(listMotivo);
         createBarModel(listStatus);
     }
@@ -206,15 +224,15 @@ public class InicialBean extends GenericBean implements Serializable {
         }
     }
 
-    private String retornarPeridoRankString(){
+    private String retornarPeridoRankString() {
 
 
-        if(this.dataInicio!=null && this.dataFim!=null){
+        if (this.dataInicio != null && this.dataFim != null) {
 
             String inicio = DateUtil.builder(this.dataInicio).formatarDataParaString("dd/MM/yyyy").getDataTexto();
             String fim = DateUtil.builder(this.dataFim).formatarDataParaString("dd/MM/yyyy").getDataTexto();
 
-            return inicio+" - "+fim;
+            return inicio + " - " + fim;
 
         }
 
@@ -321,7 +339,25 @@ public class InicialBean extends GenericBean implements Serializable {
                 if (this.usuario.getPontoAtendimento() != null && this.usuario.getPontoAtendimento().getPabx() != null && this.usuario.getPontoAtendimento().getPabx().getTipo().equals(TipoPabxEnum.TRES_CPLUS) && StringUtils.isNotBlank(this.usuario.getPontoAtendimento().getApiToken()))
                     this.tresCPlusServiceUtil.sairPausa(this.usuario.getPontoAtendimento().getPabx().getUrl(), this.usuario.getPontoAtendimento().getApiToken());
 
-            } catch (ProativaException e){
+                else if (this.usuario.getPontoAtendimento() != null && this.usuario.getPontoAtendimento().getPabx() != null && this.usuario.getPontoAtendimento().getPabx().getTipo().equals(TipoPabxEnum.PST_PHONE)) {
+
+                    String retorno = PabxUtil.sairEmPausaPstPhone(this.usuario.getPontoAtendimento().getPabx().getUrl(), this.usuario.getPontoAtendimento().getRamal());
+
+                    ObjectMapper mapper = new ObjectMapper();
+                    JsonNode node = mapper.readTree(retorno);
+                    String status = node.get("status").asText();
+                    String mensagem = node.get("mensagem").asText();
+
+                    if ("erro".equals(status))
+                        throw new ProativaException(mensagem);
+
+                    Messages.addGlobalInfo(mensagem);
+                    Faces.redirect("pages/atendimento/fichaAtendimentoSac.jsf");
+
+                }
+
+
+            } catch (ProativaException e) {
 
                 System.err.println(e.getMessage());
 
@@ -414,5 +450,37 @@ public class InicialBean extends GenericBean implements Serializable {
 
     public List<Object[]> getListMotivo() {
         return listMotivo;
+    }
+
+    public Usuario getUsuario() {
+        return usuario;
+    }
+
+    public List<Object[]> getListPendentes() {
+        return listPendentes;
+    }
+
+    public void setListPendentes(List<Object[]> listPendentes) {
+        this.listPendentes = listPendentes;
+    }
+
+    public List<Object[]> getListUltimosAtendimentos() {
+        return listUltimosAtendimentos;
+    }
+
+    public void setListUltimosAtendimentos(List<Object[]> listUltimosAtendimentos) {
+        this.listUltimosAtendimentos = listUltimosAtendimentos;
+    }
+
+    public Long getMeusAtendimentosAbertos() {
+        return meusAtendimentosAbertos;
+    }
+
+    public Long getMeuTmaFormatado() {
+        return meuTmaFormatado;
+    }
+
+    public Long getMeusFinalizados() {
+        return meusFinalizados;
     }
 }

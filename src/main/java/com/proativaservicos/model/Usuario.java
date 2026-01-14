@@ -435,6 +435,14 @@ public class Usuario extends GenericControle implements Serializable {
         return perfil;
     }
 
+    public String getSaudacao(){
+
+        if(this.nome == null)
+            return "";
+
+        return "Olá, "+getNomeSobrenome();
+    }
+
     public void setPerfil(PerfilUsuarioEnum perfil) {
         this.perfil = perfil;
     }

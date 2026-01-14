@@ -13,6 +13,7 @@ import jakarta.inject.Inject;
 import jakarta.transaction.Transactional;
 import org.apache.commons.lang3.StringUtils;
 
+import javax.xml.crypto.Data;
 import java.io.Serializable;
 import java.lang.reflect.Type;
 import java.math.BigDecimal;
@@ -348,9 +349,25 @@ public class AtendimentoService extends GenericProService<Atendimento> implement
         return dao.pesquisarAtendimentosAlerta(id);
     }
 
-    public List<?> pesquisarAtendimentosPendentes(Long idusuario, List<String> listTiposCampanha) {
+    public  List<Object[]> pesquisarAtendimentosPendentes(Long idusuario, List<String> listTiposCampanha) {
 
         return dao.pesquisarAtendimentosPendentes(idusuario, listTiposCampanha);
+    }
+    public List<Object[]> pesquisarAtendimentosPendentesSac(Long idUsuario,Date dataInicio,Date dataFim) {
+        return this.dao.pesquisarAtendimentosPendentesSac(idUsuario,dataInicio,dataFim);
+    }
+
+    public List<Object[]> pesquisarUltimosAtendimentosSac(Long idUsuario, Date dataInicio,Date dataFim) {
+      return   this.dao.pesquisarUltimosAtendimentosSac(idUsuario,dataInicio,dataFim);
+
+    }
+
+    public Long pesquisarTmaGeral(Long idUsuario) {
+        return this.dao.pesquisarTmaGeral(idUsuario);
+    }
+
+    public Long pesquisarQuantidadeFinalizadosGeral(Long idUsuario,Date dataInicio,Date dataFim) {
+        return this.dao.pesquisarQuantidadeFinalizadosGeral(idUsuario,dataInicio,dataFim);
     }
 
     public boolean validarProposta(Long idAtendimento, String adesao, InstituicaoFinanceiraEnum instituicaoFinanceiraEnum, Long idUsuario) {
@@ -725,6 +742,7 @@ public class AtendimentoService extends GenericProService<Atendimento> implement
     }
 
     public Atendimento pesquisarAtendimentoSacPorPrococolo(String protocolo) {
+
         Long idAtendimento = this.dao.pesquisarIdAtendimentoSacPorProtocolo(protocolo);
 
         if (idAtendimento != null)
@@ -775,6 +793,7 @@ public class AtendimentoService extends GenericProService<Atendimento> implement
                 atendimento.setListHistoricoAtividades(this.serviceHistoricoAtividade.pesquisarHistoricoAtividadePorProtocolo(atendimento.getProtocolo()));
 
 
+
         }
 
     }
@@ -810,26 +829,26 @@ public class AtendimentoService extends GenericProService<Atendimento> implement
         return this.dao.pesquisarAtendimentosSacFiltrosDepartamentos(filtroProtocolo, filtroCpf, encerrado, departamentos, idDepartamento);
     }
 
-    public List<?> listarQuantidadeResumoDerivadosSac(Date dataInicio, Date dataFim) {
+    public List<?> listarQuantidadeResumoDerivadosSac(Date dataInicio, Date dataFim,Long codUsuario) {
 
-        return this.dao.listarQuantidadeResumoDerivadosSac(dataInicio, dataFim);
+        return this.dao.listarQuantidadeResumoDerivadosSac(dataInicio, dataFim,codUsuario);
 
     }
 
-    public List<Object[]> buscarQuantidadePorMotivo(Date dataInicio, Date dataFim) {
-        return this.dao.buscarQuantidadePorMotivo(dataInicio, dataFim);
+    public List<Object[]> buscarQuantidadePorMotivo(Date dataInicio, Date dataFim,Long codUsuario) {
+        return this.dao.buscarQuantidadePorMotivo(dataInicio, dataFim,codUsuario);
     }
 
     public List<Object[]> buscarTop10Usuarios(Date dataInicio, Date dataFim) {
         return this.dao.buscarTop10Usuarios(dataInicio, dataFim);
     }
 
-    public String buscarTmaAtendimentosSac(Date dataInicio, Date dataFim) {
-        return this.dao.buscarTmaAtendimentosSac(dataInicio, dataFim);
+    public String buscarTmaAtendimentosSac(Date dataInicio, Date dataFim,Long codUsuario) {
+        return this.dao.buscarTmaAtendimentosSac(dataInicio, dataFim,codUsuario);
     }
 
-    public List<Object[]> buscarQuantidadePorStatus(Date dataInicio, Date dataFim) {
-        return this.dao.buscarQuantidadePorStatus(dataInicio, dataFim);
+    public List<Object[]> buscarQuantidadePorStatus(Date dataInicio, Date dataFim,Long codUsuario) {
+        return this.dao.buscarQuantidadePorStatus(dataInicio, dataFim,codUsuario);
     }
 
 

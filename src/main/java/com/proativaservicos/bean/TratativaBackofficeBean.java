@@ -44,7 +44,7 @@ public class TratativaBackofficeBean extends GenericBean {
 
 
     public void inicializar() {
-        System.out.println("ABRIR ATENDIMENTO: " + idAtendimento);
+      //  System.out.println("ABRIR ATENDIMENTO: " + idAtendimento);
         this.atendimento = this.atendimentoService.pesquisarAtendimentoSacPorCodigo(idAtendimento);
         inicializarVariaveis();
     }

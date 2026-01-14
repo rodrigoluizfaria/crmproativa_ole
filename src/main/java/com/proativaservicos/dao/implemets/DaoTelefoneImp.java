@@ -6,6 +6,7 @@ import com.proativaservicos.util.constantes.DaoEnum;
 import jakarta.inject.Named;
 
 import java.io.Serializable;
+import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -68,7 +69,7 @@ public class DaoTelefoneImp extends GenericDao<Telefone> implements Serializable
         return (Telefone) searchEntidade(DaoEnum.HQL_QUERRY, query.toString(), parametros);
     }
 
-    public Telefone pesquisarTelefonePorNumeroDdd(Long atendimento, String ddd,String numero) {
+    public Telefone pesquisarTelefonePorNumeroDdd(Long atendimento, String ddd, String numero) {
 
         StringBuilder query = new StringBuilder();
 
@@ -80,7 +81,7 @@ public class DaoTelefoneImp extends GenericDao<Telefone> implements Serializable
 
         HashMap<String, Object> parametros = new HashMap<>();
         parametros.put("atendimento", atendimento);
-        parametros.put("ddd",ddd.trim());
+        parametros.put("ddd", ddd.trim());
         parametros.put("numero", numero.trim());
 
 
@@ -207,4 +208,21 @@ public class DaoTelefoneImp extends GenericDao<Telefone> implements Serializable
         return searchEntidades(DaoEnum.NATIVE_OBJECT, query.toString(), parametros, fist, max);
     }
 
+    public void inserirTelefoneCliente(Long idCliente, Short ddd, String numero, Long idUsuario) {
+
+        String sql = "INSERT INTO telefone " +
+                "(ddd, numero, cliente, usuario_cadastro, usuario_alteracao, data_cadastro, data_alteracao) " +
+                "VALUES (:ddd, :numero, :cliente, :usuarioCadastro, :usuarioAlteracao, :dataCadastro, :dataAlteracao)";
+
+        Map<String, Object> parametros = new HashMap<>();
+        parametros.put("ddd", ddd); // mantém como Short
+        parametros.put("numero", numero.replaceAll("\\D", ""));
+        parametros.put("cliente", idCliente);
+        parametros.put("usuarioCadastro", idUsuario);
+        parametros.put("usuarioAlteracao", idUsuario);
+        parametros.put("dataCadastro", new java.sql.Timestamp(System.currentTimeMillis()));
+        parametros.put("dataAlteracao", new java.sql.Timestamp(System.currentTimeMillis()));
+
+        executeSqlUpdate(DaoEnum.NATIVE_CLASSE, sql, parametros);
+    }
 }

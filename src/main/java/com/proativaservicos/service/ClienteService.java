@@ -1,15 +1,13 @@
 package com.proativaservicos.service;
 
-import com.proativaservicos.dao.implemets.DaoBotImp;
 import com.proativaservicos.dao.implemets.DaoCliente;
 import com.proativaservicos.dao.implemets.GenericDao;
-import com.proativaservicos.model.Bot;
 import com.proativaservicos.model.Cliente;
 import jakarta.ejb.Stateless;
 import jakarta.inject.Inject;
 
 import java.util.ArrayList;
-import java.util.List;
+import java.util.Date;
 
 @Stateless
 public class ClienteService extends GenericProService<Cliente> {
@@ -58,11 +56,12 @@ public class ClienteService extends GenericProService<Cliente> {
 
         return cli;
     }
+
     public Cliente pesquisarClienteAtendimentoSacPorId(Long idCliente) {
 
         Cliente cli = this.dao.pesquisarClienteComAtendimentosSacPorId(idCliente);
 
-        if (cli !=null) {
+        if (cli != null) {
             cli.setListCartoesCreditos(
                     new ArrayList<>(this.cartaoCreditoService.pesquisarCartaoCreditoPorCliente(cli.getId()))
             );
@@ -99,7 +98,7 @@ public class ClienteService extends GenericProService<Cliente> {
 
     }
 
-    public void atualizarNomeCliente(String nome,Long idCliente) {
-        this.dao.atualizarNomeCliente(nome,idCliente);
+    public void atualizarNomeCliente(String nome, String nomeMae, String nomePai, Date nascimento, Long idCliente) {
+        this.dao.atualizarNomeCliente(nome, nomeMae, nomePai, nascimento, idCliente);
     }
 }
