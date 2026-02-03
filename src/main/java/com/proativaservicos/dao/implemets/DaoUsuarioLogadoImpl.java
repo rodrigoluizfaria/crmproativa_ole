@@ -85,6 +85,31 @@ public class DaoUsuarioLogadoImpl extends GenericDao<UsuarioLogado> implements S
 		parameter.put("empresa", idEmpresa);
 
 		BigInteger resultado = (BigInteger) searchEntidade(DaoEnum.NATIVE_OBJECT, query.toString(), parameter);
+		System.out.println(query.toString()+" "+resultado);
+
+		return (resultado == null) ? 0 : resultado.intValue();
+	}
+
+	public int pesquisarQuantidadeUsuariosLogados(Long idEmpresa, String perfil) {
+		StringBuilder query = new StringBuilder();
+
+		query.append("select count(u.id) as quantidade ");
+		query.append("from usuario_logado l ");
+		query.append("join usuario u on l.usuario = u.id ");
+		query.append("where u.empresa = :empresa ");
+		query.append("and (u.master is null or u.master = false) ");
+
+		Map<String, Object> parameter = new HashMap<>();
+		parameter.put("empresa", idEmpresa);
+
+		// Se perfil foi informado, adiciona na query
+		if (perfil != null && !perfil.trim().isEmpty()) {
+			query.append("and u.perfil = :perfil ");
+			parameter.put("perfil", perfil);
+		}
+
+		BigInteger resultado = (BigInteger) searchEntidade(DaoEnum.NATIVE_OBJECT, query.toString(), parameter);
+		System.out.println(query.toString() + " " + resultado);
 
 		return (resultado == null) ? 0 : resultado.intValue();
 	}

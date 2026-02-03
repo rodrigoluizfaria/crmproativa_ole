@@ -197,6 +197,7 @@ public class PstPhoneUtil {
 
     public String logar(String url, String ramal) throws Exception {
 
+
         if (StringUtils.isEmpty(url) || StringUtils.isEmpty(ramal)) {
             return JsonUtil.criarJson("erro", "Ramal ou url não informada");
         }

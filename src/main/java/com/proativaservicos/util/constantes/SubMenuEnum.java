@@ -55,7 +55,7 @@ public enum SubMenuEnum {
     CADASTRO_FAQ_GRUPO_PERGUNTA("faqChat", "faqChat", MenuEnum.CADASTRO, null, new PerfilUsuarioEnum[0]),
 
   /*  MEU ATENDIMENTO*/
-    ATENDIMENTO_MEUS_ATENDIMENTOS("meusAtendimentos", "meusAtendimentos", MenuEnum.ATENDIMENTO, null, PerfilUsuarioEnum.USUARIO_CONSULTA,PerfilUsuarioEnum.OPERADOR),
+    ATENDIMENTO_MEUS_ATENDIMENTOS("meusAtendimentos", "meusAtendimentos", MenuEnum.ATENDIMENTO, null, PerfilUsuarioEnum.USUARIO_CONSULTA),
     ATENDIMENTO_PONTO_ATENDIMENTO("pontoAtendimento", "associarPontoAtendimento", MenuEnum.ATENDIMENTO, null, new PerfilUsuarioEnum[]{PerfilUsuarioEnum.USUARIO_CONSULTA}),
     ATENDIMENTO_ATIVO("fichaAtendimento", "fichaAtendimento2", MenuEnum.ATENDIMENTO, null, PerfilUsuarioEnum.USUARIO_CONSULTA,PerfilUsuarioEnum.OPERADOR),
     ATENDIMENTO_PREDITIVO("fichaAtendimentoPreditivo", "fichaAtendimentoPreditivo", MenuEnum.ATENDIMENTO, null, PerfilUsuarioEnum.USUARIO_CONSULTA,PerfilUsuarioEnum.OPERADOR),
@@ -98,6 +98,7 @@ public enum SubMenuEnum {
     RELATORIOS_TIME_OUT("relatorioTimeOut", "relatorioTimeOut", MenuEnum.RELATORIOS, null, new PerfilUsuarioEnum[0]),
     RELATORIOS_FORMULARIO("formulario", "formulario", MenuEnum.RELATORIOS, null, new PerfilUsuarioEnum[0]),
     RELATORIOS_INDICACAO("relatorioIndicacao", "relatorioIndicacao", MenuEnum.RELATORIOS, null, new PerfilUsuarioEnum[0]),
+    RELATORIOS_ATENDIMENTOS("relatorioAtendimento", "relatorioAtendimento", MenuEnum.RELATORIOS, null, new PerfilUsuarioEnum[0]),
 
     DASHBOARD_ATENDIMENTO("dashBoardAtendimentos", "dashBoardAtendimentos", MenuEnum.DASHBOARD, null, new PerfilUsuarioEnum[0]),
     DASHBOARD_FORMULARIO("dashBoardQuestionario", "dashBoardQuestionario", MenuEnum.DASHBOARD, null, new PerfilUsuarioEnum[0]),

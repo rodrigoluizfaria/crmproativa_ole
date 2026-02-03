@@ -1,102 +1,181 @@
 <ui:fragment xmlns="http://www.w3.org/1999/xhtml"
-	xmlns:h="http://java.sun.com/jsf/html"
-	xmlns:f="http://java.sun.com/jsf/core"
-	xmlns:o="http://omnifaces.org/ui"
-	xmlns:pe="http://primefaces.org/ui/extensions"
-	xmlns:ui="http://java.sun.com/jsf/facelets"
-	xmlns:matriz="http://java.sun.com/jsf/composite/componentes"
-	xmlns:p="http://primefaces.org/ui">
+             xmlns:h="http://java.sun.com/jsf/html"
+             xmlns:f="http://java.sun.com/jsf/core"
+             xmlns:o="http://omnifaces.org/ui"
+             xmlns:pe="http://primefaces.org/ui/extensions"
+             xmlns:ui="http://java.sun.com/jsf/facelets"
+             xmlns:matriz="http://java.sun.com/jsf/composite/componentes"
+             xmlns:p="http://primefaces.org/ui">
 
-	<h:form id="formBackofficePendencia" prependId="false">
+    <h:form id="formBackofficePendencia" prependId="false">
 
-		<div class="grid col-12 tab-padding">
+        <div class="grid col-12 tab-padding">
 
-			<div class="col-12">
+            <div class="col-12">
 
-				<p:spacer height="20" />
+                <p:spacer height="20"/>
 
-			</div>
+            </div>
 
-			<matriz:selectEmpresa id="selectEmpresaPendencia" style="col-12 md:col-3"	managedBean="#{supervisorBackofficeBean}" value="#{supervisorBackofficeBean.empresa}" ajax="true" update="@form" filter="true" exibirSelecione="true"
-								  required="true" />
+            <matriz:selectEmpresa id="selectEmpresaPendencia" style="col-12 md:col-3"
+                                  managedBean="#{supervisorBackofficeBean}" value="#{supervisorBackofficeBean.empresa}"
+                                  ajax="true" update="@form" filter="true" exibirSelecione="true"
+                                  required="true"/>
 
-			<div class="field col-12 md:col-3">
+            <div class="field col-12 md:col-3">
 
-				<p:outputLabel value="Equipe" />
+                <p:outputLabel value="Equipe"/>
 
-				<p:selectOneMenu id="selectEquipePendencia"	value="#{supervisorBackofficeBean.equipePendencia}" filter="true" 	filterMatchMode="contains">
+                <p:selectOneMenu id="selectEquipePendencia" value="#{supervisorBackofficeBean.equipePendencia}"
+                                 filter="true" filterMatchMode="contains">
 
-					<f:selectItem itemLabel="Selecione" itemValue="" />
+                    <f:selectItem itemLabel="Selecione" itemValue=""/>
 
-					<f:selectItems value="#{supervisorBackofficeBean.listEquipes}"	var="equipe" itemLabel="#{equipe.nome}" itemValue="#{equipe.id}" />
-					
-					<p:ajax listener="#{supervisorBackofficeBean.trocarEquipe(supervisorBackofficeBean.equipePendencia)}" global="false" update="selectOperadorPendencia"/>
+                    <f:selectItems value="#{supervisorBackofficeBean.listEquipes}" var="equipe"
+                                   itemLabel="#{equipe.nome}" itemValue="#{equipe.id}"/>
 
-				</p:selectOneMenu>
+                    <p:ajax listener="#{supervisorBackofficeBean.trocarEquipe(supervisorBackofficeBean.equipePendencia)}"
+                            global="false" update="selectOperadorPendencia"/>
 
-			</div>
-			
-			<div class="field col-12 md:col-3">
+                </p:selectOneMenu>
 
-				<p:outputLabel value="Operador" />
+            </div>
 
-				<p:selectOneMenu id="selectOperadorPendencia"	value="#{supervisorBackofficeBean.operadorPendencia}" filter="true" filterMatchMode="contains">
+            <div class="field col-12 md:col-3">
 
-					<f:selectItem itemLabel="Selecione" itemValue="" />
+                <p:outputLabel value="Operador"/>
 
-					<f:selectItems	value="#{supervisorBackofficeBean.listOperador}" var="operador" itemLabel="#{operador.nome}"	itemValue="#{operador.id}" />
-					
-				</p:selectOneMenu>
+                <p:selectOneMenu id="selectOperadorPendencia" value="#{supervisorBackofficeBean.operadorPendencia}"
+                                 filter="true" filterMatchMode="contains">
 
-			</div>
-			
-			
-			<div class="field col-12 ">
+                    <f:selectItem itemLabel="Selecione" itemValue=""/>
 
-				<p:outputLabel value="&#160;&#160;" id="txtPesquisaEspacoPendencia" />
+                    <f:selectItems value="#{supervisorBackofficeBean.listOperador}" var="operador"
+                                   itemLabel="#{operador.nome}" itemValue="#{operador.id}"/>
 
-				<div>
-				
-					<p:commandButton value="Pesquisar" id="btnPesquisarPendencia" icon="pi pi-search" styleClass="ui-button-raised mr-3" actionListener="#{supervisorBackofficeBean.pesquisarPendencias()}" update="@form" />
-					<p:commandButton value="Reativar Pendência" styleClass="ui-button-raised  ui-button-outlined" actionListener="#{supervisorBackofficeBean.reativarPendencia()}" update="tableBkoPendencia" id="btnRativarPendencia" icon="pi pi-check"/>
-					
-				</div>
+                </p:selectOneMenu>
 
-			</div>
-		
-		
-		<div class="col-6 mt-3">
+            </div>
 
-				<p:dataTable id="tableBkoPendencia" var="pendencia" rows="15"	paginator="true" paginatorPosition="bottom"	value="#{supervisorBackofficeBean.listPendencias}"
-					emptyMessage="#{supervisorBackofficeBean.listPendencias eq null? '' : msg.emptyMessage}"	currentPageReportTemplate="[#{msg.totalDeRegistros}: {totalRecords}]"
-					paginatorTemplate="{CurrentPageReport}  {FirstPageLink} {PreviousPageLink} {PageLinks} {NextPageLink} {LastPageLink} {Exporters}" rowKey="#{pendencia[0]}" selection="#{supervisorBackofficeBean.listPendenciasSelecionadas}">
 
-					<p:ajax event="page" global="false" />
+            <div class="field col-12 ">
 
-					<p:ajax event="sort" global="false" />
-					
-					<p:column selectionMode="multiple" style="width:3%;text-align:center"/>
+                <p:outputLabel value="&#160;&#160;" id="txtPesquisaEspacoPendencia"/>
 
-					<p:column headerText="Operador" sortBy="#{pendencia[0]}" width="30%">
+                <div>
 
-						<h:outputLabel value="#{pendencia[1]}" />
+                    <p:commandButton value="Pesquisar" id="btnPesquisarPendencia" icon="pi pi-search"
+                                     styleClass="ui-button-raised mr-3"
+                                     actionListener="#{supervisorBackofficeBean.pesquisarPendencias()}" update="@form"/>
+                    <p:commandButton value="Reativar Pendência" styleClass="ui-button-raised  ui-button-outlined"
+                                     actionListener="#{supervisorBackofficeBean.reativarPendencia()}"
+                                     update="tableBkoPendencia" id="btnRativarPendencia" icon="pi pi-check"/>
 
-					</p:column>
+                </div>
 
-					<p:column headerText="Qtdade Pendencias" sortBy="#{pendencia[2]}"	width="20%">
+            </div>
 
-						<h:outputLabel value="#{pendencia[2]}" />
 
-					</p:column>
+            <div class="col-6 mt-3">
 
-										
+                <p:dataTable id="tableBkoPendencia" var="pendencia" rows="15" paginator="true"
+                             paginatorPosition="bottom" value="#{supervisorBackofficeBean.listPendencias}"
+                             emptyMessage="#{supervisorBackofficeBean.listPendencias eq null? '' : msg.emptyMessage}"
+                             currentPageReportTemplate="[#{msg.totalDeRegistros}: {totalRecords}]"
+                             paginatorTemplate="{CurrentPageReport}  {FirstPageLink} {PreviousPageLink} {PageLinks} {NextPageLink} {LastPageLink} {Exporters}"
+                             rowKey="#{pendencia[0]}"
+                             selection="#{supervisorBackofficeBean.listPendenciasSelecionadas}">
 
-				</p:dataTable>
+                    <p:ajax event="page" global="false"/>
 
-			</div>
-		
-</div>
+                    <p:ajax event="sort" global="false"/>
 
-	</h:form>
+                    <p:column selectionMode="multiple" style="width:3%;text-align:center"/>
+
+                    <p:column headerText="Agente" sortBy="#{pendencia[0]}" width="30%">
+
+                        <h:outputLabel value="#{pendencia[1]}"/>
+
+                    </p:column>
+
+                    <p:column headerText="Qtdade Pendencias" sortBy="#{pendencia[2]}" width="20%">
+
+                        <h:outputLabel value="#{pendencia[2]}"/>
+
+                    </p:column>
+
+                    <p:column  width="5%">
+
+                        <p:commandButton icon="pi pi-list"
+                                         styleClass="ui-button-flat ui-button-outlined ui-button-secondary ui-button-icon-only"
+                                         update="tabView:dlgAtnPendente"
+                                         actionListener="#{supervisorBackofficeBean.onListarAtendimentos(pendencia[0])}"
+                                        oncomplete="PF('dlgAtnPendente').show();"/>
+
+                    </p:column>
+
+
+                </p:dataTable>
+
+            </div>
+
+        </div>
+
+        <p:dialog header="Atendimentos Pendentes"
+                  widgetVar="dlgAtnPendente"
+                  id="dlgAtnPendente"
+                  modal="true"
+                  responsive="true"
+                  width="500"
+                  showEffect="fade"
+                  hideEffect="fade"
+                  draggable="false"
+                  resizable="false"
+                  fitViewport="true"
+                  blockScroll="true"
+                  styleClass="border-round-xl">
+
+            <f:facet name="header">
+                <div class="flex align-items-center">
+                    <div class="bg-red-100 border-circle w-2rem h-2rem flex align-items-center justify-content-center mr-2">
+                        <i class="pi pi-stopwatch text-red-600 text-lg"></i>
+                    </div>
+                    <span class="text-xl font-bold">Atendimentos Pendentes</span>
+                </div>
+            </f:facet>
+
+            <p:dataTable id="dtAtnView" var="a" value="#{supervisorBackofficeBean.listaAtendimentoPendenteView}">
+
+                <p:column headerText="Data">
+
+                    <p:outputLabel value="#{a.dataCadastro}">
+                        <f:convertDateTime pattern="dd/MM/yyyy HH:mm" />
+                    </p:outputLabel>
+
+                </p:column>
+
+                <p:column headerText="Nome">
+
+                    <p:outputLabel value="#{empty a.nome? 'Não inf.':a.nome}"/>
+
+                </p:column>
+
+                <p:column headerText="Protocolo">
+
+                    <p:outputLabel value="#{a.protocolo}"/>
+
+                </p:column>
+
+                <p:column headerText="CPF">
+
+                    <p:outputLabel value="#{a.cpf}"/>
+
+                </p:column>
+
+            </p:dataTable>
+
+        </p:dialog>
+
+    </h:form>
 
 </ui:fragment>

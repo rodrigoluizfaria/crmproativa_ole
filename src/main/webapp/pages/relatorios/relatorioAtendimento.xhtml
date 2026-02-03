@@ -1,0 +1,189 @@
+<ui:composition xmlns="http://www.w3.org/1999/xhtml"
+                xmlns:h="http://java.sun.com/jsf/html"
+                xmlns:f="http://java.sun.com/jsf/core"
+                xmlns:ui="http://java.sun.com/jsf/facelets"
+                xmlns:p="http://primefaces.org/ui"
+                template="/WEB-INF/template.xhtml">
+
+
+
+    <ui:define name="viewname">
+        <div class="bcca-breadcrumb">
+            <div class="bcca-breadcrumb-item bg-primary-500 hover:bg-primary-700">
+                <p:link outcome="/pages/relatorios/relatorioAtendimento"
+                        style="text-decoration: none">RELATÓRIO ATENDIMENTO</p:link>
+            </div>
+            <div class="bcca-breadcrumb-item ">RELATORIOS</div>
+        </div>
+
+    </ui:define>
+    <ui:define name="content">
+
+        <h:form id="formConteudo" prependId="false">
+
+            <div class="card mb-4">
+                <span class="text-900 text-xl font-bold block mb-3 border-bottom-1 border-200 pb-2">
+                    <i class="pi pi-filter mr-2"></i>Filtros de Pesquisa
+                </span>
+
+                <div class="grid formgrid ui-fluid">
+                    <div class="col-12 md:col-3 field">
+                        <p:outputLabel for="dtInicio" value="Data Início"/>
+                        <p:datePicker id="dtInicio" value="#{relatorioSacBean.filtro.dataInicio}" showIcon="true"
+                                      pattern="dd/MM/yyyy"/>
+                    </div>
+                    <div class="col-12 md:col-3 field">
+                        <p:outputLabel for="dtFim" value="Data Fim"/>
+                        <p:datePicker id="dtFim" value="#{relatorioSacBean.filtro.dataFim}" showIcon="true"
+                                      pattern="dd/MM/yyyy"/>
+                    </div>
+
+                    <div class="col-12 md:col-3 field">
+                        <p:outputLabel for="op" value="Operador"/>
+                        <p:selectOneMenu id="op" value="#{relatorioSacBean.filtro.usuarioSelecionado}"
+                                         converter="omnifaces.SelectItemsConverter">
+                            <f:selectItem itemLabel="Todos" itemValue="#{null}"/>
+                            <f:selectItems value="#{relatorioSacBean.listaUsuarios}" var="u" itemLabel="#{u.nome}"
+                                           itemValue="#{u}"/>
+                        </p:selectOneMenu>
+                    </div>
+
+                    <div class="col-12 md:col-3 field">
+                        <p:outputLabel value="Opções Avançadas"/>
+                        <div class="flex gap-3 mt-2">
+                            <p:selectBooleanCheckbox value="#{relatorioSacBean.filtro.apenasFcr}"
+                                                     itemLabel="Apenas FCR"/>
+                            <p:selectBooleanCheckbox value="#{relatorioSacBean.filtro.apenasReincidencia}"
+                                                     itemLabel="Reincidência"/>
+                        </div>
+                    </div>
+
+                    <div class="col-12 flex justify-content-end gap-2">
+                        <p:commandButton value="Limpar" action="#{relatorioSacBean.limpar}" update="@form"
+                                         styleClass="ui-button-outlined ui-button-secondary" icon="pi pi-times"/>
+
+                        <p:commandButton value="Gerar Relatório" action="#{relatorioSacBean.pesquisar}" update="@form"
+                                         icon="pi pi-search"/>
+                    </div>
+                </div>
+            </div>
+
+            <h:panelGroup rendered="#{not empty relatorioSacBean.listaRelatorio}">
+                <div class="card">
+
+                    <p:toolbar styleClass="mb-3 border-none bg-gray-50">
+                        <p:toolbarGroup>
+                            <span class="font-bold text-gray-700">#{relatorioSacBean.listaRelatorio.size()} Registros Encontrados</span>
+                        </p:toolbarGroup>
+
+                        <p:toolbarGroup align="right">
+                            <p:commandButton value="Exportar" icon="pi pi-file-excel" styleClass="ui-button-success mr-2">
+                                <p:dataExporter type="xlsx" target="dtRelatorio"
+                                                fileName="Relatorio_Atn_#{relatorioSacBean.dataAtualFormatada}"/>
+                            </p:commandButton>
+
+                            <!--<p:commandButton value="PDF" icon="pi pi-file-pdf" styleClass="ui-button-danger">
+                                <p:dataExporter type="pdf" target="dtRelatorio" fileName="Relatorio_SAC"/>
+                            </p:commandButton>-->
+                        </p:toolbarGroup>
+                    </p:toolbar>
+
+                    <p:dataTable id="dtRelatorio" var="r" value="#{relatorioSacBean.listaRelatorio}"
+                                 paginator="true" rows="20" reflow="true"
+                                 styleClass="ui-datatable-striped ui-datatable-sm text-sm">
+
+                        <p:column headerText="Protocolo" width="100" sortBy="#{r.protocolo}">
+                            <h:outputText value="#{r.protocolo}" styleClass="font-bold"/>
+                        </p:column>
+
+                        <p:column headerText="Data" width="100" sortBy="#{r.dataCadastro}">
+                            <h:outputText value="#{r.dataCadastro}">
+                                <f:convertDateTime pattern="dd/MM HH:mm"/>
+                            </h:outputText>
+                        </p:column>
+
+                        <p:column headerText="Operador" sortBy="#{r.nomeOperador}">
+                            <h:outputText value="#{r.nomeOperador}"/>
+                        </p:column>
+
+                        <p:column headerText="Cliente" sortBy="#{r.nomeCliente}">
+                            <h:outputText value="#{r.nomeCliente}"/>
+                        </p:column>
+
+                        <p:column headerText="Motivo" sortBy="#{r.motivoDescricao}">
+                            <h:outputText value="#{r.motivoDescricao}"/>
+                        </p:column>
+
+                        <p:column headerText="Submotivo" sortBy="#{r.submotivoDescricao}">
+                            <h:outputText value="#{r.submotivoDescricao}"/>
+                        </p:column>
+
+                        <p:column headerText="Status" sortBy="#{r.statusDescricao}" styleClass="text-center"
+                                  exportValue="#{r.statusDescricao}"
+                                  width="110">
+
+                             <span class="customer-badge status-#{not empty r.statusDescricao ?  ( (r.statusDescricao.toLowerCase().contains('finaliza') or (r.statusDescricao.toLowerCase().contains('concl')) ) ? 'qualified' : 'proposal') : ''}">
+
+                                 <h:outputText value="#{empty r.statusDescricao ?'':r.statusDescricao}"/>
+
+                             </span>
+
+                        </p:column>
+
+                        <p:column headerText="FCR" width="50" styleClass="text-center" exportValue="#{r.fcr?'S':'N'}">
+
+                            <i class="pi #{r.fcr ? 'pi-check text-green-500' : 'pi-times text-orange-500'}"/>
+
+                        </p:column>
+
+                        <p:column headerText="Reincidência" width="80" styleClass="text-center"
+                                  exportValue="#{r.reincidencia? 'SIM': ''}">
+
+                            <h:panelGroup rendered="#{r.reincidencia}">
+                                <span class="bg-pink-100 text-pink-700 font-bold px-2 py-1 border-round text-xs">SIM</span>
+                            </h:panelGroup>
+
+                        </p:column>
+
+                        <p:column headerText="SLA" width="90" styleClass="text-center" sortBy="#{r.situacaoPrazo}"
+                                  exportValue="#{r.situacaoPrazo}">
+
+                                <span class="#{r.situacaoPrazo eq 'VENCIDO' ? 'text-red-600 font-bold' : 'text-green-600'}">
+                                    #{r.situacaoPrazo}
+                                </span>
+
+                        </p:column>
+
+                    </p:dataTable>
+                </div>
+            </h:panelGroup>
+
+        </h:form>
+
+        <style>
+            .customer-badge {
+                border-radius: 2px;
+                padding: .25em .5rem;
+                text-transform: uppercase;
+                font-weight: 700;
+                font-size: 12px;
+                letter-spacing: .3px;
+            }
+
+            .status-qualified { /* Concluídos */
+                /*background-color: #C8E6C9;*/
+                color: #256029;
+            }
+
+            .status-proposal { /* Abertos/Em Análise */
+              /*  background-color: #FFD8B2;*/
+                color: #805B36;
+            }
+
+            .status-new { /* Pendentes */
+               /* background-color: #B3E5FC;*/
+                color: #23547B;
+            }
+        </style>
+    </ui:define>
+</ui:composition>

@@ -17,6 +17,7 @@ import jakarta.inject.Named;
 import org.apache.commons.collections4.CollectionUtils;
 import org.omnifaces.util.Messages;
 
+import java.text.NumberFormat;
 import java.util.Arrays;
 import java.util.Date;
 import java.util.List;
@@ -81,6 +82,10 @@ public class ProdutividadeConsistenciaBean extends GenericBean {
     private Long usuarioLong;
     private Long equipeLong;
     private Long produtoLong, lojaLong;
+    private Double totalPercentualFcr;
+    private Long totalFcr;
+    private Double totalPercentualNoPrazo;
+    private Double totalPercentualPrazoExcedido;
 
     @PostConstruct
     public void init() {
@@ -100,15 +105,67 @@ public class ProdutividadeConsistenciaBean extends GenericBean {
 
     private void somarTotaisFooter(List<ProdutividadeSacDto> list) {
 
-        this.totalAtendimento = list.stream().mapToLong(obj -> safeLong(obj.getQtdeAtendimento())).sum();
-        this.totalCpf = list.stream().mapToLong(obj -> safeLong(obj.getQtdeCpf())).sum();
-        this.totalResolvidoN2 = list.stream().mapToLong(obj -> safeLong(obj.getQtdeResolvidoN2())).sum();
-        this.totalResolvidoN1 = list.stream().mapToLong(obj -> safeLong(obj.getQtdadeResolvidoN1())).sum();
-        this.totalDerivado = list.stream().mapToLong(obj -> safeLong(obj.getQtdeDerivado())).sum();
-        this.totalNoPrazo = list.stream().mapToLong(obj -> safeLong(obj.getQtdadeDemandaNoPrazo())).sum();
-        this.totalPrazoExcedido = list.stream().mapToLong(obj -> safeLong(obj.getQtdadeDemandaPrazoEstourado())).sum();
-        this.totalAberto = list.stream().mapToLong(obj -> safeLong(obj.getQtidadeEmAberto())).sum();
-        this.totalConcluida = this.totalResolvidoN1 + this.totalResolvidoN2;
+        if (CollectionUtils.isNotEmpty(list)) {
+
+            // 1. Calcula as somas absolutas (Quantidades)
+            this.totalAtendimento = list.stream().mapToLong(obj -> safeLong(obj.getQtdeAtendimento())).sum();
+            this.totalCpf = list.stream().mapToLong(obj -> safeLong(obj.getQtdeCpf())).sum();
+            this.totalResolvidoN2 = list.stream().mapToLong(obj -> safeLong(obj.getQtdeResolvidoN2())).sum();
+            this.totalResolvidoN1 = list.stream().mapToLong(obj -> safeLong(obj.getQtdadeResolvidoN1())).sum();
+            this.totalDerivado = list.stream().mapToLong(obj -> safeLong(obj.getQtdeDerivado())).sum();
+            this.totalNoPrazo = list.stream().mapToLong(obj -> safeLong(obj.getQtdadeDemandaNoPrazo())).sum();
+            this.totalPrazoExcedido = list.stream().mapToLong(obj -> safeLong(obj.getQtdadeDemandaPrazoEstourado())).sum();
+            this.totalAberto = list.stream().mapToLong(obj -> safeLong(obj.getQtidadeEmAberto())).sum();
+
+            // Totais de FCR
+            this.totalFcr = list.stream().mapToLong(obj -> safeLong(obj.getQtdeFcr())).sum();
+
+            this.totalConcluida = this.totalResolvidoN1 + this.totalResolvidoN2;
+
+            // ---------------------------------------------------------------------
+            // 2. CÁLCULO DOS PERCENTUAIS GERAIS (MÉDIAS PONDERADAS)
+            // ---------------------------------------------------------------------
+
+            // Cálculo do % Total de FCR
+            if (this.totalAtendimento > 0) {
+                // Convertemos para double para ter precisão decimal
+                this.totalPercentualFcr = (double) this.totalFcr / this.totalAtendimento;
+            } else {
+                this.totalPercentualFcr = 0.0;
+            }
+
+            // DICA: Você provavelmente vai querer calcular os totais dos outros percentuais também:
+
+            // Cálculo do % Total No Prazo
+            if (this.totalAtendimento > 0) {
+                this.totalPercentualNoPrazo = (double) this.totalNoPrazo / this.totalAtendimento;
+            } else {
+                this.totalPercentualNoPrazo = 0.0;
+            }
+
+            // Cálculo do % Total Excedido
+            if (this.totalAtendimento > 0) {
+                this.totalPercentualPrazoExcedido = (double) this.totalPrazoExcedido / this.totalAtendimento;
+            } else {
+                this.totalPercentualPrazoExcedido = 0.0;
+            }
+        } else {
+
+            this.totalPercentualFcr = 0.0;
+            this.totalAtendimento = 0L;
+            this.totalCpf = 0L;
+            this.totalResolvidoN2 = 0L;
+            this.totalResolvidoN1 = 0L;
+            this.totalDerivado = 0L;
+            this.totalNoPrazo = 0L;
+            this.totalPrazoExcedido = 0L;
+            this.totalAberto = 0L;
+            this.totalFcr = 0L;
+            this.totalConcluida = 0L;
+            this.totalPercentualPrazoExcedido = 0.0;
+            this.totalPercentualNoPrazo = 0.0;
+            this.totalPercentualFcr = 0.0;
+        }
     }
 
     public Long safeLong(Long cont) {
@@ -299,7 +356,6 @@ public class ProdutividadeConsistenciaBean extends GenericBean {
     }
 
 
-
     public Date getDataInicio() {
         return dataInicio;
     }
@@ -315,10 +371,6 @@ public class ProdutividadeConsistenciaBean extends GenericBean {
     public void setDataFim(Date dataFim) {
         this.dataFim = dataFim;
     }
-
-
-
-
 
 
     public Long getUsuarioLong() {
@@ -427,5 +479,62 @@ public class ProdutividadeConsistenciaBean extends GenericBean {
 
     public void setTotalAberto(Long totalAberto) {
         this.totalAberto = totalAberto;
+    }
+
+    public Double getTotalPercentualFcr() {
+        return totalPercentualFcr;
+    }
+
+    public void setTotalPercentualFcr(Double totalPercentualFcr) {
+        this.totalPercentualFcr = totalPercentualFcr;
+    }
+
+    public Long getTotalFcr() {
+        return totalFcr;
+    }
+
+    public void setTotalFcr(Long totalFcr) {
+        this.totalFcr = totalFcr;
+    }
+
+    public Double getTotalPercentualNoPrazo() {
+        return totalPercentualNoPrazo;
+    }
+
+    public void setTotalPercentualNoPrazo(Double totalPercentualNoPrazo) {
+        this.totalPercentualNoPrazo = totalPercentualNoPrazo;
+    }
+
+    public Double getTotalPercentualPrazoExcedido() {
+
+
+        return totalPercentualPrazoExcedido;
+    }
+
+    public String getTotalPercentualNoPrazoFormatado() {
+        if (this.totalPercentualNoPrazo == null) {
+            return "0%";
+        }
+
+        NumberFormat nf = NumberFormat.getPercentInstance();
+        nf.setMinimumFractionDigits(2);
+
+        return nf.format(this.totalPercentualNoPrazo);
+    }
+
+    public String getTotalPercentualPrazoExcedidoFormatado() {
+        if (this.totalPercentualPrazoExcedido == null) {
+            return "0%";
+        }
+
+        NumberFormat nf = NumberFormat.getPercentInstance();
+        nf.setMinimumFractionDigits(2);
+
+        return nf.format(this.totalPercentualPrazoExcedido);
+    }
+
+
+    public void setTotalPercentualPrazoExcedido(Double totalPercentualPrazoExcedido) {
+        this.totalPercentualPrazoExcedido = totalPercentualPrazoExcedido;
     }
 }

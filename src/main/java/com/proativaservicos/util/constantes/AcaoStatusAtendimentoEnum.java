@@ -21,7 +21,9 @@ public enum AcaoStatusAtendimentoEnum {
 	CONTATO("Contato realizado", "bg-indigo-50 text-indigo-600 border-indigo-200", "pi pi-phone"),
 	DEVOLVER("Devolver N1", "bg-orange-100 text-orange-700 border-orange-200", "pi pi-replay"),
 	DERIVAR("Derivar N2", "bg-cyan-50 text-cyan-800 border-cyan-200", "pi pi-arrow-circle-up"), // Ajustei levemente para diferenciar do EM_ANALISE
+	// N1 -> N2 (Resposta da devolução - NOVO)
 
+	RETORNO_N2("Resposta ao N2", "bg-purple-50 text-purple-700 border-purple-200", "pi pi-sync"),
 	// --- BLOQUEIOS / NEGATIVOS (Vermelho) ---
 	SEM_ACAO("Sem ação", "bg-gray-50 text-gray-400 border-gray-200", "pi pi-ban"),
 	BLOQUEAR_CPF("Bloquear CPF", "bg-red-100 text-red-700 border-red-200", "pi pi-shield");

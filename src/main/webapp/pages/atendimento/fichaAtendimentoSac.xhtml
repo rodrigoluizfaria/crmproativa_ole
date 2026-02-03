@@ -18,8 +18,9 @@
     </ui:define>
 
     <ui:define name="content">
+
         <audio id="audioNotificacao" preload="auto">
-            <source src="https://www.soundjay.com/buttons/beep-07a.mp3" type="audio/mpeg"/>
+            <source src="#{resource['audio:beep.mp3']}" type="audio/mpeg"/>
         </audio>
 
         <style type="text/css">
@@ -112,16 +113,60 @@
 
         <div class="p-grid justify-center">
 
-
-
             <div class="ui-fluid">
 
                 <div class="p-grid">
 
                     <h:form prependId="false" id="formConteudo">
 
-                        <h:panelGroup rendered="#{fichaAtendimentoSacBean.atendimento ne null}"
-                                      id="pmpPrincipalAtendimento">
+                        <h:panelGroup layout="block"
+                                      rendered="#{not empty fichaAtendimentoSacBean.listaDevolutivasPendentes}"
+                                      styleClass="z-5 fadein animation-duration-500"
+                                      style="position: fixed; bottom: 25px; right: 25px; max-width: 350px;">
+
+                            <p:commandLink actionListener="#{fichaAtendimentoSacBean.tratarCliqueDevolutiva()}"
+                                           process="@this"
+                                           styleClass="text-decoration-none">
+
+                                <div class="surface-0 shadow-6 border-round-xl p-3 flex align-items-center gap-3 cursor-pointer border-left-3 border-purple-500 hover:surface-50 transition-colors transition-duration-300"
+                                     style="background: rgba(255, 255, 255, 0.95); backdrop-filter: blur(5px);">
+
+                                    <div class="bg-purple-100 text-purple-600 border-circle w-3rem h-3rem flex align-items-center justify-content-center flex-shrink-0 relative">
+                                        <i class="pi pi-reply text-xl animation-iteration-infinite" style="animation: pulse 2s infinite;"></i>
+
+                                        <span class="absolute top-0 right-0 -mt-1 -mr-1 bg-red-500 text-white text-xs font-bold border-circle w-1rem h-1rem flex align-items-center justify-content-center">
+                                           #{fichaAtendimentoSacBean.listaDevolutivasPendentes.size()}
+                                        </span>
+                                    </div>
+
+                                    <div class="flex flex-column">
+                                        <span class="text-purple-700 font-bold text-sm uppercase mb-1">Ação Necessária</span>
+                                        <span class="text-700 text-sm font-medium line-height-3">
+                                      <h:outputText value="Existe 1 devolutiva pendente."
+                                           rendered="#{fichaAtendimentoSacBean.listaDevolutivasPendentes.size() eq 1}"/>
+                                       <h:outputText value="Existem #{fichaAtendimentoSacBean.listaDevolutivasPendentes.size()} devolutivas pendentes."
+                                          rendered="#{fichaAtendimentoSacBean.listaDevolutivasPendentes.size() gt 1}"/>
+
+                                      <span class="text-purple-600 font-bold underline block">Clique para resolver.</span>
+                                       </span>
+                                    </div>
+
+                                    <i class="pi pi-chevron-right text-purple-300"></i>
+                                </div>
+
+                            </p:commandLink>
+
+                        </h:panelGroup>
+
+                        <h:panelGroup rendered="#{fichaAtendimentoSacBean.atendimento ne null}"  id="pmpPrincipalAtendimento">
+
+                            <style>
+                                @keyframes pulse {
+                                    0% { box-shadow: 0 0 0 0 rgba(168, 85, 247, 0.4); }
+                                    70% { box-shadow: 0 0 0 10px rgba(168, 85, 247, 0); }
+                                    100% { box-shadow: 0 0 0 0 rgba(168, 85, 247, 0); }
+                                }
+                            </style>
 
                             <div class="grid grid-nogutter">
 
@@ -155,8 +200,8 @@
                                                         </div>
                                                         <span class="text-500 font-bold text-xs uppercase mr-2">Opção URA:</span>
                                                         <span class="text-900 font-bold font-monospace">
-                    #{empty fichaAtendimentoSacBean.opcao ? 'N/A' : fichaAtendimentoSacBean.opcao}
-                </span>
+                                                           #{empty fichaAtendimentoSacBean.opcao ? 'N/A' : fichaAtendimentoSacBean.opcao}
+                                                        </span>
                                                     </div>
                                                 </div>
 
@@ -165,12 +210,12 @@
                                                     <div class="surface-50 border-1 border-200 border-round px-3 py-2 flex align-items-center mr-2">
                                                         <span class="text-500 font-bold text-xs mr-2 uppercase">Protocolo:</span>
                                                         <span class="text-blue-900 font-bold font-monospace select-all text-lg">
-                    #{fichaAtendimentoSacBean.cliente.protocolo}
-                </span>
+                                                            #{fichaAtendimentoSacBean.atendimento.protocolo}
+                                                     </span>
                                                         <div class="border-left-1 border-300 mx-2 h-1rem"></div>
                                                         <p:commandLink title="Copiar"
                                                                        styleClass="text-400 hover:text-primary transition-colors transition-duration-200"
-                                                                       onclick="copiarTexto('#{fichaAtendimentoSacBean.cliente.protocolo}'); return false">
+                                                                       onclick="copiarTexto('#{fichaAtendimentoSacBean.atendimento.protocolo}'); return false">
                                                             <i class="pi pi-copy"></i>
                                                         </p:commandLink>
                                                     </div>
@@ -260,34 +305,46 @@
                                                 <div class="flex align-items-center gap-3">
                                                     <div class="flex align-items-center justify-content-center border-round bg-orange-100 flex-shrink-0"
                                                          style="width: 3.5rem; height: 3.5rem;">
-                                                        <i class="pi pi-phone text-orange-600 text-2xl"></i>
+                                                        <i class="pi pi-phone text-orange-600 text-2xl"/>
                                                     </div>
 
                                                     <div class="flex flex-column">
+
                                                         <span class="text-orange-900 font-medium text-sm mb-1">Contatos Anteriores</span>
+
                                                         <div class="text-2xl font-bold text-orange-800">#{fichaAtendimentoSacBean.quantidadeAtendimento}</div>
+
                                                     </div>
                                                 </div>
                                             </div>
                                         </div>
 
                                         <div class="col-12 md:col-3">
-                                            <div class="border-round-xl border-1 border-yellow-200 p-4 shadow-1 h-full"
-                                                 style="background: linear-gradient(to bottom right, #fefce8, #fef9c3);">
 
-                                                <div class="flex align-items-center gap-3">
-                                                    <div class="flex align-items-center justify-content-center border-round bg-yellow-100 flex-shrink-0"
+                                            <div class="border-round-xl border-1 p-4 shadow-1 h-full transition-colors transition-duration-300
+                                                     border-#{fichaAtendimentoSacBean.fcrTema}-200 bg-#{fichaAtendimentoSacBean.fcrTema}-50">
+
+                                                <div class="flex align-items-center gap-3"
+                                                     title="#{fichaAtendimentoSacBean.atendimento.fcr ? 'Atendimento elegível para meta FCR' : 'FCR não contabilizado neste atendimento'}">
+
+                                                    <div class="flex align-items-center justify-content-center border-round flex-shrink-0 transition-colors transition-duration-300
+                                                                         bg-#{fichaAtendimentoSacBean.fcrTema}-100"
                                                          style="width: 3.5rem; height: 3.5rem;">
-                                                        <i class="pi pi-check-circle text-yellow-600 text-2xl"></i>
+
+                                                        <i class="pi #{fichaAtendimentoSacBean.fcrIcone} text-#{fichaAtendimentoSacBean.fcrTema}-600 text-2xl" title="#{fichaAtendimentoSacBean.fcrMotivoPerda}" />
                                                     </div>
 
                                                     <div class="flex flex-column">
-                                                        <span class="text-yellow-900 font-medium text-sm mb-1">FCR</span>
+                                                        <span class="font-medium text-sm mb-1 text-#{fichaAtendimentoSacBean.fcrTema}-800">
+                                                            Indicador FCR (Atual)
+                                                        </span>
 
-                                                        <span class="px-3 py-1 border-round text-white font-bold text-sm shadow-1 w-min white-space-nowrap"
-                                                              style="background-color: #d97706;">
-                    Não
-                </span>
+                                                        <span class="px-3 py-1 border-round text-white font-bold text-sm shadow-1 w-min white-space-nowrap transition-colors transition-duration-300
+                                                             bg-#{fichaAtendimentoSacBean.fcrTema}-500">
+                                                            #{fichaAtendimentoSacBean.fcrStatusTexto}  <span class="text-sm col font-light"> #{fichaAtendimentoSacBean.fcrMotivoPerda} </span>
+                                                          </span>
+
+
                                                     </div>
                                                 </div>
                                             </div>
@@ -308,22 +365,79 @@
                                                                 <p class="text-sm text-gray-500 m-0">Informações cadastrais</p>
                                                             </div>
 
-                                                            <h:panelGroup rendered="#{fichaAtendimentoSacBean.cliente.tipoClienteEnum ne 'CLIENTE'}"
+                                                            <h:panelGroup rendered="#{fichaAtendimentoSacBean.atendimento.tipoClienteEnum ne 'CLIENTE'}"
                                                                           styleClass="inline-flex align-items-center border-round-2xl px-3 py-1 font-bold text-xs #{fichaAtendimentoSacBean.cliente.tipoClienteEnum.colorCss}">
-                                                                <i class="#{fichaAtendimentoSacBean.cliente.tipoClienteEnum.icon} mr-2"/>
-                                                                <h:outputText value="#{fichaAtendimentoSacBean.cliente.tipoClienteEnum.descricao}"/>
+                                                                <i class="#{fichaAtendimentoSacBean.atendimento.tipoClienteEnum.icon} mr-2"/>
+                                                                <h:outputText value="#{fichaAtendimentoSacBean.atendimento.tipoClienteEnum.descricao}"/>
                                                             </h:panelGroup>
                                                         </div>
 
                                                         <p:commandButton value="Editar" icon="pi pi-pencil"
                                                                          oncomplete="PF('dlgEditarDadosCadastrais').show();"
                                                                          title="Editar dados cadastrais" process="@this"
+                                                                         rendered="#{!fichaAtendimentoSacBean.anonimo}"
                                                                          actionListener="#{fichaAtendimentoSacBean.editarDadosCadastrais()}"
                                                                          styleClass="ui-button-secondary ui-button-outlined ui-button-sm"/>
+
+                                                        <p:commandButton value="Cadastrar Cliente"
+                                                                         icon="pi pi-arrow-right" iconPos="right"
+                                                                         oncomplete="PF('dlgEditarDadosCadastrais').show();"
+                                                                         title="Editar dados cadastrais" process="@this"
+                                                                         update="dlgEditarDadosCadastrais"
+                                                                         rendered="#{fichaAtendimentoSacBean.anonimo}"
+                                                                         actionListener="#{fichaAtendimentoSacBean.editarDadosCadastrais()}"
+                                                                         styleClass="ui-button-outlined ui-button-lg font-bold px-5 shadow-2"/>
                                                     </div>
+
                                                 </f:facet>
 
                                                 <div class="flex flex-column gap-3 mt-2">
+
+                                                    <h:panelGroup id="pnlAlertaFCR" rendered="#{fichaAtendimentoSacBean.atendimentoAnterior ne null}">
+
+                                                        <div class="p-3 border-round mb-2 #{fichaAtendimentoSacBean.atendimentoAnterior eq null ? 'bg-green-50 border-green-500' : 'bg-orange-50 border-orange-500'} border-left-3 border-1 border-#{fichaAtendimentoSacBean.atendimentoAnterior eq null ? 'green' : 'orange'}-100">
+
+                                                            <div class="flex align-items-center justify-content-between">
+
+                                                                <div class="flex align-items-center gap-3">
+                                                                    <div class="border-circle w-3rem h-3rem flex align-items-center justify-content-center flex-shrink-0 #{fichaAtendimentoSacBean.atendimentoAnterior eq null ? 'bg-green-100 text-green-600' : 'bg-orange-100 text-orange-600'}">
+                                                                        <i class="pi #{fichaAtendimentoSacBean.atendimentoAnterior eq null ? 'pi-thumbs-up' : 'pi-exclamation-triangle'} text-xl"></i>
+                                                                    </div>
+
+                                                                    <div>
+                                                                    <span class="block font-bold text-900">
+                                                                        #{fichaAtendimentoSacBean.atendimentoAnterior eq null ? 'Primeiro Contato (FCR Elegível)' : 'Reincidência Detectada'}
+                                                                    </span>
+
+                                                                        <h:panelGroup rendered="#{fichaAtendimentoSacBean.atendimentoAnterior ne null}">
+                                                                        <span class="text-sm text-700 block mt-1" style="max-width: 400px; line-height: 1.4;">
+                                                                            Cliente retornou em menos de 7 dias.<br/>
+                                                                            Protocolo Antigo: <strong>#{fichaAtendimentoSacBean.atendimentoAnterior.protocolo}</strong>
+                                                                        </span>
+                                                                        </h:panelGroup>
+
+                                                                        <h:panelGroup rendered="#{fichaAtendimentoSacBean.atendimentoAnterior eq null}">
+                                                                            <span class="text-sm text-700 block mt-1">Nenhum chamado recente sobre este motivo.</span>
+                                                                        </h:panelGroup>
+                                                                    </div>
+                                                                </div>
+
+                                                                <h:panelGroup rendered="#{fichaAtendimentoSacBean.atendimentoAnterior ne null}">
+
+                                                                    <p:commandButton value="Ver Anterior" icon="pi pi-history"
+                                                                                     actionListener="#{fichaAtendimentoSacBean.visualizarAtendimentoProtocolo(fichaAtendimentoSacBean.atendimentoAnterior.id)}"
+
+                                                                                     update="dialogDevolutivaContent"
+                                                                                     oncomplete="PF('dlgDevolutiva').show()"
+                                                                                     process="@this"
+                                                                                     styleClass="ui-button-warning ui-button-outlined ui-button-sm rounded-button font-bold"/>
+                                                                </h:panelGroup>
+
+                                                            </div>
+
+                                                        </div>
+
+                                                    </h:panelGroup>
 
                                                     <div class="field m-0">
                                                         <p:outputLabel for="txtNome" value="Nome Completo" styleClass="font-semibold text-900 block mb-1"/>
@@ -1182,11 +1296,11 @@
                                                             <div class="flex flex-column">
                                                                 <span class="text-500 text-xs font-bold uppercase mb-1">Classificação Definida</span>
                                                                 <span class="text-800 font-medium text-lg">
-                <i class="pi pi-tag text-blue-600 mr-1 text-sm"></i>
+                                                                              <i class="pi pi-tag text-blue-600 mr-1 text-sm"></i>
                                                                     #{fichaAtendimentoSacBean.motivoSelecionado.descricao}
                                                                     <span class="text-400 mx-2">|</span>
                                                                     #{fichaAtendimentoSacBean.subMotivoSelecionado.descricao}
-            </span>
+                                                                             </span>
                                                             </div>
 
                                                             <p:commandButton value="Alterar"
@@ -1235,6 +1349,8 @@
 
                             </div>
 
+
+
                         </h:panelGroup>
 
 
@@ -1248,10 +1364,15 @@
                                 <div class="col-12 md:col-8 lg:col-6">
 
                                     <div class="flex justify-content-end mb-3 gap-2">
-                                 <!--       <p:commandButton icon="pi pi-phone" value="Simular Chamada"
-                                                         process="@this" update="dlgPonto"
+                                 <p:commandButton icon="pi pi-phone" value="Simular Chamada"
+                                                         process="@this" update="dlgPonto" rendered="#{fichaAtendimentoSacBean.usuario.perfil ne 'OPERADOR'}"
                                                          onclick="enviarMocado()"
-                                                         styleClass="ui-button-outlined ui-button-secondary text-sm"/>-->
+                                                         styleClass="ui-button-outlined ui-button-secondary text-sm"/>
+
+                                        <p:commandButton icon="pi pi-phone" value="Simular Chamada Sem CPF"
+                                                         process="@this" update="dlgPonto" rendered="#{fichaAtendimentoSacBean.usuario.perfil ne 'OPERADOR'}"
+                                                         onclick="enviarMocadoSemCpf()"
+                                                         styleClass="ui-button-outlined ui-button-secondary text-sm"/>
 
                                         <p:commandButton icon="pi pi-cog" value="Config. Ramal"
                                                          oncomplete="PF('dlgPonto').show()" process="@this"
@@ -1331,14 +1452,24 @@
 
 
                         <script>
-                            function enviarMocado() {
+                          function enviarMocado() {
                                 receberDadosChamada([
                                     {name: 'cpf', value: "06726506651"},
                                     {name: 'audioId', value: ""},
-                                    {name: 'numero', value: "31999631311"},
+                                    {name: 'numero', value: "31996124295"},
                                     {name: 'opcao', value: "6"}
                                 ]);
                             }
+
+                  function enviarMocadoSemCpf() {
+                       receberDadosChamada([
+                           {name: 'cpf', value: ""},
+                           {name: 'audioId', value: ""},
+                           {name: 'numero', value: "31996124295"},
+                           {name: 'opcao', value: "9"}
+                       ]);
+                   }
+
 
                         </script>
 
@@ -1553,9 +1684,14 @@
                                                     </div>
 
                                     <div class="field col-12 md:col-8">
+
                                         <p:outputLabel for="txtNomeEdit" value="Nome Completo" styleClass="font-semibold"/>
+
                                         <div class="ui-inputgroup">
-                                            <span class="ui-inputgroup-addon bg-gray-50"><i class="pi pi-user"></i></span>
+
+                                            <span class="ui-inputgroup-addon bg-gray-50">
+                                                <i class="pi pi-user" /></span>
+
                                             <p:inputText id="txtNomeEdit"
                                                          value="#{fichaAtendimentoSacBean.cliente.nome}"
                                                          required="true" requiredMessage="Nome é obrigatório"/>
@@ -1565,10 +1701,26 @@
 
                                     <div class="field col-12 md:col-4">
                                         <p:outputLabel for="txtCpfEdit" value="CPF" styleClass="font-semibold"/>
-                                        <p:inputMask id="txtCpfEdit" value="#{fichaAtendimentoSacBean.cliente.cpf}"
-                                                     mask="999.999.999-99"
-                                                     required="true" requiredMessage="CPF é obrigatório"
-                                                     styleClass="bg-gray-50"/> <p:message for="txtCpfEdit" display="text"/>
+
+                                        <div class="ui-inputgroup">
+                                            <p:inputMask id="txtCpfEdit" value="#{fichaAtendimentoSacBean.cliente.cpf}"
+                                                         mask="999.999.999-99"
+                                                         styleClass="bg-gray-50" >
+                                                <f:validator validatorId="converter.CpfValidator"/>
+                                            </p:inputMask>
+
+                                            <p:commandButton icon="pi pi-search"
+                                                             title="Pesquisar por este CPF"
+                                                             actionListener="#{fichaAtendimentoSacBean.buscarPorCpf()}"
+                                                             process="@this txtCpfEdit"
+                                                             rendered="#{fichaAtendimentoSacBean.anonimo}"
+                                                             update="pnpEditarDados grl"
+                                                             styleClass="ui-button-primary ui-button-outlined"/>
+
+
+                                        </div>
+
+                                        <p:message for="txtCpfEdit" display="text"/>
                                     </div>
 
                                     <div class="field col-12 md:col-4">
@@ -1593,16 +1745,19 @@
                                     </div>
 
                                     <div class="col-12 mt-4 mb-3">
-                <span class="text-500 font-bold text-sm uppercase border-bottom-1 border-200 block pb-2">
-                    <i class="pi pi-map-marker mr-1"></i>Endereço
-                </span>
-                                    </div>
+                                <span class="text-500 font-bold text-sm uppercase border-bottom-1 border-200 block pb-2">
+                                    <i class="pi pi-map-marker mr-1"></i>Endereço
+                                </span>
+                                                    </div>
 
                                     <div class="field col-12 md:col-3">
                                         <p:outputLabel for="txtCepEdit" value="CEP" styleClass="font-semibold"/>
+
                                         <div class="ui-inputgroup">
+
                                             <p:inputMask id="txtCepEdit" value="#{fichaAtendimentoSacBean.endereco.cep}"
-                                                         mask="99.999-999" required="true" requiredMessage="CEP obrigatório"/>
+                                                         mask="99.999-999" />
+
                                             <p:commandButton icon="pi pi-search"
                                                              title="Buscar CEP"
                                                              styleClass="ui-button-secondary ui-button-outlined"
@@ -1617,7 +1772,7 @@
                                         <p:outputLabel for="txtLogradouro" value="Logradouro" styleClass="font-semibold"/>
                                         <p:inputText id="txtLogradouro"
                                                      value="#{fichaAtendimentoSacBean.endereco.logradouro}"
-                                                     required="true" requiredMessage="Endereço obrigatório"/>
+                                                     />
                                         <p:message for="txtLogradouro" display="text"/>
                                     </div>
 
@@ -1625,7 +1780,7 @@
                                         <p:outputLabel for="txtNumeroEdit" value="Número" styleClass="font-semibold"/>
                                         <p:inputText id="txtNumeroEdit"
                                                      value="#{fichaAtendimentoSacBean.endereco.numero}"
-                                                     required="true" requiredMessage="Número obrigatório"/>
+                                                     />
                                         <p:message for="txtNumeroEdit" display="text"/>
                                     </div>
 
@@ -1633,7 +1788,7 @@
                                         <p:outputLabel for="txtBairroEdit" value="Bairro" styleClass="font-semibold"/>
                                         <p:inputText id="txtBairroEdit"
                                                      value="#{fichaAtendimentoSacBean.endereco.bairro}"
-                                                     required="true" requiredMessage="Bairro obrigatório"/>
+                                                     />
                                         <p:message for="txtBairroEdit" display="text"/>
                                     </div>
 
@@ -1647,17 +1802,16 @@
                                         <p:outputLabel for="txtCidadeEdit" value="Cidade" styleClass="font-semibold"/>
                                         <p:inputText id="txtCidadeEdit"
                                                      value="#{fichaAtendimentoSacBean.endereco.cidade}"
-                                                     required="true" requiredMessage="Cidade obrigatória"/>
+                                                     />
                                     </div>
 
                                     <div class="field col-12 md:col-1">
                                         <p:outputLabel for="txtUfEdit" value="UF" styleClass="font-semibold"/>
                                         <p:selectOneMenu id="txtUfEdit" value="#{fichaAtendimentoSacBean.endereco.uf}"
-                                                         required="true" autoWidth="false">
+                                                         autoWidth="false">
                                             <f:selectItem itemLabel="-" itemValue="" noSelectionOption="true"/>
-                                            <f:selectItem itemLabel="SP" itemValue="SP"/>
-                                            <f:selectItem itemLabel="RJ" itemValue="RJ"/>
-                                            <f:selectItem itemLabel="MG" itemValue="MG"/>
+                                            <f:selectItems value="#{fichaAtendimentoSacBean.ufs}" var="uf" itemLabel="#{uf}" itemValue="#{uf}" />
+
                                         </p:selectOneMenu>
                                     </div>
 
@@ -1770,15 +1924,20 @@
 
             <ui:include src="/pages/atendimento/modalPainelPontoAtendimento.xhtml"/>
 
+            <ui:include src="/pages/atendimento/modalListaDevolutivas.xhtml"/>
+
         </div>
 
         <h:form id="formPst" prependId="false">
+
+            <p:remoteCommand id="logarRamalPst" name="logarRamalPst" actionListener="#{fichaAtendimentoSacBean.logarRamal()}"	immediate="true" rendered="#{fichaAtendimentoSacBean.atendimento eq null}"/>
+
 
             <p:growl id="grl" widgetVar="grl" globalOnly="true" showSummary="false" life="8000" showDetail="true">
                 <p:autoUpdate/>
             </p:growl>
 
-            <h:outputScript   name="js/pstfone.js?v5" />
+            <h:outputScript   name="js/pstfone.js?v10" />
             <script type="text/javascript">
                 //<![CDATA[
                 console.log("Iniciando scripts pst");
@@ -1829,6 +1988,7 @@
                 atualizarCronometro();
             })();
         </script>
+
         <style>
             @keyframes pulse-blue {
                 0% {
@@ -1888,5 +2048,8 @@
                 }
             }
         </style>
+
+
     </ui:define>
+
 </ui:composition>

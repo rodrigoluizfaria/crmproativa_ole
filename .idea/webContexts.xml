@@ -9,6 +9,7 @@
         <entry key="file://$PROJECT_DIR$/src/main/webapp/pages/atendimento/fichaAtendimento2.xhtml" value="file://$PROJECT_DIR$/src/main/webapp/pages/atendimento" />
         <entry key="file://$PROJECT_DIR$/src/main/webapp/pages/atendimento/fichaAtendimentoPreditivo.xhtml" value="file://$PROJECT_DIR$/src/main/webapp/pages/atendimento" />
         <entry key="file://$PROJECT_DIR$/src/main/webapp/pages/atendimento/fichaAtendimentoSac.xhtml" value="file://$PROJECT_DIR$/src/main/webapp/pages/atendimento" />
+        <entry key="file://$PROJECT_DIR$/src/main/webapp/pages/atendimento/meusAtendimentoPesquisa.xhtml" value="file://$PROJECT_DIR$/src/main/webapp/pages/atendimento" />
         <entry key="file://$PROJECT_DIR$/src/main/webapp/pages/atendimento/modalSaque.xhtml" value="file://$PROJECT_DIR$/src/main/webapp/pages/atendimento" />
         <entry key="file://$PROJECT_DIR$/src/main/webapp/pages/backoffice/acompanhamentoConsistenciasVisualizar.xhtml" value="file://$PROJECT_DIR$/src/main/webapp/pages/backoffice" />
         <entry key="file://$PROJECT_DIR$/src/main/webapp/pages/backoffice/acompanhamentoMinhasConsistenciasVisualizar.xhtml" value="file://$PROJECT_DIR$/src/main/webapp/pages/backoffice" />
@@ -21,6 +22,7 @@
         <entry key="file://$PROJECT_DIR$/src/main/webapp/pages/cadastro/usuarioPesquisa.xhtml" value="file://$PROJECT_DIR$/src/main/webapp/pages/cadastro" />
         <entry key="file://$PROJECT_DIR$/src/main/webapp/pages/dashboard/dashAtendimentoFragmento.xhtml" value="file://$PROJECT_DIR$/src/main/webapp/pages/dashboard" />
         <entry key="file://$PROJECT_DIR$/src/main/webapp/pages/home/sistemaPausa.xhtml" value="file://$PROJECT_DIR$/src/main/webapp/pages/home" />
+        <entry key="file://$PROJECT_DIR$/src/main/webapp/pages/supervisor/backofficePendencia.xhtml" value="file://$PROJECT_DIR$/src/main/webapp/pages/supervisor" />
         <entry key="file://$PROJECT_DIR$/src/main/webapp/pages/supervisor/backofficePesquisa.xhtml" value="file://$PROJECT_DIR$/src/main/webapp/pages/supervisor" />
         <entry key="file://$PROJECT_DIR$/src/main/webapp/pages/supervisor/monitorCampanha.xhtml" value="file://$PROJECT_DIR$/src/main/webapp/pages/supervisor" />
         <entry key="file://$PROJECT_DIR$/src/main/webapp/resources/componentes/editarFichaAtendimento.xhtml" value="file://$PROJECT_DIR$/src/main/webapp/resources/componentes" />

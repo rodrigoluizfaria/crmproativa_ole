@@ -35,6 +35,7 @@ public class BackofficeFilaBean extends GenericBean implements Serializable {
     private long qtdConcluidos;
 
     private long qtdPendentes;
+    private long qtdPrazoEstourado;
 
     private List<Atendimento> listaAtendimentos;
 
@@ -57,10 +58,13 @@ public class BackofficeFilaBean extends GenericBean implements Serializable {
 
     private Long idDepartamento;
 
+    private boolean exibirConcluidos;
+
     @PostConstruct
     public void init() {
 
         this.usuario = retornarUsuarioSessao();
+        this.filtroStatus = "PENDENTE";
 
         if (this.usuario.getPerfil().equals(PerfilUsuarioEnum.OPERADOR_BACKOFFICE)) {
 
@@ -107,6 +111,7 @@ public class BackofficeFilaBean extends GenericBean implements Serializable {
 
         calcularKpis();
     }
+
 
     public long getIdAtendimento() {
         return idAtendimento;
@@ -221,6 +226,7 @@ public class BackofficeFilaBean extends GenericBean implements Serializable {
             this.qtdPendentes = 0;
             this.qtdConcluidos = 0;
             this.qtdAndamento = 0;
+            this.qtdPrazoEstourado = 0;
             return;
         }
 
@@ -236,13 +242,19 @@ public class BackofficeFilaBean extends GenericBean implements Serializable {
                         && a.getStatus().getAcao() == AcaoStatusAtendimentoEnum.EM_ANALISE)
                 .count();
 
-        // 3. PENDENTES: Não encerrado E (Status é nulo OU Status NÃO é 'EM_ANALISE')
+
         // Basicamente: Tudo que sobrou da fila
         this.qtdPendentes = (int) listaAtendimentos.stream()
                 .filter(a -> !Boolean.TRUE.equals(a.getDemandaEncerrada())) // Garante que está aberto
                 .filter(a -> a.getStatus() == null
                         || a.getStatus().getAcao() != AcaoStatusAtendimentoEnum.EM_ANALISE)
                 .count();
+
+        this.qtdPrazoEstourado = (int) listaAtendimentos.stream()
+                .filter(a -> Boolean.TRUE.equals(a.isPrazoEstourado()))
+                .count();
+
+
     }
 
     public void limparFiltros() {
@@ -307,5 +319,9 @@ public class BackofficeFilaBean extends GenericBean implements Serializable {
 
     public void setIdDepartamento(Long idDepartamento) {
         this.idDepartamento = idDepartamento;
+    }
+
+    public long getQtdPrazoEstourado() {
+        return qtdPrazoEstourado;
     }
 }

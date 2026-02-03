@@ -53,13 +53,31 @@ public class DaoCliente extends GenericDao<Cliente> {
         StringBuilder query = new StringBuilder("update cliente set ");
         Map<String, Object> parametros = new HashMap<>();
 
-        query.append("nome = :nome, nome_mae = :nomeMae, nome_pai = :nomePai");
-        parametros.put("nome", nome);
-        parametros.put("nomeMae", nomeMae);
-        parametros.put("nomePai", nomePai);
+        boolean primeiroCampo = true;
+
+        if (nome != null && !nome.trim().isEmpty()) {
+            query.append("nome = :nome");
+            parametros.put("nome", nome);
+            primeiroCampo = false;
+        }
+
+        if (nomeMae != null && !nomeMae.trim().isEmpty()) {
+            if (!primeiroCampo) query.append(", ");
+            query.append("nome_mae = :nomeMae");
+            parametros.put("nomeMae", nomeMae);
+            primeiroCampo = false;
+        }
+
+        if (nomePai != null && !nomePai.trim().isEmpty()) {
+            if (!primeiroCampo) query.append(", ");
+            query.append("nome_pai = :nomePai");
+            parametros.put("nomePai", nomePai);
+            primeiroCampo = false;
+        }
 
         if (dataNascimento != null) {
-            query.append(", data_nascimento = :dataNascimento");
+            if (!primeiroCampo) query.append(", ");
+            query.append("data_nascimento = :dataNascimento");
             parametros.put("dataNascimento", dataNascimento);
         }
 

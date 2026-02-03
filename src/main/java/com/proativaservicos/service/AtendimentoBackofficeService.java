@@ -10,6 +10,8 @@ import com.proativaservicos.model.Consistencia;
 import com.proativaservicos.model.HistoricoAtendimentoBackoffice;
 import com.proativaservicos.model.Usuario;
 import com.proativaservicos.model.dto.ProdutividadeSacDto;
+import com.proativaservicos.model.dto.RelatorioFiltroDto;
+import com.proativaservicos.model.dto.RelatorioSacDto;
 import com.proativaservicos.util.constantes.TipoVisualizacaoEnum;
 import jakarta.inject.Inject;
 import org.apache.commons.collections4.CollectionUtils;
@@ -363,7 +365,9 @@ public class AtendimentoBackofficeService extends GenericProService<AtendimentoB
                                                                           TipoVisualizacaoEnum tipoVisualizacao) {
 
         return this.dao.pesquisarProdutividadeAtendimentoSac(getLists(equipeLong), getLists(usuarioLong), produtoLong, loja, dataInicio, dataFim, tipoVisualizacao);
+
     }
+
 
     public List<ProdutividadeSacDto> pesquisarProdutividadeAtendimentoSacTotal(List<Long> equipeLong, List<Long> usuarioLong,
                                                                                Long produtoLong, Long loja,
@@ -394,6 +398,10 @@ public class AtendimentoBackofficeService extends GenericProService<AtendimentoB
     public void resetarAtendimentosEnviadosPorEquipe(Long idEquipe) {
         this.dao.resetarAtendimentosEnviadosPorEquipe(idEquipe);
 
+    }
+
+    public List<RelatorioSacDto> pesquisarRelatorioDetalhado(RelatorioFiltroDto filtro) {
+        return this.dao.pesquisarRelatorioDetalhado(filtro);
     }
 
 

@@ -1,5 +1,7 @@
 package com.proativaservicos.model.dto;
 
+import java.math.BigDecimal;
+
 public class ProdutividadeSacDto {
 
     private String visualizacao;
@@ -15,6 +17,13 @@ public class ProdutividadeSacDto {
     private Long qtidadeEmAberto;
     private Double percentualNoPrazo;
     private Double percentualPrazoEstourado;
+
+    private Long qtdeReincidencia;
+
+    private Double percentualReincidencia;
+
+    private Long qtdeFcr;
+    private Double percentualFcr; // ou Double
 
 
     public String getVisualizacao() {
@@ -119,5 +128,37 @@ public class ProdutividadeSacDto {
 
     public void setCor(String cor) {
         this.cor = cor;
+    }
+
+    public Long getQtdeFcr() {
+        return qtdeFcr;
+    }
+
+    public void setQtdeFcr(Long qtdeFcr) {
+        this.qtdeFcr = qtdeFcr;
+    }
+
+    public Double getPercentualFcr() {
+        return percentualFcr;
+    }
+
+    public void setPercentualFcr(Double percentualFcr) {
+        this.percentualFcr = percentualFcr;
+    }
+
+    public Long getQtdeReincidencia() {
+        return qtdeReincidencia;
+    }
+
+    public void setQtdeReincidencia(Long qtdeReincidencia) {
+        this.qtdeReincidencia = qtdeReincidencia;
+    }
+
+    public Double getPercentualReincidencia() {
+        return percentualReincidencia;
+    }
+
+    public void setPercentualReincidencia(Double percentualReincidencia) {
+        this.percentualReincidencia = percentualReincidencia;
     }
 }

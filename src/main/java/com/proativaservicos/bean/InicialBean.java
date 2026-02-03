@@ -101,6 +101,10 @@ public class InicialBean extends GenericBean implements Serializable {
 
     private Long codUsuario;
 
+    private Double percentualFcr;
+
+    private Long totalFcr;
+
     List<Object[]> listPendentes;
     List<Object[]> listUltimosAtendimentos;
 
@@ -169,9 +173,8 @@ public class InicialBean extends GenericBean implements Serializable {
         atualizarData();
         atualizarDadosOperador();
 
-
         if (this.codUsuario == null)
-            this.agentesOnline = (long) this.usuarioLogadoService.pesquisarQuantidadeUsuariosLogados(retornarEmpresaUsuarioSessao().getId());
+            this.agentesOnline = (long) this.usuarioLogadoService.pesquisarQuantidadeUsuariosLogados(retornarEmpresaUsuarioSessao().getId(), "OPERADOR");
 
         List<?> listResumo = this.serviceAtendimento.listarQuantidadeResumoDerivadosSac(this.dataInicio, this.dataFim, codUsuario);
 
@@ -193,6 +196,8 @@ public class InicialBean extends GenericBean implements Serializable {
             this.totalAtendimentosAbertos = safeLong(linha[2]);
             this.totalFinalizadosN1 = safeLong(linha[3]);
             this.totalFinalizadosN2 = safeLong(linha[4]);
+            this.totalFcr = safeLong(linha[5]);
+            this.percentualFcr = safeDouble(linha[6]);
 
         } else {
 
@@ -241,6 +246,10 @@ public class InicialBean extends GenericBean implements Serializable {
 
     private long safeLong(Object value) {
         return value != null ? ((Number) value).longValue() : 0L;
+    }
+
+    private double safeDouble(Object value) {
+        return value != null ? ((Number) value).doubleValue() : 0.0;
     }
 
     private int safeInt(Object value) {
@@ -482,5 +491,17 @@ public class InicialBean extends GenericBean implements Serializable {
 
     public Long getMeusFinalizados() {
         return meusFinalizados;
+    }
+
+    public Double getPercentualFcr() {
+        return percentualFcr;
+    }
+
+    public Long getTotalFcr() {
+        return totalFcr;
+    }
+
+    public Long getTotalFinalizadosN2() {
+        return totalFinalizadosN2;
     }
 }

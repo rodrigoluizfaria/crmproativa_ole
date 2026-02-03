@@ -68,6 +68,8 @@ public class Atendimento extends GenericAtendimento implements Serializable {
     @Transient
     private List<AtendimentoAudios> listaAudios;
 
+    @Transient
+    private String observacaoOriginal;
 
 
     public Atendimento() {
@@ -511,5 +513,13 @@ public class Atendimento extends GenericAtendimento implements Serializable {
 
     public void setListaAudios(List<AtendimentoAudios> listaAudios) {
         this.listaAudios = listaAudios;
+    }
+
+    public String getObservacaoOriginal() {
+        return observacaoOriginal;
+    }
+
+    public void setObservacaoOriginal(String observacaoOriginal) {
+        this.observacaoOriginal = observacaoOriginal;
     }
 }

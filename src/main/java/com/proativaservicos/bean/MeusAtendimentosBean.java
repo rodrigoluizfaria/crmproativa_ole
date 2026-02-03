@@ -156,7 +156,7 @@ public class MeusAtendimentosBean extends GenericBean {
 
             this.dataAgendamento = new Date(System.currentTimeMillis());
 
-            this.listAtendimentosPendentes = this.serviceAtendimento.pesquisarAtendimentosPendentes(this.usuario.getId(), Arrays.asList(new String[]{TipoCampanhaEnum.ATIVA.name(), TipoCampanhaEnum.RECEPTIVA.name(), TipoCampanhaEnum.PREDITIVA.name()}));
+            this.listAtendimentosPendentes = this.serviceAtendimento.pesquisarAtendimentosPendentes(this.usuario.getId(), Arrays.asList(new String[]{TipoCampanhaEnum.ATIVA.name(),TipoCampanhaEnum.SAC.name(), TipoCampanhaEnum.RECEPTIVA.name(), TipoCampanhaEnum.PREDITIVA.name()}));
 
             if (this.listAtendimentosPendentes.isEmpty()) {
 
@@ -642,6 +642,26 @@ public class MeusAtendimentosBean extends GenericBean {
         }
 
     }
+
+    public String onOcultarCpf(String cpf) {
+        if (StringUtils.isBlank(cpf)) {
+            return cpf;
+        }
+
+
+        String apenasNumeros = cpf.replaceAll("\\D", "");
+
+        if (apenasNumeros.length() != 11) {
+
+            return cpf;
+        }
+
+
+        String mascarado = "***.***.***-" + apenasNumeros.substring(9);
+
+        return mascarado;
+    }
+
 
     public Usuario getUsuario() {
         return usuario;

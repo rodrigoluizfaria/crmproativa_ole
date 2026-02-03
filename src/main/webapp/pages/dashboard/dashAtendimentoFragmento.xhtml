@@ -162,15 +162,15 @@
                 </div>
             </div>
 
-            <div class="col-12 sm:col-6 lg:col-2">
+ <!--           <div class="col-12 sm:col-6 lg:col-2">
                 <div class="surface-card shadow-1 p-3 border-round-xl text-center h-full hover:shadow-3 transition-duration-200">
                     <div class="inline-flex align-items-center justify-content-center bg-blue-50 text-blue-600 border-circle w-3rem h-3rem mb-2">
                         <i class="pi pi-inbox text-xl"></i>
                     </div>
                     <span class="block text-900 font-bold text-2xl mb-1">#{inicialBean.totalAtendimentosAbertos}</span>
-                    <span class="text-500 text-sm font-medium">Fila Geral</span>
+                    <span class="text-500 text-sm font-medium">Pendentes</span>
                 </div>
-            </div>
+            </div>-->
 
             <div class="col-12 sm:col-6 lg:col-2">
                 <div class="surface-card shadow-1 p-3 border-round-xl text-center h-full hover:shadow-3 transition-duration-200">
@@ -209,6 +209,30 @@
                     </div>
                     <span class="block text-900 font-bold text-2xl mb-1">#{inicialBean.totalDerivadosN2}</span>
                     <span class="text-500 text-sm font-medium">Encaminhados N2</span>
+                </div>
+            </div>
+
+            <div class="col-12 sm:col-6 lg:col-2">
+                <div class="surface-card shadow-1 p-3 border-round-xl text-center h-full hover:shadow-3 transition-duration-200 cursor-pointer"
+                     title="Percentual de chamados resolvidos no primeiro contato">
+
+                    <div class="inline-flex align-items-center justify-content-center bg-teal-50 text-teal-600 border-circle w-3rem h-3rem mb-2">
+                        <i class="pi pi-thumbs-up text-xl"></i>
+                    </div>
+
+                    <span class="block text-900 font-bold text-2xl mb-1">
+                          <h:outputText value="#{inicialBean.percentualFcr}">
+                              <f:convertNumber type="percent" minFractionDigits="1" />
+                            </h:outputText>
+                         </span>
+
+                    <div class="flex flex-column gap-1">
+                        <span class="text-500 text-sm font-medium">Taxa FCR</span>
+
+                        <span class="text-xs text-500 bg-100 border-round px-2 py-1 align-self-center font-bold">
+                                    #{inicialBean.totalFcr} Casos
+                </span>
+                    </div>
                 </div>
             </div>
         </h:panelGroup>

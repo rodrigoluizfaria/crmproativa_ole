@@ -86,7 +86,7 @@ public class MonitorBackofficeBean extends GenericBean {
     private List<ProdutividadeSacDto> listTotal;
 
 
-   private PolarAreaChartModel polarAreaModelConsistencia;
+    private PolarAreaChartModel polarAreaModelConsistencia;
 
 
     private List<Equipe> listEquipes;
@@ -101,6 +101,12 @@ public class MonitorBackofficeBean extends GenericBean {
     private Long totalPrazo;
     private Long totalPrazoExcedido;
     private Long totalCpf;
+    private Long totalFcr;
+    private Double totalPercentFcr;
+    private Double totalPercentReincidencia;
+    private Long totalResolvidoN1;
+    private Long totalResolvidoN2;
+    private Long totalReincidencia;
 
     private Object[] produtividade;
 
@@ -151,6 +157,10 @@ public class MonitorBackofficeBean extends GenericBean {
         this.totalPrazo = 0L;
         this.totalPrazoExcedido = 0L;
         this.totalFinalizado = 0L;
+        this.totalFcr = 0L;
+        this.totalResolvidoN1 = 0L;
+        this.totalResolvidoN2 = 0L;
+        this.totalReincidencia = 0L;
 
         if (CollectionUtils.isNotEmpty(list)) {
 
@@ -161,6 +171,10 @@ public class MonitorBackofficeBean extends GenericBean {
                 this.totalPrazo = totalPrazo + safeLong(obj.getQtdadeDemandaNoPrazo());
                 this.totalPrazoExcedido = totalPrazoExcedido + safeLong(obj.getQtdadeDemandaPrazoEstourado());
                 this.totalFinalizado = totalFinalizado + safeLong(obj.getQtdadeConcluido());
+                this.totalFcr += safeLong(obj.getQtdeFcr());
+                this.totalResolvidoN1 += safeLong(obj.getQtdadeResolvidoN1());
+                this.totalResolvidoN2 += safeLong(obj.getQtdeResolvidoN2());
+                this.totalReincidencia += safeLong(obj.getQtdeReincidencia());
 
                 System.out.print(this.totalAtendimento);
                 System.out.print(" - " + this.totalCpf);
@@ -169,6 +183,25 @@ public class MonitorBackofficeBean extends GenericBean {
                 System.out.println(" - " + this.totalFinalizado);
 
 
+            }
+
+            if (this.totalAtendimento > 0) {
+
+                // Percentual Total de FCR
+                this.totalPercentFcr = (double) this.totalFcr / this.totalAtendimento;
+                this.totalPercentReincidencia = (double) this.totalReincidencia / this.totalAtendimento;
+                // Percentual Total No Prazo
+                // this.totalPercentualNoPrazo = (double) this.totalPrazo / this.totalAtendimento;
+
+                // Percentual Total Excedido
+                //   this.totalPercentualPrazoExcedido = (double) this.totalPrazoExcedido / this.totalAtendimento;
+
+            } else {
+                // Se não houve atendimento, zera os percentuais
+                this.totalPercentFcr = 0.0;
+                this.totalPercentReincidencia = 0.0;
+                // this.totalPercentualNoPrazo = 0.0;
+                //this.totalPercentualPrazoExcedido = 0.0;
             }
 
         }
@@ -552,5 +585,37 @@ public class MonitorBackofficeBean extends GenericBean {
 
     public Long getTotalAtendimento() {
         return totalAtendimento;
+    }
+
+    public Long getTotalFcr() {
+        return totalFcr;
+    }
+
+    public void setTotalFcr(Long totalFcr) {
+        this.totalFcr = totalFcr;
+    }
+
+    public Double getTotalPercentFcr() {
+        return totalPercentFcr;
+    }
+
+    public void setTotalPercentFcr(Double totalPercentFcr) {
+        this.totalPercentFcr = totalPercentFcr;
+    }
+
+    public Long getTotalResolvidoN1() {
+        return totalResolvidoN1;
+    }
+
+    public Long getTotalResolvidoN2() {
+        return totalResolvidoN2;
+    }
+
+    public Double getTotalPercentReincidencia() {
+        return totalPercentReincidencia;
+    }
+
+    public Long getTotalReincidencia() {
+        return totalReincidencia;
     }
 }

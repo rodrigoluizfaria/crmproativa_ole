@@ -5,20 +5,19 @@ import com.proativaservicos.model.Atendimento;
 import com.proativaservicos.model.HistoricoAtendimento;
 import com.proativaservicos.model.StatusAtendimento;
 import com.proativaservicos.service.AtendimentoService;
+import com.proativaservicos.service.HistoricoAtendimentoService;
 import com.proativaservicos.service.StatusAtendimentoService;
 import com.proativaservicos.util.constantes.AcaoStatusAtendimentoEnum;
 import jakarta.enterprise.context.RequestScoped;
 import jakarta.faces.view.ViewScoped;
 import jakarta.inject.Inject;
 import jakarta.inject.Named;
+import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.omnifaces.util.Faces;
 import org.omnifaces.util.Messages;
 
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Date;
-import java.util.List;
+import java.util.*;
 
 @Named
 @ViewScoped
@@ -28,6 +27,9 @@ public class TratativaBackofficeBean extends GenericBean {
     private AtendimentoService atendimentoService;
 
     @Inject
+    private HistoricoAtendimentoService historicoAtendimentoService;
+
+    @Inject
     private StatusAtendimentoService statusAtendimentoService;
 
     private Long idAtendimento;
@@ -35,6 +37,7 @@ public class TratativaBackofficeBean extends GenericBean {
     private Atendimento atendimento;
 
     private List<StatusAtendimento> listStatusAtendimento;
+    private List<HistoricoAtendimento> listHistoricoAtendimento;
 
     private String statusFinal;
 
@@ -42,10 +45,20 @@ public class TratativaBackofficeBean extends GenericBean {
 
     private boolean enviarSms;
 
+    private String repostaN2Aux;
+
 
     public void inicializar() {
-      //  System.out.println("ABRIR ATENDIMENTO: " + idAtendimento);
+
         this.atendimento = this.atendimentoService.pesquisarAtendimentoSacPorCodigo(idAtendimento);
+        this.repostaN2Aux = null;
+
+        if (StringUtils.isNotBlank(atendimento.getRespostaN2())) {
+            this.repostaN2Aux = atendimento.getRespostaN2();
+            this.atendimento.setRespostaN2("");
+        }
+
+
         inicializarVariaveis();
     }
 
@@ -60,7 +73,7 @@ public class TratativaBackofficeBean extends GenericBean {
             this.atendimento.setResponsavelN2(retornarUsuarioSessao());
             this.atendimento.setUsuarioAlteracao(retornarUsuarioSessao());
             this.atendimento.setDataAlteracao(new Date());
-           // this.atendimento.setDemandaEncerrada(Boolean.TRUE);
+            // this.atendimento.setDemandaEncerrada(Boolean.TRUE);
 
             aplicarRegraDevolucao(this.atendimento);
 
@@ -103,7 +116,7 @@ public class TratativaBackofficeBean extends GenericBean {
             throw new ProativaException(String.join("; ", erros));
         }
 
-        if(this.atendimento.getStatus().getAcao().equals(AcaoStatusAtendimentoEnum.CONCLUIR)) {
+        if (this.atendimento.getStatus().getAcao().equals(AcaoStatusAtendimentoEnum.CONCLUIR)) {
             this.atendimento.setDemandaEncerrada(Boolean.TRUE);
             this.atendimento.setAtendimentoFinalizado(Boolean.TRUE);
 
@@ -116,6 +129,20 @@ public class TratativaBackofficeBean extends GenericBean {
 
         this.listStatusAtendimento = this.statusAtendimentoService.pesquisarStatusAtendimentoPorAcao(Arrays.asList(AcaoStatusAtendimentoEnum.CONCLUIR, AcaoStatusAtendimentoEnum.DEVOLVER, AcaoStatusAtendimentoEnum.EM_ANALISE), retornarEmpresaUsuarioSessao().getId());
 
+        if (this.atendimento != null && this.atendimento.getId() != null)
+            this.listHistoricoAtendimento = this.historicoAtendimentoService.pesquisarHistoricoSacPorAtendimento(this.atendimento.getId());
+
+        if (CollectionUtils.isNotEmpty(this.listHistoricoAtendimento)) {
+
+            // aplica filtro se necessário
+            Optional<HistoricoAtendimento> primeiroAtnOp =
+                    this.listHistoricoAtendimento.stream()
+                            .filter(h -> h.getDataCadastro() != null).min(Comparator.comparing(HistoricoAtendimento::getDataCadastro));
+
+            primeiroAtnOp.ifPresent(historicoAtendimento -> this.atendimento.setObservacaoOriginal(historicoAtendimento.getObservacao()));
+
+
+        }
     }
 
     private void criarHistoricoAtendimento() throws ProativaException {
@@ -123,6 +150,9 @@ public class TratativaBackofficeBean extends GenericBean {
         HistoricoAtendimento historicoAtendimento = HistoricoAtendimento.fromAtendimento(this.atendimento);
         inserir(historicoAtendimento);
 
+    }
+
+    public void buscarHistorico() {
 
     }
 
@@ -172,5 +202,17 @@ public class TratativaBackofficeBean extends GenericBean {
 
     public void setEnviarSms(boolean enviarSms) {
         this.enviarSms = enviarSms;
+    }
+
+    public List<HistoricoAtendimento> getListHistoricoAtendimento() {
+        return listHistoricoAtendimento;
+    }
+
+    public String getRepostaN2Aux() {
+        return repostaN2Aux;
+    }
+
+    public void setRepostaN2Aux(String repostaN2Aux) {
+        this.repostaN2Aux = repostaN2Aux;
     }
 }

@@ -59,6 +59,8 @@ public class ConsultaBackofficeBean extends GenericBean {
     private String textoCompleto;
     private Usuario usuario;
 
+    private boolean anonimo = false;
+
 
     @PostConstruct
     public void init() {
@@ -92,6 +94,8 @@ public class ConsultaBackofficeBean extends GenericBean {
 
     private void pesquisarFiltro() {
 
+        this.anonimo = false;
+        this.clienteView = null;
 
         if (!this.usuario.getPerfil().equals(PerfilUsuarioEnum.OPERADOR_BACKOFFICE)) {
 
@@ -104,8 +108,21 @@ public class ConsultaBackofficeBean extends GenericBean {
         }
 
         if (CollectionUtils.isNotEmpty(listAtendimento)) {
-            clienteView = this.serviceCliente.pesquisarClienteAtendimentoSacPorId(listAtendimento.get(0).getCliente().getId());
+
+            this.listAtendimento.stream()
+                    .map(Atendimento::getCliente)
+                    .filter(Objects::nonNull)
+                    .findFirst()
+                    .ifPresent(primeiroCliente ->
+                            clienteView = this.serviceCliente
+                                    .pesquisarClienteAtendimentoSacPorId(primeiroCliente.getId())
+                    );
         }
+
+        if (this.clienteView == null) {
+            this.anonimo = true;
+        }
+
 
     }
 
@@ -190,5 +207,13 @@ public class ConsultaBackofficeBean extends GenericBean {
 
     public String getTextoCompleto() {
         return textoCompleto;
+    }
+
+    public boolean isAnonimo() {
+        return anonimo;
+    }
+
+    public void setAnonimo(boolean anonimo) {
+        this.anonimo = anonimo;
     }
 }

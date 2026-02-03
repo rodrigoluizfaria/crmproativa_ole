@@ -332,6 +332,10 @@ public abstract class GenericAtendimento extends GenericControle {
     @Column(name = "demanda_encerrada")
     private Boolean demandaEncerrada;
 
+    @Column(name = "atendimento_anonimo")
+    private Boolean atendimentoAnonimo;
+
+
     @Transient
     private Boolean clienteVip;
 
@@ -446,6 +450,13 @@ public abstract class GenericAtendimento extends GenericControle {
     @JoinColumn(name = "departamento_derivado")
     @ManyToOne(fetch = FetchType.LAZY)
     private Departamento departamentoDerivado;
+
+
+    @Column(name = "ind_fcr")
+    private Boolean fcr = true; // Nasce verdadeiro por padrão (presunção de inocência)
+
+    @Column(name = "ind_reincidencia")
+    private Boolean reincidencia = false; // Nasce falso
 
     @Transient
     private Map<String, String> listInformacoesComplementares;
@@ -1841,6 +1852,31 @@ public abstract class GenericAtendimento extends GenericControle {
 
     public void setDepartamentoDerivado(Departamento departamentoDerivado) {
         this.departamentoDerivado = departamentoDerivado;
+    }
+
+    public Boolean getAtendimentoAnonimo() {
+        return atendimentoAnonimo;
+    }
+
+    public void setAtendimentoAnonimo(Boolean atendimentoAnonimo) {
+        this.atendimentoAnonimo = atendimentoAnonimo;
+    }
+
+
+    public Boolean getFcr() {
+        return fcr;
+    }
+
+    public void setFcr(Boolean fcr) {
+        this.fcr = fcr;
+    }
+
+    public Boolean getReincidencia() {
+        return reincidencia;
+    }
+
+    public void setReincidencia(Boolean reincidencia) {
+        this.reincidencia = reincidencia;
     }
 
     public String getDescricaoCliente() {

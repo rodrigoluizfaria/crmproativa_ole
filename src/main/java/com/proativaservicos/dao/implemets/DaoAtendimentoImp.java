@@ -1,6 +1,7 @@
 package com.proativaservicos.dao.implemets;
 
 import com.proativaservicos.model.*;
+import com.proativaservicos.model.dto.ProdutividadeSacDto;
 import com.proativaservicos.util.DateUtil;
 import com.proativaservicos.util.Util;
 import com.proativaservicos.util.Utils;
@@ -8,7 +9,9 @@ import com.proativaservicos.util.constantes.*;
 import jakarta.enterprise.context.Dependent;
 import jakarta.inject.Named;
 import jakarta.persistence.EntityManager;
+import jakarta.persistence.NoResultException;
 import jakarta.persistence.PersistenceContext;
+import jakarta.persistence.Query;
 import jakarta.transaction.Transactional;
 import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.collections4.map.HashedMap;
@@ -723,7 +726,7 @@ public class DaoAtendimentoImp extends GenericDao<Atendimento> implements Serial
         query.append("\tjoin status_campanha sc on c.status_campanha = sc.id ");
         query.append("\tjoin usuario u on a.usuario_em_atendimento = u.id ");
         query.append("where a.usuario_em_atendimento = :usuario ");
-        query.append("\tand u.equipe is not null ");
+        /*  query.append("\tand u.equipe is not null ");*/
         query.append("\tand c.tipo_campanha in (:tipoCampanhas) ");
         query.append("  and (a.status is null or s.acao like 'AGENDAR%') ");
         query.append("\tand sc.acao <> 'SUSPENDER' ");
@@ -736,7 +739,7 @@ public class DaoAtendimentoImp extends GenericDao<Atendimento> implements Serial
         return searchEntidades(DaoEnum.NATIVE_OBJECT, query.toString(), parametros);
     }
 
-    public List<Object[]> pesquisarAtendimentosPendentesSac(Long idUsuario,Date dataInicio,Date dataFim) {
+    public List<Object[]> pesquisarAtendimentosPendentesSac(Long idUsuario, Date dataInicio, Date dataFim) {
 
         StringBuilder query = new StringBuilder();
         HashMap<String, Object> parametros = new HashMap<>();
@@ -769,14 +772,13 @@ public class DaoAtendimentoImp extends GenericDao<Atendimento> implements Serial
         query.append("ORDER BY a.data_alteracao");
 
 
-
         parametros.put("idUsuario", idUsuario);
 
 
         return searchEntidades(DaoEnum.NATIVE_OBJECT, query.toString(), parametros);
     }
 
-    public List<Object[]> pesquisarUltimosAtendimentosSac(Long idUsuario,Date dataInicio,Date dataFim) {
+    public List<Object[]> pesquisarUltimosAtendimentosSac(Long idUsuario, Date dataInicio, Date dataFim) {
 
         StringBuilder query = new StringBuilder();
         Map<String, Object> parametros = new HashMap<>();
@@ -808,14 +810,13 @@ public class DaoAtendimentoImp extends GenericDao<Atendimento> implements Serial
         query.append("LIMIT 5");
 
 
-
         parametros.put("usuario", idUsuario);
 
 
         return searchEntidades(DaoEnum.NATIVE_OBJECT, query.toString(), parametros);
     }
 
-    public Long pesquisarQuantidadeFinalizadosGeral(Long idUsuario,Date dataInicio,Date dataFim) {
+    public Long pesquisarQuantidadeFinalizadosGeral(Long idUsuario, Date dataInicio, Date dataFim) {
 
         StringBuilder query = new StringBuilder();
         Map<String, Object> parametros = new HashMap<>();
@@ -1000,7 +1001,7 @@ public class DaoAtendimentoImp extends GenericDao<Atendimento> implements Serial
         query.append("FROM atendimento a ");
         query.append("    INNER JOIN empresa e ON a.empresa = e.id ");
         query.append("    INNER JOIN campanha c ON c.id = a.campanha ");
-        query.append("    INNER JOIN cliente cl ON cl.id = a.cliente ");
+        query.append("    LEFT JOIN cliente cl ON cl.id = a.cliente ");
         query.append("    LEFT JOIN status_atendimento s ON s.id = a.status ");
         query.append("    LEFT JOIN motivo m ON m.id = a.motivo ");
         query.append("    LEFT JOIN submotivo sm ON sm.id = a.submotivo ");
@@ -1158,7 +1159,7 @@ public class DaoAtendimentoImp extends GenericDao<Atendimento> implements Serial
         query.append("FROM atendimento a ");
         query.append("    inner join empresa e on a.empresa = e.id ");
         query.append("    inner join campanha c on (c.id = a.campanha) ");
-        query.append("    inner join cliente cl on (cl.id = a.cliente) ");
+        query.append("    left join cliente cl on (cl.id = a.cliente) ");
         query.append("    left join status_atendimento s on (s.id = a.status) ");
         query.append("    left join motivo m on (m.id = a.motivo) ");
         query.append("    left join submotivo sm on (sm.id = a.submotivo) ");
@@ -3370,7 +3371,7 @@ public class DaoAtendimentoImp extends GenericDao<Atendimento> implements Serial
 
         parametros.put("campanha", campanha.getId());
 
-    //    System.out.println(query.toString());
+        //    System.out.println(query.toString());
 
 
         return searchEntidades(DaoEnum.HQL_QUERRY, query.toString(), parametros);
@@ -4676,7 +4677,7 @@ public class DaoAtendimentoImp extends GenericDao<Atendimento> implements Serial
         query.append(" and a.cpf = :cpf ");
         query.append(" ORDER BY a.dataCadastro desc ");
         parametros.put("cpf", StringUtils.leftPad(cpf.trim(), 11, "0"));
-    //    System.out.println(query.toString());
+        //    System.out.println(query.toString());
         return (Atendimento) searchEntidade(DaoEnum.HQL_QUERRY, query.toString(), parametros, 0, 1);
 
     }
@@ -4709,11 +4710,12 @@ public class DaoAtendimentoImp extends GenericDao<Atendimento> implements Serial
         query.append("select distinct a ");
         query.append("from Atendimento a ");
         query.append(" join fetch a.campanha c ");
-        query.append(" join fetch a.cliente cli ");
+        query.append(" left join fetch a.cliente cli ");
         query.append(" left join fetch a.status s ");
         query.append(" left join fetch a.motivo m ");
         query.append(" left join fetch a.subMotivo sm ");
         query.append(" left join fetch a.usuarioAlteracao u ");
+        query.append(" left join fetch a.usuarioCadastro uc ");
         query.append(" left join fetch a.responsavelN2 n2 ");
         query.append(" left join fetch a.usuarioOcupado o ");
         query.append(" left join fetch a.formaPagamento tp ");
@@ -4767,6 +4769,23 @@ public class DaoAtendimentoImp extends GenericDao<Atendimento> implements Serial
         executeSqlUpdate(DaoEnum.NATIVE_CLASSE, sql.toString(), parametros);
     }
 
+    @Transactional
+    public void deletarAtendimentoSemClassificacaoCodAtendimento(Long idAtendimento, String protocolo) {
+        StringBuilder sql = new StringBuilder();
+        Map<String, Object> parametros = new HashMap<>();
+
+        sql.append("DELETE FROM atendimento ");
+        sql.append("WHERE id = :idAtendimento ");
+        sql.append("AND motivo IS NULL ");
+        sql.append("AND submotivo IS NULL ");
+        sql.append("AND protocolo_pai = :protocolo");
+
+        parametros.put("idAtendimento", idAtendimento);
+        parametros.put("protocolo", protocolo);
+
+        executeSqlUpdate(DaoEnum.NATIVE_CLASSE, sql.toString(), parametros);
+    }
+
     public Long buscarQuantidadeClientesAtendidosDiario(Long idUsuario, String protocoloAtual) {
         StringBuilder sql = new StringBuilder();
         Map<String, Object> parametros = new HashMap<>();
@@ -4777,11 +4796,70 @@ public class DaoAtendimentoImp extends GenericDao<Atendimento> implements Serial
         sql.append("AND DATE(data_cadastro) = CURRENT_DATE ");
 
         if (StringUtils.isNotBlank(protocoloAtual)) {
-            sql.append("AND protocolo <> :protocolo ");
+            sql.append("AND protocolo_pai <> :protocolo ");
             parametros.put("protocolo", protocoloAtual);
         }
 
         parametros.put("idUsuario", idUsuario);
+
+        Number resultado = (Number) searchEntidade(DaoEnum.NATIVE_OBJECT, sql.toString(), parametros);
+
+        return resultado != null ? resultado.longValue() : 0L;
+    }
+
+    /**
+     * Busca a quantidade de atendimentos de um CLIENTE específico nos últimos 7 dias.
+     * Útil para verificar reincidência / FCR.
+     */
+    public Long buscarQuantidadeAtendimentosDoClienteUltimos7Dias(Long idCliente, String protocoloAtual) {
+
+        StringBuilder sql = new StringBuilder();
+        Map<String, Object> parametros = new HashMap<>();
+
+        // 1. Calcula a data de 7 dias atrás
+        Calendar cal = Calendar.getInstance();
+        cal.add(Calendar.DAY_OF_YEAR, -7);
+        cal.set(Calendar.HOUR_OF_DAY, 0);
+        cal.set(Calendar.MINUTE, 0);
+        cal.set(Calendar.SECOND, 0);
+        Date dataLimite = cal.getTime();
+
+
+        sql.append("SELECT COUNT(*) ");
+        sql.append("FROM atendimento ");
+        sql.append("WHERE cliente = :idCliente ");
+        sql.append("AND data_cadastro >= :dataLimite ");
+
+
+
+        if (StringUtils.isNotBlank(protocoloAtual)) {
+            sql.append("AND protocolo_pai <> :protocolo ");
+            parametros.put("protocolo", protocoloAtual);
+        }
+
+        parametros.put("idCliente", idCliente);
+        parametros.put("dataLimite", dataLimite);
+
+        Number resultado = (Number) searchEntidade(DaoEnum.NATIVE_OBJECT, sql.toString(), parametros);
+
+        return resultado != null ? resultado.longValue() : 0L;
+    }
+
+    public Long buscarQuantidadeContatoCliente(Long idCliente, String protocoloAtual) {
+        StringBuilder sql = new StringBuilder();
+        Map<String, Object> parametros = new HashMap<>();
+
+        sql.append("SELECT COUNT(DISTINCT cliente) ");
+        sql.append("FROM atendimento ");
+        sql.append("WHERE cliente = :idCliente ");
+        sql.append("AND DATE(data_cadastro) = CURRENT_DATE ");
+
+        if (StringUtils.isNotBlank(protocoloAtual)) {
+            sql.append("AND protocolo_pai <> :protocolo ");
+            parametros.put("protocolo", protocoloAtual);
+        }
+
+        parametros.put("idCliente", idCliente);
 
         Number resultado = (Number) searchEntidade(DaoEnum.NATIVE_OBJECT, sql.toString(), parametros);
 
@@ -4843,10 +4921,48 @@ public class DaoAtendimentoImp extends GenericDao<Atendimento> implements Serial
 
         query.append(" order by a.demandaEncerrada asc, a.dataCadastro desc");
 
-    //    System.out.println(query.toString());
+        //    System.out.println(query.toString());
 
         return searchEntidades(DaoEnum.HQL_QUERRY, query.toString(), parametros);
     }
+
+
+
+    private List<ProdutividadeSacDto> gerarDtoProdutividade(List<Object[]> resultados) {
+
+        List<ProdutividadeSacDto> dtos = new ArrayList<>();
+
+        for (Object[] row : resultados) {
+            ProdutividadeSacDto dto = new ProdutividadeSacDto();
+
+            // Mapeando colunas conforme SELECT da query
+            dto.setVisualizacao((String) row[0]);                // a.visualizacao
+            int index = 1;
+
+            // Se houver "cor" no SELECT (alguns casos), ela vem logo após visualizacao
+            if (row.length > 12) { // quando tem cor, o array é maior
+                dto.setCor((String) row[index++]);               // a.cor
+            }
+
+            dto.setQtdeCpf(((Number) row[index++]).longValue());
+            dto.setQtdeAtendimento(((Number) row[index++]).longValue());
+            dto.setQtdadeResolvidoN1(((Number) row[index++]).longValue());
+            dto.setQtdeResolvidoN2(((Number) row[index++]).longValue());
+            dto.setQtdeDerivado(((Number) row[index++]).longValue());
+            dto.setQtdadeConcluido(((Number) row[index++]).longValue());
+            dto.setQtdadeDemandaNoPrazo(((Number) row[index++]).longValue());
+            dto.setQtdadeDemandaPrazoEstourado(((Number) row[index++]).longValue());
+            dto.setPercentualNoPrazo(((Number) row[index++]).doubleValue());
+            dto.setPercentualPrazoEstourado(((Number) row[index++]).doubleValue());
+            dto.setQtidadeEmAberto(((Number) row[index++]).longValue());
+
+            dtos.add(dto);
+        }
+
+        return dtos;
+    }
+
+
 
     public List<Atendimento> pesquisarAtendimentosSacFiltros(String filtroProtocolo, String filtroCpf, List<Long> listDpo) {
 
@@ -4856,7 +4972,7 @@ public class DaoAtendimentoImp extends GenericDao<Atendimento> implements Serial
         query.append("select distinct a ");
         query.append("from Atendimento a ");
         query.append(" join fetch a.campanha c ");
-        query.append(" join fetch a.cliente cli ");
+        query.append(" left join fetch a.cliente cli ");
         query.append(" join fetch a.motivo m ");
         query.append(" join fetch a.subMotivo sm ");
         query.append(" left join fetch a.status s ");
@@ -4947,7 +5063,14 @@ public class DaoAtendimentoImp extends GenericDao<Atendimento> implements Serial
         sql.append("SUM(CASE WHEN a.enviar_n2 = true OR s.acao = 'DERIVAR' THEN 1 ELSE 0 END) AS qtd_escalados_n2, ");
         sql.append("SUM(CASE WHEN a.enviar_n2 = true AND (a.status IS NULL OR s.acao <> 'CONCLUIR') THEN 1 ELSE 0 END) AS pendentes, ");
         sql.append("SUM(CASE WHEN (a.enviar_n2 IS NULL OR a.enviar_n2 = false) AND s.acao = 'CONCLUIR_N1' THEN 1 ELSE 0 END) AS qtd_finalizados_n1, ");
-        sql.append("SUM(CASE WHEN a.enviar_n2 = true AND s.acao = 'CONCLUIR' THEN 1 ELSE 0 END) AS qtd_finalizados_n2 ");
+        sql.append("SUM(CASE WHEN a.enviar_n2 = true AND s.acao = 'CONCLUIR' THEN 1 ELSE 0 END) AS qtd_finalizados_n2, ");
+        // 1. Quantidade Absoluta de FCR (Baseado na flag do banco)
+        sql.append("SUM(CASE WHEN a.ind_fcr = true THEN 1 ELSE 0 END) AS qtd_fcr, ");
+
+        // 2. Taxa de FCR (Cálculo com proteção contra divisão por zero)
+        // Retorna decimal (ex: 0.95). O front-end converte para 95%.
+        // O denominador COUNT(*) considera o total de atendimentos filtrados no WHERE
+        sql.append("COALESCE(CAST(SUM(CASE WHEN a.ind_fcr = true THEN 1 ELSE 0 END) AS NUMERIC) / NULLIF(COUNT(*), 0), 0) AS taxa_fcr ");
         sql.append("FROM atendimento a ");
         sql.append("JOIN campanha c ON a.campanha = c.id ");
         sql.append("LEFT JOIN status_atendimento s ON a.status = s.id ");
@@ -4963,7 +5086,7 @@ public class DaoAtendimentoImp extends GenericDao<Atendimento> implements Serial
             parametros.put("dataInicio", atStartOfDay(dataInicio));
             parametros.put("dataFim", atEndOfDay(dataFim));
         }
-    //    System.out.println(sql.toString());
+        //    System.out.println(sql.toString());
         List<?> list = searchEntidades(DaoEnum.NATIVE_OBJECT, sql.toString(), parametros);
         return CollectionUtils.isNotEmpty(list) ? list : Collections.emptyList();
 
@@ -5132,6 +5255,24 @@ public class DaoAtendimentoImp extends GenericDao<Atendimento> implements Serial
         executeSqlUpdate(DaoEnum.NATIVE_CLASSE, sql, parametros);
     }
 
+    public void atualizarProtocoloDataFimAtendimentoPorProtocolo(String protocoloPai, Date dataFim) {
+
+        if (StringUtils.isBlank(protocoloPai) || dataFim == null) {
+            return;
+        }
+
+        String sql = "UPDATE atendimento " +
+                "SET data_fim_atendimento = :dataFim " +
+                "WHERE  protocolo = :protocoloPai";
+
+        Map<String, Object> parametros = new HashMap<>();
+
+        parametros.put("dataFim", dataFim);
+        parametros.put("protocoloPai", protocoloPai);
+        executeSqlUpdate(DaoEnum.NATIVE_CLASSE, sql, parametros);
+
+    }
+
     public Long pesquisarIdAtendimentoSacPorProtocolo(String protocolo) {
 
         if (StringUtils.isBlank(protocolo)) {
@@ -5177,4 +5318,143 @@ public class DaoAtendimentoImp extends GenericDao<Atendimento> implements Serial
         return searchEntidades(DaoEnum.HQL_QUERRY, query.toString(), parametros);
 
     }
+
+    public void atualizarAtendimentoAnonimo(boolean anonimo, Long codCliente, Long atendimentoId) {
+        StringBuilder sql = new StringBuilder("UPDATE atendimento SET atendimento_anonimo = :anonimo");
+        Map<String, Object> parametros = new HashMap<>();
+        parametros.put("anonimo", anonimo);
+
+        // Se codCliente foi informado, adiciona no SET
+        if (codCliente != null) {
+            sql.append(", cliente = :codCliente");
+            parametros.put("codCliente", codCliente);
+        }
+
+        // WHERE sempre pelo id
+        sql.append(" WHERE id = :atendimentoId");
+        parametros.put("atendimentoId", atendimentoId);
+
+        executeSqlUpdate(DaoEnum.NATIVE_CLASSE, sql.toString(), parametros);
+    }
+
+    public void atualizarAtendimentoSac(Long idAtendimento, Long statusId, String observacao, Date dataAlteracao, Long usuarioAlteracao) {
+
+        StringBuilder sql = new StringBuilder("UPDATE atendimento SET observacao = :observacao,status =:statusId, " +
+                "data_alteracao =:dataAlteracao, usuario_alteracao =:usuarioAlteracao WHERE id = :atendimentoId ");
+
+        Map<String, Object> parametros = new HashMap<>();
+        parametros.put("observacao", observacao);
+        parametros.put("dataAlteracao", dataAlteracao);
+        parametros.put("usuarioAlteracao", usuarioAlteracao);
+        parametros.put("statusId", statusId);
+        parametros.put("atendimentoId", idAtendimento);
+
+        executeSqlUpdate(DaoEnum.NATIVE_CLASSE, sql.toString(), parametros);
+    }
+
+
+    public Atendimento buscarUltimoAtendimentoDoCliente(Long idCliente, Long idMotivo,Long subMotivo, Date dataLimite, Long idAtendimentoAtual) {
+
+        try {
+
+            StringBuilder hql = new StringBuilder();
+            hql.append("SELECT a FROM Atendimento a ");
+            hql.append("WHERE a.cliente.id = :idCliente ");
+            hql.append("AND a.motivo.id = :idMotivo ");
+            hql.append("AND a.subMotivo.id = :subMotivo ");
+            hql.append("AND a.dataCadastro >= :dataLimite ");
+            hql.append("AND a.id <> :idAtual "); // Não pegar o próprio atendimento
+            // Opcional: Filtrar apenas atendimentos que foram concluídos
+            // hql.append("AND a.status.acao IN ('CONCLUIR', 'CONCLUIR_N1') ");
+            hql.append("ORDER BY a.dataInicioAtendimento DESC");
+
+            Query query = getEntityManager().createQuery(hql.toString());
+            query.setParameter("idCliente", idCliente);
+            query.setParameter("idMotivo", idMotivo);
+            query.setParameter("subMotivo", subMotivo);
+            query.setParameter("dataLimite", dataLimite);
+            query.setParameter("idAtual", idAtendimentoAtual);
+            query.setMaxResults(1); // Só queremos o mais recente
+
+            return (Atendimento) query.getSingleResult();
+        } catch (NoResultException e) {
+            return null; // Não achou nada, primeira vez que liga
+        }
+    }
+
+
+    public Atendimento buscarUltimaInteracao(Long idCliente, Long idMotivo, Long subMotivo, Long idAtual) {
+
+
+        Calendar cal = Calendar.getInstance();
+        cal.add(Calendar.DAY_OF_YEAR, -7);
+        Date dataLimite = cal.getTime();
+
+        String hql = "SELECT a FROM Atendimento a " +
+                "WHERE a.cliente.id = :idCliente " +
+                "AND a.motivo.id = :idMotivo " +
+                "AND a.subMotivo.id = :subMotivo " +
+                "AND a.dataCadastro >= :dataLimite " +
+                "AND a.id <> :idAtual " +
+                "ORDER BY a.dataCadastro DESC";
+
+        try {
+
+            return entityManager.createQuery(hql, Atendimento.class)
+                    .setParameter("idCliente", idCliente)
+                    .setParameter("idMotivo", idMotivo)
+                    .setParameter("subMotivo", subMotivo)
+                    .setParameter("dataLimite", dataLimite)
+                    .setParameter("idAtual", idAtual)
+                    .setMaxResults(1)
+                    .getSingleResult();
+
+        } catch (NoResultException e) {
+            return null; // Ótimo! Nenhuma reincidência encontrada.
+        }
+    }
+
+    public void alterarFrc(Long idAtendimento, Boolean frc) {
+
+        String sql = "UPDATE atendimento SET ind_fcr = :frc WHERE id = :atendimentoId ";
+        Map<String, Object> parametros = new HashMap<>();
+        parametros.put("frc", frc);
+        parametros.put("atendimentoId", idAtendimento);
+        executeSqlUpdate(DaoEnum.NATIVE_CLASSE, sql, parametros);
+
+    }
+
+    // No seu Repository/DAO
+
+    public boolean verificarSeClienteEhReincidente(Long idCliente,String protocoloPai) {
+
+        // data limite (Hoje - 7 dias)
+        Calendar cal = Calendar.getInstance();
+        cal.add(Calendar.DAY_OF_YEAR, -7);
+        Date dataLimite = cal.getTime();
+
+        String hql = "SELECT COUNT(a) FROM Atendimento a " +
+                "WHERE a.cliente.id = :idCliente " +
+                "AND a.dataCadastro >= :dataLimite " +
+                "AND a.atendimentoPai  is true " +
+                "AND a.protocoloPai  <> :protocoloPai " +
+                "AND a.status.acao <> 'CANCELADO'";
+
+
+        try {
+
+            Long count = entityManager.createQuery(hql, Long.class)
+                    .setParameter("idCliente", idCliente)
+                    .setParameter("dataLimite", dataLimite)
+                    .setParameter("protocoloPai",protocoloPai)
+                    .getSingleResult();
+
+            return count > 0;
+
+        } catch (Exception e) {
+            return false;
+        }
+    }
+
+
 }

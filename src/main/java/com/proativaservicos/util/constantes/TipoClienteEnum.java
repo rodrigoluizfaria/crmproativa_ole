@@ -4,6 +4,7 @@ public enum TipoClienteEnum {
 
     CLIENTE_VIP("Cliente novo","fa fa-solid fa-crown","tag-gold-gradient"),
     CLIENTE("Cliente","",""),
+    CLIENTE_ANONIMO("Cliente não identificado", "pi pi-user-minus", "tag-grey"),
     CLIENTE_NOVO("Cliente novo","pi pi-verified","tag-new");
 
 

@@ -7,7 +7,6 @@
                 xmlns:of="http://omnifaces.org/functions"
                 template="/WEB-INF/template.xhtml">
 
-
     <ui:define name="viewname">
         <div class="bcca-breadcrumb">
             <div class="bcca-breadcrumb-item bg-primary-500 hover:bg-primary-700">
@@ -62,8 +61,6 @@
                             </div>
 
                             <div class="field col-12 mt-3">
-
-
                                 <p:commandButton value="Consultar" icon="pi pi-search" id="btnFiltar"
                                                  actionListener="#{consultaBackofficeBean.pesquisar()}"
                                                  update="@form"
@@ -75,9 +72,12 @@
 
                 <div class="col-12 md:col-9">
 
-                    <h:panelGroup layout="block" rendered="#{not empty consultaBackofficeBean.clienteView}">
+                    <h:panelGroup layout="block" rendered="#{not empty consultaBackofficeBean.listAtendimento}">
 
-                        <div class="surface-card p-4 shadow-2 border-round mb-4 relative overflow-hidden">
+                        <h:panelGroup styleClass="surface-card p-4 shadow-2 border-round mb-4 relative overflow-hidden border-left-3 border-blue-500"
+                                      layout="block"
+                                      rendered="#{not empty consultaBackofficeBean.clienteView and !consultaBackofficeBean.anonimo}">
+
                             <div class="flex justify-content-between align-items-start mb-4 border-bottom-1 border-100 pb-3">
                                 <div class="flex align-items-center">
                                     <div class="bg-blue-100 border-circle w-3rem h-3rem flex align-items-center justify-content-center mr-3">
@@ -115,7 +115,35 @@
                                     </div>
                                 </div>
                             </div>
-                        </div>
+                        </h:panelGroup>
+
+                        <h:panelGroup styleClass="surface-card p-4 shadow-2 border-round mb-4 relative overflow-hidden border-left-3 border-orange-500"
+                                      layout="block"
+                                      rendered="#{empty consultaBackofficeBean.clienteView or consultaBackofficeBean.anonimo}">
+
+                            <div class="flex justify-content-between align-items-center border-bottom-1 border-100 pb-3 mb-3">
+                                <div class="flex align-items-center">
+                                    <div class="bg-orange-100 border-circle w-3rem h-3rem flex align-items-center justify-content-center mr-3">
+                                        <i class="pi pi-user-secret text-orange-600 text-xl"></i>
+                                    </div>
+                                    <div>
+                                        <span class="text-900 font-bold text-xl block">Atendimento Anônimo</span>
+                                        <span class="text-500 text-sm">Cliente não identificado no cadastro.</span>
+                                    </div>
+                                </div>
+
+                                <p:commandButton value="Novo Atendimento" icon="pi pi-plus"
+                                                 process="@this"
+                                                 action="#{consultaBackofficeBean.onCriarNovoAtendimento()}"
+                                                 styleClass="ui-button-success font-bold shadow-1"/>
+                            </div>
+
+                            <div class="p-3 bg-orange-50 border-round text-orange-800 text-sm flex align-items-center">
+                                <i class="pi pi-info-circle mr-2 text-lg"></i>
+                                <span>Este protocolo foi localizado por busca direta, mas não estão vinculado a um cadastro de cliente.</span>
+                            </div>
+
+                        </h:panelGroup>
 
                         <div class="surface-card shadow-2 border-round p-0 overflow-hidden">
                             <div class="p-3 bg-gray-50 border-bottom-1 border-200 flex justify-content-between align-items-center">
@@ -126,13 +154,12 @@
 
                                 <p:commandButton value="Exportar" icon="pi pi-file-excel"
                                                  styleClass="ui-button-outlined ui-button-success ui-button-sm font-bold"
-                                                 ajax="false"
-                                                 rendered="#{not empty consultaBackofficeBean.listAtendimento}">
-
-                                    <p:dataExporter type="xls" target="tableDpo" fileName="historico_protocolos_#{consultaBackofficeBean.clienteView.cpf}" />
-
+                                                 ajax="false">
+                                    <p:dataExporter type="xls" target="tableDpo"
+                                                    fileName="historico_protocolos_#{empty consultaBackofficeBean.clienteView ? 'anonimo' : consultaBackofficeBean.clienteView.cpf}" />
                                 </p:commandButton>
                             </div>
+
                             <p:dataTable id="tableDpo" value="#{consultaBackofficeBean.listAtendimento}" var="atn"
                                          paginator="true" rows="10" paginatorPosition="bottom"
                                          emptyMessage="#{msg.emptyMessage}"
@@ -147,12 +174,14 @@
                                     </h:outputText>
                                 </p:column>
 
-                                <p:column headerText="Protocolo" width="150" styleClass="text-center" exportValue="#{atn.protocolo}">
+                                <p:column headerText="Protocolo" width="150" styleClass="text-center"
+                                          exportValue="#{atn.protocolo}">
                                     <span class="font-bold font-monospace bg-blue-50 text-blue-700 px-2 py-1 border-round">
                                         #{atn.protocolo} </span>
                                 </p:column>
 
-                                <p:column headerText="Responsavel" width="200" sortBy="#{atn.usuarioCadastro.nome}" exportValue="#{atn.usuarioCadastro.nome}">
+                                <p:column headerText="Responsavel" width="200" sortBy="#{atn.usuarioCadastro.nome}"
+                                          exportValue="#{atn.usuarioCadastro.nome}">
 
                                     <div class="flex align-items-center gap-2">
 
@@ -193,29 +222,24 @@
                                 </p:column>
 
                                 <p:column headerText="Classificação" width="200" exportable="false">
-
                                     <div class="flex flex-column">
-
                                         <span class="font-bold text-900 mb-1">
                                             #{atn.motivo.descricao}
                                         </span>
-
                                         <h:panelGroup rendered="#{not empty atn.subMotivo}" layout="block"
                                                       styleClass="flex align-items-center text-600">
-
                                             <i class="pi pi-level-down text-xs mr-2 transform rotate-90 text-400"></i>
-
                                             <span class="text-sm">#{atn.subMotivo.descricao}</span>
                                         </h:panelGroup>
-
                                     </div>
                                 </p:column>
+
                                 <p:column headerText="Motivo" visible="false" exportable="true">
-                                    <h:outputText value="#{atn.motivo.descricao}" />
+                                    <h:outputText value="#{atn.motivo.descricao}"/>
                                 </p:column>
 
                                 <p:column headerText="Submotivo" visible="false" exportable="true">
-                                    <h:outputText value="#{atn.subMotivo.descricao}" />
+                                    <h:outputText value="#{atn.subMotivo.descricao}"/>
                                 </p:column>
 
                                 <p:column width="60" styleClass="text-center" exportable="false">
@@ -231,8 +255,8 @@
 
                     </h:panelGroup>
 
-                    <h:panelGroup layout="block" rendered="#{empty consultaBackofficeBean.clienteView}">
-                        <div class="surface-card shadow-2 border-round p-6 text-center  flex flex-column align-items-center justify-content-center">
+                    <h:panelGroup layout="block" rendered="#{empty consultaBackofficeBean.listAtendimento}">
+                        <div class="surface-card shadow-2 border-round p-6 text-center flex flex-column align-items-center justify-content-center">
                             <div class="bg-gray-100 border-circle w-6rem h-6rem flex align-items-center justify-content-center mb-4">
                                 <i class="pi pi-search text-gray-400 text-5xl"></i>
                             </div>
@@ -244,7 +268,6 @@
                     </h:panelGroup>
 
                 </div>
-
             </div>
 
             <p:dialog header="Visão Geral do Atendimento"
@@ -261,398 +284,235 @@
 
                 <h:panelGroup id="dialogVisualizarContent" layout="block">
 
+                    <h:panelGroup rendered="#{empty consultaBackofficeBean.atendimentoView}"
+                                  styleClass="flex flex-column align-items-center justify-content-center py-6 text-center">
+                        <i class="pi pi-spin pi-spinner text-blue-500 text-5xl mb-3"></i>
+                        <span class="text-900 font-bold text-xl block mb-1">Carregando informações...</span>
+                        <span class="text-600">Aguarde um momento.</span>
+                    </h:panelGroup>
+
                     <h:panelGroup rendered="#{not empty consultaBackofficeBean.atendimentoView}"
-                                  styleClass="flex flex-column p-2">
+                                  styleClass="flex flex-column p-0">
 
-                        <div class="surface-0 mb-3 border-1 border-200 border-round-xl p-3 flex align-items-center shadow-1">
+                        <div class="surface-50 p-4 border-bottom-1 border-200">
+                            <div class="flex flex-column md:flex-row justify-content-between align-items-start md:align-items-center gap-3">
 
-                            <div class="border-circle bg-blue-100 flex align-items-center justify-content-center mr-3"
-                                 style="width: 3.5rem; height: 3.5rem; min-width: 3.5rem;">
-                    <span class="text-xl font-bold text-blue-600 uppercase">
-                        #{consultaBackofficeBean.atendimentoView.cliente.nome.substring(0,1)}
-                    </span>
-                            </div>
+                                <div class="flex align-items-center gap-3">
+                                    <p:avatar label="#{not empty consultaBackofficeBean.atendimentoView.cliente.nome ? consultaBackofficeBean.atendimentoView.cliente.nome.substring(0,1) : 'A'}"
+                                              size="large" shape="circle"
+                                              styleClass="#{not empty consultaBackofficeBean.atendimentoView.cliente ? 'bg-blue-600 text-white' : 'bg-gray-200 text-gray-600'} font-bold text-xl shadow-1"/>
 
-                            <div class="flex flex-column flex-grow-1">
-                                <span class="text-sm text-500 mb-1">Cliente</span>
-                                <span class="text-900 font-bold text-lg">
-                                      #{consultaBackofficeBean.atendimentoView.cliente.nome}
-                               </span>
-                                <h:panelGroup
-                                        rendered="#{not empty consultaBackofficeBean.atendimentoView.cliente.cpf}">
-                                    <div class="flex align-items-center mt-1">
-                                        <i class="pi pi-id-card text-500 mr-2 text-sm"></i>
-                                        <span class="text-600 font-medium text-sm">
-                                CPF: #{consultaBackofficeBean.atendimentoView.cliente.cpf}
+                                    <div>
+                            <span class="text-xl font-bold text-900 block">
+                                #{empty consultaBackofficeBean.atendimentoView.cliente ? 'Consumidor Anônimo' : consultaBackofficeBean.atendimentoView.cliente.nome}
                             </span>
-                                    </div>
-                                </h:panelGroup>
-                            </div>
-
-                            <div class="flex flex-column align-items-end pl-3 border-left-1 border-200 hidden md:flex">
-                                <span class="text-xs text-500 uppercase font-bold mb-1">Protocolo</span>
-                                <span class="text-xl font-bold text-900 font-monospace mb-2">
-                        #{consultaBackofficeBean.atendimentoView.protocolo}
-                    </span>
-
-                                <h:panelGroup rendered="#{not empty consultaBackofficeBean.atendimentoView.status}">
-                                    <p:tag value="#{consultaBackofficeBean.atendimentoView.status.descricao}"
-                                           icon="#{consultaBackofficeBean.atendimentoView.status.acao.icone}"
-                                           styleClass="#{consultaBackofficeBean.atendimentoView.status.acao.styleClass} px-2"
-                                           rounded="true"/>
-                                </h:panelGroup>
-                            </div>
-                        </div>
-
-                        <div class="flex justify-content-between align-items-center mb-3 md:hidden">
-                            <span class="text-900 font-bold font-monospace text-xl">#{consultaBackofficeBean.atendimentoView.protocolo}</span>
-                            <p:tag value="#{consultaBackofficeBean.atendimentoView.status.descricao}" rounded="true"/>
-                        </div>
-
-                        <div class="flex align-items-center text-700 mb-4 bg-bluegray-50 p-2 border-round border-1 border-100">
-                            <i class="pi pi-folder-open mr-2 text-primary" />
-                            <span class="font-bold text-sm">#{consultaBackofficeBean.atendimentoView.motivo.descricao}</span>
-                            <i class="pi pi-chevron-right mx-2 text-400 text-xs" />
-                            <span class="text-sm">#{consultaBackofficeBean.atendimentoView.subMotivo.descricao}</span>
-                        </div>
-
-                        <h:panelGroup rendered="#{not empty consultaBackofficeBean.atendimentoView.atendimentoPaiObj}">
-
-                            <div class="surface-100 border-1 border-blue-200 bg-blue-50 border-round p-3 mb-3 flex align-items-center justify-content-between">
-                                <div class="flex align-items-center">
-                                    <div class="bg-white border-circle w-2rem h-2rem flex align-items-center justify-content-center mr-3 shadow-1">
-                                        <i class="pi pi-arrow-up text-blue-600 font-bold"></i>
-                                    </div>
-
-                                    <div class="flex flex-column">
-                                        <span class="text-sm text-blue-600 font-medium mb-1">Originado do protocolo:</span>
-                                        <div class="flex align-items-center gap-2">
-                                            <span class="text-xl font-bold text-blue-900 font-monospace">
-                                                #{consultaBackofficeBean.atendimentoView.atendimentoPaiObj.protocolo}
-                                            </span>
-                                                                    <span class="text-sm text-600">
-                                                (#{consultaBackofficeBean.atendimentoView.atendimentoPaiObj.motivo.descricao})
-                                            </span>
-                                        </div>
-                                    </div>
-                                </div>
-
-                                <p:commandButton value="Ver Pai" icon="pi pi-external-link"
-                                                 actionListener="#{consultaBackofficeBean.onOpenAtendimento(consultaBackofficeBean.atendimentoView.atendimentoPaiObj.id)}"
-                                                 update="dlgVisualizarCompleto"
-                                                 process="@this"
-                                                 styleClass="ui-button-outlined ui-button-primary ui-button-sm font-bold bg-white"/>
-                            </div>
-
-                        </h:panelGroup>
-
-                        <p:tabView id="tabsDetalhes">
-
-                            <p:tab title="Geral">
-                                <f:facet name="title"><i class="pi pi-file mr-2"></i>Detalhes</f:facet>
-
-                         <!--       <div class="field mb-4 mt-2">
-                                    <label class="font-bold block text-900 mb-2 flex align-items-center">
-                                        <i class="pi pi-align-left mr-2 text-blue-500"/>Relato Classificação
-                                    </label>
-                                    <div class="surface-100 p-3 border-round border-1 border-200 line-height-3 text-700">
-                                        <h:outputText value="#{consultaBackofficeBean.atendimentoView.observacaoAdicional}"
-                                                      rendered="#{not empty consultaBackofficeBean.atendimentoView.observacaoAdicional}"/>
-                                        <h:outputText value="Sem descrição informada."
-                                                      rendered="#{empty consultaBackofficeBean.atendimentoView.observacaoAdicional}"
-                                                      styleClass="text-500 font-italic"/>
-                                    </div>
-                                </div>-->
-
-                                <div class="field mb-4 mt-2">
-                                    <label class="font-bold block text-900 mb-2 flex align-items-center">
-                                        <i class="pi pi-align-left mr-2 text-blue-500"/>Relato Inicial
-                                    </label>
-                                    <div class="surface-100 p-3 border-round border-1 border-200 line-height-3 text-700">
-                                        <h:outputText value="#{consultaBackofficeBean.atendimentoView.observacao}"
-                                                      rendered="#{not empty consultaBackofficeBean.atendimentoView.observacao}"/>
-                                        <h:outputText value="Sem descrição informada."
-                                                      rendered="#{empty consultaBackofficeBean.atendimentoView.observacao}"
-                                                      styleClass="text-500 font-italic"/>
-                                    </div>
-                                </div>
-
-                                <h:panelGroup rendered="#{not empty consultaBackofficeBean.atendimentoView.respostaN2}">
-                                    <div class="field mt-3"> <label class="font-bold block text-900 mb-2 flex align-items-center">
-                                        <i class="pi pi-check-circle mr-2 text-green-500"/>Resposta / Devolutiva
-                                    </label>
-
-                                        <div class="surface-0 border-round border-1 border-300 shadow-1 bg-white overflow-hidden">
-
-                                            <div class="p-3 line-height-3 text-800">
-                                                <h:outputText value="#{consultaBackofficeBean.atendimentoView.respostaN2}"
-                                                              escape="false"/>
-                                            </div>
-
-                                            <div class="bg-gray-50 p-2 border-top-1 border-200 flex align-items-center justify-content-end text-sm">
-                                                <span class="text-500 mr-2">Responsável:</span>
-
-                                                <div class="flex align-items-center font-medium text-700 bg-white px-2 py-1 border-round border-1 border-200 shadow-none">
-                                                    <i class="pi pi-user mr-2 text-blue-500 text-xs"></i>
-                                                    #{consultaBackofficeBean.atendimentoView.responsavelN2.nome}
-                                                </div>
-                                            </div>
-
-                                        </div>
-                                    </div>
-
-                                </h:panelGroup>
-
-                            </p:tab>
-
-                            <p:tab title="Gravações">
-                                <f:facet name="title">
-                                    <i class="pi pi-volume-up mr-2 text-purple-500"></i>Gravações
-                                </f:facet>
-
-                                <h:panelGroup rendered="#{empty consultaBackofficeBean.atendimentoView.listaAudios}">
-                                    <div class="flex flex-column align-items-center justify-content-center py-4">
-                                        <div class="bg-purple-50 border-circle w-4rem h-4rem flex align-items-center justify-content-center mb-2">
-                                            <i class="fa fa-solid fa-microphone-slash text-purple-300 text-3xl"></i>
-                                        </div>
-                                        <span class="text-600 font-medium">Nenhuma gravação encontrada.</span>
-                                    </div>
-                                </h:panelGroup>
-
-                                <h:panelGroup rendered="#{not empty consultaBackofficeBean.atendimentoView.listaAudios}">
-
-                                    <p:dataTable value="#{consultaBackofficeBean.atendimentoView.listaAudios}"
-                                                 var="audio"
-                                                 styleClass="ui-datatable-sm"
-                                                 stripedRows="true"
-                                                 scrollable="true"
-                                                 scrollHeight="250">
-
-                                        <p:column headerText="Data/Hora" width="130" styleClass="text-center">
-                <span class="text-700 font-medium">
-                    <h:outputText value="#{audio.data}">
-                        <f:convertDateTime pattern="dd/MM/yyyy HH:mm"/>
-                    </h:outputText>
-                </span>
-                                        </p:column>
-
-                                        <p:column headerText="Telefone" width="80" styleClass="text-center">
-                                            <span class="text-600 text-sm">#{audio.destino}</span>
-                                        </p:column>
-
-                                        <p:column headerText="Ouvir">
-                                            <audio controls="controls" preload="none"
-                                                   style="width: 100%; height: 35px; border-radius: 20px; background-color: #f1f5f9;">
-                                                <source src="#{audio.urlPublicaRange}" type="audio/mpeg"/>
-                                                Seu navegador não suporta o elemento de áudio.
-                                            </audio>
-                                        </p:column>
-
-                                        <p:column headerText="Ação" width="90" styleClass="text-center">
-                                            <h:outputLink value="#{audio.urlPublicaDownload}"
-                                                          styleClass="rounded-button ui-button-outlined ui-button-help"
-                                                          title="Baixar Arquivo">
-                                                <i class="pi pi-download"></i>
-                                            </h:outputLink>
-                                        </p:column>
-
-
-                                    </p:dataTable>
-                                </h:panelGroup>
-
-                            </p:tab>
-
-                            <p:tab title="Trâmite">
-                                <f:facet name="title"><i class="pi pi-history mr-2"></i>Histórico</f:facet>
-
-                                <p:dataTable value="#{consultaBackofficeBean.atendimentoView.listaHistoricos}"
-                                             var="hist"
-                                             rowKey="#{hist.id}"
-                                             styleClass="ui-datatable-sm border-none"
-                                             stripedRows="true" scrollable="true" scrollHeight="300"
-                                             emptyMessage="Nenhum histórico registrado.">
-
-                                    <p:column style="width: 2rem" exportable="false">
-                                        <p:rowToggler />
-                                    </p:column>
-
-                                    <p:column headerText="Data" width="110" styleClass="text-center">
-                                            <span class="text-700 font-medium">
-                                                <h:outputText value="#{hist.dataCadastro}">
-                                                    <f:convertDateTime pattern="dd/MM/yyyy HH:mm"/>
-                                                </h:outputText>
-                                            </span>
-                                  </p:column>
-
-                                    <p:column headerText="Situação" width="140">
-
-                                        <h:panelGroup rendered="#{not empty hist.statusAtendimento}">
-                                            <p:tag value="#{hist.statusAtendimento.descricao}"
-                                                   severity="#{not empty hist.statusAtendimento.acao and hist.statusAtendimento.acao.name() eq 'CONCLUIDO' ? 'success' : 'info'}"
-                                                   styleClass="text-xs w-full"/>
-                                        </h:panelGroup>
-
-                                        <h:panelGroup rendered="#{empty hist.statusAtendimento}">
-                                            <p:tag value="-"
-                                                   severity="warning"
-                                                   styleClass="text-xs w-full surface-200 text-600 border-none"/>
-                                        </h:panelGroup>
-
-                                    </p:column>
-
-                                    <p:column headerText="Responsável">
-                                        <div class="flex flex-column">
-                                            <div class="flex align-items-center text-sm text-900">
-                                                <i class="pi pi-user mr-2 text-blue-500"></i>
-                                                <span class="font-medium">#{hist.usuario.nome}</span>
-                                            </div>
-
-                                            <h:panelGroup rendered="#{not empty hist.responsavelN2}">
-                                                <div class="flex align-items-center text-xs text-500 mt-1">
-                                                    <i class="pi pi-briefcase mr-2 text-orange-500"></i>
-                                                    <span>N2: #{hist.responsavelN2.nome}</span>
-                                                </div>
+                                        <div class="flex align-items-center gap-2 mt-1 text-sm text-600">
+                                            <h:panelGroup rendered="#{not empty consultaBackofficeBean.atendimentoView.cliente.cpf}">
+                                                <span><i class="pi pi-id-card mr-1"></i>#{consultaBackofficeBean.atendimentoView.cliente.cpf}</span>
                                             </h:panelGroup>
                                         </div>
+                                    </div>
+                                </div>
 
-                                    </p:column>
+                                <div class="flex flex-column align-items-end">
+                                    <div class="flex align-items-center gap-2 mb-1">
+                                        <span class="text-xs font-bold text-500 uppercase">Protocolo</span>
+                                        <span class="font-monospace font-bold text-xl text-blue-900 surface-0 border-1 border-200 px-2 py-1 border-round">
+                                #{consultaBackofficeBean.atendimentoView.protocolo}
+                            </span>
+                                    </div>
+                                    <h:panelGroup rendered="#{not empty consultaBackofficeBean.atendimentoView.status}">
+                                        <p:tag value="#{consultaBackofficeBean.atendimentoView.status.descricao}"
+                                               icon="#{consultaBackofficeBean.atendimentoView.status.acao.icone}"
+                                               styleClass="#{consultaBackofficeBean.atendimentoView.status.acao.styleClass}"
+                                               rounded="true"/>
+                                    </h:panelGroup>
+                                </div>
+                            </div>
 
-                                    <p:rowExpansion>
-                                        <div class="p-3 bg-bluegray-50 border-bottom-1 border-200 shadow-inner">
+                            <div class="mt-3 flex align-items-center text-sm bg-white border-round px-3 py-2 border-1 border-200 shadow-sm d-inline-flex">
+                                <i class="pi pi-folder text-blue-500 mr-2"></i>
+                                <span class="text-700 font-medium">#{consultaBackofficeBean.atendimentoView.motivo.descricao}</span>
+                                <i class="pi pi-angle-right text-400 mx-2"></i>
+                                <span class="text-900 font-bold">#{consultaBackofficeBean.atendimentoView.subMotivo.descricao}</span>
+                            </div>
+                        </div>
 
-                                            <div class="grid">
+                        <div style="max-height: 60vh; overflow-y: auto;" class="p-0">
 
-                                                <div class="col-12 md:col-12 mb-2">
-                                                    <span class="text-xs font-bold text-500 uppercase block mb-1">Classificação do Histórico</span>
-                                                    <div class="flex align-items-center bg-white p-2 border-round border-1 border-200">
-                                                        <span class="font-bold text-700">#{hist.motivo.descricao}</span>
-                                                        <h:panelGroup rendered="#{not empty hist.subMotivo}">
-                                                            <i class="pi pi-chevron-right mx-2 text-400 text-xs"></i>
-                                                            <span class="text-600">#{hist.subMotivo.descricao}</span>
-                                                        </h:panelGroup>
+                            <h:panelGroup rendered="#{not empty consultaBackofficeBean.atendimentoView.atendimentoPaiObj}">
+                                <div class="bg-blue-50 border-bottom-1 border-blue-100 p-3 flex align-items-center justify-content-between">
+                                    <div class="flex align-items-center gap-2 text-blue-800">
+                                        <i class="pi pi-link text-lg"></i>
+                                        <span class="text-sm">Este atendimento é vinculado ao protocolo pai: <strong>#{consultaBackofficeBean.atendimentoView.atendimentoPaiObj.protocolo}</strong></span>
+                                    </div>
+                                    <p:commandButton value="Ver Pai" icon="pi pi-external-link"
+                                                     actionListener="#{consultaBackofficeBean.onOpenAtendimento(consultaBackofficeBean.atendimentoView.atendimentoPaiObj.id)}"
+                                                     update="dialogVisualizarContent" process="@this"
+                                                     styleClass="ui-button-flat ui-button-primary ui-button-sm font-bold"/>
+                                </div>
+                            </h:panelGroup>
+
+                           <p:tabView id="tabsDetalhes">
+
+                               <p:tab title="Geral">
+                                   <div class="p-4">
+
+                                       <div class="mb-4">
+                                           <span class="text-xs font-bold text-500 uppercase block mb-2"><i class="pi pi-align-left mr-1"></i>Relato Inicial / Solicitação</span>
+                                           <div class="surface-card border-1 border-200 border-round p-3 text-700 line-height-3 shadow-1">
+                                               <h:outputText value="#{consultaBackofficeBean.atendimentoView.observacao}"
+                                                             rendered="#{not empty consultaBackofficeBean.atendimentoView.observacao}"/>
+                                               <h:outputText value="Nenhuma descrição informada na abertura."
+                                                             rendered="#{empty consultaBackofficeBean.atendimentoView.observacao}"
+                                                             styleClass="text-500 font-italic"/>
+                                           </div>
+                                       </div>
+
+                                       <h:panelGroup rendered="#{not empty consultaBackofficeBean.atendimentoView.respostaN2}">
+                                           <div class="relative pl-3 border-left-3 border-green-500 surface-50 p-3 border-round-right border-1 border-200">
+                                               <div class="flex align-items-center mb-2">
+                                                   <div class="bg-green-100 border-circle w-2rem h-2rem flex align-items-center justify-content-center mr-2">
+                                                       <i class="pi pi-check text-green-600 font-bold"></i>
+                                                   </div>
+                                                   <span class="font-bold text-green-900 text-lg">Resolução / Devolutiva</span>
+                                               </div>
+
+                                               <div class="text-900 line-height-3 mb-3 pl-1">
+                                                   <h:outputText value="#{consultaBackofficeBean.atendimentoView.respostaN2}" escape="false"/>
+                                               </div>
+
+                                               <div class="flex justify-content-end border-top-1 border-green-100 pt-2">
+                                                   <div class="flex align-items-center gap-2 text-sm">
+                                                       <span class="text-500">Resolvido por:</span>
+                                                       <p:chip label="#{consultaBackofficeBean.atendimentoView.responsavelN2.nome}"
+                                                               icon="pi pi-user" styleClass="bg-white border-1 border-200 text-sm"/>
+                                                   </div>
+                                               </div>
+                                           </div>
+                                       </h:panelGroup>
+                                   </div>
+                               </p:tab>
+
+                                <p:tab title="Gravações">
+                                    <f:facet name="title"><i class="pi pi-volume-up mr-2 text-purple-500"></i>Gravações</f:facet>
+                                    <h:panelGroup rendered="#{empty consultaBackofficeBean.atendimentoView.listaAudios}">
+                                        <div class="flex flex-column align-items-center justify-content-center py-4">
+                                            <div class="bg-purple-50 border-circle w-4rem h-4rem flex align-items-center justify-content-center mb-2">
+                                                <i class="pi pi-microphone-slash text-purple-300 text-3xl"></i>
+                                            </div>
+                                            <span class="text-600 font-medium">Nenhuma gravação encontrada.</span>
+                                        </div>
+                                    </h:panelGroup>
+                                    <h:panelGroup rendered="#{not empty consultaBackofficeBean.atendimentoView.listaAudios}">
+                                        <p:dataTable value="#{consultaBackofficeBean.atendimentoView.listaAudios}" var="audio" styleClass="ui-datatable-sm" stripedRows="true" scrollable="true" scrollHeight="250">
+                                            <p:column headerText="Data/Hora" width="130" styleClass="text-center">
+                                    <span class="text-700 font-medium">
+                                        <h:outputText value="#{audio.data}"><f:convertDateTime pattern="dd/MM/yyyy HH:mm"/></h:outputText>
+                                    </span>
+                                            </p:column>
+                                            <p:column headerText="Telefone" width="100" styleClass="text-center">
+                                                <span class="text-600 text-sm">#{audio.destino}</span>
+                                            </p:column>
+                                            <p:column headerText="Ouvir">
+                                                <audio controls="controls" preload="none" style="width: 100%; height: 35px; border-radius: 20px; background-color: #f1f5f9;">
+                                                    <source src="#{audio.urlPublicaRange}" type="audio/mpeg"/>
+                                                </audio>
+                                            </p:column>
+                                            <p:column headerText="Ação" width="70" styleClass="text-center">
+                                                <h:outputLink value="#{audio.urlPublicaDownload}" styleClass="rounded-button ui-button-outlined ui-button-help" title="Baixar">
+                                                    <i class="pi pi-download"></i>
+                                                </h:outputLink>
+                                            </p:column>
+                                        </p:dataTable>
+                                    </h:panelGroup>
+                                </p:tab>
+
+                                <p:tab title="Trâmite">
+                                    <f:facet name="title"><i class="pi pi-history mr-2"></i>Histórico</f:facet>
+                                    <p:dataTable value="#{consultaBackofficeBean.atendimentoView.listaHistoricos}" var="hist" rowKey="#{hist.id}" styleClass="ui-datatable-sm border-none" stripedRows="true" scrollable="true" scrollHeight="300" emptyMessage="Nenhum histórico.">
+                                        <p:column style="width: 2rem" exportable="false"><p:rowToggler /></p:column>
+                                        <p:column headerText="Data" width="110" styleClass="text-center">
+                                            <h:outputText value="#{hist.dataCadastro}"><f:convertDateTime pattern="dd/MM/yyyy HH:mm"/></h:outputText>
+                                        </p:column>
+
+                                        <p:column headerText="Situação" width="140">
+                                            <h:panelGroup rendered="#{not empty hist.statusAtendimento}">
+                                                <p:tag value="#{hist.statusAtendimento.descricao}" severity="info" styleClass="text-xs w-full"/>
+                                            </h:panelGroup>
+                                        </p:column>
+
+                                        <p:column headerText="Responsável">#{hist.usuario.nome}</p:column>
+                                        <p:rowExpansion>
+                                            <div class="p-3 bg-gray-50 border-bottom-1 border-200">
+
+                                                <div class="mb-2">
+                                                    <span class="text-xs font-bold text-500 uppercase block mb-1">Descrição do Evento</span>
+                                                    <div class="text-700 line-height-3 text-sm" style="white-space: pre-wrap;">
+                                                        <h:outputText value="#{hist.observacao}" escape="false"/>
                                                     </div>
                                                 </div>
 
-                                                <div class="col-12 #{not empty hist.respostaN2 ? 'md:col-6' : 'md:col-12'}">
-                        <span class="text-xs font-bold text-500 uppercase block mb-1">
-                            <i class="pi pi-align-left mr-1"></i>Observação
-                        </span>
-                                                    <div class="surface-0 p-2 border-round border-1 border-200 text-sm line-height-3 text-700 h-full">
-                                                        <h:outputText value="#{hist.observacao}" escape="false"
-                                                                      rendered="#{not empty hist.observacao}"/>
-                                                        <h:outputText value="-" rendered="#{empty hist.observacao}" styleClass="text-400"/>
-                                                    </div>
-                                                </div>
-
-                                                <h:panelGroup rendered="#{not empty hist.respostaN2}" styleClass="col-12 md:col-6">
-                        <span class="text-xs font-bold text-green-600 uppercase block mb-1">
-                            <i class="pi pi-check-circle mr-1"></i>Resposta N2
-                        </span>
-                                                    <div class="surface-0 p-2 border-round border-1 border-green-200 bg-green-50 text-sm line-height-3 text-800 h-full">
-                                                        <h:outputText value="#{hist.respostaN2}" escape="false"/>
+                                                <h:panelGroup rendered="#{not empty hist.respostaN2}">
+                                                    <div class="mt-3 pl-3 border-left-3 border-green-500 bg-white p-2 border-round-right shadow-sm">
+                                                            <span class="text-xs font-bold text-green-600 uppercase block mb-1">
+                                                                <i class="pi pi-check-circle mr-1"></i>Parecer Técnico (N2)
+                                                            </span>
+                                                        <div class="text-green-900 line-height-3 text-sm font-italic">
+                                                            <h:outputText value="#{hist.respostaN2}" escape="false"/>
+                                                        </div>
                                                     </div>
                                                 </h:panelGroup>
 
+
+
                                             </div>
-                                        </div>
-                                    </p:rowExpansion>
+                                        </p:rowExpansion>
+                                    </p:dataTable>
+                                </p:tab>
 
-                                </p:dataTable>
-                            </p:tab>
+                                <p:tab title="Atividades">
+                                    <f:facet name="title"><i class="pi pi-list mr-2"></i>Logs</f:facet>
+                                    <p:dataTable value="#{consultaBackofficeBean.atendimentoView.listHistoricoAtividades}" var="log" styleClass="ui-datatable-sm" stripedRows="true" scrollable="true" scrollHeight="250">
+                                        <p:column headerText="Data" width="120"><h:outputText value="#{log.data}"><f:convertDateTime pattern="dd/MM/yyyy HH:mm"/></h:outputText></p:column>
+                                        <p:column headerText="Evento">#{log.tipoStatusAtividade.descricao}</p:column>
+                                        <p:column headerText="Descrição"><span class="text-sm">#{log.detalhes}</span></p:column>
+                                    </p:dataTable>
+                                </p:tab>
 
-                            <p:tab title="Atividades">
-                                <f:facet name="title"><i class="pi pi-list mr-2"></i>Logs</f:facet>
+                                <p:tab title="Vinculados" rendered="#{not empty consultaBackofficeBean.atendimentoView.listAtendimentosFilhas}">
+                                    <f:facet name="title"><i class="pi pi-sitemap mr-2 text-orange-500"></i>Vinculados</f:facet>
+                                    <p:dataTable value="#{consultaBackofficeBean.atendimentoView.listAtendimentosFilhas}"
+                                                 var="filho"
+                                                 styleClass="ui-datatable-sm" stripedRows="true" scrollable="true" scrollHeight="250">
+                                        <p:column headerText="Protocolo">
+                                            <span class="font-monospace font-bold">#{filho.protocolo}</span>
+                                        </p:column>
+                                        <p:column headerText="Motivo">#{filho.motivo.descricao}</p:column>
+                                        <p:column width="50" styleClass="text-center">
+                                            <p:commandButton icon="pi pi-external-link" title="Abrir"
+                                                             actionListener="#{consultaBackofficeBean.onOpenAtendimento(filho.id)}"
+                                                             update="dialogVisualizarContent"
+                                                             styleClass="rounded-button ui-button-flat ui-button-secondary ui-button-sm"/>
+                                        </p:column>
+                                    </p:dataTable>
+                                </p:tab>
 
-                                <p:dataTable value="#{consultaBackofficeBean.atendimentoView.listHistoricoAtividades}"
-                                             var="log"
-                                             styleClass="ui-datatable-sm" stripedRows="true" scrollable="true"
-                                             scrollHeight="250"
-                                             emptyMessage="Nenhum log de atividade encontrado.">
+                            </p:tabView>
 
-                                    <p:column headerText="Data" width="120">
-                                        <h:outputText value="#{log.data}">
-                                            <f:convertDateTime pattern="dd/MM/yyyy HH:mm"/>
-                                        </h:outputText>
-                                    </p:column>
-
-                                    <p:column headerText="Evento">
-                                        <div class="flex align-items-center">
-                                            <i class="#{log.tipoIcone} mr-2 text-blue-500"/>
-                                            <span>#{log.tipoStatusAtividade.descricao}</span>
-                                        </div>
-                                    </p:column>
-                                    <p:column headerText="Detalhe">
-                                        <span class="text-sm">#{log.detalhes}</span>
-                                    </p:column>
-
-                                    <p:column headerText="Descrição">
-
-                                        <h:outputText value="#{of:abbreviate(log.descricao, 40)}"
-                                                      styleClass="text-sm text-700"/>
-
-                                        <p:commandLink value=" ler mais"
-                                                       rendered="#{log.descricao.length() > 40}"
-                                                       actionListener="#{consultaBackofficeBean.exibirTextoCompleto(log.descricao)}"
-                                                       oncomplete="PF('dlgTextoCompleto').show()"
-                                                       update="dlgTextoCompleto"
-                                                       styleClass="text-sm font-bold text-blue-600 no-underline hover:underline ml-1"/>
-
-                                    </p:column>
-                                </p:dataTable>
-                            </p:tab>
-
-                            <p:tab title="Protocolos Vinculados"
-                                   rendered="#{not empty consultaBackofficeBean.atendimentoView.listAtendimentosFilhas}">
-                                <f:facet name="title">
-                                    <i class="pi pi-sitemap mr-2 text-orange-500"></i>
-                                    <span class="text-orange-600 font-bold">Vinculados (#{consultaBackofficeBean.atendimentoView.listAtendimentosFilhas.size()})</span>
-                                </f:facet>
-
-                                <p:dataTable value="#{consultaBackofficeBean.atendimentoView.listAtendimentosFilhas}"
-                                             var="filho"
-                                             styleClass="ui-datatable-sm" stripedRows="true" scrollable="true"
-                                             scrollHeight="250">
-
-                                    <p:column headerText="Protocolo Filho" width="130">
-                                        <span class="font-monospace font-bold">#{filho.protocolo}</span>
-                                    </p:column>
-
-                                    <p:column headerText="Data">
-                                        <h:outputText value="#{filho.dataInicioAtendimento}">
-                                            <f:convertDateTime pattern="dd/MM/yyyy"/>
-                                        </h:outputText>
-                                    </p:column>
-
-                                    <p:column headerText="Motivo">
-                                        #{filho.motivo.descricao}
-                                    </p:column>
-
-                                    <p:column headerText="Status">
-                                        <p:tag value="#{filho.status.descricao}"
-                                               severity="#{filho.status.acao eq 'CONCLUIR' ? 'success' : 'warning'}"/>
-                                    </p:column>
-
-                                    <p:column width="50" styleClass="text-center">
-                                        <p:commandButton icon="pi pi-external-link" title="Abrir este filho"
-                                                         actionListener="#{consultaBackofficeBean.onOpenAtendimento(filho.id)}"
-                                                         styleClass="rounded-button ui-button-flat ui-button-secondary ui-button-sm"/>
-                                    </p:column>
-                                </p:dataTable>
-                            </p:tab>
-
-                        </p:tabView>
-
-                    </h:panelGroup>
+                        </div> </h:panelGroup>
                 </h:panelGroup>
 
                 <f:facet name="footer">
-                    <div class="flex justify-content-end pt-2">
+                    <div class="flex justify-content-end pt-3 border-top-1 border-100 bg-white">
                         <p:commandButton value="Fechar" icon="pi pi-times" type="button"
                                          onclick="PF('dlgVisualizarCompleto').hide();"
                                          styleClass="ui-button-secondary ui-button-outlined font-bold"/>
                     </div>
                 </f:facet>
             </p:dialog>
+
+
 
             <p:dialog widgetVar="dlgTextoCompleto" id="dlgTextoCompleto" header="Descrição Completa"
                       modal="true" responsive="true" width="500" fitViewport="true">

@@ -35,9 +35,9 @@ function alterarTag(severity, texto, detalhe) {
 
     var iconMap = {
         'success': 'pi-check-circle', // Livre
-        'danger':  'pi-phone',        // Ocupado/Offline
-        'warning': 'pi-clock',        // Em espera/Pausa
-        'info':    'pi-spin pi-spinner' // Conectando/Chamando
+        'danger': 'pi-phone',        // Ocupado/Offline
+        'warning': 'pi-exclamation-triangle',        // Em espera/Pausa
+        'info': 'pi-spin pi-spinner' // Conectando/Chamando
     };
 
     console.log(tag)
@@ -77,11 +77,13 @@ function alterarTag(severity, texto, detalhe) {
         msg.className = "text-sm mt-1 block"; // Classes base
 
         if (severity === 'danger') {
-            msg.classList.add('text-red-500', 'font-bold');
+            msg.classList.add('text-red-600', 'font-bold');
+        } else if (severity === 'warning') {
+            msg.classList.add('text-yellow-600'); // Adicionado: Amarelo
         } else if (severity === 'success') {
-            msg.classList.add('text-green-500');
+            msg.classList.add('text-green-600');
         } else {
-            msg.classList.add('text-500');
+            msg.classList.add('text-gray-600');
         }
     }
 }
@@ -92,7 +94,7 @@ function iniciarPst(servidor, login) {
 
 }
 
-function conectar(servidor,login) {
+function conectar(servidor, login) {
 
     // Pega o ramal injetado pelo JSF
     let ramal = login;
@@ -100,7 +102,7 @@ function conectar(servidor,login) {
 
     if (!ramal || !host) {
         console.warn('Ramal ou servidor não definido. WebSocket abortado.');
-        alterarTag('danger','SEM RAMAL','Ramal não definido.')
+        alterarTag('danger', 'SEM RAMAL', 'Ramal não definido.')
         return;
     }
 
@@ -108,10 +110,10 @@ function conectar(servidor,login) {
 
     // URL Dinâmica (Funciona em Localhost, IP de Rede e HTTPS)
     const protocolo = window.location.protocol === 'https:' ? 'wss:' : 'ws:';
-    const path =  "/profone"
-    const wsUrl = protocolo+"//"+host+path+"/ws/cpf?ramal="+ramal;
+    const path = "/profone"
+    const wsUrl = protocolo + "//" + host + path + "/ws/cpf?ramal=" + ramal;
 
-    console.log(wsUrl+" --- wsUrl")
+    console.log(wsUrl + " --- wsUrl")
     // Monta: ws://192.168.0.10:8080/profone/ws/cpf?ramal=1001
 
 
@@ -136,11 +138,10 @@ function conectar(servidor,login) {
             if (data.type === "STATUS") {
 
                 console.log("Status Recebido:", data.state);
-                console.log(data.message+' -- MSG')
+                console.log(data.message + ' -- MSG')
                 if (data.connected === false) {
                     alterarTag("danger", "OFFLINE", data.message);
-                }
-                else {
+                } else {
                     switch (data.state) {
 
                         case "EM_LIGACAO":
@@ -159,6 +160,13 @@ function conectar(servidor,login) {
                         case "EM_ESPERA":
                             alterarTag("warning", "EM ESPERA", "Chamada em hold");
                             break;
+                        case "INDISPONIVEL":
+                            alterarTag("danger", "INDISPONÍVEL", data.message);
+                            break;
+                        case "PAUSA":
+                            alterarTag("warning", "EM PAUSA", data.message);
+                         //   logarRamalPst();
+                            break;
                         default:
                             alterarTag("info", data.state, data.message);
                     }
@@ -175,7 +183,7 @@ function conectar(servidor,login) {
 
                 // Chama o método no Bean via p:remoteCommand
                 // Certifique-se que o remoteCommand na página tem esse nome
-                if(window.receberDadosChamada) {
+                if (window.receberDadosChamada) {
 
                     receberDadosChamada([
                         {name: 'cpf', value: data.cpf},

@@ -1,0 +1,202 @@
+<ui:composition xmlns="http://www.w3.org/1999/xhtml"
+                xmlns:h="http://java.sun.com/jsf/html"
+                xmlns:f="http://java.sun.com/jsf/core"
+                xmlns:fn="http://xmlns.jcp.org/jsp/jstl/functions"
+                xmlns:ui="http://java.sun.com/jsf/facelets"
+                xmlns:p="http://primefaces.org/ui">
+
+    <p:dialog header="Devolutivas Pendentes"
+              widgetVar="dlgListaDevolutivas"
+              modal="true"
+              responsive="true"
+              width="700"
+              showEffect="fade"
+              hideEffect="fade"
+              styleClass="border-round-xl">
+
+        <f:facet name="header">
+            <div class="flex align-items-center">
+                <div class="bg-purple-100 border-circle w-2rem h-2rem flex align-items-center justify-content-center mr-2">
+                    <i class="pi pi-list text-purple-600 text-lg font-bold"></i>
+                </div>
+                <span class="text-xl font-bold text-900">Selecione para Responder</span>
+            </div>
+        </f:facet>
+
+        <h:form id="formListaDevolutiva" prependId="false">
+
+            <h:panelGroup styleClass="p-0" layout="block"
+                          rendered="#{not empty fichaAtendimentoSacBean.listaDevolutivasPendentes}">
+
+                <p:dataTable value="#{fichaAtendimentoSacBean.listaDevolutivasPendentes}" var="dev"
+                             styleClass="ui-datatable-borderless"
+                             emptyMessage="Nenhuma devolutiva pendente.">
+
+                    <p:column headerText="Protocolo" width="120">
+                        <span class="font-bold text-900 font-monospace">#{dev.protocolo}</span>
+                    </p:column>
+
+                    <p:column headerText="Motivo (N2)">
+                        <div class="flex flex-column">
+                    <span class="text-sm text-700 line-height-3 text-overflow-ellipsis white-space-nowrap overflow-hidden"
+                          style="max-width: 250px;" title="#{dev.respostaN2}">
+                             <h:outputText escape="false" value="#{dev.respostaN2}"/>
+                    </span>
+                            <small class="text-purple-600">Por: #{dev.responsavelN2.nome}</small>
+                        </div>
+                    </p:column>
+
+                    <p:column headerText="Data" width="100" styleClass="text-center">
+                        <h:outputText value="#{dev.dataAlteracao}">
+                            <f:convertDateTime pattern="dd/MM HH:mm"/>
+                        </h:outputText>
+                    </p:column>
+
+                    <p:column width="100" styleClass="text-right">
+                        <p:commandButton value="Responder"
+                                         icon="pi pi-reply"
+                                         actionListener="#{fichaAtendimentoSacBean.selecionarDevolutivaParaResponder(dev)}"
+                                         update="formResponderDevolutiva"
+                                         styleClass="ui-button-sm ui-button-outlined ui-button-primary font-bold rounded-button"/>
+                    </p:column>
+
+                </p:dataTable>
+            </h:panelGroup>
+
+            <f:facet name="footer">
+
+                <div class="flex justify-content-end pt-3 border-top-1 border-100">
+
+                    <p:commandButton value="Fechar" icon="pi pi-times"
+                                     onclick="PF('dlgListaDevolutivas').hide()"
+                                     styleClass="ui-button-flat ui-button-secondary"/>
+                </div>
+
+            </f:facet>
+
+        </h:form>
+
+    </p:dialog>
+
+
+    <p:dialog header="Responder Devolução"
+              widgetVar="dlgResponderDevolutiva"
+              id="dlgResponderDevolutiva"
+              modal="true"
+              responsive="true"
+              width="600"
+              showEffect="fade"
+              hideEffect="fade"
+              draggable="false"
+              resizable="false"
+              styleClass="border-round-xl">
+
+        <f:facet name="header">
+            <div class="flex align-items-center">
+                <div class="bg-purple-100 border-circle w-2rem h-2rem flex align-items-center justify-content-center mr-2">
+                    <i class="pi pi-reply text-purple-600 text-lg font-bold"></i>
+                </div>
+                <span class="text-xl font-bold text-900">Tratativa de Retorno</span>
+            </div>
+        </f:facet>
+
+        <h:form id="formResponderDevolutiva" prependId="false">
+
+            <h:panelGroup rendered="#{not empty fichaAtendimentoSacBean.atendimentoVisualizar}" layout="block"
+                          styleClass="pt-2">
+
+                <div class="flex align-items-center justify-content-between mb-4 px-3 py-2 bg-gray-50 border-round border-1 border-200">
+                    <div class="flex align-items-center">
+                        <span class="text-500 text-sm mr-2">Protocolo:</span>
+                        <span class="text-900 font-bold font-monospace text-lg">#{fichaAtendimentoSacBean.atendimentoVisualizar.protocolo}</span>
+                    </div>
+                    <p:tag value="Devolvido N1" severity="help" rounded="true" styleClass="uppercase font-bold"/>
+                </div>
+                <div class="field">
+                    <label class="text-500 font-semibold text-xs uppercase">Classificação</label>
+                    <div class="surface-100 p-2 border-round mt-1">
+                        <p class="m-0 text-900 font-medium text-sm">
+                            #{fichaAtendimentoSacBean.atendimentoVisualizar.motivo.descricao}
+                            <i class="pi pi-angle-right text-xs mx-1 text-400"/>
+                            #{fichaAtendimentoSacBean.atendimentoVisualizar.subMotivo.descricao}
+                        </p>
+                    </div>
+                </div>
+
+
+                <div class="mb-4">
+                <span class="block text-purple-800 font-bold text-sm uppercase mb-2 ml-1">
+                    <i class="pi pi-comment mr-1"></i>Motivo da Devolução (Nível 2)
+                </span>
+
+                    <div class="surface-0 border-1 border-purple-200 bg-purple-50 border-round-lg p-3 relative">
+                        <div class="absolute w-1rem h-1rem bg-purple-50 border-left-1 border-top-1 border-purple-200 rotate-45"
+                             style="bottom: -8px; left: 20px; transform: rotate(225deg); z-index: 1;"></div>
+
+                        <p class="m-0 text-purple-900 line-height-3 text-sm" style="white-space: pre-wrap;">
+                            <h:outputText value="#{fichaAtendimentoSacBean.atendimentoVisualizar.respostaN2}"
+                                          escape="false"
+                                          rendered="#{not empty fichaAtendimentoSacBean.atendimentoVisualizar.respostaN2}"/>
+                            <h:outputText value="Sem justificativa registrada."
+                                          rendered="#{empty fichaAtendimentoSacBean.atendimentoVisualizar.respostaN2}"
+                                          styleClass="font-italic opacity-60"/>
+                        </p>
+
+                        <div class="text-right mt-2 border-top-1 border-purple-200 pt-2">
+                            <small class="text-purple-600 flex align-items-center justify-content-end gap-1">
+                                <i class="pi pi-user"></i>
+                                <span>#{fichaAtendimentoSacBean.atendimentoVisualizar.responsavelN2.nome}</span>
+                            </small>
+                        </div>
+                    </div>
+                </div>
+
+                <p:divider styleClass="my-4"/>
+
+                <div class="field">
+                    <div class="flex align-items-center mb-2">
+                        <p:outputLabel for="respN1" value="Sua Resposta / Correção"
+                                       styleClass="font-bold text-900 text-lg mr-2"/>
+                        <span class="text-red-500 font-bold">*</span>
+                    </div>
+
+                    <p:inputTextarea id="respN1"
+                                     value="#{fichaAtendimentoSacBean.atendimentoVisualizar.observacao}"
+                                     rows="5"
+                                     styleClass="w-full text-900 line-height-3"
+                                     placeholder="Descreva as ações tomadas ou forneça as informações solicitadas..."
+                                     required="true"
+                                     requiredMessage="É obrigatório informar uma resposta para devolver o protocolo."
+                                     counter="display" counterTemplate="{0} caracteres restantes." maxlength="2000"/>
+
+                    <div class="flex justify-content-between mt-1">
+                        <h:outputText id="display" class="text-xs text-500"/>
+                        <small class="text-600"><i
+                                class="pi pi-info-circle mr-1"></i>Ao enviar, o status voltará para 'Em Andamento'.</small>
+                    </div>
+
+                    <p:message for="respN1"/>
+                </div>
+
+            </h:panelGroup>
+
+            <div class="flex justify-content-end gap-2 mt-4 pt-3 border-top-1 border-100">
+                <p:commandButton value="Cancelar" type="button"
+                                 icon="pi pi-times"
+                                 onclick="PF('dlgResponderDevolutiva').hide()"
+                                 styleClass="ui-button-outlined ui-button-secondary font-bold border-round-lg"/>
+
+                <p:commandButton value="Enviar Resposta"
+                                 icon="pi pi-send"
+                                 actionListener="#{fichaAtendimentoSacBean.salvarRespostaDevolucao()}"
+                                 process="@form"
+                                 update="@form :formConteudo:pmpPrincipalAtendimento"
+                                 oncomplete="if(!args.validationFailed) PF('dlgResponderDevolutiva').hide()"
+                                 styleClass="ui-button-primary font-bold border-round-lg px-4 shadow-2"/>
+            </div>
+
+        </h:form>
+
+    </p:dialog>
+
+</ui:composition>

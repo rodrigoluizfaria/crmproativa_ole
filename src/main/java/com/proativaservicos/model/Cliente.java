@@ -157,7 +157,7 @@ public class Cliente extends GenericControle {
 
     public String getDataNascimentoFormatado() {
         if(dataNascimento != null) {
-            return DateUtil.builder(this.dataNascimento).formatarDataParaString("ddd/MM/yyyy").getDataTexto();
+            return DateUtil.builder(this.dataNascimento).formatarDataParaString("dd/MM/yyyy").getDataTexto();
         }
 
         return null;

@@ -121,6 +121,8 @@ public abstract class GenericHistoricoAtendimento extends Generic {
     @ManyToOne(fetch = FetchType.LAZY)
     private Departamento departamentoDerivado;
 
+    @Column(name = "atendimento_anonimo")
+    private Boolean atendimentoAnonimo;
 
     public String getProtocolo() {
         return protocolo;
@@ -374,6 +376,14 @@ public abstract class GenericHistoricoAtendimento extends Generic {
 
     public void setDepartamentoDerivado(Departamento departamentoDerivado) {
         this.departamentoDerivado = departamentoDerivado;
+    }
+
+    public Boolean getAtendimentoAnonimo() {
+        return atendimentoAnonimo;
+    }
+
+    public void setAtendimentoAnonimo(Boolean atendimentoAnonimo) {
+        this.atendimentoAnonimo = atendimentoAnonimo;
     }
 
     @Override

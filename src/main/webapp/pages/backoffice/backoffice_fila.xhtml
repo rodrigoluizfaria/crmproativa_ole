@@ -8,331 +8,470 @@
     <ui:define name="viewname">
         <div class="bcca-breadcrumb">
             <div class="bcca-breadcrumb-item bg-primary-500 hover:bg-primary-700">
-                <p:link outcome="/pages/backoffice/backoffice_fila" style="text-decoration: none">TRATATIVA N2</p:link>
+                <p:link outcome="/pages/backoffice/backoffice_fila" style="text-decoration: none"
+                        styleClass="text-white">TRATATIVA N2</p:link>
             </div>
-            <div class="bcca-breadcrumb-item ">BACKOFFICE</div>
+            <div class="bcca-breadcrumb-item">BACKOFFICE</div>
         </div>
     </ui:define>
 
     <ui:define name="content">
 
-        <div class="flex flex-column md:flex-row justify-content-between align-items-start md:align-items-center mb-4 gap-3">
+        <div class="flex flex-column md:flex-row justify-content-between align-items-start md:align-items-center mb-5 gap-3">
             <div>
-                <h1 class="text-2xl text-900 font-bold m-0">Fila de Backoffice</h1>
-                <span class="text-500">Gerenciamento e tratamento de demandas escalonadas</span>
+                <h1 class="text-3xl text-900 font-bold m-0 mb-1">Fila de Atendimento</h1>
+                <span class="text-500 text-lg">Gerenciamento de demandas escalonadas</span>
             </div>
-            <p:commandButton icon="pi pi-refresh" title="Atualizar Lista"
+            <p:commandButton icon="pi pi-sync" title="Atualizar"
                              actionListener="#{backofficeFilaBean.pesquisar}"
                              update="pnpFila pnpQuantidades"
-                             styleClass="ui-button-outlined ui-button-secondary rounded-button"/>
+                             styleClass="ui-button-outlined ui-button-secondary rounded-button w-3rem h-3rem"/>
         </div>
 
-        <h:panelGroup styleClass="grid mb-4" id="pnpQuantidades" layout="block">
-            <div class="col-12 md:col-4">
-                <div class="surface-card shadow-1 p-3 border-round border-left-3 border-yellow-500 flex align-items-center h-full hover:shadow-2 transition-duration-200">
-                    <div class="bg-yellow-100 border-circle w-3rem h-3rem flex align-items-center justify-content-center mr-3">
-                        <i class="pi pi-exclamation-circle text-yellow-600 text-xl"></i>
+        <h:panelGroup styleClass="grid mb-5" id="pnpQuantidades" layout="block">
+            <div class="col-12 md:col-6 lg:col-3">
+                <div class="surface-card p-4 border-round-xl shadow-1 h-full flex flex-column justify-content-between relative overflow-hidden">
+                    <div class="flex justify-content-between align-items-start mb-2">
+                        <div>
+                            <span class="block text-500 font-medium mb-1">Pendentes</span>
+                            <span class="text-900 font-bold text-3xl">#{backofficeFilaBean.qtdPendentes}</span>
+                        </div>
+                        <div class="flex align-items-center justify-content-center bg-yellow-50 border-circle w-2rem h-2rem">
+                            <i class="pi pi-exclamation-circle text-yellow-600 text-lg"></i>
+                        </div>
                     </div>
-                    <div>
-                        <span class="block text-900 font-bold text-3xl">#{backofficeFilaBean.qtdPendentes}</span>
-                        <span class="text-600 font-medium">Pendentes</span>
-                    </div>
+                    <span class="text-yellow-600 font-medium text-sm">Aguardando início</span>
                 </div>
             </div>
 
-            <div class="col-12 md:col-4">
-                <div class="surface-card shadow-1 p-3 border-round border-left-3 border-blue-500 flex align-items-center h-full hover:shadow-2 transition-duration-200">
-                    <div class="bg-blue-100 border-circle w-3rem h-3rem flex align-items-center justify-content-center mr-3">
-                        <i class="pi pi-spinner text-blue-600 text-xl"></i>
+            <div class="col-12 md:col-6 lg:col-3">
+                <div class="surface-card p-4 border-round-xl shadow-1 h-full flex flex-column justify-content-between">
+                    <div class="flex justify-content-between align-items-start mb-2">
+                        <div>
+                            <span class="block text-500 font-medium mb-1">Em Andamento</span>
+                            <span class="text-900 font-bold text-3xl">#{backofficeFilaBean.qtdAndamento}</span>
+                        </div>
+                        <div class="flex align-items-center justify-content-center bg-blue-50 border-circle w-2rem h-2rem">
+                            <i class="pi pi-spinner text-blue-600 text-lg"></i>
+                        </div>
                     </div>
-                    <div>
-                        <span class="block text-900 font-bold text-3xl">#{backofficeFilaBean.qtdAndamento}</span>
-                        <span class="text-600 font-medium">Em Andamento</span>
-                    </div>
+                    <span class="text-blue-600 font-medium text-sm">Em tratamento</span>
                 </div>
             </div>
 
-            <div class="col-12 md:col-4">
-                <div class="surface-card shadow-1 p-3 border-round border-left-3 border-green-500 flex align-items-center h-full hover:shadow-2 transition-duration-200">
-                    <div class="bg-green-100 border-circle w-3rem h-3rem flex align-items-center justify-content-center mr-3">
-                        <i class="pi pi-check-circle text-green-600 text-xl"></i>
+            <div class="col-12 md:col-6 lg:col-3">
+                <div class="surface-card p-4 border-round-xl shadow-1 h-full flex flex-column justify-content-between">
+                    <div class="flex justify-content-between align-items-start mb-2">
+                        <div>
+                            <span class="block text-500 font-medium mb-1">Concluídos</span>
+                            <span class="text-900 font-bold text-3xl">#{backofficeFilaBean.qtdConcluidos}</span>
+                        </div>
+                        <div class="flex align-items-center justify-content-center bg-green-50 border-circle w-2rem h-2rem">
+                            <i class="pi pi-check-circle text-green-600 text-lg"></i>
+                        </div>
                     </div>
-                    <div>
-                        <span class="block text-900 font-bold text-3xl">#{backofficeFilaBean.qtdConcluidos}</span>
-                        <span class="text-600 font-medium">Concluídos (Hoje)</span>
+                    <span class="text-green-600 font-medium text-sm">Finalizados hoje</span>
+                </div>
+            </div>
+
+            <div class="col-12 md:col-6 lg:col-3">
+                <div class="surface-card p-4 border-round-xl shadow-1 h-full flex flex-column justify-content-between">
+                    <div class="flex justify-content-between align-items-start mb-2">
+                        <div>
+                            <span class="block text-500 font-medium mb-1">Atrasados</span>
+                            <span class="text-900 font-bold text-3xl">#{backofficeFilaBean.qtdPrazoEstourado}</span>
+                        </div>
+                        <div class="flex align-items-center justify-content-center bg-red-50 border-circle w-2rem h-2rem">
+                            <i class="pi pi-clock text-red-600 text-lg"></i>
+                        </div>
                     </div>
+                    <span class="text-red-600 font-medium text-sm">Fora do SLA</span>
                 </div>
             </div>
         </h:panelGroup>
 
         <h:form id="frmFiltros" prependId="false">
 
-            <div class="surface-card p-4 shadow-1 border-round mb-4">
-                <div class="flex align-items-center mb-3 border-bottom-1 border-100 pb-2">
-                    <i class="pi pi-filter text-blue-600 mr-2"></i>
-                    <span class="text-900 font-bold">Filtros de Pesquisa</span>
+            <div class="surface-card p-4 shadow-1 border-round-xl mb-5">
+
+                <div class="flex align-items-center mb-3 border-bottom-1 border-100 pb-3">
+                    <i class="pi pi-filter text-blue-600 mr-2 text-xl"></i>
+                    <span class="text-900 font-bold text-lg">Filtros de Pesquisa</span>
                 </div>
 
                 <div class="grid formgrid ui-fluid">
 
                     <div class="col-12 md:col-2 mb-3 md:mb-0">
-                        <p:outputLabel for="filtroProtocolo" value="Protocolo" styleClass="font-bold mb-2 block text-sm text-700"/>
-                        <p:inputText id="filtroProtocolo" value="#{backofficeFilaBean.filtroProtocolo}" placeholder="Nº Protocolo"/>
+                        <span class="text-500 text-sm mb-1 block font-medium">Protocolo</span>
+                        <p:inputText value="#{backofficeFilaBean.filtroProtocolo}" placeholder="Digite..."
+                                     styleClass="border-round"/>
                     </div>
 
                     <div class="col-12 md:col-2 mb-3 md:mb-0">
-                        <p:outputLabel for="filtroCpf" value="CPF" styleClass="font-bold mb-2 block text-sm text-700"/>
-                        <p:inputMask id="filtroCpf" value="#{backofficeFilaBean.filtroCpf}" mask="999.999.999-99" placeholder="000..."/>
+                        <span class="text-500 text-sm mb-1 block font-medium">CPF</span>
+                        <p:inputMask value="#{backofficeFilaBean.filtroCpf}" mask="999.999.999-99"
+                                     placeholder="Digite..." styleClass="border-round"/>
                     </div>
 
                     <div class="col-12 md:col-3 mb-3 md:mb-0">
-                        <p:outputLabel for="depo" value="Departamento" styleClass="font-bold mb-2 block text-sm text-700"/>
-                        <p:selectOneMenu id="depo" value="#{backofficeFilaBean.idDepartamento}" autoWidth="false" filter="true" filterMatchMode="contains">
-                            <f:selectItem itemLabel="Todos os Departamentos" itemValue=""/>
+                        <span class="text-500 text-sm mb-1 block font-medium">Departamento</span>
+                        <p:selectOneMenu value="#{backofficeFilaBean.idDepartamento}" autoWidth="false" filter="true"
+                                         filterMatchMode="contains" styleClass="border-round">
+                            <f:selectItem itemLabel="Todos" itemValue=""/>
                             <f:selectItems value="#{backofficeFilaBean.listDepartamentosAssociados}" var="dpo"
                                            itemLabel="#{dpo.descricao}" itemValue="#{dpo.id}"/>
                         </p:selectOneMenu>
                     </div>
 
                     <div class="col-12 md:col-3 mb-3 md:mb-0">
-                        <p:outputLabel for="filtroStatus" value="Situação" styleClass="font-bold mb-2 block text-sm text-700"/>
-                        <p:selectOneMenu id="filtroStatus" value="#{backofficeFilaBean.filtroStatus}" autoWidth="false">
+                        <span class="text-500 text-sm mb-1 block font-medium">Situação</span>
+                        <p:selectOneMenu value="#{backofficeFilaBean.filtroStatus}" autoWidth="false"
+                                         styleClass="border-round">
                             <f:selectItem itemLabel="Todas" itemValue=""/>
-                            <f:selectItem itemLabel="Pendentes / Em Tratativa" itemValue="PENDENTE"/>
-                            <f:selectItem itemLabel="Concluídos / Encerrados" itemValue="CONCLUIDO"/>
+                            <f:selectItem itemLabel="Pendentes" itemValue="PENDENTE"/>
+                            <f:selectItem itemLabel="Concluídos" itemValue="CONCLUIDO"/>
                         </p:selectOneMenu>
                     </div>
 
                     <div class="col-12 md:col-2 flex align-items-end gap-2">
-                        <p:commandButton value="Filtrar" icon="pi pi-search" id="btnFiltar"
-                                         actionListener="#{backofficeFilaBean.pesquisar}"
-                                         process="frmFiltros" update="pnpFila pnpQuantidades"
-                                         styleClass="flex-1 font-bold shadow-1"/>
+                        <p:commandButton value="Buscar" icon="pi pi-search"
+                                         actionListener="#{backofficeFilaBean.pesquisar}" process="frmFiltros"
+                                         update="pnpFila pnpQuantidades"
+                                         styleClass="flex-1 font-bold border-round shadow-none ui-button-primary"/>
 
-                        <p:commandButton icon="pi pi-filter-slash" title="Limpar" id="btnFiltrar"
-                                         actionListener="#{backofficeFilaBean.limparFiltros}"
-                                         process="frmFiltros" update="@form pnpFila pnpQuantidades"
-                                         styleClass="ui-button-secondary ui-button-outlined w-3rem"/>
+                        <p:commandButton icon="pi pi-times" title="Limpar"
+                                         actionListener="#{backofficeFilaBean.limparFiltros}" process="frmFiltros"
+                                         update="@form pnpFila pnpQuantidades"
+                                         styleClass="ui-button-secondary ui-button-outlined border-round"/>
                     </div>
                 </div>
             </div>
-
 
             <h:panelGroup layout="block" id="pnpFila">
 
                 <ui:repeat value="#{backofficeFilaBean.listaAtendimentos}" var="item">
 
-                    <div class="surface-card p-0 shadow-1 border-round mb-3 hover:shadow-3 transition-duration-200 relative overflow-hidden flex flex-column md:flex-row">
+                    <div class="surface-card p-4 shadow-1 border-round-xl mb-3 hover:shadow-2 transition-duration-200 relative
+                                border-left-3 #{!item.demandaEncerrada ? (item.prazoEstourado ? 'border-red-500' : 'border-green-500') : 'border-bluegray-400'}">
 
-                        <div class="w-full md:w-1 bg-gray-50 flex flex-column align-items-center justify-content-center py-2 md:py-0 border-bottom-1 md:border-bottom-none md:border-right-1 border-200 relative">
+                        <div class="flex flex-column md:flex-row gap-4">
 
-                            <div class="absolute top-0 left-0 bottom-0 w-4px #{!item.demandaEncerrada ? (item.prazoEstourado ? 'bg-red-500' : 'bg-green-500') : 'bg-bluegray-500'}"></div>
-
-                            <h:panelGroup rendered="#{item.demandaEncerrada}">
-                                <i class="pi pi-check-circle text-bluegray-500 text-2xl mb-1"></i>
-                                <span class="text-xs font-bold text-bluegray-600 uppercase">Concluído</span>
-                            </h:panelGroup>
-
-                            <h:panelGroup rendered="#{!item.demandaEncerrada and item.prazoEstourado}">
-                                <i class="pi pi-exclamation-triangle text-red-500 text-2xl mb-1"></i>
-                                <span class="text-xs font-bold text-red-600 uppercase">Atrasado</span>
-                            </h:panelGroup>
-
-                            <h:panelGroup rendered="#{!item.demandaEncerrada and not item.prazoEstourado}">
-                                <i class="pi pi-clock text-green-500 text-2xl mb-1"></i>
-                                <span class="text-xs font-bold text-green-600 uppercase">No Prazo</span>
-                            </h:panelGroup>
-
-                        </div>
-
-                        <div class="flex-1 p-3">
-                            <div class="flex flex-column md:flex-row justify-content-between mb-2">
-                                <div class="flex align-items-center flex-wrap gap-2 mb-2 md:mb-0">
-
-                                    <span class="text-500 text-sm font-medium">Protocolo:</span>
-                                    <span class="text-900 font-bold font-monospace bg-gray-100 px-2 border-round">#{item.protocolo}</span>
-
-                                    <h:panelGroup rendered="#{not empty item.departamentoDerivado}">
-                                        <span class="text-300 mx-1">|</span>
-
-                                        <p:tag value="#{item.departamentoDerivado.descricao}"
-                                               icon="pi pi-building"
-                                               styleClass="bg-indigo-50 text-indigo-700 border-indigo-200 border-1 font-bold px-2"/>
-                                    </h:panelGroup>
-
-                                    <span class="text-300 mx-1">|</span>
-
-                                    <div class="flex align-items-center text-600 text-sm" title="Data de Início">
-                                        <i class="pi pi-calendar mr-1 text-xs text-500"></i>
+                            <div class="flex-1">
+                                <div class="flex align-items-center flex-wrap gap-2 text-sm mb-2">
+                                    <span class="text-500 font-medium">##{item.protocolo}</span>
+                                    <span class="text-300">•</span>
+                                    <span class="text-500">
                                         <h:outputText value="#{item.dataInicioAtendimento}">
                                             <f:convertDateTime pattern="dd/MM/yyyy HH:mm"/>
                                         </h:outputText>
-                                    </div>
+                                    </span>
 
+                                    <h:panelGroup rendered="#{not empty item.departamentoDerivado}">
+                                        <span class="text-300">•</span>
+                                        <span class="text-primary-600 font-medium">#{item.departamentoDerivado.descricao}</span>
+                                    </h:panelGroup>
+
+                                    <h:panelGroup rendered="#{!item.demandaEncerrada}" styleClass="ml-auto md:ml-2">
+                                        <span class="text-xs font-bold px-2 py-1 border-round #{item.prazoEstourado ? 'bg-red-50 text-red-600' : 'bg-green-50 text-green-600'}">
+                                            #{item.prazoEstourado ? 'ATRASADO' : 'NO PRAZO'}
+                                        </span>
+                                    </h:panelGroup>
+                                    <h:panelGroup rendered="#{item.demandaEncerrada}" styleClass="ml-auto md:ml-2">
+                                        <span class="text-xs font-bold px-2 py-1 border-round bg-gray-100 text-gray-600">CONCLUÍDO</span>
+                                    </h:panelGroup>
                                 </div>
 
-                                <h:panelGroup>
-                                    <h:panelGroup rendered="#{not empty item.status and item.status.acao ne 'DERIVAR'}">
-                                        <p:tag value="#{item.status.descricao}"
-                                               icon="#{item.status.acao.icone}"
-                                               styleClass="#{item.status.acao.styleClass} border-1 font-bold px-2"/>
+                                <div class="flex align-items-center flex-wrap gap-2 mb-2">
+                                    <span class="text-xl font-bold text-900">#{item.motivo.descricao}</span>
+                                    <h:panelGroup rendered="#{not empty item.subMotivo}">
+                                        <i class="pi pi-angle-right text-300"></i>
+                                        <span class="text-lg text-700">#{item.subMotivo.descricao}</span>
                                     </h:panelGroup>
+                                </div>
 
-                                    <h:panelGroup rendered="#{empty item.status or item.status.acao eq 'DERIVAR'}">
-                                        <p:tag value="Aguardando Tratativa"
-                                               icon="pi pi-inbox"
-                                               styleClass="bg-yellow-50 text-yellow-700 border-yellow-200 border-1 font-bold px-2"/>
-                                    </h:panelGroup>
-                                </h:panelGroup>
+                                <p class="text-600 m-0 text-sm line-height-3 mb-3 text-overflow-ellipsis overflow-hidden"
+                                   style="display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; max-height: 3em;">
+                                    #{item.observacao}
+                                </p>
+
+                                <div class="flex flex-wrap align-items-center justify-content-between mt-3 pt-3 border-top-1 border-100">
+                                    <div class="flex align-items-center gap-3">
+                                        <div class="flex align-items-center gap-2">
+                                            <p:avatar label="#{item.cliente.nome.substring(0,1)}" shape="circle"
+                                                      size="small" styleClass="bg-indigo-50 text-indigo-600 text-xs"/>
+                                            <div class="flex flex-column">
+                                                <span class="text-900 font-medium text-sm">#{item.cliente.nome}</span>
+                                                <span class="text-500 text-xs">#{item.cliente.cpf}</span>
+                                            </div>
+                                        </div>
+                                    </div>
+
+                                    <div class="flex align-items-center gap-2 mt-2 md:mt-0">
+                                        <h:panelGroup rendered="#{not empty item.status}">
+                                            <span class="text-xs font-bold text-700 uppercase tracking-wide mr-2">Status:</span>
+                                            <p:tag value="#{item.status.descricao}" rounded="true"
+                                                   styleClass="#{item.status.acao eq 'CONCLUIR' ? 'bg-green-100 text-green-700' : 'bg-blue-50 text-blue-700'} border-none px-2"/>
+                                        </h:panelGroup>
+                                    </div>
+                                </div>
                             </div>
 
-                            <h2 class="text-lg font-bold text-900 m-0 mb-2">#{item.motivo.descricao}</h2>
-
-                            <p class="text-700 m-0 text-sm line-height-3 mb-3 bg-gray-50 p-2 border-round border-1 border-100"
-                               title="#{item.observacao}"
-                               style="display: -webkit-box;
-          -webkit-line-clamp: 3;
-          -webkit-box-orient: vertical;
-          overflow: hidden;
-          text-overflow: ellipsis;
-          height: 4.5em;"> #{item.observacao}
-                            </p>
-                            <div class="flex flex-wrap align-items-center gap-4 text-sm mt-3 pt-3 border-top-1 border-200">
-                                 <span class="flex align-items-center gap-2 text-700">
-                                    <i class="pi pi-user bg-blue-50 text-blue-500 p-1 border-circle"></i>
-                                    <span class="font-medium">#{item.cliente.nome}</span>
-                                </span>
-
-                                <span class="flex align-items-center gap-2 text-700">
-                                    <i class="pi pi-id-card bg-blue-50 text-blue-500 p-1 border-circle"></i>
-                                    <span>#{item.cliente.cpf}</span>
-                                </span>
-
-                                <span class="flex align-items-center gap-2 #{item.prazoEstourado ? 'text-red-600' : 'text-600'} ml-auto">
-                                    <span class="uppercase text-xs font-bold text-500">Prazo Limite:</span>
-                                    <i class="pi pi-calendar-times"></i>
-                                    <h:outputText value="#{item.prazoPrazoDemanda}" styleClass="font-bold">
-                                        <f:convertDateTime pattern="dd/MM/yyyy"/>
-                                    </h:outputText>
-                                </span>
-                            </div>
-                        </div>
-
-                        <div class="w-full md:w-auto p-3 flex align-items-center justify-content-center bg-gray-50 md:bg-white border-top-1 md:border-top-none md:border-left-1 border-200">
-                            <div class="flex flex-row md:flex-column gap-2 w-full">
+                            <div class="flex flex-row md:flex-column align-items-center justify-content-center gap-2 md:border-left-1 border-100 md:pl-4 min-w-max">
 
                                 <p:button value="Tratar"
                                           rendered="#{empty item.status or item.status.acao ne 'CONCLUIR'}"
-                                          icon="pi pi-pencil" iconPos="right"
+                                          icon="pi pi-arrow-right" iconPos="right"
                                           outcome="/pages/backoffice/tratativa_n2"
-                                          styleClass="ui-button-raised ui-button-primary font-bold shadow-1 w-full">
+                                          styleClass="ui-button-primary font-bold shadow-none w-full md:w-auto px-4">
                                     <f:param name="id" value="#{item.id}"/>
                                 </p:button>
 
-                                <p:commandButton value="Detalhes"
+                                <p:commandButton value="Ver"
                                                  rendered="#{not empty item.status and item.status.acao eq 'CONCLUIR'}"
                                                  icon="pi pi-eye"
                                                  actionListener="#{backofficeFilaBean.selecionarAtendimento(item.id)}"
                                                  update="dlgVisualizar"
                                                  oncomplete="PF('dlgVisualizar').show()"
-                                                 styleClass="ui-button-outlined ui-button-secondary font-bold w-full"/>
+                                                 styleClass="ui-button-outlined ui-button-secondary border-none w-full md:w-auto"/>
+
+                                <h:panelGroup rendered="#{!item.demandaEncerrada}" styleClass="text-center mt-2">
+                                    <span class="text-xs text-500 block">Prazo:</span>
+                                    <span class="text-sm font-bold #{item.prazoEstourado ? 'text-red-500' : 'text-green-500'}">
+                                        <h:outputText value="#{item.prazoPrazoDemanda}">
+                                            <f:convertDateTime pattern="dd/MM"/>
+                                        </h:outputText>
+                                     </span>
+                                </h:panelGroup>
                             </div>
                         </div>
-
                     </div>
                 </ui:repeat>
 
-                <h:panelGroup rendered="#{empty backofficeFilaBean.listaAtendimentos}"
-                              styleClass="text-center py-6 surface-card border-round shadow-1">
-                    <div class="w-6rem h-6rem bg-gray-100 border-circle flex align-items-center justify-content-center mx-auto mb-4">
-                        <i class="pi pi-search text-gray-400 text-4xl"></i>
+                <h:panelGroup rendered="#{empty backofficeFilaBean.listaAtendimentos}" styleClass="block mt-4">
+                    <div class="surface-card border-round-xl p-6 text-center shadow-1">
+                        <div class="bg-gray-50 border-circle w-5rem h-5rem flex align-items-center justify-content-center mx-auto mb-3">
+                            <i class="pi pi-inbox text-gray-400 text-3xl"></i>
+                        </div>
+                        <span class="text-900 font-bold text-xl block mb-2">Fila Vazia</span>
+                        <span class="text-600">Não há atendimentos correspondentes aos filtros.</span>
                     </div>
-                    <span class="block text-900 text-xl font-bold mb-2">Nenhum atendimento encontrado</span>
-                    <span class="block text-600 text-base mb-4" style="max-width: 400px; margin: 0 auto;">
-                        Não encontramos registros com os filtros selecionados ou a fila está vazia no momento.
-                    </span>
-                    <p:commandButton value="Limpar Filtros" icon="pi pi-filter-slash" id="bntLimpar"
-                                     actionListener="#{backofficeFilaBean.limparFiltros}"
-                                     update=" @form pnpQuantidades"
-                                     styleClass="ui-button-outlined ui-button-secondary"/>
                 </h:panelGroup>
 
             </h:panelGroup>
-
         </h:form>
 
+
         <p:dialog header="Detalhamento do Atendimento" widgetVar="dlgVisualizar" id="dlgVisualizar"
-                  modal="true" responsive="true" width="70%" fitViewport="true"
+
+                  modal="true" responsive="true" width="900" fitViewport="true"
+
                   showEffect="fade" hideEffect="fade" closeOnEscape="true"
-                  styleClass="border-round-xl">
+
+                  styleClass="border-round-xl overflow-hidden">
+
 
             <h:panelGroup id="conteudoVisualizacao" rendered="#{not empty backofficeFilaBean.atendimentoSelecionado}">
-                <div class="flex justify-content-between align-items-center mb-4 border-bottom-1 border-200 pb-3">
-                    <div>
-                        <span class="text-sm text-500 block">Protocolo</span>
-                        <span class="text-xl font-bold text-900 font-monospace">#{backofficeFilaBean.atendimentoSelecionado.protocolo}</span>
-                    </div>
-                    <p:tag value="CONCLUÍDO" severity="success" icon="pi pi-check-circle" rounded="true"/>
-                </div>
 
-                <div class="grid">
-                    <div class="col-12 md:col-5 border-right-1 border-200">
-                        <div class="mb-4">
-                            <span class="text-xs font-bold text-500 uppercase block mb-2">Cliente</span>
-                            <div class="flex align-items-center gap-2">
-                                <p:avatar label="#{backofficeFilaBean.atendimentoSelecionado.cliente.nome.substring(0,1)}" shape="circle"/>
-                                <div>
-                                    <span class="font-bold text-900 block">#{backofficeFilaBean.atendimentoSelecionado.cliente.nome}</span>
-                                    <span class="text-sm text-600">#{backofficeFilaBean.atendimentoSelecionado.cpf}</span>
-                                </div>
+
+                <div class="surface-50 p-4 border-bottom-1 border-200">
+
+                    <div class="flex justify-content-between align-items-start mb-3">
+
+                        <div class="flex align-items-center gap-3">
+
+                            <div class="bg-white border-1 border-200 shadow-sm border-circle w-3rem h-3rem flex align-items-center justify-content-center">
+
+                                <i class="pi pi-file text-700 text-xl"></i>
+
                             </div>
-                        </div>
 
-                        <div>
-                            <span class="text-xs font-bold text-500 uppercase block mb-2">Solicitação N1</span>
-                            <div class="surface-100 p-3 border-round text-sm line-height-3 text-700">
-                                <h:outputText value="#{backofficeFilaBean.atendimentoSelecionado.observacao}"/>
-                            </div>
-                            <div class="mt-2 text-xs text-500">
-                                Aberto em:
-                                <h:outputText value="#{backofficeFilaBean.atendimentoSelecionado.dataInicioAtendimento}">
-                                    <f:convertDateTime pattern="dd/MM/yyyy HH:mm"/>
-                                </h:outputText>
-                            </div>
-                        </div>
-                    </div>
-
-                    <div class="col-12 md:col-7 pl-4">
-                        <span class="text-xs font-bold text-blue-600 uppercase block mb-2">
-                            <i class="pi pi-check-circle mr-1"/> Resolução N2
-                        </span>
-                        <div class="text-900 line-height-3 mb-4">
-                            <h:outputText value="#{backofficeFilaBean.atendimentoSelecionado.respostaN2}" escape="false"/>
-                        </div>
-
-                        <div class="surface-50 p-3 border-round border-1 border-200 flex justify-content-between align-items-center">
                             <div>
-                                <span class="block text-xs text-500">Analista Responsável</span>
-                                <span class="font-medium text-800">#{backofficeFilaBean.atendimentoSelecionado.responsavelN2.nome}</span>
+
+                                <span class="text-xs text-500 font-bold uppercase block mb-1">Protocolo</span>
+
+                                <span class="text-2xl font-bold text-900 font-monospace">#{backofficeFilaBean.atendimentoSelecionado.protocolo}</span>
+
                             </div>
-                            <div class="text-right">
-                                <span class="block text-xs text-500">Concluído em</span>
-                                <span class="font-medium text-800">
-                                    <h:outputText value="#{backofficeFilaBean.atendimentoSelecionado.dataFechamentoDemanda}">
-                                        <f:convertDateTime pattern="dd/MM/yyyy HH:mm"/>
-                                    </h:outputText>
-                                </span>
-                            </div>
+
                         </div>
+
+
+                        <p:tag value="CONCLUÍDO" severity="success" icon="pi pi-check-circle"
+
+                               styleClass="px-3 py-2 text-base" rounded="true"/>
+
                     </div>
+
+
+                    <div class="flex align-items-center text-sm bg-white border-round px-3 py-2 border-1 border-200 d-inline-flex">
+
+                        <i class="pi pi-tag text-500 mr-2"></i>
+
+                        <span class="text-700 font-medium">#{backofficeFilaBean.atendimentoSelecionado.motivo.descricao}</span>
+
+                        <i class="pi pi-angle-right text-400 mx-2"></i>
+
+                        <span class="text-900 font-bold">#{backofficeFilaBean.atendimentoSelecionado.subMotivo.descricao}</span>
+
+                    </div>
+
                 </div>
+
+
+                <div class="grid grid-nogutter">
+
+
+                    <div class="col-12 md:col-5 p-4 border-right-1 border-200 bg-white">
+
+
+                        <div class="surface-card border-1 border-200 border-round p-3 mb-4 shadow-1 flex align-items-center gap-3">
+
+                            <p:avatar label="#{backofficeFilaBean.atendimentoSelecionado.cliente.nome.substring(0,1)}"
+
+                                      shape="circle" size="large"
+
+                                      styleClass="bg-blue-50 text-blue-600 font-bold"/>
+
+                            <div class="overflow-hidden">
+
+                                <span class="text-900 font-bold block white-space-nowrap text-overflow-ellipsis">#{backofficeFilaBean.atendimentoSelecionado.cliente.nome}</span>
+
+                                <div class="flex align-items-center gap-2 text-sm text-600 mt-1">
+
+                                    <span><i
+                                            class="pi pi-id-card mr-1 text-xs"></i>#{backofficeFilaBean.atendimentoSelecionado.cpf}</span>
+
+                                </div>
+
+                            </div>
+
+                        </div>
+
+
+                        <div class="mb-2">
+
+<span class="text-xs font-bold text-500 uppercase block mb-2">
+
+<i class="pi pi-align-left mr-1"></i>Relato de Abertura (N1)
+
+</span>
+
+                            <div class="bg-gray-50 border-1 border-200 border-round p-3 text-700 line-height-3 text-sm overflow-y-auto"
+
+                                 style="max-height: 300px; white-space: pre-wrap;">
+
+                                <h:outputText value="#{backofficeFilaBean.atendimentoSelecionado.observacao}"/>
+
+                            </div>
+
+                        </div>
+
+
+                        <div class="text-xs text-500 mt-2 flex align-items-center">
+
+                            <i class="pi pi-calendar mr-1"></i>
+
+                            Aberto em:
+
+                            <h:outputText value="#{backofficeFilaBean.atendimentoSelecionado.dataInicioAtendimento}"
+                                          styleClass="font-medium ml-1">
+
+                                <f:convertDateTime pattern="dd/MM/yyyy HH:mm"/>
+
+                            </h:outputText>
+
+                        </div>
+
+                    </div>
+
+
+                    <div class="col-12 md:col-7 p-4 bg-green-50 relative">
+
+                        <div class="absolute left-0 top-0 bottom-0 w-3px bg-green-500"></div>
+
+
+                        <div class="flex align-items-center mb-3">
+
+                            <div class="bg-green-100 text-green-700 border-circle w-2rem h-2rem flex align-items-center justify-content-center mr-2">
+
+                                <i class="pi pi-check"></i>
+
+                            </div>
+
+                            <span class="text-green-800 font-bold text-lg">Parecer Técnico / Resolução</span>
+
+                        </div>
+
+
+                        <div class="surface-card p-4 border-round-xl shadow-1 text-900 line-height-3 mb-4 overflow-y-auto border-1 border-green-100"
+
+                             style="max-height: 400px; word-break: break-word;">
+
+                            <div class="m-0">
+
+                                <h:outputText value="#{backofficeFilaBean.atendimentoSelecionado.respostaN2}"
+                                              escape="false"/>
+
+                            </div>
+
+                        </div>
+
+
+                        <div class="flex justify-content-end">
+
+                            <div class="surface-0 border-1 border-200 border-round px-3 py-2 flex align-items-center gap-3 shadow-sm">
+
+                                <div class="flex flex-column text-right border-right-1 border-200 pr-3">
+
+                                    <span class="text-xs text-500 uppercase font-bold">Responsável</span>
+
+                                    <span class="text-sm font-bold text-800">#{backofficeFilaBean.atendimentoSelecionado.responsavelN2.nome}</span>
+
+                                </div>
+
+                                <div class="flex flex-column text-right">
+
+                                    <span class="text-xs text-500 uppercase font-bold">Conclusão</span>
+
+                                    <span class="text-sm font-bold text-blue-600">
+
+                                        <h:outputText value="#{backofficeFilaBean.atendimentoSelecionado.dataFechamentoDemanda}">
+
+                                        <f:convertDateTime pattern="dd/MM HH:mm"/>
+
+                                        </h:outputText>
+
+                                        </span>
+
+                                </div>
+
+                            </div>
+
+                        </div>
+
+                    </div>
+
+                </div>
+
 
                 <f:facet name="footer">
-                    <p:commandButton value="Fechar" onclick="PF('dlgVisualizar').hide()" type="button"
-                                     styleClass="ui-button-secondary ui-button-flat"/>
+
+                    <div class="flex justify-content-end border-top-1 border-200 pt-3 bg-white px-4 pb-2">
+
+                        <p:commandButton value="Fechar" onclick="PF('dlgVisualizar').hide()" type="button"
+
+                                         icon="pi pi-times"
+
+                                         styleClass="ui-button-secondary ui-button-outlined font-bold px-4"/>
+
+                    </div>
+
                 </f:facet>
+
             </h:panelGroup>
+
         </p:dialog>
+
 
     </ui:define>
 </ui:composition>

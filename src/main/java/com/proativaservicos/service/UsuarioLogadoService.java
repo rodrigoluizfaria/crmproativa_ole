@@ -32,6 +32,10 @@ public class UsuarioLogadoService extends GenericProService<UsuarioLogado> {
 	 public int pesquisarQuantidadeUsuariosLogados(Long empresa) { return
 	 this.dao.pesquisarQuantidadeUsuariosLogados(empresa); }
 
+	public int pesquisarQuantidadeUsuariosLogados(Long idEmpresa, String perfil) {
+		return this.dao.pesquisarQuantidadeUsuariosLogados(idEmpresa, perfil);
+	}
+
 	public void removerUsuariosLogados() {
 		this.dao.deletarTodosUsuariosLogados();
 	}

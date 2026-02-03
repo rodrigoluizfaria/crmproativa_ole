@@ -133,7 +133,7 @@
                     </p:column>
 
                     <p:column headerText="CPF" sortBy="#{atendimento[3]}" width="120">
-                        <h:outputText value="#{atendimento[3]}"/>
+                        <h:outputText value="#{meusAtendimentosBean.onOcultarCpf(atendimento[3])}"/>
                     </p:column>
 
                     <p:column headerText="Adesão" sortBy="#{atendimento[7]}" width="90" styleClass="text-center">

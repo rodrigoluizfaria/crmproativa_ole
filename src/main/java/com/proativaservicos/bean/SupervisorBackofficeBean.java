@@ -243,6 +243,8 @@ public class SupervisorBackofficeBean extends GenericBean implements Serializabl
 
 //    private LazyDataModel<Object[]> listModel;
 
+    private List<Atendimento> listaAtendimentoPendenteView;
+
     private List<Object[]> listModel;
 
     private boolean init;
@@ -271,7 +273,6 @@ public class SupervisorBackofficeBean extends GenericBean implements Serializabl
     private List<TipoIntegracaoEnum> listTipoIntegracaoConsulta;
 
     private TipoIntegracaoEnum tipoConsultaIntegracaoEnum;
-
 
 
     @PostConstruct
@@ -392,7 +393,7 @@ public class SupervisorBackofficeBean extends GenericBean implements Serializabl
 
             this.listAtendimentos = this.serviceAtendimento.pesquisarAtendimentosPorNomeCpf(this.cpf, this.nome, this.adesao,
                     this.protocolo, this.campanhaPesquisa, this.listIdsEquipes, this.listAgentes, this.listIdsStatusAtendimentos,
-                    null, this.dataInicio, this.dataFim, this.usuario, this.produto, this.tiket, getEmpresa().getId(),motivoAtendimento,subMotivoAtendimento);
+                    null, this.dataInicio, this.dataFim, this.usuario, this.produto, this.tiket, getEmpresa().getId(), motivoAtendimento, subMotivoAtendimento);
 
             gerarFooterTotal();
 
@@ -519,7 +520,7 @@ public class SupervisorBackofficeBean extends GenericBean implements Serializabl
 
             this.listHistoricosAtendimentos = new ArrayList<>();
 
-            this.atendimentoVisualizar = this.serviceAtendimento.pesquisarAtendimentoSacPorCodigo(id,true);
+            this.atendimentoVisualizar = this.serviceAtendimento.pesquisarAtendimentoSacPorCodigo(id, true);
 
             this.listConciliar = this.serviceConciliarAudioAnexo.pesquisarPorAtendimento(id);
 
@@ -552,7 +553,7 @@ public class SupervisorBackofficeBean extends GenericBean implements Serializabl
 
             this.listHistoricosAtendimentos = new ArrayList<>();
 
-            this.atendimentoVisualizar = this.serviceAtendimento.pesquisarAtendimentoSacPorCodigo(id,true);
+            this.atendimentoVisualizar = this.serviceAtendimento.pesquisarAtendimentoSacPorCodigo(id, true);
 
             this.listConciliar = this.serviceConciliarAudioAnexo.pesquisarPorAtendimento(id);
 
@@ -678,7 +679,6 @@ public class SupervisorBackofficeBean extends GenericBean implements Serializabl
     }
 
 
-
     public void abrirModalConciliarAudio() {
 
         this.listConciliar = this.serviceConciliarAudioAnexo.pesquisarPorAtendimento(this.atendimentoVisualizar.getId());
@@ -706,7 +706,10 @@ public class SupervisorBackofficeBean extends GenericBean implements Serializabl
 
             validarCpf();
 
-            this.listHistoricosAtendimentos = this.serviceHistorico.pesquisarHIstoricoSacPorCpf(this.atendimentoVisualizar.getCpf().trim(), retornarEmpresaUsuarioSessao().getId());
+            if (this.atendimentoVisualizar.getCliente() != null && StringUtils.isNotBlank(this.atendimentoVisualizar.getCliente().getCpf()))
+                this.listHistoricosAtendimentos = this.serviceHistorico.pesquisarHIstoricoSacPorCpf(this.atendimentoVisualizar.getCliente().getCpf().trim(), retornarEmpresaUsuarioSessao().getId());
+            else
+                this.listHistoricosAtendimentos = this.serviceHistorico.pesquisarHIstoricoSacPorCpf(this.atendimentoVisualizar.getCpf().trim(), retornarEmpresaUsuarioSessao().getId());
 
         } catch (ProativaException e) {
 
@@ -720,7 +723,8 @@ public class SupervisorBackofficeBean extends GenericBean implements Serializabl
 
     public void validarCpf() throws ProativaException {
 
-        if (this.atendimentoVisualizar.getCpf() == null || this.atendimentoVisualizar.getCpf().trim().isEmpty()) {
+        if ((StringUtils.isBlank(this.atendimentoVisualizar.getCpf()))
+                && (this.atendimentoVisualizar.getCliente() == null || StringUtils.isBlank(this.atendimentoVisualizar.getCliente().getCpf()))) {
 
             throw new ProativaException("CPF Deve ser informado");
         }
@@ -1108,20 +1112,20 @@ public class SupervisorBackofficeBean extends GenericBean implements Serializabl
 
     public void onExportarCsv() {
 
-       // System.out.println("EXPORTANDO ATENDIMENTOS: [ " + this.usuario.getNome() + " ] | TOTAL: " + (this.listModel != null ? this.listModel.getRowCount() : " 0 "));
+        // System.out.println("EXPORTANDO ATENDIMENTOS: [ " + this.usuario.getNome() + " ] | TOTAL: " + (this.listModel != null ? this.listModel.getRowCount() : " 0 "));
         exportarAtendimentos(true);
     }
 
     public void onExportarCsvSimples() {
 
-      //  System.out.println("EXPORTANDO ATENDIMENTOS: [ " + this.usuario.getNome() + " ] | TOTAL: " + (this.listModel != null ? this.listModel.getRowCount() : " 0 "));
+        //  System.out.println("EXPORTANDO ATENDIMENTOS: [ " + this.usuario.getNome() + " ] | TOTAL: " + (this.listModel != null ? this.listModel.getRowCount() : " 0 "));
         pesquisarAtendimentos();
         exportarAtendimentosSimples();
     }
 
     public void onExportarCsvSimplesManivesto() {
 
-      //  System.out.println("EXPORTANDO ATENDIMENTOS: [ " + this.usuario.getNome() + " ] | TOTAL: " + (this.listModel != null ? this.listModel.getRowCount() : " 0 "));
+        //  System.out.println("EXPORTANDO ATENDIMENTOS: [ " + this.usuario.getNome() + " ] | TOTAL: " + (this.listModel != null ? this.listModel.getRowCount() : " 0 "));
         pesquisarAtendimentos();
         exportarAtendimentosSimplesManifesto();
     }
@@ -2002,6 +2006,21 @@ public class SupervisorBackofficeBean extends GenericBean implements Serializabl
 
     }
 
+    public void onListarAtendimentos(Long codigo) {
+
+        if (codigo != null) {
+
+            this.listaAtendimentoPendenteView = this.serviceAtendimento.pesquisarPendenciasPorOperadores(List.of(codigo));
+
+        }
+
+
+    }
+
+    public List<Atendimento> getListaAtendimentoPendenteView() {
+        return listaAtendimentoPendenteView;
+    }
+
     public Long getCampanha() {
         return campanha;
     }
@@ -2753,7 +2772,7 @@ public class SupervisorBackofficeBean extends GenericBean implements Serializabl
         }
     }
 
-    public void onTrocarIntegracao(){
+    public void onTrocarIntegracao() {
 
         this.cartaoMasterResponse = new CartaoResponse();
         this.calculadoraConsignadoResponse = new CalculadoraConsignadoResponse();
@@ -2774,7 +2793,7 @@ public class SupervisorBackofficeBean extends GenericBean implements Serializabl
 
             if (this.integracaoApiMaster != null && this.integracaoApiMaster.getId() != null && this.integracaoApiMaster.getTipoIntegracao() != null && this.integracaoApiMaster.getTipoIntegracao().equals(TipoIntegracaoEnum.API_BANCO_MASTER)) {
 
-                this.cartaoMasterResponse = this.apiBancoMasterUtil.consultarLimiteCartao(this.integracaoApiMaster, this.entradaCalculadora, this.usuario,null,null, true, true);
+                this.cartaoMasterResponse = this.apiBancoMasterUtil.consultarLimiteCartao(this.integracaoApiMaster, this.entradaCalculadora, this.usuario, null, null, true, true);
 
 
             } else {
@@ -2913,7 +2932,7 @@ public class SupervisorBackofficeBean extends GenericBean implements Serializabl
 
     public StreamedContent getFile() {
 
-      //  System.out.println("EXPORTANDO ATENDIMENTOS: [ " + this.usuario.getNome() + " ] | TOTAL: " + (this.listModel != null ? this.listModel.getRowCount() : " 0 "));
+        //  System.out.println("EXPORTANDO ATENDIMENTOS: [ " + this.usuario.getNome() + " ] | TOTAL: " + (this.listModel != null ? this.listModel.getRowCount() : " 0 "));
         gerarStreamedArquivo();
 
         return file;
@@ -2921,7 +2940,7 @@ public class SupervisorBackofficeBean extends GenericBean implements Serializabl
 
     public StreamedContent getFileManifesto() {
 
-      //  System.out.println("EXPORTANDO ATENDIMENTOS: [ " + this.usuario.getNome() + " ] | TOTAL: " + (this.listModel != null ? this.listModel.getRowCount() : " 0 "));
+        //  System.out.println("EXPORTANDO ATENDIMENTOS: [ " + this.usuario.getNome() + " ] | TOTAL: " + (this.listModel != null ? this.listModel.getRowCount() : " 0 "));
         gerarStreamedArquivoManifesto();
 
         return fileManifesto;
@@ -2929,7 +2948,7 @@ public class SupervisorBackofficeBean extends GenericBean implements Serializabl
 
     public StreamedContent getFileSimples() {
 
-      //  System.out.println("EXPORTANDO ATENDIMENTOS: [ " + this.usuario.getNome() + " ] | TOTAL: " + (this.listModel != null ? this.listModel.getRowCount() : " 0 "));
+        //  System.out.println("EXPORTANDO ATENDIMENTOS: [ " + this.usuario.getNome() + " ] | TOTAL: " + (this.listModel != null ? this.listModel.getRowCount() : " 0 "));
         gerarStreamedArquivoSimples();
         return fileSimples;
     }

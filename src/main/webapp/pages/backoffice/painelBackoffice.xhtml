@@ -104,8 +104,9 @@
                             </div>
                         </div>
                     </div>
+
                     <div class="col-12 md:col-6 lg:col">
-                        <div class="surface-card shadow-1 p-3 border-round-xl h-full flex align-items-center justify-content-between hover:surface-50 transition-duration-200">
+                        <h:panelGroup id="cardConcluido" layout="block" styleClass="surface-card shadow-1 p-3 border-round-xl h-full flex align-items-center justify-content-between hover:surface-50 transition-duration-200 cursor-pointer">
                             <div>
                                 <span class="block text-500 font-medium text-sm mb-1">Total Concluído</span>
                                 <div class="text-teal-600 font-bold text-2xl">
@@ -115,10 +116,64 @@
                             <div class="flex align-items-center justify-content-center bg-teal-50 border-circle w-3rem h-3rem">
                                 <i class="pi pi-check-circle text-teal-500 text-xl"/>
                             </div>
+                        </h:panelGroup>
+
+                        <p:tooltip for="cardConcluido" position="top" showEffect="fade" hideEffect="fade" styleClass="shadow-4">
+                            <div class="p-2">
+                                <div class="font-bold text-center mb-2 text-white border-bottom-1 border-white-alpha-20 pb-1">Detalhamento</div>
+
+                                <div class="flex align-items-center justify-content-between gap-4 mb-2">
+                                    <span class="text-white"><i class="pi pi-star mr-2 text-sm"></i>Resolvido N1:</span>
+                                    <span class="font-bold text-teal-300 text-lg">#{monitorBackofficeBean.totalResolvidoN1}</span>
+                                </div>
+
+                                <div class="flex align-items-center justify-content-between gap-4">
+                                    <span class="text-white"><i class="pi pi-shield mr-2 text-sm"></i>Resolvido N2:</span>
+                                    <span class="font-bold text-yellow-300 text-lg">#{monitorBackofficeBean.totalResolvidoN2}</span>
+                                </div>
+                            </div>
+                        </p:tooltip>
+                    </div>
+
+                    <div class="col-12 md:col-6 lg:col">
+                        <div class="surface-card shadow-1 p-3 border-round-xl h-full flex align-items-center justify-content-between hover:surface-50 transition-duration-200"
+                            >
+
+                            <div>
+                                <span class="block text-500 font-medium text-sm mb-1">Taxa FCR</span>
+
+                                <div class="text-teal-600 font-bold text-2xl"  title="First Call Resolution (Resolução no Primeiro Contato)">
+                                    <h:outputText value="#{monitorBackofficeBean.totalPercentFcr}">
+                                        <f:convertNumber type="percent" minFractionDigits="1" maxFractionDigits="1" />
+                                    </h:outputText>
+                                </div>
+                            </div>
+
+                            <h:panelGroup id="carReicidencia" styleClass="text-orange-600 font-bold text-2xl" layout="block">
+                                <span class="block text-500 font-medium text-sm mb-1">Reincidência</span>
+                                <h:outputText value="#{monitorBackofficeBean.totalPercentReincidencia}">
+                                    <f:convertNumber type="percent" minFractionDigits="1" />
+                                </h:outputText>
+                            </h:panelGroup>
+
+                            <div class="flex align-items-center justify-content-center bg-teal-50 border-circle w-3rem h-3rem">
+                                <i class="pi pi-thumbs-up text-teal-500 text-xl"/>
+                            </div>
+
                         </div>
                     </div>
                 </div>
 
+                <p:tooltip for="carReicidencia" position="top" showEffect="fade" hideEffect="fade" styleClass="shadow-4">
+
+                    <div class="p-2">
+                        <div class="font-bold text-center mb-2 text-white border-bottom-1 border-white-alpha-20 pb-1">Total Reincidência</div>
+                        <div class="flex align-items-center justify-content-between gap-4">
+                            <span class="font-bold text-orange-300 text-lg">#{monitorBackofficeBean.totalReincidencia}</span>
+                        </div>
+                    </div>
+
+                </p:tooltip>
                 <div class="grid">
 
                     <div class="col-12 xl:col-4">
@@ -263,42 +318,74 @@
 
                         <div class="col-12 lg:col-6">
                             <div class="surface-card shadow-1 border-round-xl p-4 h-full flex flex-column">
-                <span class="text-900 font-bold text-lg block mb-4 border-bottom-1 border-100 pb-2">
-                    Atendimentos Concluídos x Em Aberto
-                </span>
+                             <span class="text-900 font-bold text-lg block mb-4 border-bottom-1 border-100 pb-2">
+                                  Atendimentos Concluídos x Em Aberto
+                             </span>
 
                                 <div class="flex align-items-center justify-content-center flex-grow-1">
                                     <p:polarAreaChart model="#{monitorBackofficeBean.polarAreaModelConsistencia}"
-                                                style="width: 100%; height: 180px;"/> </div>
+                                                      style="width: 100%; height: 180px;"/>
+                                </div>
                             </div>
                         </div>
 
                         <div class="col-12 lg:col-6">
                             <div class="surface-card shadow-1 border-round-xl p-4 h-full">
-                <span class="text-900 font-bold text-lg block mb-4 border-bottom-1 border-100 pb-2">
-                    Detalhamento Geral
-                </span>
+                            <span class="text-900 font-bold text-lg block mb-4 border-bottom-1 border-100 pb-2">
+                                Detalhamento Geral
+                            </span>
 
                                 <p:dataTable value="#{monitorBackofficeBean.listTotal}" var="t"
-                                             rows="8" paginator="true" paginatorPosition="bottom"
+
                                              styleClass="ui-datatable-sm ui-datatable-striped" stripedRows="true" reflow="true"
                                              paginatorTemplate="{CurrentPageReport} {FirstPageLink} {PreviousPageLink} {NextPageLink} {LastPageLink}">
 
-                                    <p:column headerText="Clientes" sortBy="#{t.qtdeCpf}" styleClass="text-center">
+                                    <p:column headerText="Clientes" sortBy="#{t.qtdeCpf}" styleClass="text-center" width="80">
                                         <h:outputText value="#{t.qtdeCpf}"/>
                                     </p:column>
-                                    <p:column headerText="Atendimentos" sortBy="#{t.qtdeAtendimento}" styleClass="text-center">
-                                        <span class="font-bold text-blue-600">#{t.qtdeAtendimento}</span>
+
+                                    <p:column headerText="Total" sortBy="#{t.qtdeAtendimento}" styleClass="text-center font-bold text-blue-600" width="80">
+                                        #{t.qtdeAtendimento}
                                     </p:column>
+
+                                    <p:column headerText="Res. N1" sortBy="#{t.qtdadeResolvidoN1}" styleClass="text-center" width="90">
+                                        <div class="flex align-items-center justify-content-center gap-1">
+                                            <i class="pi pi-star text-purple-500 text-xs"></i>
+                                            <h:outputText value="#{t.qtdadeResolvidoN1}" styleClass="text-700"/>
+                                        </div>
+                                    </p:column>
+
+                                    <p:column headerText="Res. N2" sortBy="#{t.qtdeResolvidoN2}" styleClass="text-center" width="90">
+                                        <div class="flex align-items-center justify-content-center gap-1">
+                                            <i class="pi pi-shield text-yellow-600 text-xs"></i>
+                                            <h:outputText value="#{t.qtdeResolvidoN2}" styleClass="text-700"/>
+                                        </div>
+                                    </p:column>
+
                                     <p:column headerText="No Prazo" sortBy="#{t.qtdadeDemandaNoPrazo}" styleClass="text-center">
-                                        <span class="inline-block border-round px-2 py-1 bg-green-100 text-green-700 text-sm font-bold">#{t.qtdadeDemandaNoPrazo}</span>
+                                        <span class="inline-block border-round px-2 py-1 bg-green-100 text-green-700 text-sm font-bold">
+                                            #{t.qtdadeDemandaNoPrazo}
+                                        </span>
+                                                    </p:column>
+
+                                                    <p:column headerText="Excedido" sortBy="#{t.qtdadeDemandaPrazoEstourado}" styleClass="text-center">
+                                        <span class="inline-block border-round px-2 py-1 bg-pink-100 text-pink-700 text-sm font-bold">
+                                            #{t.qtdadeDemandaPrazoEstourado}
+                                        </span>
                                     </p:column>
-                                    <p:column headerText="Excedido" sortBy="#{t.qtdadeDemandaPrazoEstourado}" styleClass="text-center">
-                                        <span class="inline-block border-round px-2 py-1 bg-pink-100 text-pink-700 text-sm font-bold">#{t.qtdadeDemandaPrazoEstourado}</span>
-                                    </p:column>
-                                    <p:column headerText="Em Aberto" sortBy="#{t.qtidadeEmAberto}" styleClass="text-center">
+
+                                    <p:column headerText="Aberto" sortBy="#{t.qtidadeEmAberto}" styleClass="text-center">
                                         <h:outputText value="#{t.qtidadeEmAberto}" styleClass="text-500"/>
                                     </p:column>
+
+                                    <p:column headerText="% FCR" sortBy="#{t.percentualFcr}" styleClass="text-center">
+                                    <span class="inline-block border-round px-2 py-1 bg-teal-100 text-teal-800 text-sm font-bold shadow-1">
+                                        <h:outputText value="#{t.percentualFcr}">
+                                            <f:convertNumber type="percent" minFractionDigits="1" maxFractionDigits="1" />
+                                        </h:outputText>
+                                    </span>
+                                    </p:column>
+
                                 </p:dataTable>
                             </div>
                         </div>

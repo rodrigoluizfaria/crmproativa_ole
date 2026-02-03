@@ -7,273 +7,212 @@
 
     <p:dialog id="dlgVisualizarAtendimento" widgetVar="dlgVisualizarAtendimento"
               modal="true" draggable="false" resizable="false" closable="true"
-              visible="false" width="95%" height="90%" fitViewport="true"
+              visible="false" width="1100" height="90%" fitViewport="true"
               header="Detalhes do Atendimento" appendTo="@(body)"
               showEffect="fade" hideEffect="fade"
-              blockScroll="true" responsive="true">
+              blockScroll="true" responsive="true"
+              styleClass="border-round-xl overflow-hidden">
 
-        <h:form id="formVisualizar" prependId="false">
+        <h:form id="formVisualizar" prependId="false" styleClass="h-full flex flex-column">
 
-            <div class="surface-ground p-3">
+            <div class="surface-0 border-bottom-1 border-200 p-4 flex flex-column md:flex-row justify-content-between align-items-start md:align-items-center gap-3 flex-shrink-0">
 
-                <div class="flex justify-content-between align-items-center mb-3">
-                    <div class="flex align-items-center gap-2">
-                        <span class="text-xl font-bold text-900">Visão Geral</span>
-                        <p:tag value="#{meusAtendimentosBean.atendimentoVisualizar.status.descricao}"
-                               styleClass="mr-2" severity="info" rounded="true"/>
+                <div class="flex align-items-center">
+                    <div class="bg-blue-50 text-blue-600 border-circle w-4rem h-4rem flex align-items-center justify-content-center mr-3 shadow-1">
+                        <i class="pi pi-user text-2xl"></i>
                     </div>
-
-                    <div class="flex gap-2">
-                        <p:commandButton value="Iniciar Novo Atendimento"
-                                         icon="pi pi-plus-circle"
-                                         disabled="true"
-                                         styleClass="ui-button-success ui-button-raised font-bold"
-                                         id="novaProposta"
-                                         oncomplete="PF('dlgVisualizarAtendimento').hide();">
-                            <p:confirm header="Confirmar Ação" message="Deseja iniciar um novo atendimento para este cliente?"
-                                       icon="pi pi-question-circle"/>
-                        </p:commandButton>
-
-                        <p:commandButton value="Fechar" icon="pi pi-times"
-                                         onclick="PF('dlgVisualizarAtendimento').hide();"
-                                         process="@this" global="false"
-                                         styleClass="ui-button-secondary ui-button-outlined font-bold"/>
-                    </div>
-                </div>
-
-                <div class="surface-card shadow-2 border-round p-4 mb-4 border-left-3 border-blue-500">
-                    <div class="grid ui-fluid">
-
-                        <div class="col-12 md:col-2">
-                            <span class="text-500 font-medium text-sm block mb-1">Protocolo</span>
-                            <span class="text-900 font-bold text-lg">#{meusAtendimentosBean.atendimentoVisualizar.protocolo}</span>
-                        </div>
-
-                        <div class="col-12 md:col-3">
-                            <span class="text-500 font-medium text-sm block mb-1">Campanha</span>
-                            <div class="flex align-items-center">
-                                <i class="pi pi-megaphone text-blue-500 mr-2"></i>
-                                <span class="text-900 font-medium">#{meusAtendimentosBean.atendimentoVisualizar.campanha.descricao}</span>
-                            </div>
-                        </div>
-
-                        <div class="col-12 md:col-3">
-                            <span class="text-500 font-medium text-sm block mb-1">Nome do Cliente</span>
-                            <div class="flex align-items-center">
-                                <i class="pi pi-user text-blue-500 mr-2"></i>
-                                <span class="text-900 font-bold">#{meusAtendimentosBean.atendimentoVisualizar.cliente.nome}</span>
-                            </div>
-                        </div>
-
-                        <div class="col-12 md:col-2">
-                            <span class="text-500 font-medium text-sm block mb-1">CPF</span>
-                            <span class="text-900 font-medium">#{meusAtendimentosBean.atendimentoVisualizar.cliente.cpf}</span>
-                        </div>
-
-                        <div class="col-12 md:col-2">
-                            <span class="text-500 font-medium text-sm block mb-1">Idade / Nasc.</span>
-                            <span class="text-900">
-                                #{meusAtendimentosBean.atendimentoVisualizar.cliente.idade} anos
-                                <span class="text-500 mx-1">|</span>
-                                <h:outputText value="#{meusAtendimentosBean.atendimentoVisualizar.cliente.dataNascimento}">
-                                    <f:convertDateTime pattern="dd/MM/yyyy"/>
-                                </h:outputText>
+                    <div>
+                        <div class="flex align-items-center gap-2 mb-1">
+                            <span class="text-2xl font-bold text-900">
+                                #{empty meusAtendimentosBean.atendimentoVisualizar.cliente ? 'Cliente Não Identificado' : meusAtendimentosBean.atendimentoVisualizar.cliente.nome}
                             </span>
+                            <p:tag value="#{meusAtendimentosBean.atendimentoVisualizar.status.descricao}"
+                                   styleClass="#{meusAtendimentosBean.atendimentoVisualizar.status.acao.styleClass}"
+                                   rounded="true"/>
+                        </div>
+                        <div class="flex align-items-center text-600 gap-3 text-sm flex-wrap">
+                            <h:panelGroup rendered="#{not empty meusAtendimentosBean.atendimentoVisualizar.cliente}">
+                                <span class="flex align-items-center"><i class="pi pi-id-card mr-1"></i>#{meusAtendimentosBean.onOcultarCpf(meusAtendimentosBean.atendimentoVisualizar.cliente.cpf)}</span>
+                                <span class="text-300">|</span>
+                            </h:panelGroup>
+
+                            <span class="flex align-items-center font-bold text-900"><i class="pi pi-hashtag mr-1 text-primary"></i>#{meusAtendimentosBean.atendimentoVisualizar.protocolo}</span>
+                            <span class="text-300">|</span>
+                            <span class="flex align-items-center"><i class="pi pi-megaphone mr-1"></i>#{meusAtendimentosBean.atendimentoVisualizar.campanha.descricao}</span>
                         </div>
                     </div>
                 </div>
 
-                <div class="grid mb-4">
+                <div class="flex gap-2">
+                    <p:commandButton value="Novo Atendimento"
+                                     icon="pi pi-plus" disabled="true"
+                                     process="@this"
+                                     action="#{meusAtendimentosBean.gerarNovaProposta()}"
+                                     styleClass="ui-button-success font-bold border-round-md shadow-none"
+                                     id="novaProposta"
+                                     oncomplete="PF('dlgVisualizarAtendimento').hide();">
+                        <p:confirm header="Confirmar" message="Deseja iniciar um novo atendimento para este perfil?" icon="pi pi-question-circle"/>
+                    </p:commandButton>
 
-                    <div class="col-12 md:col-8">
-                        <div class="surface-card shadow-2 border-round p-0 h-full">
-                            <div class="p-3 border-bottom-1 border-100 bg-gray-50 border-round-top">
-                                <span class="font-bold text-900"><i class="pi pi-history mr-2 text-blue-600"></i>Histórico do Atendimento</span>
-                            </div>
+                    <p:commandButton value="Fechar" icon="pi pi-times"
+                                     onclick="PF('dlgVisualizarAtendimento').hide();"
+                                     process="@this" global="false"
+                                     styleClass="ui-button-secondary ui-button-outlined border-round-md font-bold"/>
+                </div>
+            </div>
 
-                            <p:dataTable id="tableHistorico"
-                                         value="#{meusAtendimentosBean.atendimentoVisualizar.listaHistoricos}"
-                                         var="historico" rows="5" paginator="true" paginatorPosition="bottom"
-                                         styleClass="ui-datatable-sm border-none" stripedRows="true" reflow="true"
-                                         emptyMessage="#{msg.emptyMessage}">
+            <div class="grid m-0 flex-grow-1 overflow-hidden" style="background-color: #f8fafc;">
 
-                                <p:column headerText="Data" width="130">
-                                    <h:outputText value="#{historico.dataCadastro}">
-                                        <f:convertDateTime pattern="dd/MM/yyyy HH:mm"/>
-                                    </h:outputText>
-                                </p:column>
+                <div class="col-12 md:col-8 p-4 overflow-y-auto custom-scroll" style="height: 100%;">
 
-                                <p:column headerText="Status">
-                                    <span class="font-bold text-700">#{historico.statusAtendimento.descricao}</span>
-                                </p:column>
+                    <div class="surface-card border-round-xl shadow-1 p-0 overflow-hidden mb-4">
+                        <p:tabView id="tabviewVisualizarAtn" styleClass="border-none clean-tabs">
 
-                                <p:column headerText="Motivo / Detalhe">
-                                    <div class="flex flex-column">
-                                        <span class="font-medium">#{historico.motivo.descricao}</span>
-                                        <span class="text-sm text-500">#{historico.subMotivo.descricao}</span>
+                            <p:tab title="Resumo">
+                                <div class="p-4">
+                                    <h:panelGroup rendered="#{meusAtendimentosBean.atendimentoVisualizar.enviarN2}" layout="block" styleClass="mb-4">
+                                        <div class="bg-blue-50 border-round-lg p-3 border-left-3 border-blue-500">
+                                            <div class="flex align-items-center justify-content-between mb-2">
+                                                <span class="text-blue-800 font-bold flex align-items-center"><i class="pi pi-directions mr-2"></i>Tratativa Nível 2</span>
+                                                <span class="text-xs text-blue-600 font-medium bg-blue-100 px-2 py-1 border-round">Prazo: #{meusAtendimentosBean.atendimentoVisualizar.dataPrazoDemandaFormatada}</span>
+                                            </div>
+                                            <div class="surface-0 p-3 border-round text-blue-900 line-height-3 text-sm shadow-sm">
+                                                <h:outputText value="#{meusAtendimentosBean.atendimentoVisualizar.respostaN2}" escape="false"/>
+                                            </div>
+                                            <div class="mt-2 text-right">
+                                                <span class="text-xs text-blue-500">Responsável: <b>#{meusAtendimentosBean.atendimentoVisualizar.responsavelN2.nome}</b></span>
+                                            </div>
+                                        </div>
+                                    </h:panelGroup>
+
+                                    <h:panelGroup rendered="#{not meusAtendimentosBean.atendimentoVisualizar.enviarN2}">
+                                        <div class="mb-3">
+                                            <span class="text-xs font-bold text-500 uppercase block mb-2">Relato do Atendimento</span>
+                                            <div class="text-900 line-height-3 text-lg bg-gray-50 p-3 border-round-lg border-1 border-100">
+                                                <h:outputText value="#{meusAtendimentosBean.atendimentoVisualizar.observacao}"
+                                                              rendered="#{not empty meusAtendimentosBean.atendimentoVisualizar.observacao}"/>
+                                                <h:outputText value="Sem observações registradas."
+                                                              rendered="#{empty meusAtendimentosBean.atendimentoVisualizar.observacao}"
+                                                              styleClass="text-500 font-italic"/>
+                                            </div>
+                                        </div>
+
+                                        <h:panelGroup rendered="#{not empty meusAtendimentosBean.atendimentoVisualizar.observacaoN2}">
+                                            <div class="mb-3">
+                                                <span class="text-xs font-bold text-500 uppercase block mb-2">Detalhe Técnico / Classificação</span>
+                                                <div class="text-700 bg-white border-1 border-200 p-2 border-round">
+                                                    #{meusAtendimentosBean.atendimentoVisualizar.observacaoN2}
+                                                </div>
+                                            </div>
+                                        </h:panelGroup>
+                                    </h:panelGroup>
+                                </div>
+                            </p:tab>
+
+                            <p:tab title="Contatos">
+                                <h:panelGroup styleClass="p-0 block" rendered="#{not empty meusAtendimentosBean.atendimentoVisualizar.cliente}">
+                                    <p:dataTable value="#{meusAtendimentosBean.atendimentoVisualizar.cliente.listaTelefonesOrdenada}"
+                                                 var="tel" styleClass="ui-datatable-borderless" rowStyleClass="border-bottom-1 border-100">
+                                        <p:column headerText="Número">
+                                            <span class="font-medium text-lg text-900">(#{tel.ddd}) #{tel.numero}</span>
+                                        </p:column>
+                                        <p:column headerText="Tipo" width="100">
+                                            <span class="text-600 text-sm bg-gray-100 px-2 py-1 border-round">Móvel</span>
+                                        </p:column>
+                                        <p:column headerText="Status" width="100" styleClass="text-right">
+                                            <i class="pi pi-circle-fill text-xs #{tel.statusTelefone.descricao eq 'Ativo' ? 'text-green-500' : 'text-red-500'} mr-1"></i>
+                                            <span class="text-sm">#{tel.statusTelefone.descricao}</span>
+                                        </p:column>
+                                    </p:dataTable>
+                                </h:panelGroup>
+                                <h:outputText value="Cliente não identificado." rendered="#{empty meusAtendimentosBean.atendimentoVisualizar.cliente}" styleClass="p-4 block text-500"/>
+                            </p:tab>
+
+                            <p:tab title="Endereços">
+                                <h:panelGroup styleClass="p-0 block" rendered="#{not empty meusAtendimentosBean.atendimentoVisualizar.cliente}">
+                                    <p:dataTable value="#{meusAtendimentosBean.atendimentoVisualizar.cliente.listEnderecos}" var="endereco"
+                                                 styleClass="ui-datatable-borderless text-sm" rowStyleClass="border-bottom-1 border-100">
+                                        <p:column headerText="Endereço">
+                                            <div class="flex flex-column">
+                                                <span class="font-bold text-900">#{endereco.logradouro}, #{endereco.numero}</span>
+                                                <span class="text-500">#{endereco.bairro} - #{endereco.cep}</span>
+                                            </div>
+                                        </p:column>
+                                        <p:column headerText="Cidade" width="150">
+                                            #{endereco.cidade} / #{endereco.uf}
+                                        </p:column>
+                                    </p:dataTable>
+                                </h:panelGroup>
+                                <h:outputText value="Cliente não identificado." rendered="#{empty meusAtendimentosBean.atendimentoVisualizar.cliente}" styleClass="p-4 block text-500"/>
+                            </p:tab>
+
+                            <p:tab title="Logs do Sistema">
+                                <div class="p-0">
+                                    <p:dataTable value="#{meusAtendimentosBean.atendimentoVisualizar.listHistoricoAtividades}" var="at"
+                                                 rows="5" paginator="true" paginatorPosition="bottom" styleClass="ui-datatable-sm ui-datatable-borderless" stripedRows="true">
+                                        <p:column headerText="Data" width="130">
+                                            <span class="text-sm font-medium"><h:outputText value="#{at.data}"><f:convertDateTime pattern="dd/MM HH:mm"/></h:outputText></span>
+                                        </p:column>
+                                        <p:column headerText="Evento">
+                                            <span class="text-sm">#{at.tipoStatusAtividade.descricao}</span>
+                                        </p:column>
+                                    </p:dataTable>
+                                </div>
+                            </p:tab>
+                        </p:tabView>
+                    </div>
+                </div>
+
+                <div class="col-12 md:col-4 p-4 pl-0 h-full overflow-hidden">
+
+                    <div class="surface-card border-round-xl shadow-1 h-full flex flex-column">
+                        <div class="p-3 border-bottom-1 border-100 flex align-items-center bg-gray-50 border-round-top-xl flex-shrink-0">
+                            <i class="pi pi-history text-gray-500 mr-2"></i>
+                            <span class="font-bold text-700">Linha do Tempo</span>
+                        </div>
+
+                        <div class="flex-grow-1 overflow-y-auto custom-scroll p-3">
+                            <ui:repeat value="#{meusAtendimentosBean.atendimentoVisualizar.listaHistoricos}" var="hist" varStatus="status">
+                                <div class="flex mb-0 relative">
+                                    <div class="flex flex-column align-items-center mr-3" style="min-width: 20px;">
+                                        <div class="w-1rem h-1rem border-circle bg-blue-100 border-2 border-blue-500 z-1 flex-shrink-0"></div>
+                                        <h:panelGroup rendered="#{!status.last}" styleClass="w-2px bg-gray-300 flex-grow-1 -mt-1" layout="block" style="min-height: 2rem;"/>
                                     </div>
-                                </p:column>
 
-                                <p:column headerText="Usuário">
-                                    #{historico.usuario.nome}
-                                </p:column>
+                                    <div class="pb-4 w-full">
+                                        <div class="flex justify-content-between align-items-baseline mb-1">
+                                            <span class="font-bold text-900 text-sm">#{hist.statusAtendimento.descricao}</span>
+                                            <span class="text-xs text-500 bg-gray-100 px-2 border-round">
+                                                <h:outputText value="#{hist.dataCadastro}"><f:convertDateTime pattern="dd/MM HH:mm"/></h:outputText>
+                                            </span>
+                                        </div>
 
-                                <p:column headerText="Obs" width="25%">
-                                    <span class="text-sm" title="#{historico.observacao}">
-                                        #{of:abbreviate(historico.observacao, 50)}
-                                    </span>
-                                </p:column>
-                            </p:dataTable>
-                        </div>
-                    </div>
+                                        <div class="text-sm text-700 mb-1 font-medium">
+                                            #{hist.motivo.descricao}
+                                        </div>
 
-                    <div class="col-12 md:col-4">
-                        <div class="surface-card shadow-2 border-round p-0 h-full">
-                            <div class="p-3 border-bottom-1 border-100 bg-gray-50 border-round-top">
-                                <span class="font-bold text-900"><i class="pi pi-phone mr-2 text-blue-600"></i>Telefones</span>
-                            </div>
+                                        <div class="text-xs text-500 flex align-items-center mb-2">
+                                            <i class="pi pi-user mr-1 text-xs"></i> #{hist.usuario.nome}
+                                        </div>
 
-                            <p:dataTable value="#{meusAtendimentosBean.atendimentoVisualizar.cliente.listaTelefonesOrdenada}"
-                                         var="tel" rows="5" paginator="true" paginatorPosition="bottom"
-                                         styleClass="ui-datatable-sm border-none" stripedRows="true"
-                                         emptyMessage="#{msg.emptyMessage}">
-
-                                <p:column headerText="Número">
-                                    <span class="font-bold text-lg">(#{tel.ddd}) #{tel.numero}</span>
-                                </p:column>
-
-                                <p:column headerText="Status" styleClass="text-center">
-                                    <p:tag value="#{tel.statusTelefone.descricao}"
-                                           severity="#{tel.statusTelefone.descricao eq 'Ativo' ? 'success' : 'warning'}"
-                                           rounded="true"/>
-                                </p:column>
-
-                            </p:dataTable>
-                        </div>
-                    </div>
-                </div>
-
-                <div class="surface-card shadow-2 border-round p-0">
-
-                    <p:tabView id="tabviewVisualizarAtn" styleClass="border-none">
-
-                        <p:tab title="Informações Gerais">
-                            <f:facet name="title"><i class="pi pi-info-circle mr-2" />Geral</f:facet>
-
-                            <div class="p-3">
-                                <div class="grid">
-                                    <div class="col-12">
-                                        <span class="text-gray-500 text-sm font-bold uppercase block mb-3">Detalhes do Tratamento</span>
-
-                                        <h:panelGroup rendered="#{meusAtendimentosBean.atendimentoVisualizar.enviarN2}">
-                                            <div class="bg-blue-50 border-blue-200 border-1 p-3 border-round mb-3">
-                                                <div class="flex align-items-center mb-3 pb-2 border-bottom-1 border-blue-100">
-                                                    <i class="pi pi-arrow-circle-right text-blue-600 mr-2 text-xl"></i>
-                                                    <span class="font-bold text-blue-900 text-lg">Derivado para N2</span>
-                                                </div>
-
-                                                <div class="grid text-sm">
-                                                    <div class="col-12 md:col-6">
-                                                        <span class="block text-gray-500 mb-1">Responsável:</span>
-                                                        <span class="font-medium text-900 text-lg">#{meusAtendimentosBean.atendimentoVisualizar.responsavelN2.nome}</span>
-                                                    </div>
-                                                    <div class="col-12 md:col-6">
-                                                        <span class="block text-gray-500 mb-1">Prazo Limite:</span>
-                                                        <span class="font-medium text-900 text-lg">#{meusAtendimentosBean.atendimentoVisualizar.dataPrazoDemandaFormatada}</span>
-                                                    </div>
-
-                                                    <div class="col-12 mt-3">
-                                                        <span class="block text-gray-500 mb-1 font-bold">Resposta N2:</span>
-                                                        <div class="bg-white p-3 border-round border-1 border-200 shadow-1">
-                                                            <h:outputText value="#{meusAtendimentosBean.atendimentoVisualizar.respostaN2}" escape="false"/>
-                                                        </div>
-                                                    </div>
-                                                </div>
+                                        <h:panelGroup rendered="#{not empty hist.observacao}">
+                                            <div class="surface-100 p-2 border-round text-xs text-600 font-italic line-height-3 border-1 border-100 relative">
+                                                <i class="pi pi-comment absolute text-gray-300" style="right: 5px; top: 5px;"></i>
+                                                "#{of:abbreviate(hist.observacao, 80)}"
                                             </div>
                                         </h:panelGroup>
-
-                                        <h:panelGroup rendered="#{not meusAtendimentosBean.atendimentoVisualizar.enviarN2}">
-
-                                            <div class="bg-gray-50 border-gray-200 border-1 p-3 border-round mb-3">
-                                                <div class="flex align-items-center mb-3 pb-2 border-bottom-1 border-gray-200">
-                                                    <i class="pi pi-check-circle text-gray-600 mr-2 text-xl"></i>
-                                                    <span class="font-bold text-gray-800 text-lg">
-                                                        #{meusAtendimentosBean.atendimentoVisualizar.status.descricao}
-                                                    </span>
-                                                </div>
-
-                                                <div class="grid text-sm">
-                                                    <h:panelGroup layout="block" styleClass="col-12"
-                                                                  rendered="#{not empty meusAtendimentosBean.atendimentoVisualizar.observacaoAdicional}">
-                                                        <span class="block text-gray-500 mb-1 font-bold">Classificação / Detalhe:</span>
-                                                        <div class="bg-white p-2 border-round border-1 border-200 text-700">
-                                                            #{meusAtendimentosBean.atendimentoVisualizar.observacaoAdicional}
-                                                        </div>
-                                                    </h:panelGroup>
-
-                                                    <div class="col-12 mt-2">
-                                                        <span class="block text-gray-500 mb-1 font-bold">Observação Final:</span>
-                                                        <div class="bg-white p-3 border-round border-1 border-200 shadow-1 text-800 line-height-3">
-                                                            <h:outputText value="#{meusAtendimentosBean.atendimentoVisualizar.observacao}"
-                                                                          rendered="#{not empty meusAtendimentosBean.atendimentoVisualizar.observacao}"/>
-                                                            <h:outputText value="Sem observações registradas."
-                                                                          rendered="#{empty meusAtendimentosBean.atendimentoVisualizar.observacao}"
-                                                                          styleClass="text-500 font-italic"/>
-                                                        </div>
-                                                    </div>
-                                                </div>
-                                            </div>
-                                        </h:panelGroup>
-
                                     </div>
                                 </div>
-                            </div>
-                        </p:tab>
+                            </ui:repeat>
 
-                        <p:tab title="Endereços">
-                            <f:facet name="title"><i class="pi pi-map-marker mr-2"></i>Endereços</f:facet>
-                            <p:dataTable value="#{meusAtendimentosBean.atendimentoVisualizar.cliente.listEnderecos}" var="endereco"
-                                         rows="5" paginator="true" paginatorPosition="bottom"
-                                         styleClass="ui-datatable-sm" stripedRows="true" showGridlines="true">
-                                <p:column headerText="Logradouro">#{endereco.logradouro}, #{endereco.numero}</p:column>
-                                <p:column headerText="Bairro">#{endereco.bairro}</p:column>
-                                <p:column headerText="Cidade/UF">#{endereco.cidade} - #{endereco.uf}</p:column>
-                                <p:column headerText="CEP">#{endereco.cep}</p:column>
-                            </p:dataTable>
-                        </p:tab>
+                            <h:panelGroup rendered="#{empty meusAtendimentosBean.atendimentoVisualizar.listaHistoricos}">
+                                <div class="text-center py-4">
+                                    <span class="text-500 text-sm">Nenhum histórico registrado.</span>
+                                </div>
+                            </h:panelGroup>
+                        </div>
+                    </div>
 
-                        <p:tab title="Dados Bancários">
-                            <f:facet name="title"><i class="pi pi-wallet mr-2"></i>Bancário</f:facet>
-                            <p:dataTable value="#{meusAtendimentosBean.atendimentoVisualizar.cliente.listDadosBancarios}" var="banco"
-                                         rows="5" paginator="true" paginatorPosition="bottom"
-                                         styleClass="ui-datatable-sm" stripedRows="true" showGridlines="true">
-                                <p:column headerText="Banco">#{banco.banco.constante}</p:column>
-                                <p:column headerText="Tipo">#{banco.tipoConta.descricao}</p:column>
-                                <p:column headerText="Agência/Conta">
-                                    Ag: <b>#{banco.agencia}-#{banco.digitoAgencia}</b> / Cc: <b>#{banco.conta}-#{banco.digitoConta}</b>
-                                </p:column>
-                            </p:dataTable>
-                        </p:tab>
-
-                        <p:tab title="Log de Atividades">
-                            <f:facet name="title"><i class="pi pi-list mr-2"></i>Logs</f:facet>
-                            <p:dataTable value="#{meusAtendimentosBean.atendimentoVisualizar.listHistoricoAtividades}" var="at"
-                                         rows="10" paginator="true" paginatorPosition="bottom" styleClass="ui-datatable-sm" stripedRows="true">
-                                <p:column headerText="Data" width="140" styleClass="text-center">
-                                    <h:outputText value="#{at.data}"><f:convertDateTime pattern="dd/MM/yyyy HH:mm"/></h:outputText>
-                                </p:column>
-                                <p:column headerText="Usuário">#{at.usuario.nome}</p:column>
-                                <p:column headerText="Evento">
-                                    <div class="flex align-items-center">
-                                        <i class="#{at.tipoIcone} mr-2 text-blue-500"></i>
-                                        #{at.tipoStatusAtividade.descricao}
-                                    </div>
-                                </p:column>
-                                <p:column headerText="Detalhes">#{at.descricao}</p:column>
-                            </p:dataTable>
-                        </p:tab>
-
-                    </p:tabView>
                 </div>
 
             </div>
@@ -284,6 +223,21 @@
             </p:confirmDialog>
 
         </h:form>
+
+        <style>
+            /* Custom Scrollbar for a cleaner look */
+            .custom-scroll::-webkit-scrollbar { width: 6px; }
+            .custom-scroll::-webkit-scrollbar-track { background: transparent; }
+            .custom-scroll::-webkit-scrollbar-thumb { background: #cbd5e1; border-radius: 3px; }
+            .custom-scroll::-webkit-scrollbar-thumb:hover { background: #94a3b8; }
+
+            /* Remove tabview borders */
+            body .clean-tabs .ui-tabs-nav { background: transparent; border: none; border-bottom: 1px solid #e5e7eb; }
+            body .clean-tabs .ui-tabs-panel { padding: 0 !important; }
+
+            /* Ajuste para tags dentro do header */
+            .ui-tag { font-weight: 700; letter-spacing: 0.5px; }
+        </style>
 
     </p:dialog>
 

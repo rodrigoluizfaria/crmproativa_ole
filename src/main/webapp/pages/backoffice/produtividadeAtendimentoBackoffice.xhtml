@@ -140,7 +140,7 @@
                             </div>
                             <span class="text-900 font-bold text-2xl mb-2">Relatório de Produtividade</span>
                             <span class="text-600 line-height-3 max-w-30rem">
-                                Configure os filtros na lateral esquerda e clique em "Gerar Relatório" para visualizar os indicadores de performance.
+                                Configure os filtros na lateral esquerda e clique em "Filtrar Resultados".
                             </span>
                         </div>
                     </h:panelGroup>
@@ -190,14 +190,24 @@
                                 </p:column>
 
                                 <p:column headerText="Derivado" sortBy="#{iten.qtdeDerivado}" styleClass="text-center">
-                                    <h:outputText value="#{iten.qtdeDerivado}"/> </p:column>
+                                    <h:outputText value="#{iten.qtdeDerivado}"/>
+                                </p:column>
 
                                 <p:column headerText="Concluído N2" sortBy="#{iten.qtdeResolvidoN2}" styleClass="text-center">
                                     <h:outputText value="#{iten.qtdeResolvidoN2}" />
-
-
                                 </p:column>
 
+                                <p:column headerText="FCR (Qtd)" sortBy="#{iten.qtdeFcr}" styleClass="text-center">
+                                    <h:outputText value="#{iten.qtdeFcr}"/>
+                                </p:column>
+
+                                <p:column headerText="% FCR" sortBy="#{iten.percentualFcr}" styleClass="text-center">
+                                        <h:outputText value="#{iten.percentualFcr}">
+                                            <f:convertNumber type="percent" minFractionDigits="1" />
+                                        </h:outputText>
+
+
+                                                            </p:column>
                                 <p:column headerText="No Prazo" sortBy="#{iten.qtdadeDemandaNoPrazo}" styleClass="text-center text-green-600 font-bold">
                                     <h:outputText value="#{iten.qtdadeDemandaNoPrazo}"/>
                                 </p:column>
@@ -221,25 +231,29 @@
                                 <p:columnGroup type="footer">
                                     <p:row>
                                         <p:column footerText="TOTAIS:" style="text-align:right; font-weight: bold;"/>
-
                                         <p:column footerText="#{produtividadeConsistenciaBean.totalCpf}" style="text-align:center; font-weight: bold;"/>
-
                                         <p:column footerText="#{produtividadeConsistenciaBean.totalAtendimento}" style="text-align:center; font-weight: bold;"/>
-
                                         <p:column footerText="#{produtividadeConsistenciaBean.totalAberto}" style="text-align:center; font-weight: bold;"/>
-
                                         <p:column footerText="#{produtividadeConsistenciaBean.totalResolvidoN1}" style="text-align:center; font-weight: bold;"/>
-
                                         <p:column footerText="#{produtividadeConsistenciaBean.totalDerivado}" style="text-align:center; font-weight: bold;"/>
                                         <p:column footerText="#{produtividadeConsistenciaBean.totalResolvidoN2}" style="text-align:center; font-weight: bold;"/>
 
+                                        <p:column footerText="#{produtividadeConsistenciaBean.totalFcr}" style="text-align:center; font-weight: bold; color: var(--blue-600);"/>
 
+                                        <p:column style="text-align:center; font-weight: bold;">
+                                            <f:facet name="footer">
+                                                <h:outputText value="#{produtividadeConsistenciaBean.totalPercentualFcr}">
+                                                    <f:convertNumber type="percent" minFractionDigits="1" />
+                                                </h:outputText>
+                                            </f:facet>
+                                        </p:column>
                                         <p:column footerText="#{produtividadeConsistenciaBean.totalNoPrazo}" style="text-align:center; font-weight: bold;"/>
-
                                         <p:column footerText="#{produtividadeConsistenciaBean.totalPrazoExcedido}" style="text-align:center; font-weight: bold;"/>
+                                        <p:column footerText="#{produtividadeConsistenciaBean.totalPercentualNoPrazoFormatado}"  style="text-align:center; font-weight: bold;"/>
 
-                                        <p:column footerText="" />
-                                        <p:column footerText="" />
+                                        <p:column footerText="#{produtividadeConsistenciaBean.totalPercentualPrazoExcedidoFormatado}" style="text-align:center; font-weight: bold;" />
+
+
                                     </p:row>
                                 </p:columnGroup>
 

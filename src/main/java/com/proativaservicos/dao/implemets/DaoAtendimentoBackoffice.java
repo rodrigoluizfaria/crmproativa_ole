@@ -10,6 +10,8 @@ import java.util.Map;
 import java.util.TreeMap;
 
 import com.proativaservicos.model.dto.ProdutividadeSacDto;
+import com.proativaservicos.model.dto.RelatorioFiltroDto;
+import com.proativaservicos.model.dto.RelatorioSacDto;
 import com.proativaservicos.util.DateUtil;
 import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.lang3.StringUtils;
@@ -1217,6 +1219,7 @@ public class DaoAtendimentoBackoffice extends GenericDao<AtendimentoBackoffice> 
         return tratarDadosAtendimentoQuantidadeConsistencia(searchEntidades(DaoEnum.NATIVE_OBJECT, query.toString(), parametros));
     }
 
+
     public List<?> pesquisarProdutividadeAtendimento(List<Long> equipeLong, List<Long> usuarioLong, Long produtoLong, Long loja, Usuario usurioLogado, Date dataInicio, Date dataFim, TipoVisualizacaoEnum tipoVisualizacao) {
 
         Map<String, Object> parametros = new HashMap<>();
@@ -1319,21 +1322,19 @@ public class DaoAtendimentoBackoffice extends GenericDao<AtendimentoBackoffice> 
         Map<String, Object> parametros = new HashMap<>();
         StringBuilder where = new StringBuilder();
 
+        // ... (Seus IFs de filtro continuam iguais) ...
         if (CollectionUtils.isNotEmpty(usuarioLong)) {
             where.append("\tand a.usuario_cadastro in (:usuario) ");
             parametros.put("usuario", usuarioLong);
         }
-
         if (CollectionUtils.isNotEmpty(equipeLong)) {
             where.append("\tand a.usuario_cadastro in (select id from usuario where equipe in (:equipe)) ");
             parametros.put("equipe", equipeLong);
         }
-
         if (produtoLong != null) {
             where.append("\tand a.produto = :produto ");
             parametros.put("produto", produtoLong);
         }
-
         if (loja != null) {
             where.append("\tand a.loja = :loja ");
             parametros.put("loja", loja);
@@ -1342,41 +1343,46 @@ public class DaoAtendimentoBackoffice extends GenericDao<AtendimentoBackoffice> 
         String fieldSelect = "";
         String fieldGroup = "";
         String join = "";
-        String selectViw = "a.visualizacao,"; // default
+        String selectViw = "a.visualizacao,";
 
         if (TipoVisualizacaoEnum.LOJA.equals(tipoVisualizacao)) {
             fieldSelect = "l.cod_loja AS visualizacao, sm.descricao AS cor";
-            fieldGroup  = "l.cod_loja, sm.descricao";
+            fieldGroup = "l.cod_loja, sm.descricao";
             join = "LEFT JOIN loja l ON a.loja = l.id JOIN submotivo sm ON a.submotivo = sm.id";
             selectViw = "a.visualizacao, a.cor,";
         } else if (TipoVisualizacaoEnum.EQUIPE.equals(tipoVisualizacao)) {
             fieldSelect = "e.nome AS visualizacao, sm.descricao AS cor";
-            fieldGroup  = "e.nome, sm.descricao";
+            fieldGroup = "e.nome, sm.descricao";
             join = "JOIN equipe e ON a.equipe = e.id JOIN submotivo sm ON a.submotivo = sm.id";
             selectViw = "a.visualizacao, a.cor,";
+        } else if (TipoVisualizacaoEnum.CAMPANHA.equals(tipoVisualizacao)) {
+            fieldSelect = "c.descricao AS visualizacao";
+            fieldGroup = "c.descricao ";
+            join = " JOIN campanha c ON a.campanha = c.id JOIN submotivo sm ON a.submotivo = sm.id";
+            selectViw = " a.visualizacao, ";
         } else if (TipoVisualizacaoEnum.USUARIO.equals(tipoVisualizacao)) {
             fieldSelect = "u.nome AS visualizacao";
-            fieldGroup  = "u.nome";
+            fieldGroup = "u.nome";
             join = "JOIN usuario u ON a.usuario_cadastro = u.id JOIN submotivo sm ON a.submotivo = sm.id";
             selectViw = "a.visualizacao, ";
         } else if (TipoVisualizacaoEnum.PRODUTO.equals(tipoVisualizacao)) {
             fieldSelect = "p.descricao AS visualizacao, sm.descricao AS cor";
-            fieldGroup  = "p.descricao, sm.descricao";
+            fieldGroup = "p.descricao, sm.descricao";
             join = "JOIN produto p ON a.produto = p.id JOIN submotivo sm ON a.submotivo = sm.id";
             selectViw = "a.visualizacao, a.cor,";
         } else if (TipoVisualizacaoEnum.SUBMOTIVO.equals(tipoVisualizacao)) {
             fieldSelect = "sm.descricao AS visualizacao, sm.cor AS cor";
-            fieldGroup  = "sm.descricao, sm.cor";
+            fieldGroup = "sm.descricao, sm.cor";
             join = "JOIN submotivo sm ON a.submotivo = sm.id";
             selectViw = "a.visualizacao, a.cor,";
         } else if (TipoVisualizacaoEnum.MOTIVO.equals(tipoVisualizacao)) {
             fieldSelect = "m.descricao AS visualizacao, m.cor AS cor";
-            fieldGroup  = "m.descricao, m.cor";
+            fieldGroup = "m.descricao, m.cor";
             join = "JOIN motivo m ON a.motivo = m.id";
             selectViw = "a.visualizacao, a.cor,";
         } else if (TipoVisualizacaoEnum.STATUS.equals(tipoVisualizacao)) {
             fieldSelect = "s.descricao AS visualizacao";
-            fieldGroup  = "s.descricao";
+            fieldGroup = "s.descricao";
             join = ""; // já está no LEFT JOIN abaixo
             selectViw = "a.visualizacao,";
         }
@@ -1390,6 +1396,14 @@ public class DaoAtendimentoBackoffice extends GenericDao<AtendimentoBackoffice> 
         query.append("       SUM(a.qtde_resolvido_n2) AS qtdeResolvidoN2, ");
         query.append("       SUM(a.qtde_derivado) AS qtdeDerivado, ");
         query.append("       SUM(a.qtdade_concluido) AS qtdadeConcluido, ");
+
+        // --- NOVO: Totais de FCR ---
+        query.append("       SUM(a.qtde_fcr) AS qtdeFcr, ");
+
+        // --- NOVO: Percentual de FCR (Cálculo seguro contra divisão por zero) ---
+        // Nota: Mantive o padrão de retornar decimal (0.95). Se quiser 95%, adicione * 100
+        query.append("       COALESCE(CAST(SUM(a.qtde_fcr) AS NUMERIC) / NULLIF(SUM(a.qtde_atendimento),0), 0) AS percentualFcr, ");
+
         query.append("       SUM(a.qtdade_demanda_no_prazo) AS qtdadeDemandaNoPrazo, ");
         query.append("       SUM(a.qtdade_demanda_prazo_estourado) AS qtdadeDemandaPrazoEstourado, ");
         query.append("       COALESCE(CAST(SUM(a.qtdade_demanda_no_prazo) AS NUMERIC) / NULLIF(SUM(a.qtde_atendimento),0), 0) AS percentualNoPrazo, ");
@@ -1399,6 +1413,11 @@ public class DaoAtendimentoBackoffice extends GenericDao<AtendimentoBackoffice> 
         query.append("    SELECT " + fieldSelect + ", ");
         query.append("           COUNT(DISTINCT a.cpf) AS qtde_cpf, ");
         query.append("           COUNT(DISTINCT a.id) AS qtde_atendimento, ");
+
+        // --- NOVO: Contagem baseada na flag do banco ---
+        // Se ind_fcr for TRUE, conta 1.
+        query.append("           SUM(CASE WHEN a.ind_fcr IS TRUE THEN 1 ELSE 0 END) AS qtde_fcr, ");
+
         query.append("           SUM(CASE WHEN s.acao = 'CONCLUIR_N1' THEN 1 ELSE 0 END) AS qtdade_resolvido_n1, ");
         query.append("           SUM(CASE WHEN s.acao = 'CONCLUIR' THEN 1 ELSE 0 END) AS qtde_resolvido_n2, ");
         query.append("           SUM(CASE WHEN (s.acao = 'DERIVAR' OR a.enviar_n2 IS TRUE) THEN 1 ELSE 0 END) AS qtde_derivado, ");
@@ -1428,6 +1447,7 @@ public class DaoAtendimentoBackoffice extends GenericDao<AtendimentoBackoffice> 
         System.out.println(query.toString());
         return gerarDtoProdutividade(searchEntidades(DaoEnum.NATIVE_OBJECT, query.toString(), parametros));
     }
+
     public List<ProdutividadeSacDto> pesquisarProdutividadeAtendimentoSacTotal(List<Long> equipeLong, List<Long> usuarioLong,
                                                                                Long produtoLong, Long loja,
                                                                                Date dataInicio, Date dataFim) {
@@ -1455,6 +1475,7 @@ public class DaoAtendimentoBackoffice extends GenericDao<AtendimentoBackoffice> 
             parametros.put("loja", loja);
         }
 
+
         StringBuilder query = new StringBuilder();
         query.append("SELECT ");
         query.append("       COUNT(DISTINCT a.cpf) AS qtdeCpf, ");
@@ -1462,14 +1483,46 @@ public class DaoAtendimentoBackoffice extends GenericDao<AtendimentoBackoffice> 
         query.append("       SUM(CASE WHEN s.acao = 'CONCLUIR_N1' THEN 1 ELSE 0 END) AS qtdadeResolvidoN1, ");
         query.append("       SUM(CASE WHEN s.acao = 'CONCLUIR' THEN 1 ELSE 0 END) AS qtdeResolvidoN2, ");
         query.append("       SUM(CASE WHEN (s.acao = 'DERIVAR' OR a.enviar_n2 IS TRUE) THEN 1 ELSE 0 END) AS qtdeDerivado, ");
-        query.append("       SUM(CASE WHEN ((s.acao = 'CONCLUIR' OR a.demanda_encerrada IS TRUE) AND a.enviar_n2 IS TRUE) THEN 1 ELSE 0 END) AS qtdadeConcluido, ");
-        query.append("       SUM(CASE WHEN ((s.acao NOT LIKE 'CONCLUIR%' OR a.demanda_encerrada IS FALSE) AND a.abertura_demanda <= a.prazo_demanda) THEN 1 ELSE 0 END) AS qtdadeDemandaNoPrazo, ");
-        query.append("       SUM(CASE WHEN ((s.acao NOT LIKE 'CONCLUIR%' OR a.demanda_encerrada IS FALSE) AND a.abertura_demanda > a.prazo_demanda) THEN 1 ELSE 0 END) AS qtdadeDemandaPrazoEstourado, ");
-        query.append("       COALESCE(CAST(SUM(CASE WHEN ((s.acao NOT LIKE 'CONCLUIR%' OR a.demanda_encerrada IS FALSE) AND a.abertura_demanda <= a.prazo_demanda) THEN 1 ELSE 0 END) AS numeric) / NULLIF(COUNT(DISTINCT a.id),0), 0) AS percentualNoPrazo, ");
-        query.append("       COALESCE(CAST(SUM(CASE WHEN ((s.acao NOT LIKE 'CONCLUIR%' OR a.demanda_encerrada IS FALSE) AND a.abertura_demanda > a.prazo_demanda) THEN 1 ELSE 0 END) AS numeric) / NULLIF(COUNT(DISTINCT a.id),0), 0) AS percentualPrazoEstourado, ");
-        query.append("       SUM(CASE WHEN ((s.acao NOT LIKE 'CONCLUIR%' OR a.demanda_encerrada IS FALSE) AND a.enviar_n2 IS TRUE) THEN 1 ELSE 0 END) AS qtidadeAberto ");
+        query.append("       SUM(CASE WHEN (s.acao LIKE 'CONCLUIR%' OR a.demanda_encerrada IS TRUE) THEN 1 ELSE 0 END) AS qtdadeConcluido, ");
+
+        // --- FCR (Resolvido de Primeira) ---
+        query.append("       SUM(CASE WHEN a.ind_fcr IS TRUE THEN 1 ELSE 0 END) AS qtdeFcr, ");
+        query.append("       COALESCE(CAST(SUM(CASE WHEN a.ind_fcr IS TRUE THEN 1 ELSE 0 END) AS numeric) / NULLIF(COUNT(DISTINCT a.id),0), 0) AS percentualFcr, ");
+
+        // --- NOVO: REINCIDÊNCIA (Rechamada) ---
+        // Quantidade Absoluta
+        query.append("       SUM(CASE WHEN a.ind_reincidencia IS TRUE THEN 1 ELSE 0 END) AS qtdeReincidencia, ");
+
+        // Taxa de Reincidência (Quanto menor, melhor)
+        query.append("       COALESCE(CAST(SUM(CASE WHEN a.ind_reincidencia IS TRUE THEN 1 ELSE 0 END) AS numeric) / NULLIF(COUNT(DISTINCT a.id),0), 0) AS percentualReincidencia, ");
+        // ---------------------------------------
+
+        // --- PRAZOS ---
+        // No Prazo
+        // Se prazo for NULL, usa 9999 (nunca vence)
+        query.append("       SUM(CASE WHEN ");
+        query.append("           (s.acao NOT LIKE 'CONCLUIR%' AND (a.demanda_encerrada IS NULL OR a.demanda_encerrada IS FALSE)) ");
+        query.append("           AND (DATE(a.data_cadastro) + COALESCE(sm.prazo_demanda, 9999)) >= CURRENT_DATE ");
+        query.append("       THEN 1 ELSE 0 END) AS qtdadeDemandaNoPrazo, ");
+
+        // --- ESTOURADO ---
+        //  Se prazo for NULL, usa 9999
+        query.append("       SUM(CASE WHEN ");
+        query.append("           (s.acao NOT LIKE 'CONCLUIR%' AND (a.demanda_encerrada IS NULL OR a.demanda_encerrada IS FALSE)) ");
+        query.append("           AND (DATE(a.data_cadastro) + COALESCE(sm.prazo_demanda, 9999)) < CURRENT_DATE ");
+        query.append("       THEN 1 ELSE 0 END) AS qtdadeDemandaPrazoEstourado, ");
+
+        // % No Prazo
+        query.append("       COALESCE(CAST(SUM(CASE WHEN (s.acao NOT LIKE 'CONCLUIR%' AND (a.demanda_encerrada IS NULL OR a.demanda_encerrada IS FALSE)) AND (DATE(a.data_cadastro) + sm.prazo_demanda) >= CURRENT_DATE THEN 1 ELSE 0 END) AS numeric) / NULLIF(COUNT(DISTINCT a.id),0), 0) AS percentualNoPrazo, ");
+
+        // % Estourado
+        query.append("       COALESCE(CAST(SUM(CASE WHEN (s.acao NOT LIKE 'CONCLUIR%' AND (a.demanda_encerrada IS NULL OR a.demanda_encerrada IS FALSE)) AND (DATE(a.data_cadastro) + sm.prazo_demanda) < CURRENT_DATE THEN 1 ELSE 0 END) AS numeric) / NULLIF(COUNT(DISTINCT a.id),0), 0) AS percentualPrazoEstourado, ");
+
+        query.append("       SUM(CASE WHEN (s.acao NOT LIKE 'CONCLUIR%' AND (a.demanda_encerrada IS NULL OR a.demanda_encerrada IS FALSE)) THEN 1 ELSE 0 END) AS qtidadeAberto ");
+
         query.append("FROM public.atendimento a ");
         query.append("LEFT JOIN status_atendimento s ON a.status = s.id ");
+        query.append("LEFT JOIN submotivo sm ON a.submotivo = sm.id "); // Obrigatório para o cálculo de prazo
         query.append("WHERE DATE(a.data_cadastro) BETWEEN DATE(:dataInicial) AND DATE(:dataFinal) ");
         query.append(where);
 
@@ -1491,24 +1544,35 @@ public class DaoAtendimentoBackoffice extends GenericDao<AtendimentoBackoffice> 
 
             int idx = 0;
 
-            // Caso tenha selectView com cor ou outro campo extra
+            // 1. Visualização (Sempre é o primeiro)
             dto.setVisualizacao((String) row[idx++]);
 
-            // Se a query trouxe cor junto
-            if (row.length > 12) {
+            // 2. Cor (Condicional)
+            // Antes era > 12. Como adicionamos 2 colunas novas (Qtde FCR e % FCR),
+            // a régua sobe para 14. Se tiver 15 colunas, significa que tem COR.
+            if (row.length > 14) {
                 dto.setCor((String) row[idx++]);
             }
 
+            // 3. Mapeamento sequencial conforme a Query
             dto.setQtdeCpf(safeLong(row, idx++));
             dto.setQtdeAtendimento(safeLong(row, idx++));
             dto.setQtdadeResolvidoN1(safeLong(row, idx++));
             dto.setQtdeResolvidoN2(safeLong(row, idx++));
             dto.setQtdeDerivado(safeLong(row, idx++));
             dto.setQtdadeConcluido(safeLong(row, idx++));
+
+            // --- NOVOS CAMPOS (Inseridos aqui conforme a ordem da Query) ---
+            dto.setQtdeFcr(safeLong(row, idx++));
+            dto.setPercentualFcr(safeDouble(row, idx++));
+            // --------------------------------------------------------------
+
             dto.setQtdadeDemandaNoPrazo(safeLong(row, idx++));
             dto.setQtdadeDemandaPrazoEstourado(safeLong(row, idx++));
             dto.setPercentualNoPrazo(safeDouble(row, idx++));
             dto.setPercentualPrazoEstourado(safeDouble(row, idx++));
+
+            // O último campo (sem incremento de idx no final, ou com, tanto faz pois acaba aqui)
             dto.setQtidadeEmAberto(safeLong(row, idx));
 
             lista.add(dto);
@@ -1518,28 +1582,38 @@ public class DaoAtendimentoBackoffice extends GenericDao<AtendimentoBackoffice> 
 
     private List<ProdutividadeSacDto> gerarDtoProdutividadeTotal(List<Object[]> resultados) {
 
-        if (CollectionUtils.isEmpty(resultados))
-            return null;
+        if (CollectionUtils.isEmpty(resultados)) return new ArrayList<>();
 
         List<ProdutividadeSacDto> lista = new ArrayList<>();
 
+        // Geralmente query de totais retorna apenas 1 linha, mas iteramos por segurança
         for (Object[] row : resultados) {
             ProdutividadeSacDto dto = new ProdutividadeSacDto();
-
             int idx = 0;
 
-            dto.setQtdeCpf(safeLong(row, idx++));
-            dto.setQtdeAtendimento(safeLong(row, idx++));
-            dto.setQtdadeResolvidoN1(safeLong(row, idx++));
-            dto.setQtdeResolvidoN2(safeLong(row, idx++));
-            dto.setQtdeDerivado(safeLong(row, idx++));
-            dto.setQtdadeConcluido(safeLong(row, idx++));
-            dto.setQtdadeDemandaNoPrazo(safeLong(row, idx++));
-            dto.setQtdadeDemandaPrazoEstourado(safeLong(row, idx++));
-            dto.setPercentualNoPrazo(safeDouble(row, idx++));
-            dto.setPercentualPrazoEstourado(safeDouble(row, idx++));
-            dto.setQtidadeEmAberto(safeLong(row, idx));
+            dto.setQtdeCpf(safeLong(row, idx++));              // 0
+            dto.setQtdeAtendimento(safeLong(row, idx++));      // 1
+            dto.setQtdadeResolvidoN1(safeLong(row, idx++));    // 2
+            dto.setQtdeResolvidoN2(safeLong(row, idx++));      // 3
+            dto.setQtdeDerivado(safeLong(row, idx++));         // 4
+            dto.setQtdadeConcluido(safeLong(row, idx++));      // 5
 
+            // --- FCR ---
+            dto.setQtdeFcr(safeLong(row, idx++));              // 6
+            dto.setPercentualFcr(safeDouble(row, idx++));      // 7
+
+            // --- NOVO: REINCIDÊNCIA ---
+            dto.setQtdeReincidencia(safeLong(row, idx++));     // 8
+            dto.setPercentualReincidencia(safeDouble(row, idx++)); // 9
+            // --------------------------
+
+            // --- PRAZOS (Índices deslocados) ---
+            dto.setQtdadeDemandaNoPrazo(safeLong(row, idx++));         // 10
+            dto.setQtdadeDemandaPrazoEstourado(safeLong(row, idx++));  // 11
+            dto.setPercentualNoPrazo(safeDouble(row, idx++));          // 12
+            dto.setPercentualPrazoEstourado(safeDouble(row, idx++));   // 13
+
+            dto.setQtidadeEmAberto(safeLong(row, idx));                // 14
 
             lista.add(dto);
         }
@@ -1885,10 +1959,104 @@ public class DaoAtendimentoBackoffice extends GenericDao<AtendimentoBackoffice> 
 
     }
 
-    public static void main(String[] args) {
-        Long total = Long.valueOf(1616);
-        Long l = Long.valueOf(45);
-        System.out.println(Double.valueOf((double) l / total));
+    public List<RelatorioSacDto> pesquisarRelatorioDetalhado(RelatorioFiltroDto filtro) {
+
+        StringBuilder sql = new StringBuilder();
+        Map<String, Object> params = new HashMap<>();
+
+        sql.append("SELECT ");
+        sql.append("  a.protocolo, ");                          // 0
+        sql.append("  a.data_cadastro, ");                      // 1
+        sql.append("  c.nome AS nome_cliente, ");               // 2
+        sql.append("  u.nome AS nome_operador, ");              // 3
+        sql.append("  s.descricao AS status_desc, ");           // 4 (Novo)
+        sql.append("  m.descricao AS motivo_desc, ");           // 5
+        sql.append("  sm.descricao AS submotivo_desc, ");       // 6 (Novo)
+        sql.append("  COALESCE(a.ind_fcr, true) AS fcr, ");     // 7
+        sql.append("  COALESCE(a.ind_reincidencia, false) AS reincidencia, "); // 8
+
+        // Cálculo de Prazo na Query (Para evitar lógica no Java)
+        // Se (Data Cadastro + Prazo Submotivo) < Hoje e não está concluído -> Vencido
+        sql.append("  CASE ");
+        sql.append("    WHEN (s.acao NOT LIKE 'CONCLUIR%' AND (a.demanda_encerrada IS FALSE OR a.demanda_encerrada IS NULL)) ");
+        sql.append("         AND (DATE(a.data_cadastro) + COALESCE(sm.prazo_demanda, 0)) < CURRENT_DATE ");
+        sql.append("    THEN 'VENCIDO' ");
+        sql.append("    ELSE 'NO PRAZO' ");
+        sql.append("  END AS situacao_prazo ");                 // 9
+
+        sql.append("FROM atendimento a ");
+        sql.append("LEFT JOIN cliente c ON a.cliente = c.id ");
+        sql.append("LEFT JOIN usuario u ON a.usuario_cadastro = u.id ");
+        sql.append("LEFT JOIN status_atendimento s ON a.status = s.id ");
+        sql.append("LEFT JOIN motivo m ON a.motivo = m.id ");
+        sql.append("LEFT JOIN submotivo sm ON a.submotivo = sm.id ");
+
+        sql.append("WHERE 1=1 ");
+
+        // --- FILTROS ---
+        if (filtro.getDataInicio() != null) {
+            sql.append("AND a.data_cadastro >= :dtInicio ");
+            params.put("dtInicio", filtro.getDataInicio());
+        }
+        if (filtro.getDataFim() != null) {
+            sql.append("AND a.data_cadastro <= :dtFim ");
+            params.put("dtFim", filtro.getDataFim());
+        }
+        if (filtro.getUsuarioSelecionado() != null) {
+            sql.append("AND a.usuario_cadastro = :idUsuario ");
+            params.put("idUsuario", filtro.getUsuarioSelecionado().getId());
+        }
+
+
+        if (filtro.getListaStatus() != null && !filtro.getListaStatus().isEmpty()) {
+            sql.append("AND a.status IN (:listaStatus) ");
+            params.put("listaStatus", filtro.getListaStatus());
+        }
+
+        if (filtro.isApenasFcr()) {
+            sql.append(" AND a.ind_fcr = true ");
+        }
+
+        if (filtro.isApenasReincidencia()) {
+            sql.append(" AND a.ind_reincidencia = true ");
+        }
+
+        sql.append("ORDER BY a.data_cadastro DESC ");
+
+        List<Object[]> result = searchEntidades(DaoEnum.NATIVE_OBJECT, sql.toString(), params);
+        return converterParaDto(result);
+    }
+
+
+    private List<RelatorioSacDto> converterParaDto(List<Object[]> rows) {
+
+        List<RelatorioSacDto> lista = new ArrayList<>();
+
+        if (rows == null) return lista;
+
+        for (Object[] row : rows) {
+
+            RelatorioSacDto dto = new RelatorioSacDto();
+            int i = 0;
+
+            dto.setProtocolo((String) row[i++]);
+            dto.setDataCadastro((Date) row[i++]);
+            dto.setNomeCliente((String) row[i++]);
+            dto.setNomeOperador((String) row[i++]);
+            dto.setStatusDescricao((String) row[i++]);
+            dto.setMotivoDescricao((String) row[i++]);
+            dto.setSubmotivoDescricao((String) row[i++]);
+
+            // Booleanos (Postgres pode retornar 't'/'f' ou Boolean, dependendo do driver)
+            dto.setFcr(Boolean.TRUE.equals(row[i++]));
+            dto.setReincidencia(Boolean.TRUE.equals(row[i++]));
+
+            dto.setSituacaoPrazo((String) row[i++]); // "VENCIDO" ou "NO PRAZO"
+
+            lista.add(dto);
+        }
+
+        return lista;
     }
 
 
