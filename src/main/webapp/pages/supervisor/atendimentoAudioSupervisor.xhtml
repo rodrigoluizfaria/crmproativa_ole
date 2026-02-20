@@ -112,17 +112,10 @@
 
                             </h:panelGroup>
 
-                            <h:panelGroup
-                                    rendered="#{atendimento.tipoIntegracao eq 'TRES_CPLUS' and not empty atendimento.urlAudio}"
+                            <h:panelGroup rendered="#{atendimento.tipoIntegracao eq 'TRES_CPLUS' and not empty atendimento.urlAudio}"
                                     style="display: flex;align-items: center">
 
-                                <!--			<a href="#{atendimento.urlAudio}"	title="Baixar audio." >
 
-                                                <i class="fa fa-volume-up fa-lg">
-
-                                                </i>
-
-                                            </a>-->
                                 <p:audio value="#{atendimento.urlAudio}" styleClass="mr-3"
                                          player="mp3"
                                          controls="true"
@@ -450,6 +443,14 @@
                                                value="Baixar audio.">
                                     <i class="fa fa-volume-up fa-lg"/>
                                 </p:commandLink>
+
+                            </h:panelGroup>
+
+                            <h:panelGroup rendered="#{atendimento.tipoIntegracao eq 'PST_PHONE'}">
+
+                                <audio controls="controls" preload="none" style="width: 100%; height: 35px; border-radius: 20px; background-color: #f1f5f9;">
+                                    <source src="#{atendimento.urlPublicaRange}" type="audio/mpeg"/>
+                                </audio>
 
                             </h:panelGroup>
 

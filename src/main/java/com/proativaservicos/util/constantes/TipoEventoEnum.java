@@ -106,18 +106,14 @@ public enum TipoEventoEnum {
     }
 
     public static void main(String[] args) {
-        List<?> list = Arrays.asList(TipoEventoEnum.retornarEventosOperacional());
-        for (Object string : list) {
-
-            System.out.println(string);
-        }
+        System.out.println(retornarTipoEvento(TipoStatusAtividadesEnum.ATENDIMENTO_CLASSIFICADO.name()));
     }
 
     public static TipoEventoEnum retornarTipoEvento(String tipo) {
 
         return StringUtils.isNotBlank(tipo)
                 ? Arrays.stream(TipoEventoEnum.values())
-                .filter(e -> e.getConstante().equals(tipo))
+                .filter(e -> e.name().equals(tipo))
                 .findFirst()
                 .orElse(null)
                 : null;
