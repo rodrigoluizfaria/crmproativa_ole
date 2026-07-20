@@ -121,6 +121,12 @@ public abstract class GenericHistoricoAtendimento extends Generic {
     @ManyToOne(fetch = FetchType.LAZY)
     private Departamento departamentoDerivado;
 
+
+    @JoinColumn(name = "departamento_anterior")
+    @ManyToOne(fetch = FetchType.LAZY)
+    private Departamento departamentoAnterior;
+
+
     @Column(name = "atendimento_anonimo")
     private Boolean atendimentoAnonimo;
 
@@ -376,6 +382,14 @@ public abstract class GenericHistoricoAtendimento extends Generic {
 
     public void setDepartamentoDerivado(Departamento departamentoDerivado) {
         this.departamentoDerivado = departamentoDerivado;
+    }
+
+    public Departamento getDepartamentoAnterior() {
+        return departamentoAnterior;
+    }
+
+    public void setDepartamentoAnterior(Departamento departamentoAnterior) {
+        this.departamentoAnterior = departamentoAnterior;
     }
 
     public Boolean getAtendimentoAnonimo() {

@@ -1341,7 +1341,10 @@ public class SupervisorBackofficeBean extends GenericBean implements Serializabl
 
             for (Object[] atendimento : this.listAtendimentos) {
 
-                List<Object> listTelefones = mapaTelefones.get(Long.valueOf((((BigInteger) atendimento[0]).longValue())));
+                List<Object> listTelefones = new ArrayList<>();
+
+                if (atendimento[26] != null && mapaTelefones != null)
+                    listTelefones = mapaTelefones.get(((BigInteger) atendimento[26]).longValue());
 
                 if (!exportarCompleto) {
 
@@ -1351,7 +1354,10 @@ public class SupervisorBackofficeBean extends GenericBean implements Serializabl
                     atendimento = ArrayUtils.remove(atendimento, atendimento.length - 1);
                     atendimento = ArrayUtils.remove(atendimento, atendimento.length - 1);
                     atendimento = ArrayUtils.remove(atendimento, atendimento.length - 1);
+                    atendimento = ArrayUtils.remove(atendimento, atendimento.length - 1);
 
+                } else {
+                    atendimento = ArrayUtils.remove(atendimento, atendimento.length - 1);
                 }
 
                 if (CollectionUtils.isNotEmpty(listTelefones)) {
@@ -1364,11 +1370,11 @@ public class SupervisorBackofficeBean extends GenericBean implements Serializabl
                     continue;
                 }
 
-                listAtendimentosGerados.add(ArrayUtils.addAll(atendimento, new Object[0]));
+                listAtendimentosGerados.add(ArrayUtils.addAll(atendimento));
 
             }
 
-            ArrayList<String> listCabecalho = new ArrayList<>(Arrays.asList(new String[]{"ID Atendimento", "Campanha", "Cliente", "CPF", "Status Atendimento", "Último Contato", "Operador", "Adesão", "Quantidade Parcela", "Valor Parcela", "Valor Liberado", "Protocolo", "Status do Contrato"}));
+            ArrayList<String> listCabecalho = new ArrayList<>(Arrays.asList("ID Atendimento", "Campanha", "Cliente", "CPF", "Status Atendimento", "Último Contato", "Operador", "Adesão", "Quantidade Parcela", "Valor Parcela", "Valor Liberado", "Protocolo", "Status do Contrato"));
 
             if (exportarCompleto) {
 
@@ -1383,6 +1389,8 @@ public class SupervisorBackofficeBean extends GenericBean implements Serializabl
                 listCabecalho.add("Ticket");
                 listCabecalho.add("Data Nascimento");
                 listCabecalho.add("Equipe");
+                listCabecalho.add("Motivo");
+                listCabecalho.add("Submotivo");
 
             }
 
@@ -1398,7 +1406,7 @@ public class SupervisorBackofficeBean extends GenericBean implements Serializabl
 
             this.progress = 100;
 
-            return this.progress < 0 ? null : ArquivoUtil.gerarArquivoCSVString(listCabecalho, listAtendimentosGerados);
+            return ArquivoUtil.gerarArquivoCSVString(listCabecalho, listAtendimentosGerados);
 
 
         } catch (Exception e) {
@@ -1414,7 +1422,7 @@ public class SupervisorBackofficeBean extends GenericBean implements Serializabl
 
     private Map<Long, List<Object>> criarListTelefones() {
 
-        List<Long> idsAtendimentos = new ArrayList<>();
+        List<Long> idsClientes = new ArrayList<>();
 
         List<Object[]> listTelefones = new ArrayList<Object[]>();
 
@@ -1427,27 +1435,31 @@ public class SupervisorBackofficeBean extends GenericBean implements Serializabl
 
         for (Object[] atendimento : this.listAtendimentos) {
 
-            if (this.progress < 0)
-                return null;
+            if (atendimento[26] != null) {
 
-            this.progress = ((cont * 100) / quantidadeTotal);
+                if (this.progress < 0)
+                    return null;
 
-            idsAtendimentos.add(Long.valueOf(((BigInteger) atendimento[0]).longValue()));
+                this.progress = ((cont * 100) / quantidadeTotal);
 
-            if (idsAtendimentos.size() == 1000) {
+                idsClientes.add(((BigInteger) atendimento[26]).longValue());
 
-                listTelefones.addAll(this.serviceTelefone.pesquisarTelefonesPorAtendimentos(idsAtendimentos));
+                if (idsClientes.size() == 1000) {
 
-                idsAtendimentos = new ArrayList<>();
+                    listTelefones.addAll(this.serviceTelefone.pesquisarTelefonesPorCliente(idsClientes));
+
+                    idsClientes = new ArrayList<>();
+                }
+
+                cont++;
             }
 
-            cont++;
+
         }
 
-        if (idsAtendimentos.size() > 0) {
+        if (idsClientes.size() > 0) {
 
-            listTelefones.addAll(this.serviceTelefone.pesquisarTelefonesPorAtendimentos(idsAtendimentos));
-            idsAtendimentos = new ArrayList<Long>();
+            listTelefones.addAll(this.serviceTelefone.pesquisarTelefonesPorCliente(idsClientes));
         }
 
         Map<Long, List<Object>> mapTelefones = new HashMap<Long, List<Object>>();

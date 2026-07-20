@@ -10,7 +10,7 @@ import com.proativaservicos.util.constantes.TipoAcessoEnum;
 import org.apache.commons.lang3.StringUtils;
 
 
-@SuppressWarnings("unchecked")
+
 public class DaoSubMotivo extends GenericDao<SubMotivo> {
 
     public List<SubMotivo> pesquisarSubMotivoPorEmpresa(Long idEmpresa) {
@@ -22,8 +22,10 @@ public class DaoSubMotivo extends GenericDao<SubMotivo> {
         query.append("from SubMotivo m ");
 
         query.append("where m.empresa.id = :empresa ");
+        query.append(" order by m.descricao ");
 
         parametros.put("empresa", idEmpresa);
+
 
 
         return searchEntidades(DaoEnum.HQL_QUERRY, query.toString(), parametros);
@@ -49,6 +51,7 @@ public class DaoSubMotivo extends GenericDao<SubMotivo> {
         }
 
         parametros.put("idMotivo", idMotivo);
+        query.append(" order by m.descricao ");
 
 
         return searchEntidades(DaoEnum.HQL_QUERRY, query.toString(), parametros);
@@ -82,8 +85,8 @@ public class DaoSubMotivo extends GenericDao<SubMotivo> {
         }
 
         if (StringUtils.isNotBlank(subMotivoDescricao)) {
-            query.append(" and m.descricao = :descricao ");
-            parametros.put("descricao", subMotivoDescricao);
+            query.append(" and upper(m.descricao) like :descricao ");
+            parametros.put("descricao", subMotivoDescricao.toUpperCase()+"%");
 
         }
         query.append(" order by m.descricao ");

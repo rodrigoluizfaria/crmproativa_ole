@@ -196,26 +196,17 @@ public abstract class GenericDao<E> {
 		return null;
 	}
 
-	/*
-	 *
-	 * 
-	 */
+
 	public void executeSqlUpdate(DaoEnum daoEnum, String sql) {
 		executeSqlUpdate(daoEnum, sql, null, null, null);
 	}
 
-	/*
-	 *
-	 * 
-	 */
+
 	public void executeSqlUpdate(DaoEnum daoEnum, String sql, Map<String, Object> parametros) {
 		executeSqlUpdate(daoEnum, sql, parametros, null, null);
 	}
 
-	/*
-	 *
-	 * 
-	 */
+
 	private void executeSqlUpdate(DaoEnum daoEnum, String sql, Map<String, Object> parameter, Integer fistResult,
 			Integer maxResult) {
 
@@ -223,19 +214,13 @@ public abstract class GenericDao<E> {
 
 	}
 
-	/*
-	 *
-	 * 
-	 */
+
 
 	public List<E> pesquisarTodos(Class<?> classe) {
 		return pesquisarTodos(classe, null);
 	}
 
-	/*
-	 *
-	 * 
-	 */
+
 
 	@TransactionAttribute(TransactionAttributeType.NOT_SUPPORTED)
 	public List<E> pesquisarTodos(Class<?> classe, String orderBy) {

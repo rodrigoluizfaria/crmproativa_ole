@@ -187,6 +187,9 @@ public abstract class GenericAtendimento extends GenericControle {
     @Column(name = "tipo_convenio", length = 30)
     private String tipoConvenio;
 
+    @Column(name = "opcao")
+    private String opcao;
+
     @Temporal(TemporalType.TIMESTAMP)
     @Column(name = "data_inicio_atendimento")
     private Date dataInicioAtendimento;
@@ -450,6 +453,10 @@ public abstract class GenericAtendimento extends GenericControle {
     @JoinColumn(name = "departamento_derivado")
     @ManyToOne(fetch = FetchType.LAZY)
     private Departamento departamentoDerivado;
+
+    @JoinColumn(name = "departamento_anterior")
+    @ManyToOne(fetch = FetchType.LAZY)
+    private Departamento departamentoAnterior;
 
 
     @Column(name = "ind_fcr")
@@ -1862,6 +1869,13 @@ public abstract class GenericAtendimento extends GenericControle {
         this.atendimentoAnonimo = atendimentoAnonimo;
     }
 
+    public Departamento getDepartamentoAnterior() {
+        return departamentoAnterior;
+    }
+
+    public void setDepartamentoAnterior(Departamento departamentoAnterior) {
+        this.departamentoAnterior = departamentoAnterior;
+    }
 
     public Boolean getFcr() {
         return fcr;
@@ -1877,6 +1891,14 @@ public abstract class GenericAtendimento extends GenericControle {
 
     public void setReincidencia(Boolean reincidencia) {
         this.reincidencia = reincidencia;
+    }
+
+    public String getOpcao() {
+        return opcao;
+    }
+
+    public void setOpcao(String opcao) {
+        this.opcao = opcao;
     }
 
     public String getDescricaoCliente() {

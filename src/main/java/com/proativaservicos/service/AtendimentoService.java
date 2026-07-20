@@ -367,6 +367,10 @@ public class AtendimentoService extends GenericProService<Atendimento> implement
         return this.dao.pesquisarTmaGeral(idUsuario);
     }
 
+    public String retornarTmaDiario(Long usuario) {
+        return this.dao.retornarTmaDiario(usuario);
+    }
+
     public Long pesquisarQuantidadeFinalizadosGeral(Long idUsuario, Date dataInicio, Date dataFim) {
         return this.dao.pesquisarQuantidadeFinalizadosGeral(idUsuario, dataInicio, dataFim);
     }
@@ -816,6 +820,7 @@ public class AtendimentoService extends GenericProService<Atendimento> implement
     public Long buscarQuantidadeClientesAtendidosDiario(Long idUsuario, String protocoloAtual) {
         return this.dao.buscarQuantidadeClientesAtendidosDiario(idUsuario, protocoloAtual);
     }
+
     public Long buscarQuantidadeAtendimentosDoClienteUltimos7Dias(Long idCliente, String protocoloAtual) {
         return this.dao.buscarQuantidadeAtendimentosDoClienteUltimos7Dias(idCliente, protocoloAtual);
     }
@@ -881,14 +886,14 @@ public class AtendimentoService extends GenericProService<Atendimento> implement
     }
 
     public void alterarFrc(Long idAtendimento, Boolean frc) {
-        this.dao.alterarFrc(idAtendimento,frc);
+        this.dao.alterarFrc(idAtendimento, frc);
     }
 
     public Atendimento buscarUltimaInteracao(Long idCliente, Long idMotivo, Long subMotivo, Long idAtual) {
         return this.dao.buscarUltimaInteracao(idCliente, idMotivo, subMotivo, idAtual);
     }
 
-    public boolean verificarSeClienteEhReincidente(Long idCliente,String protocoloPai) {
-        return this.dao.verificarSeClienteEhReincidente(idCliente,protocoloPai);
+    public boolean verificarSeClienteEhReincidente(Long idCliente, String protocoloPai) {
+        return this.dao.verificarSeClienteEhReincidente(idCliente, protocoloPai);
     }
 }

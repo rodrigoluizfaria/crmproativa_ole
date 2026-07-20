@@ -1,7 +1,9 @@
 package com.proativaservicos.dao.implemets;
 
 import com.proativaservicos.model.Cliente;
+import com.proativaservicos.util.Utils;
 import com.proativaservicos.util.constantes.DaoEnum;
+import com.proativaservicos.util.constantes.TipoClienteEnum;
 import jakarta.enterprise.context.Dependent;
 import jakarta.persistence.Transient;
 import jakarta.transaction.Transactional;
@@ -48,7 +50,7 @@ public class DaoCliente extends GenericDao<Cliente> {
 
 
     @Transactional
-    public void atualizarNomeCliente(String nome, String nomeMae, String nomePai, Date dataNascimento, Long idCliente) {
+    public void atualizarNomeCliente(String nome, String nomeMae, String nomePai, Date dataNascimento, String email, Long idCliente, TipoClienteEnum tipoClienteEnum) {
 
         StringBuilder query = new StringBuilder("update cliente set ");
         Map<String, Object> parametros = new HashMap<>();
@@ -81,10 +83,41 @@ public class DaoCliente extends GenericDao<Cliente> {
             parametros.put("dataNascimento", dataNascimento);
         }
 
+        if (email != null) {
+            if (!primeiroCampo) query.append(", ");
+            query.append("email = :email");
+            parametros.put("email", email);
+        }
+        if(tipoClienteEnum != null) {
+            if (!primeiroCampo) query.append(", ");
+            query.append("tipo_cliente = :tipoClienteEnum");
+            parametros.put("tipoClienteEnum", tipoClienteEnum.name());
+        }
+
+
         query.append(" where id = :idCliente");
         parametros.put("idCliente", idCliente);
 
         executeSqlUpdate(DaoEnum.NATIVE_CLASSE, query.toString(), parametros);
     }
 
+    public Long pesquisarClientePorTelefone(String telefone) {
+
+        StringBuilder query = new StringBuilder();
+        Map<String, Object> parametros = new HashMap<>();
+
+        query.append(" SELECT c.id  ");
+        query.append(" FROM cliente c ");
+        query.append(" JOIN telefone t ON t.cliente = c.id ");
+        query.append(" WHERE (t.ddd || t.numero) = :telefone ");
+        query.append(" and nome is not null and cpf is not null ");
+        query.append(" ORDER BY c.data_cadastro desc limit 1 ");
+        parametros.put("telefone", telefone);
+
+        Object o = searchEntidade(DaoEnum.NATIVE_OBJECT, query.toString(), parametros);
+
+        return (o != null) ? ((Number) o).longValue() : null;
+
+
+    }
 }

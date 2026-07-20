@@ -5,6 +5,8 @@ import com.proativaservicos.model.*;
 import com.proativaservicos.service.*;
 import com.proativaservicos.util.DateUtil;
 import com.proativaservicos.util.RegistroSistemaUtil;
+import com.proativaservicos.util.Util;
+import com.proativaservicos.util.Utils;
 import com.proativaservicos.util.constantes.*;
 import jakarta.annotation.PostConstruct;
 import jakarta.faces.view.ViewScoped;
@@ -40,6 +42,8 @@ public class MeusAtendimentosBean extends GenericBean {
     private Usuario usuario;
     private Empresa empresa;
     private Anotacoes anotacao;
+
+    private Atendimento atendimentoView;
     private List<GenericAtendimento> listAtendimentosAgendados;
     private List<StatusAtendimento> listStatusAtendimentos;
     private List<StatusContrato> listStatusContrato;
@@ -81,6 +85,12 @@ public class MeusAtendimentosBean extends GenericBean {
     @Inject
     private SubMotivoService serviceSubMotivo;
 
+    @Inject
+    private AtendimentoAudiosService atendimentoAudiosService;
+
+    @Inject
+    private ClienteService serviceCliente;
+
     private Atendimento atendimentoVisualizar;
 
     private GenericHistoricoAtendimento historicoAtendimento;
@@ -95,6 +105,9 @@ public class MeusAtendimentosBean extends GenericBean {
 
     @Inject
     private ConcilicarAudioAnexoService serviceConcilicarAudioAnexo;
+
+    @Inject
+    private AtendimentoAudiosService serviceAtendimentoAudios;
 
     private List<Motivo> listMotivos;
 
@@ -118,6 +131,19 @@ public class MeusAtendimentosBean extends GenericBean {
     private Date dataInicio;
     private Date dataAFim;
     private LocalDate dataEvento;
+    private Cliente clienteView;
+
+    private String filtroCpf;
+    private String filtro;
+    private String filtroProtocolo;
+
+    private String textoCompleto;
+
+    private String tipoFiltro;
+
+    private boolean anonimo = false;
+    private boolean cpfValido = false;
+
 
 
     private String valorPesquisaAdianteamento;
@@ -127,6 +153,8 @@ public class MeusAtendimentosBean extends GenericBean {
     private List<FormaPagamento> listFormaPagamento;
 
     private List<ConciliarAudioAnexo> audios;
+
+    private List<Atendimento> listAtendimento;
 
     @PostConstruct
     public void init() {
@@ -156,7 +184,7 @@ public class MeusAtendimentosBean extends GenericBean {
 
             this.dataAgendamento = new Date(System.currentTimeMillis());
 
-            this.listAtendimentosPendentes = this.serviceAtendimento.pesquisarAtendimentosPendentes(this.usuario.getId(), Arrays.asList(new String[]{TipoCampanhaEnum.ATIVA.name(),TipoCampanhaEnum.SAC.name(), TipoCampanhaEnum.RECEPTIVA.name(), TipoCampanhaEnum.PREDITIVA.name()}));
+            this.listAtendimentosPendentes = this.serviceAtendimento.pesquisarAtendimentosPendentes(this.usuario.getId(), Arrays.asList(new String[]{TipoCampanhaEnum.ATIVA.name(), TipoCampanhaEnum.SAC.name(), TipoCampanhaEnum.RECEPTIVA.name(), TipoCampanhaEnum.PREDITIVA.name()}));
 
             if (this.listAtendimentosPendentes.isEmpty()) {
 
@@ -229,7 +257,7 @@ public class MeusAtendimentosBean extends GenericBean {
             this.listAtendimentos = this.serviceAtendimento.pesquisarAtendimentosPorNomeCpf(this.cpf, this.nome,
                     this.adesao, this.protocolo, null, null, this.usuario.getId(), this.idSatusAtendimento,
                     this.idStatusContrato, this.dataInicio, this.dataAFim, this.usuario, null,
-                    this.usuario.getEmpresa().getId(),idMotivo,idSubMotivo);
+                    this.usuario.getEmpresa().getId(), idMotivo, idSubMotivo);
 
         } catch (Exception e) {
             // TODO: handle exception
@@ -302,7 +330,7 @@ public class MeusAtendimentosBean extends GenericBean {
 
     }
 
-
+/*
     public String adiantarFichaAtendimentoNaoTrabalado() {
 
         if (this.idAtendimento != null) {
@@ -318,7 +346,8 @@ public class MeusAtendimentosBean extends GenericBean {
 
         }
         return null;
-    }
+    }*/
+
 
     public void dateChange(SelectEvent<Date> event) {
         System.out.println("File Date: " + (Date) event.getObject());
@@ -502,7 +531,7 @@ public class MeusAtendimentosBean extends GenericBean {
 
         try {
 
-            this.atendimentoVisualizar = this.serviceAtendimento.pesquisarAtendimentoSacPorCodigo(idAtendimento,true);
+            this.atendimentoVisualizar = this.serviceAtendimento.pesquisarAtendimentoSacPorCodigo(idAtendimento, true);
 
             if (this.atendimentoVisualizar.getListaHistoricos() != null && !this.atendimentoVisualizar.getListaHistoricos().isEmpty()) {
 
@@ -545,105 +574,169 @@ public class MeusAtendimentosBean extends GenericBean {
         }
     }
 
-    public void onPesquisarAudiosAnexos() {
-
-
-    }
-
-
-    public void enviarAudios(FileUploadEvent event) {
+    public String onCriarNovoAtendimentoReceptivo() {
 
         try {
 
-            if (CollectionUtils.isEmpty(audios)) {
 
-                this.audios = new ArrayList<ConciliarAudioAnexo>();
-
-            } else {
-
-                for (ConciliarAudioAnexo conciliarAudioAnexo : audios) {
-
-                    if (conciliarAudioAnexo.getNomeArquivoOriginal().equals(event.getFile().getFileName()))
-
-                        throw new ProativaException("Não foi possivel anexar o arquivo: [ " + event.getFile().getFileName() + " ]. Arquivo já foi anexado.");
-
-                }
-
+            if (atendimentoVisualizar.getCliente() == null
+                    || StringUtils.isEmpty(atendimentoVisualizar.getCliente().getCpf())) {
+                throw new ProativaException("Não foi possível localizar o cliente. O atendimento não pode ser criado sem os dados do cliente.");
             }
 
-            if (event != null && event.getFile() != null) {
 
-                int tamanhoArquivo = event.getFile().getFileName().length();
+            if (atendimentoVisualizar.getCliente() != null && StringUtils.isNotBlank(atendimentoVisualizar.getCliente().getCpf())) {
 
-                if (event.getFile().getFileName().substring(tamanhoArquivo - 3, tamanhoArquivo).equalsIgnoreCase("wav")) {
+                // Limpar a o CPF da sessão
+                Faces.getSession().removeAttribute("atendimento_iniciado");
 
-                    ConciliarAudioAnexo conciliar = new ConciliarAudioAnexo();
-                    conciliar.setNomeArquivoOriginal(event.getFile().getFileName());
-                    conciliar.setTamanhoArquivo(event.getFile().getSize());
-                    conciliar.setInpuStream(event.getFile().getInputStream());
-                    this.audios.add(conciliar);
+                //  Seta o CPF alvo
+                Faces.getSession().setAttribute("cpf_atn", atendimentoVisualizar.getCliente().getCpf());
+
+                // 3. Redireciona
+                return "/pages/atendimento/fichaAtendimentoSac?faces-redirect=true";
+
+            }
+            Messages.addGlobalError("Cliente não encontrado.");
+
+        } catch (ProativaException e) {
+            Messages.addGlobalError(e.getMessage());
+        }
+        return null;
+
+    }
+
+    public String adiantarFichaAtendimentoNaoTrabalado() {
+
+        if (this.idAtendimento != null) {
+
+            Atendimento atendimento = this.serviceAtendimento.pesquisarAtendimentoSacPorCodigo(this.idAtendimento);
+            List<AtendimentoAudios> listAudios = this.atendimentoAudiosService.pesquisarAtendimentoAudios(this.idAtendimento);
+
+            if (atendimento != null) {
+
+                Faces.getSession().setAttribute("atendimento_iniciado", atendimento.getId());
+                Faces.getSession().setAttribute("protocolo_pai", atendimento.getProtocoloPai());
+
+                if (CollectionUtils.isNotEmpty(listAudios))
+                    Faces.getSession().setAttribute("numeroCLiente", listAudios.get(0).getDestino());
+
+
+                if (atendimento.getCliente() == null) {
+                    //ANONIMO
+
+                    Faces.getSession().setAttribute("anonimo", Boolean.TRUE);
+                    Faces.getSession().setAttribute("opcao", "9");
+
 
                 } else {
 
-                    throw new ProativaException("Formato de arquivo invalido");
+                    Faces.getSession().setAttribute("anonimo", Boolean.FALSE);
+                    Faces.getSession().setAttribute("cpf_atn", atendimento.getCliente().getCpf());
+
                 }
-
-                Messages.addGlobalInfo("Áudio enviado com sucesso!", new Object[0]);
-            }
-
-        } catch (ProativaException e) {
-
-            Messages.addGlobalError(e.getMessage(), new Object[0]);
-
-        } catch (Exception e) {
-
-            e.printStackTrace();
-            Messages.addGlobalError(MessagesEnum.ERRO_INERPERADO.constante, new Object[0]);
-        }
-
-    }
-
-    public void onTrocarAudio(ReorderEvent event) {
-
-        if (CollectionUtils.isNotEmpty(this.audios)) {
-
-
-            //Collections.swap(this.audios, event.getFromIndex()	, event.getToIndex());
-
-
-        }
-
-    }
-
-    //EXCLUIR DO DIRETORIO
-    public void excluirAnexoArquivo(String audio) {
-
-        try {
-
-            if (CollectionUtils.isNotEmpty(this.audios)) {
-
-                this.audios.removeIf(a -> a.getNomeArquivoOriginal().equals(audio));
-
-                Optional<ConciliarAudioAnexo> conciliar = this.audios.stream().filter(a -> a.getNomeArquivoOriginal().equals(audio)).findFirst();
-
-                if (conciliar.isPresent())
-                    this.serviceConcilicarAudioAnexo.excluir(conciliar.get());
+                return "/pages/atendimento/fichaAtendimentoSac?faces-redirect=true";
 
             }
 
-        } catch (ProativaException e) {
 
-            Messages.addGlobalError(e.getMessage(), new Object[0]);
+        }
 
-        } catch (Exception e) {
+        return null;
+    }
 
-            e.printStackTrace();
-            Messages.addGlobalError(MessagesEnum.ERRO_INERPERADO.constante, new Object[0]);
+
+    public void pesquisar() {
+
+        System.out.println("Filtro: " + tipoFiltro);
+        this.filtroCpf = null;
+
+        switch (this.tipoFiltro) {
+            case "CPF":
+                this.filtroProtocolo = null;
+                this.filtroCpf = filtro;
+                this.cpfValido = Utils.validaCPF(StringUtils.leftPad(this.filtroCpf, 11, "0"));
+                pesquisarFiltro();
+                break;
+            case "PROTOCOLO":
+                this.filtroProtocolo = filtro;
+                pesquisarFiltro();
+                break;
         }
 
     }
+
+
+    private void pesquisarFiltro() {
+
+        this.anonimo = false;
+        this.clienteView = null;
+
+        this.listAtendimento = this.serviceAtendimento.pesquisarAtendimentosSacFiltros(filtroProtocolo, filtroCpf, null);
+
+        if (CollectionUtils.isNotEmpty(listAtendimento)) {
+
+            this.listAtendimento.stream()
+                    .map(Atendimento::getCliente)
+                    .filter(Objects::nonNull)
+                    .findFirst()
+                    .ifPresent(primeiroCliente ->
+                            clienteView = this.serviceCliente
+                                    .pesquisarClienteAtendimentoSacPorId(primeiroCliente.getId())
+                    );
+
+            this.cpfValido = true;
+        }
+
+        if (this.clienteView == null) {
+            this.anonimo = true;
+        }
+    }
+
+
+    public String onCriarNovoAtendimento() {
+
+        if (this.clienteView != null && StringUtils.isNotBlank(this.clienteView.getCpf())) {
+
+            // Limpar a o CPF da sessão
+            Faces.getSession().removeAttribute("atendimento_iniciado");
+
+            //  Seta o CPF alvo
+            Faces.getSession().setAttribute("cpf_atn", clienteView.getCpf());
+
+            // 3. Redireciona
+            return "/pages/atendimento/fichaAtendimentoSac?faces-redirect=true";
+
+        }
+        Messages.addGlobalError("Cliente não encontrado.");
+
+        return null;
+    }
+
+    public String onCriarNovoAtendimentoComCpf() {
+
+        if (StringUtils.isNotBlank(this.filtroCpf)) {
+
+            // Limpar a o CPF da sessão
+            Faces.getSession().removeAttribute("atendimento_iniciado");
+
+            //  Seta o CPF alvo
+            Faces.getSession().setAttribute("cpf_atn", this.filtroCpf);
+
+            // 3. Redireciona
+            return "/pages/atendimento/fichaAtendimentoSac?faces-redirect=true";
+
+
+        }
+        Messages.addGlobalError("CPF não encontrado.");
+
+        return null;
+
+    }
+
 
     public String onOcultarCpf(String cpf) {
+
         if (StringUtils.isBlank(cpf)) {
             return cpf;
         }
@@ -660,6 +753,21 @@ public class MeusAtendimentosBean extends GenericBean {
         String mascarado = "***.***.***-" + apenasNumeros.substring(9);
 
         return mascarado;
+    }
+
+    public void onOpenAtendimento(Long atendimentoId) {
+
+        this.atendimentoView = this.serviceAtendimento.pesquisarAtendimentoSacPorCodigo(atendimentoId, true);
+
+        if (this.atendimentoView != null && this.atendimentoView.getAtendimentoPai())
+            this.atendimentoView.setListaAudios(this.serviceAtendimentoAudios.pesquisarAtendimentoAudios(this.atendimentoView.getId()));
+        else if (this.atendimentoView != null && StringUtils.isNotBlank(this.atendimentoView.getProtocoloPai()))
+            this.atendimentoView.setListaAudios(this.serviceAtendimentoAudios.pesquisarAtendimentoAudiosPorProtocolo(this.atendimentoView.getProtocoloPai()));
+
+
+        PrimeFaces.current().executeScript("PF('dlgVisualizarCompleto').show();");
+        PrimeFaces.current().ajax().update("dlgVisualizarCompleto");
+
     }
 
 
@@ -984,5 +1092,77 @@ public class MeusAtendimentosBean extends GenericBean {
 
     public void setListMotivos(List<Motivo> listMotivos) {
         this.listMotivos = listMotivos;
+    }
+
+    public Cliente getClienteView() {
+        return clienteView;
+    }
+
+    public void setClienteView(Cliente clienteView) {
+        this.clienteView = clienteView;
+    }
+
+    public String getTipoFiltro() {
+        return tipoFiltro;
+    }
+
+    public void setTipoFiltro(String tipoFiltro) {
+        this.tipoFiltro = tipoFiltro;
+    }
+
+    public boolean isAnonimo() {
+        return anonimo;
+    }
+
+    public void setAnonimo(boolean anonimo) {
+        this.anonimo = anonimo;
+    }
+
+    public String getFiltroCpf() {
+        return filtroCpf;
+    }
+
+    public void setFiltroCpf(String filtroCpf) {
+        this.filtroCpf = filtroCpf;
+    }
+
+    public String getFiltroProtocolo() {
+        return filtroProtocolo;
+    }
+
+    public void setFiltroProtocolo(String filtroProtocolo) {
+        this.filtroProtocolo = filtroProtocolo;
+    }
+
+    public String getTextoCompleto() {
+        return textoCompleto;
+    }
+
+    public void setTextoCompleto(String textoCompleto) {
+        this.textoCompleto = textoCompleto;
+    }
+
+    public String getFiltro() {
+        return filtro;
+    }
+
+    public void setFiltro(String filtro) {
+        this.filtro = filtro;
+    }
+
+    public List<Atendimento> getListAtendimento() {
+        return listAtendimento;
+    }
+
+    public Atendimento getAtendimentoView() {
+        return atendimentoView;
+    }
+
+    public boolean isCpfValido() {
+        return cpfValido;
+    }
+
+    public void setCpfValido(boolean cpfValido) {
+        this.cpfValido = cpfValido;
     }
 }

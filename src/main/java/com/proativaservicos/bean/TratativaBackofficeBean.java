@@ -1,13 +1,14 @@
 package com.proativaservicos.bean;
 
 import com.proativaservicos.exception.ProativaException;
-import com.proativaservicos.model.Atendimento;
-import com.proativaservicos.model.HistoricoAtendimento;
-import com.proativaservicos.model.StatusAtendimento;
+import com.proativaservicos.model.*;
 import com.proativaservicos.service.AtendimentoService;
+import com.proativaservicos.service.DepartamentoService;
 import com.proativaservicos.service.HistoricoAtendimentoService;
 import com.proativaservicos.service.StatusAtendimentoService;
 import com.proativaservicos.util.constantes.AcaoStatusAtendimentoEnum;
+import com.proativaservicos.util.constantes.PerfilUsuarioEnum;
+import com.proativaservicos.util.constantes.TipoAcessoEnum;
 import jakarta.enterprise.context.RequestScoped;
 import jakarta.faces.view.ViewScoped;
 import jakarta.inject.Inject;
@@ -32,12 +33,19 @@ public class TratativaBackofficeBean extends GenericBean {
     @Inject
     private StatusAtendimentoService statusAtendimentoService;
 
+    @Inject
+    private DepartamentoService departamentoService;
+
     private Long idAtendimento;
 
     private Atendimento atendimento;
 
+    private Departamento departamentoParaDerivar;
+
     private List<StatusAtendimento> listStatusAtendimento;
     private List<HistoricoAtendimento> listHistoricoAtendimento;
+
+    private List<Departamento> listDepartamento;
 
     private String statusFinal;
 
@@ -47,11 +55,24 @@ public class TratativaBackofficeBean extends GenericBean {
 
     private String repostaN2Aux;
 
+    private Usuario usuario;
+
+    private boolean retornoN2;
+
+    private StatusAtendimento statusAtendimentoAnterior;
+
 
     public void inicializar() {
 
         this.atendimento = this.atendimentoService.pesquisarAtendimentoSacPorCodigo(idAtendimento);
         this.repostaN2Aux = null;
+        this.statusAtendimentoAnterior = this.atendimento.getStatus();
+
+        if (this.atendimento.getStatus() != null && this.atendimento.getStatus().getAcao().equals(AcaoStatusAtendimentoEnum.RETORNO_N2))
+            this.retornoN2 = true;
+
+        this.atendimento.setStatus(null);
+        this.usuario = retornarUsuarioSessao();
 
         if (StringUtils.isNotBlank(atendimento.getRespostaN2())) {
             this.repostaN2Aux = atendimento.getRespostaN2();
@@ -66,6 +87,7 @@ public class TratativaBackofficeBean extends GenericBean {
     public void salvar() {
 
         try {
+
             System.out.println("Salvando atendimento: " + atendimento.getProtocolo());
             validarAtendimento();
 
@@ -98,6 +120,14 @@ public class TratativaBackofficeBean extends GenericBean {
             atendimento.setAtendimentoFinalizado(Boolean.FALSE);
 
         }
+
+        if (atendimento.getStatus().getAcao().equals(AcaoStatusAtendimentoEnum.DERIVAR) && departamentoParaDerivar != null) {
+            atendimento.setDemandaEncerrada(Boolean.FALSE);
+            atendimento.setAtendimentoFinalizado(Boolean.FALSE);
+            atendimento.setDepartamentoAnterior(atendimento.getDepartamentoDerivado());
+            atendimento.setDepartamentoDerivado(departamentoParaDerivar);
+
+        }
     }
 
 
@@ -112,9 +142,15 @@ public class TratativaBackofficeBean extends GenericBean {
             erros.add("Informe a resolução do atendimento");
         }
 
+        if (this.atendimento.getStatus() != null
+                && this.atendimento.getStatus().getAcao().equals(AcaoStatusAtendimentoEnum.DERIVAR)
+                && this.departamentoParaDerivar == null)
+            erros.add("Informe o departamento para direcionar.");
+
         if (!erros.isEmpty()) {
             throw new ProativaException(String.join("; ", erros));
         }
+
 
         if (this.atendimento.getStatus().getAcao().equals(AcaoStatusAtendimentoEnum.CONCLUIR)) {
             this.atendimento.setDemandaEncerrada(Boolean.TRUE);
@@ -127,14 +163,19 @@ public class TratativaBackofficeBean extends GenericBean {
 
     private void inicializarVariaveis() {
 
-        this.listStatusAtendimento = this.statusAtendimentoService.pesquisarStatusAtendimentoPorAcao(Arrays.asList(AcaoStatusAtendimentoEnum.CONCLUIR, AcaoStatusAtendimentoEnum.DEVOLVER, AcaoStatusAtendimentoEnum.EM_ANALISE), retornarEmpresaUsuarioSessao().getId());
+        onChangeStatusFinal();
+
+        if (CollectionUtils.isNotEmpty(this.listDepartamento))
+            this.listStatusAtendimento = this.statusAtendimentoService.pesquisarStatusAtendimentoPorAcao(Arrays.asList(AcaoStatusAtendimentoEnum.CONCLUIR, AcaoStatusAtendimentoEnum.DEVOLVER, AcaoStatusAtendimentoEnum.EM_ANALISE, AcaoStatusAtendimentoEnum.DERIVAR), retornarEmpresaUsuarioSessao().getId());
+        else
+            this.listStatusAtendimento = this.statusAtendimentoService.pesquisarStatusAtendimentoPorAcao(Arrays.asList(AcaoStatusAtendimentoEnum.CONCLUIR, AcaoStatusAtendimentoEnum.DEVOLVER, AcaoStatusAtendimentoEnum.EM_ANALISE), retornarEmpresaUsuarioSessao().getId());
 
         if (this.atendimento != null && this.atendimento.getId() != null)
             this.listHistoricoAtendimento = this.historicoAtendimentoService.pesquisarHistoricoSacPorAtendimento(this.atendimento.getId());
 
         if (CollectionUtils.isNotEmpty(this.listHistoricoAtendimento)) {
 
-            // aplica filtro se necessário
+
             Optional<HistoricoAtendimento> primeiroAtnOp =
                     this.listHistoricoAtendimento.stream()
                             .filter(h -> h.getDataCadastro() != null).min(Comparator.comparing(HistoricoAtendimento::getDataCadastro));
@@ -148,11 +189,30 @@ public class TratativaBackofficeBean extends GenericBean {
     private void criarHistoricoAtendimento() throws ProativaException {
 
         HistoricoAtendimento historicoAtendimento = HistoricoAtendimento.fromAtendimento(this.atendimento);
+
+        if (atendimento.getStatus().getAcao().equals(AcaoStatusAtendimentoEnum.DERIVAR) && departamentoParaDerivar != null) {
+            historicoAtendimento.setDepartamentoAnterior(atendimento.getDepartamentoAnterior());
+            historicoAtendimento.setDepartamentoDerivado(atendimento.getDepartamentoDerivado());
+        }
+
         inserir(historicoAtendimento);
 
     }
 
     public void buscarHistorico() {
+
+    }
+
+    public void onChangeStatusFinal() {
+
+//        if (this.atendimento.getStatus().getAcao().equals(AcaoStatusAtendimentoEnum.DERIVAR) && CollectionUtils.isEmpty(this.listDepartamento)) {
+
+        if (this.usuario.getPerfil().equals(PerfilUsuarioEnum.OPERADOR_BACKOFFICE))
+            this.listDepartamento = this.departamentoService.buscarDepartamentosSemUsuario(retornarUsuarioSessao().getId());
+        else
+            this.listDepartamento = this.departamentoService.listarDepartamentosAtivos(TipoAcessoEnum.ATIVO);
+
+        //    }
 
     }
 
@@ -214,5 +274,25 @@ public class TratativaBackofficeBean extends GenericBean {
 
     public void setRepostaN2Aux(String repostaN2Aux) {
         this.repostaN2Aux = repostaN2Aux;
+    }
+
+    public Departamento getDepartamentoParaDerivar() {
+        return departamentoParaDerivar;
+    }
+
+    public void setDepartamentoParaDerivar(Departamento departamentoParaDerivar) {
+        this.departamentoParaDerivar = departamentoParaDerivar;
+    }
+
+    public List<Departamento> getListDepartamento() {
+        return listDepartamento;
+    }
+
+    public boolean isRetornoN2() {
+        return retornoN2;
+    }
+
+    public StatusAtendimento getStatusAtendimentoAnterior() {
+        return statusAtendimentoAnterior;
     }
 }

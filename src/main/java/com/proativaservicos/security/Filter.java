@@ -10,7 +10,10 @@ import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpSession;
 import org.omnifaces.util.Faces;
 import org.omnifaces.util.Messages;
+
 import java.io.IOException;
+import java.util.Arrays;
+import java.util.List;
 
 // Nota: Registre esta classe no faces-config.xml
 public class Filter implements PhaseListener {
@@ -56,7 +59,7 @@ public class Filter implements PhaseListener {
         // Se a página atual NÃO for a ficha de atendimento, removemos os atributos da sessão.
         // Isso resolve seu problema de "destruir o setAttribute quando sair da página".
         if (!page.contains("/atendimento/fichaAtendimento")) { // Ajuste o caminho conforme seu XHTML
-           // System.out.println("REMOVENDO ATN,,,,");
+            // System.out.println("REMOVENDO ATN,,,,");
          /*   if (sessao != null) {
                 sessao.removeAttribute("atendimento_iniciado");
                 sessao.removeAttribute("cpf_atn");
@@ -87,8 +90,9 @@ public class Filter implements PhaseListener {
                 }
             }
 
+
             // Validação de Permissão (ACL)
-            if (isUsrSession && validarPermissaoUsuario() && !page.endsWith("/index.jsf")) {
+            if (!validarTratativas() && ( isUsrSession && validarPermissaoUsuario() && !page.endsWith("/index.jsf"))) {
                 Faces.redirect(Faces.getRequestContextPath() + "/pages/erro/access.jsf");
             }
 
@@ -101,6 +105,20 @@ public class Filter implements PhaseListener {
         }
     }
 
+    private boolean validarTratativas() {
+
+        Usuario usuario = (Usuario) Faces.getSessionAttribute("usuario");
+        if (usuario == null) return false;
+
+        String page = Faces.getRequestURI();
+
+        List<PerfilUsuarioEnum> listLiberados = Arrays.asList(PerfilUsuarioEnum.OPERADOR_BACKOFFICE, PerfilUsuarioEnum.COORDENADOR, PerfilUsuarioEnum.DIRETOR);
+        boolean usuarioPermitido = listLiberados.contains(usuario.getPerfil());
+        return usuarioPermitido && page.contains("/tratativa_n2.jsf");
+
+
+    }
+
     private void realizarLogoutForcado(HttpSession sessao, String mensagem) throws IOException, ServletException {
 
         Faces.logout();
@@ -111,6 +129,7 @@ public class Filter implements PhaseListener {
     }
 
     private boolean validarPermissaoUsuario() {
+
         Usuario usuario = (Usuario) Faces.getSessionAttribute("usuario");
         if (usuario == null) return false;
 
@@ -118,13 +137,13 @@ public class Filter implements PhaseListener {
         if (PerfilUsuarioEnum.ADMIN.equals(usuario.getPerfil())) return false;
 
         SubMenuEnum subMenuEnum = SubMenuEnum.getSubMenu(Faces.getRequestURI());
-
+        String page = Faces.getRequestURI();
         // Se a página não está mapeada no Enum, talvez deva liberar ou bloquear (depende da regra)
         if (subMenuEnum == null) {
-            String page = Faces.getRequestURI();
-            // Libera páginas padrão de erro e home
+
             return !page.contains("/erro") && !page.contains("/home");
         }
+
 
         boolean temPermissaoExplicita = subMenuEnum.getMenu().getListPermicoes().contains(usuario.getPerfil());
         boolean acessoNegadoExplicito = subMenuEnum.getListPermecaoNegada().contains(usuario.getPerfil());

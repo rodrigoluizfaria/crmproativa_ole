@@ -77,6 +77,7 @@ public class ConsultaBackofficeBean extends GenericBean {
     public void pesquisar() {
 
         System.out.println("Filtro: " + tipoFiltro);
+
         switch (this.tipoFiltro) {
             case "CPF":
                 this.filtroProtocolo = null;
@@ -103,7 +104,7 @@ public class ConsultaBackofficeBean extends GenericBean {
 
         } else if (CollectionUtils.isNotEmpty(listDepartamento)) {
 
-            List<Long> ids = this.listAtendimento.stream().filter(Objects::nonNull).map(Atendimento::getId).collect(Collectors.toList());
+            List<Long> ids = this.listDepartamento.stream().filter(Objects::nonNull).map(Departamento::getId).collect(Collectors.toList());
             this.listAtendimento = this.serviceAtendimento.pesquisarAtendimentosSacFiltros(filtroProtocolo, filtroCpf, ids);
         }
 

@@ -1146,6 +1146,27 @@
 
                         </p:tab>
 
+                        <p:tab title="Motivos">
+
+                            <div class="col-6 formgrid grid mt-5">
+
+                                <p:pickList id="pckListMotivos"
+                                            value="#{campanhaBean.dualListMotivos}" var="m"
+                                            itemLabel="#{m.descricao}" itemValue="#{m}" responsive="true"
+                                            showSourceFilter="true" showTargetFilter="true">
+
+                                    <f:facet name="sourceCaption">#{msg.naoAssociados}</f:facet>
+                                    <f:facet name="targetCaption">#{msg.associados}</f:facet>
+
+                                    <o:converter converterId="omnifaces.ListConverter"
+                                                 list="#{campanhaBean.listMotivos}"/>
+
+                                </p:pickList>
+
+                            </div>
+
+                        </p:tab>
+
                         <p:tab title="Status Telefone">
 
 

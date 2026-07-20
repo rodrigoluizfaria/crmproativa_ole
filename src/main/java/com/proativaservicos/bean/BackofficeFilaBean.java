@@ -3,6 +3,7 @@ package com.proativaservicos.bean;
 import com.proativaservicos.model.*;
 import com.proativaservicos.service.AtendimentoService;
 import com.proativaservicos.service.DepartamentoService;
+import com.proativaservicos.service.HistoricoAtendimentoService;
 import com.proativaservicos.service.asynchronous.produtoseguros.TipoPagamento;
 import com.proativaservicos.util.constantes.AcaoStatusAtendimentoEnum;
 import com.proativaservicos.util.constantes.PerfilUsuarioEnum;
@@ -28,6 +29,9 @@ public class BackofficeFilaBean extends GenericBean implements Serializable {
     @Inject
     private DepartamentoService departamentoService;
 
+    @Inject
+    private HistoricoAtendimentoService historicoAtendimentoService;
+
     private long idAtendimento;
 
     private long qtdAndamento;
@@ -42,6 +46,8 @@ public class BackofficeFilaBean extends GenericBean implements Serializable {
     private Atendimento atendimento;
 
     private List<Departamento> listDepartamentosAssociados;
+
+    private List<HistoricoAtendimento> listHistoricoAtendimento;
 
 
     private Usuario usuario;
@@ -75,7 +81,6 @@ public class BackofficeFilaBean extends GenericBean implements Serializable {
             this.listDepartamentosAssociados = this.departamentoService.listarDepartamentosAtivos(null);
         }
 
-        //  carregarMocadaFila();
         pesquisar();
         this.tipoPaginaEnum = TipoPaginaEnum.PESQUISA;
 
@@ -98,9 +103,10 @@ public class BackofficeFilaBean extends GenericBean implements Serializable {
                     idDepartamento
             );
 
-        } else if (CollectionUtils.isNotEmpty(listaAtendimentos)) {
+        } else if (CollectionUtils.isNotEmpty(listDepartamentosAssociados)) {
 
             List<Long> ids = listDepartamentosAssociados.stream().filter(Objects::nonNull).map(Departamento::getId).collect(Collectors.toList());
+
             this.listaAtendimentos = atendimentoService.pesquisarAtendimentosSacFiltrosDepartamento(
                     filtroProtocolo,
                     filtroCpf,
@@ -269,6 +275,12 @@ public class BackofficeFilaBean extends GenericBean implements Serializable {
         this.atendimentoSelecionado = this.atendimentoService.pesquisarAtendimentoSacPorCodigo(idAtendimento);
     }
 
+    public void buscarHistorico(Long codigoAtendimento) {
+
+        this.listHistoricoAtendimento = this.historicoAtendimentoService.pesquisarHistoricoSacPorAtendimento(codigoAtendimento);
+
+    }
+
     public TipoPaginaEnum getTipoPaginaEnum() {
         return tipoPaginaEnum;
     }
@@ -323,5 +335,9 @@ public class BackofficeFilaBean extends GenericBean implements Serializable {
 
     public long getQtdPrazoEstourado() {
         return qtdPrazoEstourado;
+    }
+
+    public List<HistoricoAtendimento> getListHistoricoAtendimento() {
+        return listHistoricoAtendimento;
     }
 }

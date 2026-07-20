@@ -86,6 +86,9 @@ public class CampanhaBean extends GenericBean implements Serializable {
     private StatusTelefoneService serviceStatusTelefone;
 
     @Inject
+    private MotivoService motivoService;
+
+    @Inject
     private QuestionarioService serviceQuestionatio;
 
     @Inject
@@ -132,6 +135,10 @@ public class CampanhaBean extends GenericBean implements Serializable {
     private List<StatusAtendimento> listStatusAtendimentos;
     private List<StatusAtendimento> listStatusAtendimentosAssociados;
 
+    private List<Motivo> listMotivos;
+
+    private List<Motivo> listMotivosAssociados;
+
     private List<FormaPagamento> listFormaPagamento;
     private List<FormaPagamento> listFormaPagamentoAssociados;
 
@@ -161,7 +168,9 @@ public class CampanhaBean extends GenericBean implements Serializable {
     private TipoPaginaEnum tipoPagina;
 
     private DualListModel<Equipe> dualListEquipes;
+
     private DualListModel<StatusAtendimento> dualListStatusAtendimento;
+    private DualListModel<Motivo> dualListMotivos;
     private DualListModel<Produto> dualListProduto;
     private DualListModel<FormaPagamento> dualListFormaPagamento;
     private DualListModel<Pausa> dualListPausa;
@@ -508,6 +517,9 @@ public class CampanhaBean extends GenericBean implements Serializable {
 
             this.listStatusAtendimentosAssociados = new ArrayList<>();
 
+            this.listMotivos = this.motivoService.pesquisarMotivos(null, TipoAcessoEnum.ATIVO);
+            this.listMotivosAssociados = new ArrayList<>();
+
             this.listProdutos = this.serviceProduto.pesquisarProdutosPorEmpresa(retornarEmpresaMatrizUsuarioSessao().getId());
 
             this.listProdutosAssociados = new ArrayList<>();
@@ -529,6 +541,7 @@ public class CampanhaBean extends GenericBean implements Serializable {
 
             this.dualListEquipes = new DualListModel<>();
             this.dualListStatusAtendimento = new DualListModel<>();
+            this.dualListMotivos = new DualListModel<>();
             this.dualListProduto = new DualListModel<>();
             this.dualListFormaPagamento = new DualListModel<>();
             this.dualListPausa = new DualListModel<>();
@@ -621,7 +634,7 @@ public class CampanhaBean extends GenericBean implements Serializable {
             limparDadosCampoOrientacao(this.campanha);
             boolean isSalvar = false;
 
-            if (this.campanha.getTipoCampanha().equals(TipoCampanhaEnum.PREDITIVA) || this.campanha.getTipoCampanha().equals(TipoCampanhaEnum.PREDITIVA_3C) || this.campanha.getTipoCampanha().equals(TipoCampanhaEnum.PREDITIVA_ARGUS) ) {
+            if (this.campanha.getTipoCampanha().equals(TipoCampanhaEnum.PREDITIVA) || this.campanha.getTipoCampanha().equals(TipoCampanhaEnum.PREDITIVA_3C) || this.campanha.getTipoCampanha().equals(TipoCampanhaEnum.PREDITIVA_ARGUS)) {
 
                 this.statusTelefonePreditivo = this.serviceStatusTelefone.pesquisarStatusTelefone(retornarEmpresaMatrizUsuarioSessao().getId(), "Entregue Pelo Discador");
 
@@ -650,7 +663,10 @@ public class CampanhaBean extends GenericBean implements Serializable {
                 this.campanha.setDataCadastro(new Date(System.currentTimeMillis()));
 
                 inserir(this.campanha, false);
-                inicializarDualListsVinculacoes(new ArrayList<>(), new ArrayList<>(), new ArrayList<>(), new ArrayList<>(), new ArrayList<>(), new ArrayList<>(), new ArrayList<>());
+
+                inicializarDualListsVinculacoes(new ArrayList<>(), new ArrayList<>(), new ArrayList<>(),
+                        new ArrayList<>(), new ArrayList<>(), new ArrayList<>(),
+                        new ArrayList<>(), new ArrayList<>());
 
                 if (this.campanha.getTipoCampanha().equals(TipoCampanhaEnum.PREDITIVA)) {
 
@@ -751,6 +767,13 @@ public class CampanhaBean extends GenericBean implements Serializable {
         if (verificarListaNaoVazia(this.dualListStatusAtendimento.getTarget())) {
 
             this.campanha.setListStatusAtendimentos(this.dualListStatusAtendimento.getTarget());
+        }
+
+        this.campanha.setListMotivos(new ArrayList<>());
+
+        if (verificarListaNaoVazia(this.dualListMotivos.getTarget())) {
+            this.campanha.setListMotivos(this.dualListMotivos.getTarget());
+
         }
 
         this.campanha.setListStatusTelefone(new ArrayList<>());
@@ -883,6 +906,7 @@ public class CampanhaBean extends GenericBean implements Serializable {
         List<FormaPagamento> listFormaPagamentoAssociadas = new ArrayList<FormaPagamento>();
         List<StatusTelefone> listStatusTelefoneAssociadas = new ArrayList<StatusTelefone>();
         List<StatusAtendimento> listStatusAtendimentoAssociadas = new ArrayList<StatusAtendimento>();
+        List<Motivo> listMotivosAssociados = new ArrayList<>();
         List<Pausa> listPausasAssociadas = new ArrayList<Pausa>();
         List<Produto> listProdutosAssociadas = new ArrayList<Produto>();
         List<Questionario> listQuestionatio = new ArrayList<Questionario>();
@@ -899,7 +923,9 @@ public class CampanhaBean extends GenericBean implements Serializable {
             preencherListas(retornarEmpresaUsuarioSessao());
         }
 
-        inicializarDualListsVinculacoes(this.listEquipesAssociados, listStatusAtendimentoAssociadas, listPausasAssociadas, listStatusTelefoneAssociadas, listProdutosAssociadas, listFormaPagamentoAssociadas, listQuestionatio);
+        inicializarDualListsVinculacoes(this.listEquipesAssociados, listStatusAtendimentoAssociadas,
+                listPausasAssociadas, listStatusTelefoneAssociadas, listProdutosAssociadas,
+                listFormaPagamentoAssociadas, listQuestionatio, listMotivosAssociados);
 
         this.tipoPagina = TipoPaginaEnum.CADASTRO;
 
@@ -920,6 +946,7 @@ public class CampanhaBean extends GenericBean implements Serializable {
             List<Equipe> listEquipesAssociadas = new ArrayList<Equipe>();
             List<FormaPagamento> listFormaPagamentoAssociadas = new ArrayList<FormaPagamento>();
             List<StatusTelefone> listStatusTelefoneAssociadas = new ArrayList<StatusTelefone>();
+            List<Motivo> listaMotivoAssociados = new ArrayList<Motivo>();
             List<StatusAtendimento> listStatusAtendimentoAssociadas = new ArrayList<StatusAtendimento>();
             List<Pausa> listPausasAssociadas = new ArrayList<Pausa>();
             List<Produto> listProdutosAssociadas = new ArrayList<Produto>();
@@ -943,7 +970,9 @@ public class CampanhaBean extends GenericBean implements Serializable {
 
             for (FormaPagamento formaPagamento : this.campanha.getListFormaPagamento()) {
 
-                listFormaPagamentoAssociadas.add(new FormaPagamento(formaPagamento.getId(), formaPagamento.getDescricao(), formaPagamento.getParametro(), formaPagamento.getAtivo()));
+                listFormaPagamentoAssociadas.add(new FormaPagamento(formaPagamento.getId(),
+                        formaPagamento.getDescricao(), formaPagamento.getParametro(),
+                        formaPagamento.getAtivo()));
 
             }
 
@@ -955,7 +984,13 @@ public class CampanhaBean extends GenericBean implements Serializable {
 
             for (StatusAtendimento statusAtendimento : this.campanha.getListStatusAtendimentos()) {
 
-                listStatusAtendimentoAssociadas.add(new StatusAtendimento(statusAtendimento.getId(), statusAtendimento.getDescricao(), statusAtendimento.getAcao(), statusAtendimento.getAtivo()));
+                listStatusAtendimentoAssociadas.add(new StatusAtendimento(statusAtendimento.getId(),
+                        statusAtendimento.getDescricao(), statusAtendimento.getAcao(),
+                        statusAtendimento.getAtivo()));
+            }
+
+            for (Motivo motivo : this.campanha.getListMotivos()) {
+                listaMotivoAssociados.add(new Motivo(motivo.getId(), motivo.getDescricao(), motivo.getAcao(), motivo.getAcesso()));
             }
 
             for (Pausa pausa : campanha.getListPausa()) {
@@ -979,7 +1014,9 @@ public class CampanhaBean extends GenericBean implements Serializable {
 
             gerarTotalEnvioDiscador();
 
-            inicializarDualListsVinculacoes(listEquipesAssociadas, listStatusAtendimentoAssociadas, listPausasAssociadas, listStatusTelefoneAssociadas, listProdutosAssociadas, listFormaPagamentoAssociadas, listQuestionarioAssociado);
+            inicializarDualListsVinculacoes(listEquipesAssociadas, listStatusAtendimentoAssociadas, listPausasAssociadas,
+                    listStatusTelefoneAssociadas, listProdutosAssociadas, listFormaPagamentoAssociadas,
+                    listQuestionarioAssociado, listaMotivoAssociados);
 
             if (this.campanha.getIntegrarWs() != null) {
 
@@ -1030,8 +1067,7 @@ public class CampanhaBean extends GenericBean implements Serializable {
                 Messages.addGlobalError(e.getMessage());
             }
 
-        }else if (this.campanha.getTipoCampanha().equals(TipoCampanhaEnum.PREDITIVA_ARGUS) && this.campanha.getSkillIten() == null ) {
-
+        } else if (this.campanha.getTipoCampanha().equals(TipoCampanhaEnum.PREDITIVA_ARGUS) && this.campanha.getSkillIten() == null) {
 
 
             IntegracaoWs integracaoWs = this.serviceIntegracao.pesquisarIntegracoes(TipoIntegracaoEnum.ARGUS, retornarEmpresaMatrizUsuarioSessao().getId(), TipoAcessoEnum.ATIVO);
@@ -1262,7 +1298,7 @@ public class CampanhaBean extends GenericBean implements Serializable {
     private void inicializarDualListsVinculacoes(List<Equipe> listaEquipeAssociados,
                                                  List<StatusAtendimento> listaStatusAtendimentoAssociados, List<Pausa> listaMotivoPausaAssociados,
                                                  List<StatusTelefone> listaStatusTelefoneAssociados, List<Produto> listaProdutoAssociados,
-                                                 List<FormaPagamento> listaFormaPagamentoAssociados, List<Questionario> listQuestionario) {
+                                                 List<FormaPagamento> listaFormaPagamentoAssociados, List<Questionario> listQuestionario, List<Motivo> listMotivosAssociados) {
 
         this.dualListEquipes = new DualListModel<Equipe>(
                 (List<Equipe>) CollectionUtils.subtract(this.listEquipes, listaEquipeAssociados),
@@ -1271,6 +1307,11 @@ public class CampanhaBean extends GenericBean implements Serializable {
         this.dualListStatusAtendimento = new DualListModel<StatusAtendimento>((List<StatusAtendimento>) CollectionUtils
                 .subtract(this.listStatusAtendimentos, listaStatusAtendimentoAssociados),
                 listaStatusAtendimentoAssociados);
+
+        this.dualListMotivos = new DualListModel<Motivo>((List<Motivo>) CollectionUtils
+                .subtract(this.listMotivos, listMotivosAssociados),
+                listMotivosAssociados);
+
 
         this.dualListPausa = new DualListModel<Pausa>(
                 (List<Pausa>) CollectionUtils.subtract(this.listPausa, listaMotivoPausaAssociados),
@@ -1288,7 +1329,7 @@ public class CampanhaBean extends GenericBean implements Serializable {
 
         this.listaTipoConsultasDisponiveis = new ArrayList<TipoConsultaEnum>();
 
-        this.listaTipoConsultasDisponiveis.addAll(Arrays.asList(new TipoConsultaEnum[]{TipoConsultaEnum.SAQUE, TipoConsultaEnum.SEGURO, TipoConsultaEnum.SEGURO_PAPCARD_PARCELADO, TipoConsultaEnum.SEGURO_BMG_MED, TipoConsultaEnum.REFIN, TipoConsultaEnum.CARTAO_BENEFICIO,TipoConsultaEnum.SAQUE_MASTER}));
+        this.listaTipoConsultasDisponiveis.addAll(Arrays.asList(new TipoConsultaEnum[]{TipoConsultaEnum.SAQUE, TipoConsultaEnum.SEGURO, TipoConsultaEnum.SEGURO_PAPCARD_PARCELADO, TipoConsultaEnum.SEGURO_BMG_MED, TipoConsultaEnum.REFIN, TipoConsultaEnum.CARTAO_BENEFICIO, TipoConsultaEnum.SAQUE_MASTER}));
 
         this.dualListQuestionario = new DualListModel<Questionario>((List<Questionario>) CollectionUtils.subtract(this.listFormularios, listQuestionario), listQuestionario);
 
@@ -1340,7 +1381,7 @@ public class CampanhaBean extends GenericBean implements Serializable {
 
                 this.listConsultaBeneficio = this.serviceIntegracao.pesquisarIntegracoes(integracaoPossiveis, this.campanha.getEmpresa().getId(), TipoAcessoEnum.ATIVO);
 
-            }else if (TipoConsultaEnum.SAQUE_MASTER.equals(this.tipoConsultaEscolhido)) {
+            } else if (TipoConsultaEnum.SAQUE_MASTER.equals(this.tipoConsultaEscolhido)) {
 
                 this.listConsultaMaster = this.serviceIntegracao.pesquisarIntegracoes(integracaoPossiveis, this.campanha.getEmpresa().getId(), TipoAcessoEnum.ATIVO);
 
@@ -1669,10 +1710,10 @@ public class CampanhaBean extends GenericBean implements Serializable {
                         System.out.println("CONSULTA PAN....");
                         this.consultaSimulacaoPan.consultarSimulacaoSaque(importacao, this.campanha, this.usuario, getEmpresa());
 
-                    } else if(this.campanha.getIntegrarWs().getTipoIntegracao().equals(TipoIntegracaoEnum.API_BANCO_MASTER)){
-                        this.consultaMaster.consultarSaque(importacao,this.campanha,this.usuario,getEmpresa());
+                    } else if (this.campanha.getIntegrarWs().getTipoIntegracao().equals(TipoIntegracaoEnum.API_BANCO_MASTER)) {
+                        this.consultaMaster.consultarSaque(importacao, this.campanha, this.usuario, getEmpresa());
 
-                    }else
+                    } else
 
                         this.consultaSaque.consultarSaqueComplementar(importacao, this.campanha, this.usuario, getEmpresa());
 
@@ -1680,7 +1721,7 @@ public class CampanhaBean extends GenericBean implements Serializable {
 
                 }
 
-            }  else
+            } else
                 throw new ProativaException("Está ação está disponível para esta integração.");
 
 
@@ -2336,5 +2377,21 @@ public class CampanhaBean extends GenericBean implements Serializable {
 
     public List<IntegracaoWs> getListConsultaMaster() {
         return listConsultaMaster;
+    }
+
+    public List<Motivo> getListMotivos() {
+        return listMotivos;
+    }
+
+    public void setListMotivos(List<Motivo> listMotivos) {
+        this.listMotivos = listMotivos;
+    }
+
+    public DualListModel<Motivo> getDualListMotivos() {
+        return dualListMotivos;
+    }
+
+    public void setDualListMotivos(DualListModel<Motivo> dualListMotivos) {
+        this.dualListMotivos = dualListMotivos;
     }
 }

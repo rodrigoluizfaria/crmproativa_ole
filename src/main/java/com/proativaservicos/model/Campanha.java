@@ -191,6 +191,11 @@ public class Campanha extends GenericControle {
 	// SEM RELACIONAMENTO
 	@OneToMany(mappedBy = "campanha")
 	private List<CampanhaOrdenacao> listCampanhaOrdenacao;
+
+
+	@ManyToMany(fetch = FetchType.LAZY)
+	@JoinTable(name = "campanha_motivo", joinColumns = {@JoinColumn(name = "campanha") }, inverseJoinColumns = { @JoinColumn(name = "motivo") })
+	private List<Motivo> listMotivos;
 	
 	
 	@Column(name = "cod_importacao_pwd")
@@ -683,5 +688,13 @@ public Campanha(Long id,String descricao) {
 
 	public void setSkillIten(RetornoGetSkillsIten skillIten) {
 		this.skillIten = skillIten;
+	}
+
+	public List<Motivo> getListMotivos() {
+		return listMotivos;
+	}
+
+	public void setListMotivos(List<Motivo> listMotivos) {
+		this.listMotivos = listMotivos;
 	}
 }

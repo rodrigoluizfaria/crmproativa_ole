@@ -290,9 +290,10 @@
                             <div class="flex flex-column">
 
                                  <span class="font-bold text-900">#{of:replaceAll(agente[5], 'CAMPANHA:', '')}</span>
+
                                 <h:panelGroup rendered="#{not empty agente[4]}" styleClass="mt-1">
 
-                                     <span class="#{supervisorMonitorAtividadeBean.getEventoCss(agente[4])} px-2 py-0 border-round text-xs font-bold inline-flex align-items-center"
+                                     <span class="#{supervisorMonitorAtividadeBean.getEventoCss(agente[4])} px-2 py-1 border-round text-xs font-bold inline-flex align-items-center"
                                            style="width: fit-content;">
                                         <i class="#{supervisorMonitorAtividadeBean.getEventoIcon(agente[4])} mr-1 text-xs"></i>
                                          #{agente[4]}

@@ -37,6 +37,7 @@ public class RelatorioSacBean extends GenericBean {
 
     @PostConstruct
     public void init() {
+
         filtro.setDataInicio(DateUtil.builder(new Date()).retornarDataPrimeiroDiaMes().getData());
         filtro.setDataFim(DateUtil.builder(new Date()).retornarDataUltimoDiaMes().getData());
 
@@ -51,11 +52,13 @@ public class RelatorioSacBean extends GenericBean {
             Messages.addGlobalWarn("Nenhum registro encontrado para os filtros informados.");
         }
     }
+
     public void limpar() {
         this.filtro = new RelatorioFiltroDto();
         this.listaRelatorio = null;
         init();
     }
+
     public String getDataAtualFormatada() {
         return new SimpleDateFormat("yyyyMMdd_HHmm").format(new Date());
     }
@@ -63,6 +66,7 @@ public class RelatorioSacBean extends GenericBean {
     public RelatorioFiltroDto getFiltro() {
         return filtro;
     }
+
 
     public void setFiltro(RelatorioFiltroDto filtro) {
         this.filtro = filtro;

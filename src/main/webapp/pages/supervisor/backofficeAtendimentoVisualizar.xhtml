@@ -8,8 +8,7 @@
              xmlns:cc="http://java.sun.com/jsf/composite/componentes">
 
     <style>
-        /* CORREÇÃO: Aplica o Flexbox APENAS quando o dialog estiver visível (aria-hidden="false") */
-        /* Isso impede que ele abra sozinho ao carregar a página */
+
         body .dlg-flex-fix.ui-dialog[aria-hidden="false"] {
             display: flex !important;
             flex-direction: column !important;
@@ -18,7 +17,7 @@
             max-height: 100vh !important;
         }
 
-        /* Garante que o conteúdo ocupe o espaço restante */
+
         body .dlg-flex-fix .ui-dialog-content {
             flex: 1 1 auto !important;
             width: 100% !important;
@@ -29,7 +28,7 @@
             flex-direction: column !important;
         }
 
-        /* Scrollbars e Tabs */
+
         .custom-scroll::-webkit-scrollbar {
             width: 6px;
         }
@@ -226,9 +225,9 @@
                                                          style="top: -8px; left: 20px; transform: rotate(45deg);"></div>
 
                                                     <div style="white-space: pre-wrap; word-break: break-word;">
-                                                        <h:outputText value="#{supervisorBackofficeBean.atendimentoVisualizar.observacao}"
+                                                        <h:outputText value="#{supervisorBackofficeBean.atendimentoVisualizar.observacao}" escape="false"
                                                                       rendered="#{not empty supervisorBackofficeBean.atendimentoVisualizar.observacao}"/>
-                                                        <h:outputText value="Sem observação de envio."
+                                                        <h:outputText value="Sem observação de envio." escape="false"
                                                                       rendered="#{empty supervisorBackofficeBean.atendimentoVisualizar.observacao}"
                                                                       styleClass="font-italic text-400"/>
                                                     </div>
@@ -264,7 +263,7 @@
 
                                             <div class="text-900 line-height-3 text-lg"
                                                  style="white-space: pre-wrap; word-break: break-word;">
-                                                <h:outputText value="#{supervisorBackofficeBean.atendimentoVisualizar.observacao}"
+                                                <h:outputText value="#{supervisorBackofficeBean.atendimentoVisualizar.observacao}" escape="false"
                                                               rendered="#{not empty supervisorBackofficeBean.atendimentoVisualizar.observacao}"/>
                                                 <h:outputText value="Nenhuma observação registrada."
                                                               rendered="#{empty supervisorBackofficeBean.atendimentoVisualizar.observacao}"
@@ -320,6 +319,13 @@
                                     <h:panelGroup
                                             rendered="#{not empty supervisorBackofficeBean.atendimentoVisualizar.cliente}">
 
+                                        <div class="p-3 border-bottom-1 border-100 bg-gray-50 mt-3 mb-3">
+                                            <span class="font-bold text-900">
+
+                                            <i class="pi pi-at mr-2 text-indigo-500">
+                                            </i>E-mail: #{supervisorBackofficeBean.atendimentoVisualizar.cliente.email}</span>
+                                        </div>
+
                                         <div class="p-3 border-bottom-1 border-100 bg-gray-50">
                                             <span class="font-bold text-900">
 
@@ -341,7 +347,7 @@
 
                                         </p:dataTable>
 
-                                        <div class="p-3 border-bottom-1 border-100 bg-gray-50 border-top-1"><span
+                                        <div class="p-3 border-bottom-1 border-100 bg-gray-50 border-top-1 mt-3"><span
                                                 class="font-bold text-900"><i
                                                 class="pi pi-map-marker mr-2 text-indigo-500">
 
@@ -365,7 +371,7 @@
                                                       width="150">#{endereco.cidade} / #{endereco.uf}</p:column>
 
                                         </p:dataTable>
-                                        <div class="p-3 border-bottom-1 border-100 bg-gray-50 border-top-1"><span
+                                        <div class="p-3 border-bottom-1 border-100 bg-gray-50 border-top-1 mt-3"><span
                                                 class="font-bold text-900"><i
                                                 class="pi pi-wallet mr-2 text-indigo-500"></i>Dados Bancários</span>
                                         </div>
@@ -469,10 +475,10 @@
                                         <div class="flex justify-content-between align-items-baseline mb-1">
                                             <span class="font-bold text-900 text-sm">#{hist.statusAtendimento.descricao}</span>
                                             <span class="text-xs text-500 bg-gray-100 px-2 border-round">
-                    <h:outputText value="#{hist.dataCadastro}">
-                        <f:convertDateTime pattern="dd/MM HH:mm"/>
-                    </h:outputText>
-                </span>
+                                            <h:outputText value="#{hist.dataCadastro}">
+                                                <f:convertDateTime pattern="dd/MM HH:mm"/>
+                                            </h:outputText>
+                                      </span>
                                         </div>
 
                                         <div class="text-xs text-500 flex align-items-center mb-2">
@@ -482,7 +488,7 @@
                                         <h:panelGroup rendered="#{not empty hist.observacao}">
                                             <div class="surface-100 p-2 border-round text-xs text-600 font-italic line-height-3 border-1 border-100 relative mb-1"
                                                  style="word-break: break-word;">
-                                                "#{of:abbreviate(hist.observacao, 100)}"
+                                                "#{of:abbreviate(of:stripTags(hist.observacao), 100)}"
                                             </div>
                                         </h:panelGroup>
 
@@ -491,10 +497,9 @@
                                                  style="word-break: break-word;">
                                                 <i class="pi pi-reply mr-1 text-green-600" style="transform: rotate(180deg)"></i>
                                                 <span class="font-bold text-green-700 mr-1">N2:</span>
-                                                "#{of:abbreviate(hist.respostaN2, 100)}"
+                                                "#{of:abbreviate(of:stripTags(hist.respostaN2), 100)}"
                                             </div>
                                         </h:panelGroup>
-
                                     </div>
 
                                 </div>

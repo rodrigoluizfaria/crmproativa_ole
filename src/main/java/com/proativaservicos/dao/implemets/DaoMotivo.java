@@ -21,6 +21,7 @@ public class DaoMotivo extends GenericDao<Motivo> {
         query.append("from Motivo m ");
         query.append("\tleft join fetch m.listSubMotivos sb ");
         query.append("where m.empresa.id = :empresa ");
+        query.append(" order by m.descricao ");
 
         parametros.put("empresa", idEmpresa);
 
@@ -60,11 +61,11 @@ public class DaoMotivo extends GenericDao<Motivo> {
             parametros.put("desc", "%" + nomeMotivo.toUpperCase() + "%");
         }
 
-        if(tipoAcessoEnum != null){
+        if (tipoAcessoEnum != null) {
             query.append(" and m.acesso = :tipoAcesso ");
             parametros.put("tipoAcesso", tipoAcessoEnum);
         }
-
+        query.append("order by m.descricao ");
         return searchEntidades(DaoEnum.HQL_QUERRY, query.toString(), parametros);
     }
 
@@ -82,5 +83,21 @@ public class DaoMotivo extends GenericDao<Motivo> {
 
 
         return (Motivo) searchEntidade(DaoEnum.HQL_QUERRY, query.toString(), parametros);
+    }
+
+    public List<Motivo> pesquisarMotivosPorCamapanha(Long idCampanha) {
+
+        StringBuilder query = new StringBuilder();
+        query.append("select distinct m.* ");
+        query.append("from motivo m ");
+        query.append("  join campanha_motivo cm on m.id = cm.motivo ");
+        query.append("where cm.campanha = :campanha ");
+        query.append("\tand m.ativo = 'ATIVO' ");
+        query.append("order by m.descricao ");
+
+        Map<String, Object> parametros = new HashMap<>();
+        parametros.put("campanha", idCampanha);
+
+        return searchEntidades(DaoEnum.NATIVE_CLASSE, query.toString(), parametros);
     }
 }

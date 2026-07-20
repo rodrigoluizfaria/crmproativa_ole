@@ -36,6 +36,10 @@ public class CampanhaService extends GenericProService<Campanha> {
     private StatusAtendimentoService serviceStatusAtendimento;
 
     @Inject
+    private MotivoService serviceMotivo;
+
+
+    @Inject
     private ProdutoService serviceProduto;
 
     @Inject
@@ -71,6 +75,7 @@ public class CampanhaService extends GenericProService<Campanha> {
             campanha.setListFormaPagamento(this.serviceFormaPagamento.pesquisarFormaPagamentosPorCampanha(idCampanha));
             campanha.setListImportacao(serviceImportacao.pesquisarImportacaoPorCampanha(idCampanha));
             campanha.setListQuestionatios(this.serviceQuestionario.pesquisarQuestionatiosPorCampanha(idCampanha));
+            campanha.setListMotivos(this.serviceMotivo.pesquisarMotivosPorCamapanha(idCampanha));
 
         }
 

@@ -9,10 +9,11 @@ public enum TipoCampanhaEnum {
 	PREDITIVA_ARGUS("Preditiva - Argus"),
 	CONSULTA("Consulta"),
 	RECEPTIVA("Receptiva"),
-	SAC("SAC");
-	
+	SAC("SAC"),
+	OUVIDORIA("Ouvidoria");
 
-	public String constante;
+
+	public final String constante;
 
 	private TipoCampanhaEnum(String valor) {
 		// TODO Auto-generated constructor stub

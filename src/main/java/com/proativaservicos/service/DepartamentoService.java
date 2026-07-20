@@ -36,6 +36,11 @@ public class DepartamentoService extends GenericProService<Departamento> {
         return this.dao.listarDepartamentos(acessoEnum);
     }
 
+    public List<Departamento> buscarDepartamentosSemUsuario(Long idUsuario) {
+        return dao.buscarDepartamentosSemUsuario(idUsuario);
+    }
+
+
     public List<Departamento> pesquisarDepartamentosAssociadosPorUsuario(Long idUsuario) {
         return this.dao.pesquisarDepartamentosAssociadosPorUsuario(idUsuario);
     }

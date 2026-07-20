@@ -436,6 +436,8 @@ public class DaoHistoricoAtendimentoImp extends GenericDao<HistoricoAtendimento>
                 + " join fetch h.motivo m "
                 + " join fetch h.subMotivo sb "
                 + " left join fetch h.statusAtendimento sa "
+                + " left join fetch h.departamentoAnterior dpoa "
+                + " left join fetch h.departamentoDerivado dpo "
                 + " where a.id = :idAtendimento "
                 + "   and a.campanha.tipoCampanha = 'SAC'";
 

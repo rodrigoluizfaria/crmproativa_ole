@@ -45,6 +45,7 @@ public class UsuarioBean extends GenericBean  {
 
     @Inject
     private UsuarioService serviceUsuario;
+
     @Inject
     private EquipeService equipeService;
 

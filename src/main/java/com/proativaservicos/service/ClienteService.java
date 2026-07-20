@@ -3,6 +3,8 @@ package com.proativaservicos.service;
 import com.proativaservicos.dao.implemets.DaoCliente;
 import com.proativaservicos.dao.implemets.GenericDao;
 import com.proativaservicos.model.Cliente;
+import com.proativaservicos.util.constantes.TipoCampanhaEnum;
+import com.proativaservicos.util.constantes.TipoClienteEnum;
 import jakarta.ejb.Stateless;
 import jakarta.inject.Inject;
 
@@ -62,15 +64,9 @@ public class ClienteService extends GenericProService<Cliente> {
         Cliente cli = this.dao.pesquisarClienteComAtendimentosSacPorId(idCliente);
 
         if (cli != null) {
-            cli.setListCartoesCreditos(
-                    new ArrayList<>(this.cartaoCreditoService.pesquisarCartaoCreditoPorCliente(cli.getId()))
-            );
-            cli.setListEnderecos(
-                    new ArrayList<>(this.enderecoService.pesquisarEnderecoPorCliente(cli.getId()))
-            );
-            cli.setListEmails(
-                    new ArrayList<>(this.emailService.pesquisarEmailPorCliente(cli.getId()))
-            );
+            cli.setListCartoesCreditos(new ArrayList<>(this.cartaoCreditoService.pesquisarCartaoCreditoPorCliente(cli.getId())));
+            cli.setListEnderecos(new ArrayList<>(this.enderecoService.pesquisarEnderecoPorCliente(cli.getId())));
+            cli.setListEmails(new ArrayList<>(this.emailService.pesquisarEmailPorCliente(cli.getId())));
             cli.setListDadosBancarios(this.dadosBancariosService.pesquisarDadosBancariosPorCliente(cli.getId()));
         }
 
@@ -81,24 +77,26 @@ public class ClienteService extends GenericProService<Cliente> {
 
         if (cli != null) {
 
-            cli.setListAtendimentos(
-                    new ArrayList<>(this.atendimentoService.pesquisarAtendimentosSacPorCliente(cli.getId()))
-            );
+            cli.setListAtendimentos(new ArrayList<>(this.atendimentoService.pesquisarAtendimentosSacPorCliente(cli.getId())));
 
-            cli.setListCartoesCreditos(
-                    new ArrayList<>(this.cartaoCreditoService.pesquisarCartaoCreditoPorCliente(cli.getId()))
-            );
-            cli.setListEnderecos(
-                    new ArrayList<>(this.enderecoService.pesquisarEnderecoPorCliente(cli.getId()))
-            );
-            cli.setListEmails(
-                    new ArrayList<>(this.emailService.pesquisarEmailPorCliente(cli.getId()))
-            );
+            cli.setListCartoesCreditos(new ArrayList<>(this.cartaoCreditoService.pesquisarCartaoCreditoPorCliente(cli.getId())));
+            cli.setListEnderecos(new ArrayList<>(this.enderecoService.pesquisarEnderecoPorCliente(cli.getId())));
+            cli.setListEmails(new ArrayList<>(this.emailService.pesquisarEmailPorCliente(cli.getId())));
         }
 
     }
 
-    public void atualizarNomeCliente(String nome, String nomeMae, String nomePai, Date nascimento, Long idCliente) {
-        this.dao.atualizarNomeCliente(nome, nomeMae, nomePai, nascimento, idCliente);
+    public void atualizarNomeCliente(String nome, String nomeMae, String nomePai, Date nascimento, String email, Long idCliente, TipoClienteEnum tipoClienteEnum) {
+        this.dao.atualizarNomeCliente(nome, nomeMae, nomePai, nascimento, email, idCliente,tipoClienteEnum);
+    }
+
+    public Cliente pesquisarClientePorTelefone(String telefone) {
+
+        Long codigo = this.dao.pesquisarClientePorTelefone(telefone);
+        if (codigo != null) {
+            return this.dao.pesquisarClienteComAtendimentosSacPorId(codigo);
+        }
+
+        return null;
     }
 }

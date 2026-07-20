@@ -194,6 +194,41 @@ public class DaoTelefoneImp extends GenericDao<Telefone> implements Serializable
         return searchEntidades(DaoEnum.NATIVE_OBJECT, query.toString(), parametros);
     }
 
+    public List<Object[]> pesquisarTelefonesPorCpf(List<String> cpfs) {
+
+        StringBuilder query = new StringBuilder();
+
+        query.append("select distinct c.id, t.ddd, t.numero, st.descricao ");
+        query.append("from public.telefone t ");
+        query.append("\tjoin public.cliente c on t.cliente = c.id ");
+        query.append("\tleft join status_telefone st on st.id = t.status_telefone ");
+        query.append("where c.cpf in (:listCpf) ");
+
+        HashMap<String, Object> parametros = new HashMap<>();
+
+        parametros.put("listCpf", cpfs);
+
+        return searchEntidades(DaoEnum.NATIVE_OBJECT, query.toString(), parametros);
+    }
+
+    public List<Object[]> pesquisarTelefonesPorClientes(List<Long> clientes) {
+
+        StringBuilder query = new StringBuilder();
+
+        query.append("select distinct c.id, t.ddd, t.numero, st.descricao ");
+        query.append("from public.telefone t ");
+        query.append("\tjoin public.cliente c on t.cliente = c.id ");
+        query.append("\tleft join status_telefone st on st.id = t.status_telefone ");
+        query.append("where t.cliente in (:clientes) ");
+
+        HashMap<String, Object> parametros = new HashMap<>();
+
+        parametros.put("clientes", clientes);
+
+        return searchEntidades(DaoEnum.NATIVE_OBJECT, query.toString(), parametros);
+    }
+
+
     public List<Object[]> pesquisarTelefonesPorCpf(String cpf, Integer fist, Integer max) {
 
         StringBuilder query = new StringBuilder();

@@ -7,6 +7,7 @@ import jakarta.inject.Named;
 import org.apache.commons.lang3.StringUtils;
 
 import java.io.Serializable;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -50,6 +51,27 @@ public class DaoDepartamento extends GenericDao<Departamento> implements Seriali
 
         return searchEntidades(DaoEnum.HQL_QUERRY, jpql.toString(), parametros);
     }
+
+    public List<Departamento> buscarDepartamentosSemUsuario(Long idUsuario) {
+        if (idUsuario == null) {
+            return Collections.emptyList();
+        }
+
+        StringBuilder jpql = new StringBuilder();
+        Map<String, Object> parametros = new HashMap<>();
+
+        jpql.append("SELECT DISTINCT d FROM Departamento d ");
+        jpql.append(" WHERE NOT EXISTS ( ");
+        jpql.append("   SELECT u FROM d.listUsuariosDepartamento u ");
+        jpql.append("   WHERE u.id = :idUsuario ");
+        jpql.append(" )");
+
+        parametros.put("idUsuario", idUsuario);
+
+        return searchEntidades(DaoEnum.HQL_QUERRY, jpql.toString(), parametros);
+    }
+
+
 
 
     public List<Departamento> pesquisarDepartamentos(String descricao, TipoAcessoEnum acessoEnum) {

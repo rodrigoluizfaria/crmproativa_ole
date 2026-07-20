@@ -76,6 +76,15 @@ public class TelefoneService extends GenericProService<Telefone> implements Seri
 
         return this.dao.pesquisarTelefonesPorAtendimento(idsAtendimentos);
     }
+    public List<Object[]> pesquisarTelefonesPorCpf(List<String> cpfs) {
+
+        return this.dao.pesquisarTelefonesPorCpf(cpfs);
+    }
+
+    public List<Object[]> pesquisarTelefonesPorCliente(List<Long> idClientes) {
+
+        return this.dao.pesquisarTelefonesPorClientes(idClientes);
+    }
 
 
     public List<Object[]> pesquisarTelefonesPorCpf(String cpf, Integer fist, Integer max) {

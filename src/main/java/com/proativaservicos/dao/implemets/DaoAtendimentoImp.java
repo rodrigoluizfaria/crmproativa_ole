@@ -766,7 +766,7 @@ public class DaoAtendimentoImp extends GenericDao<Atendimento> implements Serial
         }
 
 
-        query.append("    AND c.tipo_campanha = 'SAC' ");
+        query.append("    AND c.tipo_campanha IN ('SAC','OUVIDORIA') ");
         query.append("    AND (a.status IS NULL OR s.acao LIKE 'AGENDAR%') ");
         query.append("    AND sc.acao <> 'SUSPENDER' ");
         query.append("ORDER BY a.data_alteracao");
@@ -796,7 +796,7 @@ public class DaoAtendimentoImp extends GenericDao<Atendimento> implements Serial
         query.append(" JOIN cliente cl ON a.cliente = cl.id ");
         query.append(" JOIN status_atendimento s ON a.status = s.id ");
         query.append(" JOIN campanha c ON a.campanha = c.id ");
-        query.append("WHERE c.tipo_campanha = 'SAC' ");
+        query.append("WHERE c.tipo_campanha IN ('SAC','OUVIDORIA') ");
         query.append("  AND a.usuario_cadastro = :usuario ");
 
         if (dataInicio != null && dataFim != null) {
@@ -825,7 +825,7 @@ public class DaoAtendimentoImp extends GenericDao<Atendimento> implements Serial
         query.append("FROM atendimento a ");
         query.append("    JOIN status_atendimento s ON a.status = s.id ");
         query.append("    JOIN campanha c ON a.campanha = c.id ");
-        query.append("WHERE c.tipo_campanha = 'SAC' ");
+        query.append("WHERE c.tipo_campanha IN ('SAC','OUVIDORIA') ");
         query.append("  AND a.usuario_cadastro = :usuario ");
 
         if (dataInicio != null && dataFim != null) {
@@ -857,7 +857,7 @@ public class DaoAtendimentoImp extends GenericDao<Atendimento> implements Serial
         query.append("FROM atendimento a ");
         query.append("    JOIN status_atendimento s ON a.status = s.id ");
         query.append("    JOIN campanha c ON a.campanha = c.id ");
-        query.append("WHERE c.tipo_campanha = 'SAC' ");
+        query.append("WHERE c.tipo_campanha IN ('SAC','OUVIDORIA') ");
         query.append("  AND a.usuario_cadastro = :usuario");
 
         Map<String, Object> parametros = new HashMap<>();
@@ -871,6 +871,31 @@ public class DaoAtendimentoImp extends GenericDao<Atendimento> implements Serial
         }
 
         return 0L;
+    }
+
+    public String retornarTmaDiario(Long usuario) {
+
+        String query = "SELECT COALESCE(CAST(avg(EXTRACT(EPOCH FROM (data_fim_atendimento - data_inicio_atendimento))) AS integer), 0) " +
+                "FROM atendimento " +
+                "WHERE data_inicio_atendimento IS NOT NULL " +
+                "  AND data_fim_atendimento IS NOT NULL " +
+                "  AND usuario_cadastro = :usuario " +
+                "  AND date(data_cadastro) = current_date";
+
+        Map<String, Object> parametros = new HashMap<>();
+        parametros.put("usuario", usuario);
+
+        Object ob = searchEntidade(DaoEnum.NATIVE_OBJECT, query, parametros);
+
+        if (ob != null) {
+            int totalSegundos = ((Number) ob).intValue();
+            int minutos = totalSegundos / 60;
+            int segundos = totalSegundos % 60;
+
+            return String.format("%02d:%02d", minutos, segundos);
+        }
+
+        return "00:00";
     }
 
 
@@ -997,7 +1022,8 @@ public class DaoAtendimentoImp extends GenericDao<Atendimento> implements Serial
         query.append("    to_char(a.data_nascimento, 'DD/MM/YYYY') AS nascimento, ");
         query.append("    eq.nome AS equipe, ");
         query.append("    m.descricao AS motivo, ");
-        query.append("    sm.descricao AS submotivo ");
+        query.append("    sm.descricao AS submotivo, ");
+        query.append("    cl.id AS idCliente "); //26
         query.append("FROM atendimento a ");
         query.append("    INNER JOIN empresa e ON a.empresa = e.id ");
         query.append("    INNER JOIN campanha c ON c.id = a.campanha ");
@@ -4695,7 +4721,7 @@ public class DaoAtendimentoImp extends GenericDao<Atendimento> implements Serial
         query.append(" join fetch a.motivo m ");
         query.append(" join fetch a.subMotivo sm ");
         query.append(" join fetch a.usuarioAlteracao u ");
-        query.append(" where cli.cpf = :cpf and c.tipoCampanha = 'SAC'");
+        query.append(" where cli.cpf = :cpf and c.tipoCampanha IN ('SAC','OUVIDORIA') ");
 
         parametros.put("cpf", StringUtils.leftPad(cpf.trim(), 11, "0"));
 
@@ -4721,9 +4747,10 @@ public class DaoAtendimentoImp extends GenericDao<Atendimento> implements Serial
         query.append(" left join fetch a.formaPagamento tp ");
         query.append(" left join fetch a.produto pe ");
         query.append(" left join fetch a.departamentoDerivado dp ");
+        query.append(" left join fetch a.departamentoAnterior dpa ");
         query.append(" left join fetch a.contrato ct ");
         query.append(" left join fetch ct.statusContrato sc ");
-        query.append(" where a.id = :id and c.tipoCampanha = 'SAC'");
+        query.append(" where a.id = :id and c.tipoCampanha IN ('SAC','OUVIDORIA') ");
 
 
         parametros.put("id", idAtendimento);
@@ -4745,7 +4772,7 @@ public class DaoAtendimentoImp extends GenericDao<Atendimento> implements Serial
         query.append(" left join fetch a.motivo m ");
         query.append(" left join fetch a.subMotivo sm ");
         query.append(" left join fetch a.usuarioAlteracao u ");
-        query.append(" where cli.id = :codigoCliente and c.tipoCampanha = 'SAC'");
+        query.append(" where cli.id = :codigoCliente and c.tipoCampanha IN ('SAC','OUVIDORIA') ");
 
         parametros.put("codigoCliente", codigoCliente);
 
@@ -4831,7 +4858,6 @@ public class DaoAtendimentoImp extends GenericDao<Atendimento> implements Serial
         sql.append("AND data_cadastro >= :dataLimite ");
 
 
-
         if (StringUtils.isNotBlank(protocoloAtual)) {
             sql.append("AND protocolo_pai <> :protocolo ");
             parametros.put("protocolo", protocoloAtual);
@@ -4877,7 +4903,7 @@ public class DaoAtendimentoImp extends GenericDao<Atendimento> implements Serial
         query.append(" left join fetch a.motivo m ");
         query.append(" left join fetch a.subMotivo sm ");
         query.append(" left join fetch a.usuarioAlteracao u ");
-        query.append(" where a.enviarN2 is not null and a.enviarN2 = true and c.tipoCampanha = 'SAC'");
+        query.append(" where a.enviarN2 is not null and a.enviarN2 = true and   c.tipoCampanha IN ('SAC','OUVIDORIA') ");
 
         return searchEntidades(DaoEnum.HQL_QUERRY, query.toString(), null);
     }
@@ -4895,7 +4921,8 @@ public class DaoAtendimentoImp extends GenericDao<Atendimento> implements Serial
         query.append(" left join fetch a.subMotivo sm ");
         query.append(" left join fetch a.usuarioAlteracao u ");
         query.append(" left join fetch a.departamentoDerivado dpo ");
-        query.append(" where a.enviarN2 is not null and a.enviarN2 = true and c.tipoCampanha = 'SAC' ");
+        query.append(" left join fetch a.departamentoAnterior dpoa ");
+        query.append(" where a.enviarN2 is not null and a.enviarN2 = true and c.tipoCampanha IN ('SAC','OUVIDORIA') ");
 
         if (StringUtils.isNotBlank(filtroProtocolo)) {
             query.append(" and a.protocolo = :protocolo");
@@ -4925,7 +4952,6 @@ public class DaoAtendimentoImp extends GenericDao<Atendimento> implements Serial
 
         return searchEntidades(DaoEnum.HQL_QUERRY, query.toString(), parametros);
     }
-
 
 
     private List<ProdutividadeSacDto> gerarDtoProdutividade(List<Object[]> resultados) {
@@ -4963,7 +4989,6 @@ public class DaoAtendimentoImp extends GenericDao<Atendimento> implements Serial
     }
 
 
-
     public List<Atendimento> pesquisarAtendimentosSacFiltros(String filtroProtocolo, String filtroCpf, List<Long> listDpo) {
 
         StringBuilder query = new StringBuilder();
@@ -4977,9 +5002,10 @@ public class DaoAtendimentoImp extends GenericDao<Atendimento> implements Serial
         query.append(" join fetch a.subMotivo sm ");
         query.append(" left join fetch a.status s ");
         query.append(" left join fetch a.usuarioAlteracao u ");
+        query.append(" left join fetch a.usuarioCadastro uc ");
         query.append(" left join fetch a.responsavelN2 n2 ");
         query.append(" left join fetch a.departamentoDerivado dpo ");
-        query.append(" where c.tipoCampanha = 'SAC' ");
+        query.append(" where c.tipoCampanha IN ('SAC','OUVIDORIA') ");
 
 
         if (StringUtils.isNotBlank(filtroProtocolo)) {
@@ -5017,7 +5043,8 @@ public class DaoAtendimentoImp extends GenericDao<Atendimento> implements Serial
         query.append(" left join fetch a.subMotivo sm ");
         query.append(" left join fetch a.usuarioAlteracao u ");
         query.append(" left join fetch a.departamentoDerivado dpo ");
-        query.append(" where a.enviarN2 is not null and a.enviarN2 = true and c.tipoCampanha = 'SAC' ");
+        query.append(" left join fetch a.departamentoAnterior dpoa ");
+        query.append(" where a.enviarN2 is not null and a.enviarN2 = true and c.tipoCampanha IN ('SAC','OUVIDORIA') ");
 
         if (StringUtils.isNotBlank(filtroProtocolo)) {
 
@@ -5074,7 +5101,7 @@ public class DaoAtendimentoImp extends GenericDao<Atendimento> implements Serial
         sql.append("FROM atendimento a ");
         sql.append("JOIN campanha c ON a.campanha = c.id ");
         sql.append("LEFT JOIN status_atendimento s ON a.status = s.id ");
-        sql.append("WHERE c.tipo_campanha = 'SAC' ");
+        sql.append("WHERE c.tipo_campanha IN ('SAC','OUVIDORIA') ");
 
         if (codUsuario != null) {
             sql.append(" AND a.usuario_cadastro = :usuario ");
@@ -5103,7 +5130,7 @@ public class DaoAtendimentoImp extends GenericDao<Atendimento> implements Serial
         sql.append("JOIN campanha c ON a.campanha = c.id ");
         sql.append("JOIN motivo m ON a.motivo = m.id ");
 
-        sql.append("WHERE c.tipo_campanha = 'SAC' ");
+        sql.append("WHERE c.tipo_campanha IN ('SAC','OUVIDORIA') ");
 
         if (codUsuario != null) {
             sql.append(" AND a.usuario_cadastro = :usuario ");
@@ -5132,7 +5159,7 @@ public class DaoAtendimentoImp extends GenericDao<Atendimento> implements Serial
         sql.append("JOIN campanha c ON a.campanha = c.id ");
         sql.append("JOIN submotivo sm ON a.submotivo = sm.id ");
 
-        sql.append("WHERE c.tipo_campanha = 'SAC' ");
+        sql.append("WHERE c.tipo_campanha IN ('SAC','OUVIDORIA') ");
 
         if (dataInicio != null && dataFim != null) {
             sql.append("AND a.data_cadastro >= :dataInicio AND a.data_cadastro <= :dataFim ");
@@ -5154,7 +5181,7 @@ public class DaoAtendimentoImp extends GenericDao<Atendimento> implements Serial
         sql.append("FROM atendimento a ");
         sql.append("JOIN campanha c ON a.campanha = c.id ");
         sql.append("JOIN usuario u ON a.usuario_cadastro = u.id ");
-        sql.append("WHERE c.tipo_campanha = 'SAC' ");
+        sql.append("WHERE c.tipo_campanha IN ('SAC','OUVIDORIA') ");
 
         if (dataInicio != null && dataFim != null) {
             sql.append("AND a.data_cadastro >= :dataInicio AND a.data_cadastro <= :dataFim ");
@@ -5179,7 +5206,7 @@ public class DaoAtendimentoImp extends GenericDao<Atendimento> implements Serial
         sql.append("TO_CHAR(AVG(a.data_fim_atendimento - a.data_inicio_atendimento), 'HH24:MI:SS') AS tma_formatado ");
         sql.append("FROM atendimento a ");
         sql.append("JOIN campanha c ON a.campanha = c.id ");
-        sql.append("WHERE c.tipo_campanha = 'SAC' ");
+        sql.append("WHERE c.tipo_campanha IN ('SAC','OUVIDORIA') ");
         sql.append("AND a.data_inicio_atendimento IS NOT NULL ");
         sql.append("AND a.data_fim_atendimento IS NOT NULL ");
 
@@ -5218,7 +5245,7 @@ public class DaoAtendimentoImp extends GenericDao<Atendimento> implements Serial
         sql.append("FROM atendimento a ");
         sql.append("JOIN campanha c ON a.campanha = c.id ");
         sql.append("JOIN status_atendimento s ON a.status = s.id ");
-        sql.append("WHERE c.tipo_campanha = 'SAC' ");
+        sql.append("WHERE c.tipo_campanha IN ('SAC','OUVIDORIA') ");
 
         if (codUsuario != null) {
             sql.append(" AND a.usuario_cadastro = :usuario ");
@@ -5307,7 +5334,7 @@ public class DaoAtendimentoImp extends GenericDao<Atendimento> implements Serial
         query.append(" left join fetch a.usuarioAlteracao u ");
         query.append(" left join fetch a.responsavelN2 n2 ");
         query.append(" left join fetch a.departamentoDerivado dpo ");
-        query.append(" where c.tipoCampanha = 'SAC' AND a.atendimentoPai = false");
+        query.append(" where c.tipoCampanha IN ('SAC','OUVIDORIA') AND a.atendimentoPai = false");
 
         query.append(" and a.protocoloPai = :protocoloPai");
         parametros.put("protocoloPai", protocoloPai);
@@ -5353,7 +5380,7 @@ public class DaoAtendimentoImp extends GenericDao<Atendimento> implements Serial
     }
 
 
-    public Atendimento buscarUltimoAtendimentoDoCliente(Long idCliente, Long idMotivo,Long subMotivo, Date dataLimite, Long idAtendimentoAtual) {
+    public Atendimento buscarUltimoAtendimentoDoCliente(Long idCliente, Long idMotivo, Long subMotivo, Date dataLimite, Long idAtendimentoAtual) {
 
         try {
 
@@ -5426,7 +5453,7 @@ public class DaoAtendimentoImp extends GenericDao<Atendimento> implements Serial
 
     // No seu Repository/DAO
 
-    public boolean verificarSeClienteEhReincidente(Long idCliente,String protocoloPai) {
+    public boolean verificarSeClienteEhReincidente(Long idCliente, String protocoloPai) {
 
         // data limite (Hoje - 7 dias)
         Calendar cal = Calendar.getInstance();
@@ -5446,7 +5473,7 @@ public class DaoAtendimentoImp extends GenericDao<Atendimento> implements Serial
             Long count = entityManager.createQuery(hql, Long.class)
                     .setParameter("idCliente", idCliente)
                     .setParameter("dataLimite", dataLimite)
-                    .setParameter("protocoloPai",protocoloPai)
+                    .setParameter("protocoloPai", protocoloPai)
                     .getSingleResult();
 
             return count > 0;

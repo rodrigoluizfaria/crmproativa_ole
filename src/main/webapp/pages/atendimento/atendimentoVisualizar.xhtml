@@ -45,13 +45,13 @@
 
                 <div class="flex gap-2">
                     <p:commandButton value="Novo Atendimento"
-                                     icon="pi pi-plus" disabled="true"
+                                     icon="pi pi-plus"
                                      process="@this"
-                                     action="#{meusAtendimentosBean.gerarNovaProposta()}"
+                                     action="#{meusAtendimentosBean.onCriarNovoAtendimento()}"
                                      styleClass="ui-button-success font-bold border-round-md shadow-none"
                                      id="novaProposta"
                                      oncomplete="PF('dlgVisualizarAtendimento').hide();">
-                        <p:confirm header="Confirmar" message="Deseja iniciar um novo atendimento para este perfil?" icon="pi pi-question-circle"/>
+                        <p:confirm header="Confirmar" message="Deseja iniciar um novo atendimento para este cliente?" icon="pi pi-question-circle"/>
                     </p:commandButton>
 
                     <p:commandButton value="Fechar" icon="pi pi-times"
@@ -89,7 +89,7 @@
                                         <div class="mb-3">
                                             <span class="text-xs font-bold text-500 uppercase block mb-2">Relato do Atendimento</span>
                                             <div class="text-900 line-height-3 text-lg bg-gray-50 p-3 border-round-lg border-1 border-100">
-                                                <h:outputText value="#{meusAtendimentosBean.atendimentoVisualizar.observacao}"
+                                                <h:outputText value="#{meusAtendimentosBean.atendimentoVisualizar.observacao}" escape="false"
                                                               rendered="#{not empty meusAtendimentosBean.atendimentoVisualizar.observacao}"/>
                                                 <h:outputText value="Sem observações registradas."
                                                               rendered="#{empty meusAtendimentosBean.atendimentoVisualizar.observacao}"
